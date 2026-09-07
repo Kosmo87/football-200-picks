@@ -23,6 +23,10 @@ ESPN_NCAAF_BASE = (
 )
 PREFERRED_PROVIDER = "Draft Kings"  # normalized match vs "DraftKings"
 
+# All-star rosters are not franchises: the Pro Bowl would otherwise create
+# phantom "AFC"/"NFC" entries in the power ratings.
+NON_TEAM_ABBRS = {"AFC", "NFC", "NFL", "USA", "WORLD"}
+
 HEADERS = {
     "User-Agent": (
         "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
@@ -63,6 +67,7 @@ class Game:
     home: TeamInfo
     away: TeamInfo
     odds: OddsInfo
+    neutral: bool = False
 
 
 def _provider_matches(name: str, preferred: str) -> bool:
@@ -220,6 +225,7 @@ def parse_upcoming_game(event: dict) -> Optional[Game]:
             status=status,
             home=home,
             away=away,
+            neutral=bool(comp.get("neutralSite")),
             odds=OddsInfo(
                 provider=(odds_data.get("provider") or {}).get("name", "Unknown"),
                 moneyline_home=home_ml,
@@ -233,7 +239,7 @@ def parse_upcoming_game(event: dict) -> Optional[Game]:
         return None
 
 
-def parse_completed_game(event: dict) -> Optional[CompletedGame]:
+def parse_completed_game(event: dict, season_type: int = 2) -> Optional[CompletedGame]:
     try:
         competitions = event.get("competitions") or []
         if not competitions:
@@ -249,6 +255,11 @@ def parse_completed_game(event: dict) -> Optional[CompletedGame]:
         home, away = _team_info(home_c, "home"), _team_info(away_c, "away")
         if not home.id or not away.id:
             return None
+        if (
+            home.abbreviation in NON_TEAM_ABBRS
+            or away.abbreviation in NON_TEAM_ABBRS
+        ):
+            return None  # all-star exhibition, not a rateable game
 
         try:
             home_score = int(float(home_c.get("score")))
@@ -267,6 +278,10 @@ def parse_completed_game(event: dict) -> Optional[CompletedGame]:
             away_abbr=away.abbreviation,
             home_score=home_score,
             away_score=away_score,
+            neutral=bool(comp.get("neutralSite")),
+            season_type=int(
+                ((event.get("season") or {}).get("type") or season_type)
+            ),
         )
     except Exception:
         return None
@@ -386,3 +401,64 @@ def fetch_completed_games(league: str) -> List[CompletedGame]:
     if league.upper() == "NFL":
         return fetch_nfl_completed()
     return fetch_ncaaf_completed()
+
+
+# ---------------------------------------------------------------------------
+# Prior-season pulls (for Elo carryover)
+# ---------------------------------------------------------------------------
+
+# Weeks worth walking per league, as (seasontype, max_week)
+SEASON_WEEK_SPANS = {
+    "NFL": ((2, 18), (3, 5)),
+    "NCAAF": ((2, 16), (3, 2)),
+}
+
+
+def current_season_year(now: Optional[datetime] = None) -> int:
+    """
+    ESPN season year for football. A season is labelled by the year it starts,
+    so January-July belongs to the previous year's season.
+    """
+    now = now or datetime.now(timezone.utc)
+    return now.year if now.month >= 8 else now.year - 1
+
+
+def _season_week_url(league: str, season: int, season_type: int, week: int) -> str:
+    if league.upper() == "NFL":
+        return f"{ESPN_NFL}?dates={season}&seasontype={season_type}&week={week}"
+    return (
+        f"{ESPN_NCAAF_BASE}?dates={season}&seasontype={season_type}"
+        f"&week={week}&groups=80&limit=200"
+    )
+
+
+def fetch_season_completed(league: str, season: int) -> List[CompletedGame]:
+    """
+    Pull every completed game for a full season by walking its weeks.
+
+    Used for prior-season Elo carryover, so it covers regular season and
+    postseason but skips preseason (which carries almost no signal).
+    """
+    league_u = (league or "NFL").upper()
+    spans = SEASON_WEEK_SPANS.get(league_u, SEASON_WEEK_SPANS["NCAAF"])
+    events = []
+    for season_type, max_week in spans:
+        for week in range(1, max_week + 1):
+            url = _season_week_url(league_u, season, season_type, week)
+            try:
+                data = fetch_scoreboard(url, retries=2)
+            except Exception:
+                continue
+            for ev in data.get("events") or []:
+                ev.setdefault("season", {})
+                if not isinstance(ev["season"], dict):
+                    ev["season"] = {}
+                ev["season"].setdefault("type", season_type)
+                events.append(ev)
+
+    games = []
+    for ev in _dedupe_events(events):
+        g = parse_completed_game(ev)
+        if g:
+            games.append(g)
+    return games

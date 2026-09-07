@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import traceback
 
-from elo import EloSystem, config_for_league
+from elo import EloSystem, build_league_elo, config_for_league
 from espn import fetch_completed_games, get_upcoming_games
 from odds import (
     american_to_implied_prob,
@@ -20,6 +20,19 @@ from picks import (
     get_all_legs,
     summarize_board,
 )
+
+
+def _rated(completed, league):
+    """Build Elo the way the shipped build does: seeded from last season."""
+    try:
+        from build_board import load_prior_season
+        from espn import current_season_year
+
+        prior = load_prior_season(league, current_season_year() - 1)
+    except Exception as e:
+        print(f"  (carryover unavailable: {e})")
+        prior = []
+    return build_league_elo(completed, prior_games=prior, league=league)
 
 
 def demo_odds_math() -> None:
@@ -191,7 +204,7 @@ def run_league(league: str, cfg: ConfidenceConfig) -> dict:
     try:
         completed = fetch_completed_games(league)
         upcoming = get_upcoming_games(league)
-        elo = EloSystem(config=config_for_league(league)).build(completed)
+        elo = _rated(completed, league)
         summary = summarize_board(upcoming, elo, cfg=cfg)
         picks = build_picks(upcoming, elo, n=3, cfg=cfg)
 
@@ -304,7 +317,7 @@ def main() -> None:
     try:
         completed = fetch_completed_games("NFL")
         upcoming = get_upcoming_games("NFL")
-        elo = EloSystem(config=config_for_league("NFL")).build(completed)
+        elo = _rated(completed, "NFL")
         cfg_hi = ConfidenceConfig().apply_high_confidence_preset("NFL")
         picks_hi = build_picks(upcoming, elo, n=3, cfg=cfg_hi)
         summary_hi = summarize_board(upcoming, elo, cfg=cfg_hi)

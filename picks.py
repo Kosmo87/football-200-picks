@@ -62,9 +62,12 @@ class Leg:
     implied_prob: float = 0.0
     edge: float = 0.0  # probability points (e.g. 0.04 = 4pp)
     fair_odds: int = 0
-    sample_games: int = 0  # min completed games used in Elo for both teams
-    team_sample: int = 0
-    opp_sample: int = 0
+    sample_games: float = 0.0  # min effective sample across both teams
+    team_sample: float = 0.0
+    opp_sample: float = 0.0
+    team_games: int = 0  # raw completed games this season
+    opp_games: int = 0
+    prior_credit: float = 0.0  # sample credit from last season's rating
     confidence: float = 0.0  # 0–100
     confidence_label: str = "Low"
 
@@ -107,7 +110,7 @@ def confidence_label_from_score(score: float) -> str:
 def compute_confidence(
     edge: float,
     odds_american: int,
-    sample_games: int,
+    sample_games: float,
 ) -> Tuple[float, str]:
     """
     Confidence 0–100 from sample depth + edge size + price shortness.
@@ -123,7 +126,7 @@ def compute_confidence(
     Labels: High ≥70, Med ≥40, else Low.
     """
     epp = edge * 100.0
-    sample_score = min(max(sample_games, 0) / 8.0, 1.0) * 40.0
+    sample_score = min(max(float(sample_games), 0.0) / 8.0, 1.0) * 40.0
     edge_score = min(max(epp, 0.0) / 15.0, 1.0) * 35.0
     if odds_american >= 0:
         short_frac = max(0.0, 1.0 - (odds_american - 100) / 500.0)
@@ -135,19 +138,26 @@ def compute_confidence(
     return score, confidence_label_from_score(score)
 
 
+DEFAULT_MIN_LEG_ODDS = -350
+
+
 def annotate_leg(
     game: Game,
     side: str,
     elo: EloSystem,
     max_leg_odds: int = DEFAULT_MAX_SINGLE_LEG_ODDS,
+    min_leg_odds: int = DEFAULT_MIN_LEG_ODDS,
 ) -> Optional[Leg]:
     team = game.home if side == "home" else game.away
     odds = game.odds.moneyline_home if side == "home" else game.odds.moneyline_away
-    # Favorites down to -350 for multi-leg stacks; long dogs capped by max_leg_odds
-    if odds is None or not (-350 <= odds <= max_leg_odds):
+    # Favorites are allowed down to min_leg_odds for multi-leg stacks; long dogs
+    # are capped by max_leg_odds.
+    if odds is None or not (min_leg_odds <= odds <= max_leg_odds):
         return None
 
-    model_p = elo.win_prob_side(game.home.id, game.away.id, side)
+    model_p = elo.win_prob_side(
+        game.home.id, game.away.id, side, neutral=getattr(game, "neutral", False)
+    )
     implied = side_implied_prob(
         odds,
         game.odds.moneyline_home,
@@ -157,9 +167,14 @@ def annotate_leg(
     )
     edge = model_p - implied
     opp = game.away if side == "home" else game.home
-    team_sample = elo.games_played.get(team.id, 0)
-    opp_sample = elo.games_played.get(opp.id, 0)
+    # Effective sample credits prior-season games, so a week-2 team with a real
+    # carried-over rating is not treated as a total unknown.
+    team_sample = elo.effective_sample(team.id)
+    opp_sample = elo.effective_sample(opp.id)
+    team_games = elo.games_played.get(team.id, 0)
+    opp_games = elo.games_played.get(opp.id, 0)
     sample = min(team_sample, opp_sample)
+    credit = min(elo.prior_credit(team.id), elo.prior_credit(opp.id))
     conf, conf_label = compute_confidence(edge, odds, sample)
     return Leg(
         game=game,
@@ -175,6 +190,9 @@ def annotate_leg(
         sample_games=sample,
         team_sample=team_sample,
         opp_sample=opp_sample,
+        team_games=team_games,
+        opp_games=opp_games,
+        prior_credit=credit,
         confidence=conf,
         confidence_label=conf_label,
     )
@@ -184,11 +202,14 @@ def get_all_legs(
     games: List[Game],
     elo: EloSystem,
     max_leg_odds: int = DEFAULT_MAX_SINGLE_LEG_ODDS,
+    min_leg_odds: int = DEFAULT_MIN_LEG_ODDS,
 ) -> List[Leg]:
     legs: List[Leg] = []
     for g in games:
         for side in ("away", "home"):
-            leg = annotate_leg(g, side, elo, max_leg_odds=max_leg_odds)
+            leg = annotate_leg(
+                g, side, elo, max_leg_odds=max_leg_odds, min_leg_odds=min_leg_odds
+            )
             if leg is not None:
                 legs.append(leg)
     return legs

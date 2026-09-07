@@ -1,0 +1,76 @@
+name: Build picks board
+
+on:
+  schedule:
+    # Hourly. ESPN odds move through the day and CLV tracking needs the
+    # latest price on open picks before kickoff.
+    - cron: "17 * * * *"
+  workflow_dispatch:
+    inputs:
+      refresh_prior:
+        description: "Re-pull the prior season instead of using the cache"
+        type: boolean
+        default: false
+  push:
+    branches: [main]
+    paths:
+      - "build_board.py"
+      - "elo.py"
+      - "espn.py"
+      - "odds.py"
+      - "picks.py"
+      - ".github/workflows/build-board.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-board
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install --quiet requests
+
+      - name: Build board
+        run: |
+          python build_board.py \
+            ${{ inputs.refresh_prior && '--refresh-prior' || '' }}
+
+      - name: Verify engine parity
+        # The browser re-implements pick selection; a drift here means the site
+        # would show different tips than the Python engine that logs the ledger.
+        run: |
+          node parity_test.js > /tmp/js.json
+          python parity_test.py > /tmp/py.json
+          diff /tmp/js.json /tmp/py.json && echo "parity OK"
+
+      - name: Commit refreshed data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/data cache
+          if git diff --staged --quiet; then
+            echo "No board changes."
+            exit 0
+          fi
+          git commit -m "Rebuild board $(date -u +'%Y-%m-%d %H:%M UTC')"
+          git push
+
+      - name: Trigger Netlify deploy
+        # Optional: set the NETLIFY_BUILD_HOOK secret if the site is not already
+        # set to auto-deploy on push to main.
+        if: env.HOOK != ''
+        env:
+          HOOK: ${{ secrets.NETLIFY_BUILD_HOOK }}
+        run: curl -fsS -X POST -d '{}' "$HOOK"

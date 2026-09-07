@@ -1,0 +1,31 @@
+# Netlify serves the prebuilt static board. All data is generated ahead of time
+# by .github/workflows/build-board.yml and committed to public/data/, so there
+# is no build step and no Python runtime needed here.
+
+[build]
+  publish = "public"
+  command = ""
+
+[[headers]]
+  for = "/data/*.json"
+  [headers.values]
+    # The board is rebuilt hourly; let clients revalidate rather than sit on a
+    # stale copy for the CDN's default TTL.
+    Cache-Control = "public, max-age=60, must-revalidate"
+
+[[headers]]
+  for = "/*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=300"
+
+[[headers]]
+  for = "/*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=300"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "SAMEORIGIN"
+    Referrer-Policy = "strict-origin-when-cross-origin"

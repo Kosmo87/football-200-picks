@@ -45,9 +45,19 @@ def conf_badge(label: str, score: float) -> str:
 
 
 def load_league(league: str, cfg: ConfidenceConfig) -> dict:
+    # Same rating path as the static build so both surfaces agree: prior-season
+    # ratings (cached on disk) are regressed to the mean and seed this season.
+    from build_board import load_prior_season
+    from elo import build_league_elo
+    from espn import current_season_year
+
     games = get_upcoming_games(league)
     completed = fetch_completed_games(league)
-    elo = EloSystem(config=config_for_league(league)).build(completed)
+    try:
+        prior = load_prior_season(league, current_season_year() - 1)
+    except Exception:
+        prior = []
+    elo = build_league_elo(completed, prior_games=prior, league=league)
     picks = build_picks(games, elo, n=3, cfg=cfg)
     summary = summarize_board(games, elo, cfg=cfg)
     return {
