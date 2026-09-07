@@ -77,8 +77,15 @@ jobs:
         # Uploads the finished public/ folder. Netlify never clones the repo, so
         # this costs no build minutes. Runs every time so the live site always
         # matches main, whether the code or just the board data changed.
-        if: env.NETLIFY_AUTH_TOKEN != ''
         run: |
+          # Guard in bash rather than `if:` so a missing or empty token is
+          # visible in the log instead of silently skipping the whole step.
+          if [ -z "$NETLIFY_AUTH_TOKEN" ]; then
+            echo "::warning::NETLIFY_AUTH_TOKEN is empty (${#NETLIFY_AUTH_TOKEN} chars) — skipping deploy."
+            echo "Set it with: gh secret set NETLIFY_AUTH_TOKEN --repo Kosmo87/football-200-picks"
+            exit 0
+          fi
+          echo "Token present (${#NETLIFY_AUTH_TOKEN} chars). Deploying…"
           npx --yes netlify-cli@27 deploy \
             --prod \
             --dir=public \
