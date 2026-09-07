@@ -73,12 +73,28 @@ so it is fetched once (~20 requests) and committed.
 Netlify cannot run Streamlit (it needs a persistent Python WebSocket server), which
 is why the board is prebuilt. Netlify only serves files.
 
-1. **New site** → import `Kosmo87/football-200-picks` from GitHub.
-2. Netlify reads `netlify.toml`: publish directory `public`, **no build command**.
-3. Deploy. Every push to `main` — including the hourly data commit — redeploys.
+**Live:** https://statuesque-brioche-a8fa92.netlify.app
 
-Optional: if you turn off auto-deploy on push, add a build hook and store it as the
-`NETLIFY_BUILD_HOOK` repository secret; the workflow pings it after each build.
+GitHub remains the source of truth. The hourly Action builds the board and then
+**uploads the finished `public/` folder** with the Netlify CLI — Netlify never
+clones the repo, so deploys cost no build minutes (a git-connected site would burn
+~215–250 of the free tier's 300 at hourly cadence).
+
+One-time setup, already done except the token:
+
+```bash
+# 1. Create a personal access token at
+#    https://app.netlify.com/user/applications#personal-access-tokens
+# 2. Store it as a repo secret:
+gh secret set NETLIFY_AUTH_TOKEN --repo Kosmo87/football-200-picks
+```
+
+Without that secret the deploy step is skipped and the rest of the build still runs.
+Deploying by hand from a checkout:
+
+```bash
+netlify deploy --prod --dir=public
+```
 
 ## Scheduled refresh
 

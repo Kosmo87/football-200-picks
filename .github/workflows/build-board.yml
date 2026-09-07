@@ -67,10 +67,18 @@ jobs:
           git commit -m "Rebuild board $(date -u +'%Y-%m-%d %H:%M UTC')"
           git push
 
-      - name: Trigger Netlify deploy
-        # Optional: set the NETLIFY_BUILD_HOOK secret if the site is not already
-        # set to auto-deploy on push to main.
-        if: env.HOOK != ''
+      - name: Deploy to Netlify
+        # Uploads the finished public/ folder. Netlify never clones the repo, so
+        # this costs no build minutes. Runs every time so the live site always
+        # matches main, whether the code or just the board data changed.
+        if: env.NETLIFY_AUTH_TOKEN != ''
         env:
-          HOOK: ${{ secrets.NETLIFY_BUILD_HOOK }}
-        run: curl -fsS -X POST -d '{}' "$HOOK"
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          # Not a secret: site IDs are public in every deploy URL.
+          NETLIFY_SITE_ID: fbbd4003-735c-46f1-b1da-bed28205ee4c
+        run: |
+          npx --yes netlify-cli@27 deploy \
+            --prod \
+            --dir=public \
+            --site="$NETLIFY_SITE_ID" \
+            --message="Board $(date -u +'%Y-%m-%d %H:%M UTC')"
