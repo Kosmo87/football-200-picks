@@ -32,6 +32,12 @@ jobs:
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 25
+    env:
+      # Must live at job level: step-level env is not in scope for a step's own
+      # `if:` condition, which silently skipped the deploy.
+      NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+      # Not a secret: site IDs are public in every deploy URL.
+      NETLIFY_SITE_ID: fbbd4003-735c-46f1-b1da-bed28205ee4c
     steps:
       - uses: actions/checkout@v4
 
@@ -72,10 +78,6 @@ jobs:
         # this costs no build minutes. Runs every time so the live site always
         # matches main, whether the code or just the board data changed.
         if: env.NETLIFY_AUTH_TOKEN != ''
-        env:
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          # Not a secret: site IDs are public in every deploy URL.
-          NETLIFY_SITE_ID: fbbd4003-735c-46f1-b1da-bed28205ee4c
         run: |
           npx --yes netlify-cli@27 deploy \
             --prod \
