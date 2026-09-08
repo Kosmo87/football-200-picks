@@ -9,7 +9,7 @@ const fs = require("fs");
 const src = fs.readFileSync("public/app.js", "utf8");
 const engine = src.split("// --------------------------------------------------------------------------\n// State")[0];
 const sandbox = {};
-new Function("exports", engine + "\nObject.assign(exports, {flattenLegs, buildPicks, DEFAULTS, LEAGUE_MIN_SAMPLE, computeConfidence, combineOdds});")(sandbox);
+new Function("exports", engine + "\nObject.assign(exports, {flattenLegs, buildPicks, DEFAULTS, LEAGUE_MIN_SAMPLE, computeConfidence, combineOdds, stakeUnits});")(sandbox);
 
 const board = JSON.parse(fs.readFileSync("public/data/board.json", "utf8"));
 const out = {};
@@ -22,6 +22,8 @@ for (const [name, lg] of Object.entries(board.leagues)) {
     // order can differ in the last float bit. One decimal is the real tolerance.
     conf: p.avgConfidence.toFixed(1),
     edge: p.combinedEdgePP.toFixed(1),
+    units: p.stakeUnits.toFixed(1),
+    winp: p.winProb.toFixed(4),
     legs: p.legs.map((l) => `${l.team_abbr}@${l.odds}`),
   }));
 }

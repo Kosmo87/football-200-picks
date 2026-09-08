@@ -14,6 +14,7 @@ from odds import (
     fair_american_from_prob,
     side_implied_prob,
 )
+from staking import parlay_win_prob, stake_units, units_label
 
 MIN_COMBINED_ODDS = 200
 DEFAULT_MAX_SINGLE_LEG_ODDS = 600
@@ -81,6 +82,8 @@ class Pick:
     combined_edge_pp: float = 0.0
     avg_confidence: float = 0.0
     confidence_label: str = "Low"
+    win_prob: float = 0.0     # model probability every leg lands
+    stake_units: float = 0.0  # ladder, capped by what the price justifies
 
 
 def _opp_id(leg: Leg) -> str:
@@ -283,6 +286,12 @@ def _make_pick(legs: List[Leg], combined: int) -> Pick:
         parts = " + ".join(f"{l.team_abbr} ({l.odds_american:+d})" for l in legs)
         label = f"{n}-leg: {parts} → {combined:+d}"
         combined_edge = avg_e * 100.0
+    # A parlay lands only if every leg does, so the stake follows the combined
+    # probability rather than the average of the legs'.
+    win_p = parlay_win_prob([l.model_win_prob for l in legs])
+    units = stake_units(win_p, combined)
+    if units > 0:
+        label = f"{units_label(units)} · {label}"
     return Pick(
         legs=list(legs),
         combined_odds=combined,
@@ -291,6 +300,8 @@ def _make_pick(legs: List[Leg], combined: int) -> Pick:
         combined_edge_pp=combined_edge,
         avg_confidence=avg_c,
         confidence_label=confidence_label_from_score(avg_c),
+        win_prob=win_p,
+        stake_units=units,
     )
 
 

@@ -28,6 +28,41 @@ const fmtPct = (p) => `${(p * 100).toFixed(1)}%`;
 const fmtPP = (pp) => `${pp >= 0 ? "+" : ""}${pp.toFixed(1)}pp`;
 
 // --------------------------------------------------------------------------
+// staking.py port — units
+//
+// The ladder sizes a bet by how likely it is to land, which is the capper
+// convention and beat flat staking in both seasons we can measure. Capped by
+// Kelly because win probability alone does not say whether a bet is good: a
+// 75% favourite at -300 is priced fairly and deserves nothing, while the raw
+// ladder would stake 2U on it.
+// --------------------------------------------------------------------------
+
+const LADDER = [[0.60, 0.5], [0.70, 1.0], [0.80, 2.0], [0.90, 3.0], [0.95, 4.0], [1.01, 5.0]];
+const MAX_UNITS = 5.0;
+const KELLY_FRACTION = 0.25;
+
+function ladderUnits(p) {
+  for (const [ceiling, units] of LADDER) if (p < ceiling) return units;
+  return MAX_UNITS;
+}
+
+function kellyUnits(p, odds, fraction = KELLY_FRACTION) {
+  const b = americanToDecimal(odds) - 1;
+  if (b <= 0) return 0;
+  const f = (b * p - (1 - p)) / b;
+  if (f <= 0) return 0;
+  return Math.min(Math.round(f * fraction * 20 * 10) / 10, MAX_UNITS);
+}
+
+/** Published stake: the ladder, never above what the price justifies. */
+const stakeUnits = (p, odds) => Math.min(ladderUnits(p), kellyUnits(p, odds));
+
+/** A parlay lands only if every leg does. Independence is why legs never share a game. */
+const parlayWinProb = (probs) => probs.reduce((a, b) => a * b, 1);
+
+const unitsLabel = (u) => (u <= 0 ? "no bet" : `${+u.toFixed(1)}U`);
+
+// --------------------------------------------------------------------------
 // picks.py port — confidence, gates, selection
 // --------------------------------------------------------------------------
 
@@ -145,11 +180,16 @@ function makePick(legs, combined) {
   const avgC = avgBy(legs, "confidence");
   const avgE = avgBy(legs, "edge_pp");
   const n = legs.length;
-  const label =
+  const winProb = parlayWinProb(legs.map((l) => l.model_prob));
+  const units = stakeUnits(winProb, combined);
+  let label =
     n === 1
       ? `Single: ${legs[0].team_abbr} ML ${fmtOdds(legs[0].odds)}`
       : `${n}-leg: ${legs.map((l) => `${l.team_abbr} (${fmtOdds(l.odds)})`).join(" + ")}`;
+  if (units > 0) label = `${unitsLabel(units)} · ${label}`;
   return {
+    winProb,
+    stakeUnits: units,
     legs,
     combined,
     label,

@@ -54,6 +54,8 @@ for name, lg in board["leagues"].items():
             "combined": p.combined_odds,
             "conf": f"{p.avg_confidence:.1f}",
             "edge": f"{p.combined_edge_pp:.1f}",
+            "units": f"{p.stake_units:.1f}",
+            "winp": f"{p.win_prob:.4f}",
             "legs": [f"{l.team_abbr}@{l.odds_american}" for l in p.legs],
         }
         for p in result
