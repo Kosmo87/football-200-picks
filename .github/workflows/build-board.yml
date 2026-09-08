@@ -44,6 +44,9 @@ jobs:
       # `if:` condition, which silently skipped the deploy.
       NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
       ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+      RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+      RESEND_FROM: ${{ vars.RESEND_FROM }}
+      DELIVER_TO: ${{ vars.DELIVER_TO }}
       # Not a secret: site IDs are public in every deploy URL.
       NETLIFY_SITE_ID: fbbd4003-735c-46f1-b1da-bed28205ee4c
     steps:
@@ -76,6 +79,24 @@ jobs:
           fi
           python shop_ledger.py --scan --grade
           python shop_ledger.py --report
+
+      - name: Send the morning message
+        # Only in the 12:00-13:59 UTC hour, which is early morning US time: the
+        # message is worth sending once, on the day, while the prices it names
+        # are still live. Any other hour is a no-op.
+        continue-on-error: true
+        run: |
+          HOUR=$(date -u +%H)
+          if [ "$HOUR" != "12" ] && [ "$HOUR" != "13" ]; then
+            echo "Not the sending hour (UTC $HOUR) — skipping."
+            exit 0
+          fi
+          if [ -z "$RESEND_API_KEY" ] || [ -z "$DELIVER_TO" ]; then
+            echo "::warning::RESEND_API_KEY or DELIVER_TO missing — rendering only."
+            python delivery.py --dry-run
+            exit 0
+          fi
+          python delivery.py --to "$DELIVER_TO"
 
       - name: Build board
         run: |
