@@ -111,7 +111,7 @@
       <li><strong>Model win%</strong> — logistic Elo expectation from the rating gap plus home-field.</li>
       <li><strong>Implied win%</strong> — from the priced side, de-vigged against the other side's moneyline so both probabilities sum to 1.</li>
       <li><strong>Edge</strong> — model win% minus implied win%, in percentage points.</li>
-      <li><strong>Confidence</strong> — sample depth (40) + edge size (35) + how short the price is (25). Prior-season games grant capped sample credit, so a week-2 team with a real carried-over rating isn't treated as an unknown.</li>
+      <li><strong>Signal</strong> — sample depth (40) + edge size (35) + how short the price is (25), scored out of 100. Not a win probability. Prior-season games grant capped sample credit, so a week-2 team with a real carried-over rating isn't treated as an unknown.</li>
       <li><strong>Selection</strong> — gated legs only, no overlapping teams or games; prefer singles and short parlays that already clear +200, then stack 3–5 shorter legs. Ranked by confidence and edge, not by juiciest payout.</li>
       <li><strong>CLV</strong> — each tracked pick logs its price when first surfaced and keeps updating the latest price until kickoff. Positive CLV means the opening price was longer than the close.</li>
     </ol>

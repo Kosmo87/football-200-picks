@@ -19,6 +19,13 @@ on:
       - "espn.py"
       - "odds.py"
       - "picks.py"
+      - "history_data.py"
+      - "parity_test.js"
+      - "parity_test.py"
+      # The site itself. Without this a front-end-only change never deploys and
+      # sits unpublished until the next cron happens to run.
+      - "public/**"
+      - "netlify.toml"
       - ".github/workflows/build-board.yml"
 
 permissions:
