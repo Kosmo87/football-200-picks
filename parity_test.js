@@ -24,6 +24,8 @@ for (const [name, lg] of Object.entries(board.leagues)) {
     edge: p.combinedEdgePP.toFixed(1),
     units: p.stakeUnits.toFixed(1),
     winp: p.winProb.toFixed(4),
+    mktp: p.marketProb.toFixed(4),
+    trust: p.trust,
     legs: p.legs.map((l) => `${l.team_abbr}@${l.odds}`),
   }));
 }

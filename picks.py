@@ -14,7 +14,12 @@ from odds import (
     fair_american_from_prob,
     side_implied_prob,
 )
-from staking import parlay_win_prob, stake_units, units_label
+from staking import (
+    parlay_win_prob,
+    stake_units,
+    trust_label,
+    units_label,
+)
 
 MIN_COMBINED_ODDS = 200
 DEFAULT_MAX_SINGLE_LEG_ODDS = 600
@@ -82,8 +87,10 @@ class Pick:
     combined_edge_pp: float = 0.0
     avg_confidence: float = 0.0
     confidence_label: str = "Low"
-    win_prob: float = 0.0     # model probability every leg lands
-    stake_units: float = 0.0  # ladder, capped by what the price justifies
+    win_prob: float = 0.0      # model probability every leg lands
+    market_prob: float = 0.0   # the same, according to the price
+    stake_units: float = 0.0   # ladder, capped by price and by disagreement
+    trust: str = "None"
 
 
 def _opp_id(leg: Leg) -> str:
@@ -289,7 +296,8 @@ def _make_pick(legs: List[Leg], combined: int) -> Pick:
     # A parlay lands only if every leg does, so the stake follows the combined
     # probability rather than the average of the legs'.
     win_p = parlay_win_prob([l.model_win_prob for l in legs])
-    units = stake_units(win_p, combined)
+    market_p = parlay_win_prob([l.implied_prob for l in legs])
+    units = stake_units(win_p, combined, market_p)
     if units > 0:
         label = f"{units_label(units)} · {label}"
     return Pick(
@@ -301,7 +309,9 @@ def _make_pick(legs: List[Leg], combined: int) -> Pick:
         avg_confidence=avg_c,
         confidence_label=confidence_label_from_score(avg_c),
         win_prob=win_p,
+        market_prob=market_p,
         stake_units=units,
+        trust=trust_label(win_p, market_p),
     )
 
 
@@ -399,7 +409,12 @@ def build_picks(
                     break
                 if not can_use(leg):
                     continue
-                picks.append(_make_pick([leg], leg.odds_american))
+                pick = _make_pick([leg], leg.odds_american)
+                # A pick we would stake nothing on is not a pick. Leave its
+                # teams free so they can still appear in a combination.
+                if pick.stake_units <= 0:
+                    continue
+                picks.append(pick)
                 mark_used(leg)
             continue
 
@@ -414,7 +429,10 @@ def build_picks(
                 break
             if any(not can_use(l) for l in legs_combo):
                 continue
-            picks.append(_make_pick(legs_combo, comb))
+            pick = _make_pick(legs_combo, comb)
+            if pick.stake_units <= 0:
+                continue
+            picks.append(pick)
             for l in legs_combo:
                 mark_used(l)
 

@@ -19,6 +19,8 @@ the ones the ladder gets right.
 
 from __future__ import annotations
 
+import math
+
 from typing import List, Optional
 
 from odds import american_to_decimal
@@ -35,6 +37,37 @@ LADDER = [
 
 MAX_UNITS = 5.0
 KELLY_FRACTION = 0.25  # quarter Kelly: full Kelly is far too violent in practice
+
+# How far the model may disagree with the market before the disagreement is
+# treated as the model's error rather than the market's.
+#
+# This is not caution, it is the measured result. Backtesting sorted every pick
+# by how far it strayed from the price and the relationship ran backwards: where
+# the model claimed 10+ points of edge it won 25-38% of the time against the
+# 57-67% it forecast. Sizing by win probability alone therefore stakes the most
+# on the picks that lose most, which is the opposite of what a stake should do.
+#
+# Elo cannot see talent, only results, so two teams with similar records get
+# similar ratings even when one is a Big Ten program and the other is not. A
+# fifty-point disagreement is that blindness talking, not an edge.
+DISAGREEMENT_BANDS = [
+    (5.0, 1.00),    # within 5 points of the market: trust it
+    (10.0, 0.60),
+    (15.0, 0.30),
+]
+DISAGREEMENT_CUTOFF = 0.0   # beyond the last band, no bet
+
+
+def _round1(x: float) -> float:
+    """
+    Round to one decimal, half away from zero.
+
+    Python's built-in round() is half-to-even, so round(0.15, 1) is 0.1 while
+    JavaScript's Math.round gives 0.2. The browser re-implements this sizing, and
+    a stake that differs between the two engines is a real disagreement about
+    what to bet -- so the rounding rule has to be stated rather than inherited.
+    """
+    return math.floor(x * 10 + 0.5) / 10
 
 
 def ladder_units(win_prob: float) -> float:
@@ -60,17 +93,40 @@ def kelly_units(
     f = (b * win_prob - (1.0 - win_prob)) / b
     if f <= 0:
         return 0.0
-    return min(round(f * fraction * 20, 1), MAX_UNITS)
+    return min(_round1(f * fraction * 20), MAX_UNITS)
 
 
-def stake_units(win_prob: float, odds_american: int) -> float:
+def disagreement_factor(win_prob: float, market_prob: Optional[float]) -> float:
     """
-    The published stake: the ladder, never exceeding what the price justifies.
+    Shrink the stake as the model strays further from the price.
 
-    Zero means the model likes the side but the price does not pay enough to
-    back it — a real answer, and one the raw ladder cannot give.
+    Returns 1.0 when the two broadly agree and 0.0 once the gap is wide enough
+    that the model has historically been the wrong one.
     """
-    return min(ladder_units(win_prob), kelly_units(win_prob, odds_american))
+    if market_prob is None:
+        return 1.0
+    gap = abs(win_prob - market_prob) * 100.0
+    for limit, factor in DISAGREEMENT_BANDS:
+        if gap <= limit:
+            return factor
+    return DISAGREEMENT_CUTOFF
+
+
+def stake_units(
+    win_prob: float,
+    odds_american: int,
+    market_prob: Optional[float] = None,
+) -> float:
+    """
+    The published stake: the ladder, capped by what the price justifies, then
+    shrunk by how far the model has strayed from the market.
+
+    Zero is a real answer and means one of two things — the price does not pay
+    enough to back the opinion, or the opinion is too far from the market to be
+    believed.
+    """
+    base = min(ladder_units(win_prob), kelly_units(win_prob, odds_american))
+    return _round1(base * disagreement_factor(win_prob, market_prob))
 
 
 def parlay_win_prob(leg_probs: List[float]) -> float:
@@ -84,6 +140,23 @@ def parlay_win_prob(leg_probs: List[float]) -> float:
     for lp in leg_probs:
         p *= lp
     return p
+
+
+def trust_label(win_prob: float, market_prob: Optional[float]) -> str:
+    """
+    Plain-language version of the disagreement factor.
+
+    Answers "how much should you believe our number here", which is the question
+    the old composite signal score looked like it was answering but was not.
+    """
+    f = disagreement_factor(win_prob, market_prob)
+    if f >= 1.0:
+        return "High"
+    if f >= 0.6:
+        return "Medium"
+    if f > 0:
+        return "Low"
+    return "None"
 
 
 def units_label(units: float) -> str:

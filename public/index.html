@@ -51,12 +51,15 @@
 
   <section>
     <h2 class="section-title">Tips <span class="note" id="tips-note"></span></h2>
-    <p class="legend"><strong>Model win%</strong> is the model's estimated chance the
-    side wins. <strong>Market win%</strong> is the same thing implied by the price,
-    de-vigged. <strong>Signal</strong> is a 0–100 score for how strongly the model
-    likes its own read — sample depth, size of the claimed edge, and how short the
-    price is. <em>Signal is not a win probability</em>, and a high one is not a
-    stronger bet: backtesting found the largest claimed edges performed the worst.</p>
+    <p class="legend">Four numbers, in the order they matter.
+    <strong>Stake</strong> is how much to bet, in units.
+    <strong>Trust</strong> is how far our number sits from the market's — and when
+    those two disagree badly, <em>we are usually the ones who are wrong</em>, so a
+    wide gap shrinks the stake instead of growing it.
+    <strong>Model win%</strong> is our estimated chance the bet lands;
+    <strong>Market win%</strong> is the same thing according to the price.
+    A parlay needs every leg to hit, so its chance is much lower than any single
+    leg's — which is why a confident-looking parlay still gets a small stake.</p>
     <div id="tips" class="tips"></div>
   </section>
 
@@ -75,7 +78,7 @@
             <th>Game</th><th>Kickoff</th><th>Side</th><th class="num">Odds</th>
             <th class="num">Model win%</th><th class="num">Market win%</th>
             <th class="num">Edge</th><th class="num">Fair</th>
-            <th class="num">Sample</th><th class="num">Signal</th>
+            <th class="num">Sample</th><th class="num">Signal</th><th class="num">Stake</th>
           </tr>
         </thead>
         <tbody></tbody>

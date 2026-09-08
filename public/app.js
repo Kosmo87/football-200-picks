@@ -54,8 +54,30 @@ function kellyUnits(p, odds, fraction = KELLY_FRACTION) {
   return Math.min(Math.round(f * fraction * 20 * 10) / 10, MAX_UNITS);
 }
 
-/** Published stake: the ladder, never above what the price justifies. */
-const stakeUnits = (p, odds) => Math.min(ladderUnits(p), kellyUnits(p, odds));
+// How far the model may disagree with the price before the disagreement counts
+// as its own error. Backtesting sorted picks by how far they strayed from the
+// market and the relationship ran backwards: at 10+ points of claimed edge it
+// won 25-38% against the 57-67% it forecast. So a wide gap shrinks the stake
+// rather than growing it.
+const DISAGREEMENT_BANDS = [[5, 1.0], [10, 0.6], [15, 0.3]];
+
+function disagreementFactor(p, marketP) {
+  if (marketP == null) return 1;
+  const gap = Math.abs(p - marketP) * 100;
+  for (const [limit, factor] of DISAGREEMENT_BANDS) if (gap <= limit) return factor;
+  return 0;
+}
+
+function trustLabel(p, marketP) {
+  const f = disagreementFactor(p, marketP);
+  return f >= 1 ? "High" : f >= 0.6 ? "Medium" : f > 0 ? "Low" : "None";
+}
+
+/** Published stake: the ladder, capped by the price, shrunk by disagreement. */
+const stakeUnits = (p, odds, marketP) =>
+  Math.round(
+    Math.min(ladderUnits(p), kellyUnits(p, odds)) * disagreementFactor(p, marketP) * 10
+  ) / 10;
 
 /** A parlay lands only if every leg does. Independence is why legs never share a game. */
 const parlayWinProb = (probs) => probs.reduce((a, b) => a * b, 1);
@@ -181,7 +203,8 @@ function makePick(legs, combined) {
   const avgE = avgBy(legs, "edge_pp");
   const n = legs.length;
   const winProb = parlayWinProb(legs.map((l) => l.model_prob));
-  const units = stakeUnits(winProb, combined);
+  const marketProb = parlayWinProb(legs.map((l) => l.implied_prob));
+  const units = stakeUnits(winProb, combined, marketProb);
   let label =
     n === 1
       ? `Single: ${legs[0].team_abbr} ML ${fmtOdds(legs[0].odds)}`
@@ -189,7 +212,9 @@ function makePick(legs, combined) {
   if (units > 0) label = `${unitsLabel(units)} · ${label}`;
   return {
     winProb,
+    marketProb,
     stakeUnits: units,
+    trust: trustLabel(winProb, marketProb),
     legs,
     combined,
     label,
@@ -230,7 +255,11 @@ function buildPicks(allLegs, cfg, n = 3) {
       for (const leg of available.filter((l) => l.odds >= cfg.minCombined)) {
         if (picks.length >= n) break;
         if (!canUse(leg)) continue;
-        picks.push(makePick([leg], leg.odds));
+        const pick = makePick([leg], leg.odds);
+        // A pick we would stake nothing on is not a pick. Leave its teams free
+        // so they can still appear in a combination.
+        if (pick.stakeUnits <= 0) continue;
+        picks.push(pick);
         markUsed(leg);
       }
       continue;
@@ -239,7 +268,9 @@ function buildPicks(allLegs, cfg, n = 3) {
     for (const cand of candidateCombos(available, nLegs, cfg.minCombined, POOL_CAPS[nLegs] || 25)) {
       if (picks.length >= n) break;
       if (cand.legs.some((l) => !canUse(l))) continue;
-      picks.push(makePick(cand.legs, cand.combined));
+      const pick = makePick(cand.legs, cand.combined);
+      if (pick.stakeUnits <= 0) continue;
+      picks.push(pick);
       cand.legs.forEach(markUsed);
     }
   }
@@ -297,13 +328,24 @@ function kickoffLabel(iso) {
 
 function confBadge(score) {
   const label = confidenceLabel(score);
-  // Always "/100": a bare number next to two percentages reads as a third one,
-  // and this score is not a probability.
   return (
     `<span class="badge ${label.toLowerCase()}" title="Signal score, not a win ` +
     `probability. Combines sample depth (40), claimed edge (35) and how short ` +
     `the price is (25).">${label} ${Math.round(score)}/100</span>`
   );
+}
+
+/** How much to believe our own number, from how far it sits from the price. */
+function trustBadge(trust) {
+  const cls = { High: "high", Medium: "med", Low: "low", None: "low" }[trust];
+  const tip = {
+    High: "Our number is within 5 points of the market — worth acting on.",
+    Medium: "We are 5-10 points from the market. Reduced stake.",
+    Low: "We are 10-15 points from the market. Heavily reduced stake.",
+    None: "We are more than 15 points from the market, which historically means "
+        + "we are the ones who are wrong. No stake.",
+  }[trust];
+  return `<span class="badge ${cls}" title="${tip}">Trust: ${trust}</span>`;
 }
 
 // --------------------------------------------------------------------------
@@ -425,8 +467,8 @@ function renderTips() {
     head.innerHTML = `
       <div class="tip-title"><span class="tip-rank">#${i + 1}</span>${pick.label}</div>
       <div class="tip-meta">
-        ${confBadge(pick.avgConfidence)}
-        <span class="dim">${fmtPP(pick.combinedEdgePP)} edge</span>
+        ${trustBadge(pick.trust)}
+        <span class="dim">we say ${fmtPct(pick.winProb)} · market says ${fmtPct(pick.marketProb)}</span>
         <span class="tip-odds ${pick.combined > 0 ? "pos" : ""}">${fmtOdds(pick.combined)}</span>
       </div>`;
     card.appendChild(head);
@@ -486,7 +528,13 @@ function renderBoard() {
       <td class="num ${l.edge_pp > 0 ? "pos" : "neg"}">${fmtPP(l.edge_pp)}</td>
       <td class="num dim">${fmtOdds(l.fair_odds)}</td>
       <td class="num dim">${l.sample.toFixed(1)}</td>
-      <td class="num">${confBadge(l.confidence)}</td>`;
+      <td class="num">${confBadge(l.confidence)}</td>
+      <td class="num">${(() => {
+        const u = stakeUnits(l.model_prob, l.odds, l.implied_prob);
+        return u > 0
+          ? `<strong>${unitsLabel(u)}</strong>`
+          : `<span class="dim">no bet</span>`;
+      })()}</td>`;
     if (!passes) tr.style.opacity = "0.55";
     body.appendChild(tr);
   }
