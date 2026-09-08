@@ -35,7 +35,10 @@ RESEND_URL = "https://api.resend.com/emails"
 TWILIO_URL = "https://api.twilio.com/2010-04-01/Accounts/{sid}/Messages.json"
 
 # A message is worth sending while the game is still ahead of us, and only then.
-SEND_WINDOW_HOURS = 14
+# Eighteen hours so a single morning send covers the whole day's card: from a
+# 12:00 UTC send that reaches a 10:30pm ET kickoff, which a shorter window drops
+# without saying anything.
+SEND_WINDOW_HOURS = 18
 
 
 def _dt(iso: str) -> Optional[datetime]:
@@ -150,7 +153,7 @@ def send_email(to: str, subject: str, html: str) -> bool:
     if not key:
         print("  RESEND_API_KEY not set — nothing sent.")
         return False
-    sender = os.environ.get("RESEND_FROM", "picks@resend.dev")
+    sender = os.environ.get("RESEND_FROM", "onboarding@resend.dev")
     r = requests.post(
         RESEND_URL,
         headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
@@ -191,6 +194,8 @@ def main() -> int:
     ap.add_argument("--to", help="email address")
     ap.add_argument("--sms", help="phone number in E.164, e.g. +15555550123")
     ap.add_argument("--dry-run", action="store_true", help="render only, send nothing")
+    ap.add_argument("--send-empty", action="store_true",
+                    help="send even when nothing is mispriced (default: stay quiet)")
     ap.add_argument("--hours", type=float, default=SEND_WINDOW_HOURS)
     args = ap.parse_args()
 
@@ -208,6 +213,12 @@ def main() -> int:
         print(f"  {len(rows)} better-than-market price"
               f"{'' if len(rows) == 1 else 's'} this morning")
         print("\n(dry run: nothing sent)")
+        return 0
+
+    if not rows and not args.send_empty:
+        # A daily "nothing today" is how a useful alert becomes one you skim
+        # past. Silence on quiet days is what keeps the message worth opening.
+        print("Nothing mispriced — staying quiet. (--send-empty to override.)")
         return 0
 
     subject = (f"{len(rows)} better-than-market price"
