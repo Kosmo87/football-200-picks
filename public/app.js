@@ -257,7 +257,13 @@ function kickoffLabel(iso) {
 
 function confBadge(score) {
   const label = confidenceLabel(score);
-  return `<span class="badge ${label.toLowerCase()}">${label} ${Math.round(score)}</span>`;
+  // Always "/100": a bare number next to two percentages reads as a third one,
+  // and this score is not a probability.
+  return (
+    `<span class="badge ${label.toLowerCase()}" title="Signal score, not a win ` +
+    `probability. Combines sample depth (40), claimed edge (35) and how short ` +
+    `the price is (25).">${label} ${Math.round(score)}/100</span>`
+  );
 }
 
 // --------------------------------------------------------------------------
@@ -395,8 +401,8 @@ function renderTips() {
           <div class="lg-game">${l.matchup}${l.neutral ? " · neutral" : ""} · ${kickoffLabel(l.kickoff)}</div>
         </td>
         <td class="num">${fmtOdds(l.odds)}</td>
-        <td class="num">${fmtPct(l.model_prob)}<div class="lg-game">model</div></td>
-        <td class="num">${fmtPct(l.implied_prob)}<div class="lg-game">implied</div></td>
+        <td class="num">${fmtPct(l.model_prob)}<div class="lg-game">model win%</div></td>
+        <td class="num">${fmtPct(l.implied_prob)}<div class="lg-game">market win%</div></td>
         <td class="num pos">${fmtPP(l.edge_pp)}<div class="lg-game">fair ${fmtOdds(l.fair_odds)}</div></td>
         <td class="num">${confBadge(l.confidence)}</td>`;
       body.appendChild(tr);

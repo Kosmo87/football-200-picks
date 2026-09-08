@@ -131,6 +131,14 @@ body {
   font: 12px/1.5 var(--mono); color: var(--ink-faint);
 }
 
+.legend {
+  margin: -2px 0 14px; padding: 11px 13px; font-size: 12.5px; line-height: 1.55;
+  color: var(--ink-dim); background: var(--panel); border: 1px solid var(--line);
+  border-left: 3px solid var(--warn); border-radius: var(--radius);
+}
+.legend strong { color: var(--ink); }
+.legend em { color: var(--warn); font-style: normal; font-weight: 600; }
+
 /* ---- tips ---- */
 .tips { display: grid; gap: 12px; }
 .tip {
