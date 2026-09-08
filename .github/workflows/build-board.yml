@@ -55,6 +55,13 @@ jobs:
       - name: Install dependencies
         run: pip install --quiet requests
 
+      - name: Archive lines and results
+        # Runs before the board so a build failure cannot cost us a snapshot.
+        # ESPN drops betting lines once a game finals, so an hour not captured
+        # is an hour gone for good.
+        continue-on-error: true
+        run: python archive.py
+
       - name: Build board
         run: |
           python build_board.py \
@@ -72,7 +79,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add public/data cache
+          git add public/data cache data/archive
           if git diff --staged --quiet; then
             echo "No board changes."
             exit 0
