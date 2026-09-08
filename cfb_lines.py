@@ -50,6 +50,10 @@ class GameLine:
     home_ml: Optional[int]
     away_ml: Optional[int]
     book: str
+    # The number first posted, before the market had seen any action. Where a
+    # model has any chance of knowing something the price does not yet reflect.
+    open_home_spread: Optional[float] = None
+    open_total: Optional[float] = None
 
 
 def _f(v):
@@ -124,9 +128,10 @@ def load_game_lines(refresh: bool = False) -> List[GameLine]:
         picked = [r for r in rs if r.get("book") == book] if book else rs
         book = book or "consensus"
 
-        def collect(market, pred):
+        def collect(market, pred, col=None):
+            key = col or ("lines" if market != "money_line" else "odds")
             vals = [
-                _f(r["lines"] if market != "money_line" else r["odds"])
+                _f(r.get(key))
                 for r in picked
                 if r.get("market_type") == market and pred(r)
             ]
@@ -138,6 +143,11 @@ def load_game_lines(refresh: bool = False) -> List[GameLine]:
         home_ml = collect("money_line", lambda r: abbr_map.get((r.get("abbr") or "").strip()) == home_id)
         away_ml = collect("money_line", lambda r: abbr_map.get((r.get("abbr") or "").strip()) == away_id)
 
+        is_home = lambda r: abbr_map.get((r.get("abbr") or "").strip()) == home_id
+        open_spread = collect("spread", is_home, "opening_lines")
+        open_total = collect("total", lambda r: (r.get("abbr") or "").strip() == "over",
+                             "opening_lines")
+
         season = _f(head.get("season"))
         out.append(GameLine(
             game_id=gid, season=int(season) if season else 0,
@@ -147,5 +157,6 @@ def load_game_lines(refresh: bool = False) -> List[GameLine]:
             home_ml=int(home_ml) if home_ml else None,
             away_ml=int(away_ml) if away_ml else None,
             book=book,
+            open_home_spread=open_spread, open_total=open_total,
         ))
     return out
