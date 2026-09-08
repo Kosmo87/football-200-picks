@@ -39,3 +39,10 @@ Thumbs.db
 
 # Local Netlify folder
 .netlify
+
+# Analysis caches derived from ESPN's permanent record. Box scores and player
+# statlines stay available for finished games indefinitely, so these are
+# re-derivable in minutes and do not belong in git at ~19 MB per season.
+# data/archive/ is the opposite case and IS committed: ESPN deletes betting
+# lines once a game finals, so nothing can rebuild those.
+/cache/players_*.json
