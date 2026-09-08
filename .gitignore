@@ -46,3 +46,8 @@ Thumbs.db
 # data/archive/ is the opposite case and IS committed: ESPN deletes betting
 # lines once a game finals, so nothing can rebuild those.
 /cache/players_*.json
+
+# Free bulk line archives, re-downloadable from their public URLs at any time.
+# cfb_line_odds expands to ~136 MB; nflverse games is small but equally derived.
+/cache/cfb_line_odds.csv*
+/cache/nflverse_games.csv
