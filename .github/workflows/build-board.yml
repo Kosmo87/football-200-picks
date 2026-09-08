@@ -35,7 +35,7 @@ jobs:
     env:
       # Must live at job level: step-level env is not in scope for a step's own
       # `if:` condition, which silently skipped the deploy.
-      NETLIFY_AUTH_TOKEN: ${{ secrets.FOOTBALL_PICKER_AUTH }}
+      NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
       # Not a secret: site IDs are public in every deploy URL.
       NETLIFY_SITE_ID: fbbd4003-735c-46f1-b1da-bed28205ee4c
     steps:
@@ -82,7 +82,7 @@ jobs:
           # visible in the log instead of silently skipping the whole step.
           if [ -z "$NETLIFY_AUTH_TOKEN" ]; then
             echo "::warning::NETLIFY_AUTH_TOKEN is empty (${#NETLIFY_AUTH_TOKEN} chars) — skipping deploy."
-            echo "Set the FOOTBALL_PICKER_AUTH repository secret to a Netlify personal access token."
+            echo "Set the NETLIFY_AUTH_TOKEN repository secret to a Netlify personal access token."
             exit 0
           fi
           echo "Token present (${#NETLIFY_AUTH_TOKEN} chars). Deploying…"
