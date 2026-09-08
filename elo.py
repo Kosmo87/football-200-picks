@@ -9,12 +9,16 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass, field
-from typing import Dict, Iterable, List, Optional, Tuple
+from typing import Dict, Iterable, List, Optional, Set, Tuple
 
 
 @dataclass
 class EloConfig:
     initial: float = 1500.0
+    # Teams outside the league's top division (FCS opponents on an FBS
+    # schedule) start far below average. Treating them as 1500 was the single
+    # biggest source of phantom edge on underdogs.
+    fcs_initial: float = 1500.0
     k_factor: float = 20.0
     home_field: float = 55.0  # Elo points added to home team
     scale: float = 400.0
@@ -29,12 +33,20 @@ class EloConfig:
     prior_credit_per_game: float = 0.35
 
 
+# Fitted by tune_elo.py against 2021-2025 walk-forward log-loss, not chosen by
+# hand. Re-run `python tune_elo.py --league <LG>` after changing the data window.
 NFL_ELO = EloConfig(
-    initial=1500.0, k_factor=20.0, home_field=55.0, carry=0.75
+    initial=1500.0, k_factor=24.0, home_field=35.0, scale=400.0, carry=0.55
 )
-# College has larger home effects, more variance, and stickier talent gaps
+# College needs a real FCS baseline: those opponents are ~500 Elo below an
+# average FBS team, and calling them 1500 invented edge on every home underdog.
 NCAAF_ELO = EloConfig(
-    initial=1500.0, k_factor=24.0, home_field=65.0, carry=0.72
+    initial=1500.0,
+    fcs_initial=1000.0,
+    k_factor=36.0,
+    home_field=55.0,
+    scale=400.0,
+    carry=0.70,
 )
 
 
@@ -72,6 +84,9 @@ def mov_multiplier(margin: int, elo_diff_winner: float) -> float:
 class EloSystem:
     config: EloConfig
     ratings: Dict[str, float] = field(default_factory=dict)
+    # Ids belonging to the top division. Empty means "treat everyone as top
+    # division", preserving old behaviour for the NFL.
+    top_division: Set[str] = field(default_factory=set)
     names: Dict[str, str] = field(default_factory=dict)
     abbrs: Dict[str, str] = field(default_factory=dict)
     games_played: Dict[str, int] = field(default_factory=dict)
@@ -79,12 +94,18 @@ class EloSystem:
     prior_games: Dict[str, int] = field(default_factory=dict)
     seeded: bool = False
 
+    def initial_for(self, team_id: str) -> float:
+        """Starting rating: the FCS baseline for teams outside the top division."""
+        if self.top_division and team_id not in self.top_division:
+            return self.config.fcs_initial
+        return self.config.initial
+
     def rating(self, team_id: str) -> float:
-        return self.ratings.get(team_id, self.config.initial)
+        return self.ratings.get(team_id, self.initial_for(team_id))
 
     def ensure_team(self, team_id: str, name: str = "", abbr: str = "") -> None:
         if team_id not in self.ratings:
-            self.ratings[team_id] = self.config.initial
+            self.ratings[team_id] = self.initial_for(team_id)
             self.games_played[team_id] = 0
         if name:
             self.names[team_id] = name
@@ -103,8 +124,8 @@ class EloSystem:
         are retained so `effective_sample` can credit them.
         """
         c = self.config.carry if carry is None else carry
-        base = self.config.initial
         for team_id, prior_rating in prior.ratings.items():
+            base = self.initial_for(team_id)
             self.ratings[team_id] = base + c * (prior_rating - base)
             self.games_played.setdefault(team_id, 0)
             self.prior_games[team_id] = prior.games_played.get(team_id, 0)
@@ -206,6 +227,7 @@ def build_league_elo(
     current_games: Iterable[CompletedGame],
     prior_games: Optional[Iterable[CompletedGame]] = None,
     league: str = "NFL",
+    top_division: Optional[Set[str]] = None,
 ) -> EloSystem:
     """
     Build a league's ratings, seeding from the prior season when available.
@@ -214,9 +236,33 @@ def build_league_elo(
     regressed to the mean and become this season's starting point.
     """
     cfg = config_for_league(league)
-    system = EloSystem(config=cfg)
+    top = set(top_division or ())
+    system = EloSystem(config=cfg, top_division=top)
     prior_list = list(prior_games or [])
     if prior_list:
-        prior_system = EloSystem(config=cfg).build(prior_list)
+        prior_system = EloSystem(config=cfg, top_division=top).build(prior_list)
         system.seed_from(prior_system)
     return system.build(current_games)
+
+
+def build_multi_season(
+    seasons: Dict[int, List[CompletedGame]],
+    league: str = "NFL",
+    config: Optional[EloConfig] = None,
+    top_division: Optional[Set[str]] = None,
+) -> EloSystem:
+    """
+    Chain several seasons into one rating system.
+
+    Each season starts from the previous one regressed toward the team's own
+    baseline, so ratings accumulate real spread across years instead of being
+    rebuilt from scratch every August.
+    """
+    cfg = config or config_for_league(league)
+    system: Optional[EloSystem] = None
+    for season in sorted(seasons):
+        nxt = EloSystem(config=cfg, top_division=set(top_division or ()))
+        if system is not None:
+            nxt.seed_from(system)
+        system = nxt.build(seasons[season])
+    return system or EloSystem(config=cfg, top_division=set(top_division or ()))

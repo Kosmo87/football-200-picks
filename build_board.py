@@ -20,13 +20,19 @@ from dataclasses import asdict
 from datetime import datetime, timezone
 from typing import Dict, List, Optional
 
-from elo import CompletedGame, EloSystem, build_league_elo, config_for_league
+from elo import (
+    CompletedGame,
+    EloSystem,
+    build_multi_season,
+    config_for_league,
+)
 from espn import (
     current_season_year,
     fetch_completed_games,
     fetch_season_completed,
     get_upcoming_games,
 )
+from history_data import all_fbs_ids, load_seasons
 from odds import american_to_decimal, side_implied_prob
 from picks import ConfidenceConfig, get_all_legs
 
@@ -114,11 +120,22 @@ def serialize_leg(leg) -> Dict:
     }
 
 
+# How many prior seasons feed the chained ratings.
+HISTORY_SEASONS = 5
+
+
 def build_league(league: str, season: int, refresh_prior: bool):
     """Returns (board_dict, elo_system, completed_games)."""
-    prior = load_prior_season(league, season - 1, refresh=refresh_prior)
+    years = list(range(season - HISTORY_SEASONS, season))
+    history = load_seasons(league, years, refresh=refresh_prior)
+    # FCS opponents must not inherit an average FBS rating.
+    top = all_fbs_ids(years + [season]) if league == "NCAAF" else set()
+    cfg = config_for_league(league)
+
     completed = fetch_completed_games(league)
-    elo = build_league_elo(completed, prior_games=prior, league=league)
+    base = build_multi_season(history, league=league, config=cfg, top_division=top)
+    elo = EloSystem(config=cfg, top_division=top).seed_from(base).build(completed)
+    prior = history.get(season - 1, [])
     upcoming = get_upcoming_games(league)
 
     legs = get_all_legs(
@@ -186,8 +203,10 @@ def build_league(league: str, season: int, refresh_prior: bool):
         "meta": {
             "season": season,
             "prior_season": season - 1,
-            "carryover": bool(prior),
-            "prior_games_used": len(prior),
+            "carryover": bool(history),
+            "prior_games_used": sum(len(v) for v in history.values()),
+            "history_seasons": f"{years[0]}-{years[-1]}",
+            "top_division_teams": len(top),
             "completed_games": len(completed),
             "upcoming_games": len(upcoming),
             "rated_teams": len(elo.ratings),

@@ -104,11 +104,18 @@ parity**, and commits `public/data/` and `cache/` only when something changed.
 
 ## Tip methodology
 
-1. **Ratings** — Elo per league, **seeded from last season regressed to the mean**
-   (`new = 1500 + carry × (prior − 1500)`; carry 0.75 NFL / 0.72 NCAAF), then updated
-   game by game with a **margin-of-victory multiplier** and 538's autocorrelation
-   damper, so blowouts by heavy favorites don't run a rating away. Preseason counts at
-   40% K; **neutral sites drop home-field**; all-star games are excluded.
+1. **Ratings** — Elo per league, chained across the **five prior seasons**, each one
+   seeded from the last regressed toward the team's own baseline, then updated game by
+   game with a **margin-of-victory multiplier** and 538's autocorrelation damper.
+   FCS opponents start at **1000, not 1500** — treating them as an average FBS team was
+   the single largest source of phantom edge on home underdogs. Preseason counts at 40%
+   K; **neutral sites drop home-field**; all-star games are excluded.
+
+   Parameters are **fitted, not chosen**: `tune_elo.py` runs coordinate descent on
+   walk-forward log-loss over 2021–2025 (4,495 NCAAF / 1,425 NFL games). It picked
+   K 36 / HFA 55 / carry 0.70 / FCS 1000 for college, and K 24 / **HFA 35** / carry
+   0.55 for the NFL — that low NFL home-field number is a real result, matching the
+   league's measured decline in home advantage. Re-run it after changing the window.
 2. **Model win%** — logistic Elo expectation from the rating gap plus home-field.
 3. **Implied win%** — from the priced side, **de-vigged** against the opposite
    moneyline so both probabilities sum to 1.
@@ -125,6 +132,43 @@ parity**, and commits `public/data/` and `cache/` only when something changed.
 7. **Selection** — gated legs only, no overlapping teams or games; prefer singles and
    short parlays that already clear +200, then stack 3–5 shorter legs. Ranked by
    **average confidence and edge**, not by the juiciest combined price.
+
+## Does it actually work? No — and here is the evidence
+
+Backtested on NCAAF Sep 4–6 2026 with ratings built only from earlier games and
+ESPN's recorded pregame DraftKings lines:
+
+| | tips | all qualifying legs | ROI | model said | actual |
+| --- | --- | --- | --- | --- | --- |
+| before calibration work | 0–3 | 2–14 | −60.3% | 49.5% | 12.5% |
+| after | 0–3 | 2–10 | −47.1% | 52.9% | 16.7% |
+
+Walk-forward calibration over the season, model against the market's de-vigged
+price on the same 73 games:
+
+| Brier (lower is better) | before | after | market |
+| --- | --- | --- | --- |
+| NCAAF | 0.1820 | **0.1474** | **0.0999** |
+
+The fitted model is a much better *predictor* — 19% better Brier, and the 80–90%
+and 90–100% buckets are now calibrated to within 3pp. It is still not better than
+the market, and the decisive test is this one:
+
+```
+model edge      n    model said    actual
+ -100..0pp     43        72.3%     95.3%    <- where it saw no value
+  +5..10pp      7        83.7%     57.1%
+ +10..20pp      4        67.6%     25.0%    <- where it screamed value
+```
+
+**Claimed edge is inversely related to outcome.** Wherever the model disagrees
+with the closing line, the market is right and the model is wrong. The +200 target
+makes this worse rather than better, because clearing +200 forces the engine onto
+underdogs — exactly the region where the model's residual error lives.
+
+Treat the tips as a model under evaluation, not as advice. `calibrate.py` is the
+scoreboard that matters: until model Brier beats the market's, no selection logic
+layered on top can profit.
 
 ## Results tracking & CLV
 

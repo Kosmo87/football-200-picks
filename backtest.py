@@ -18,7 +18,7 @@ import concurrent.futures as futures
 from datetime import date, datetime, timedelta, timezone
 from typing import Dict, List, Optional, Tuple
 
-from elo import CompletedGame, build_league_elo
+from elo import CompletedGame, EloSystem, build_multi_season, config_for_league
 from espn import (
     ESPN_NCAAF_BASE,
     ESPN_NFL,
@@ -221,9 +221,14 @@ def main() -> int:
         return 1
 
     print("Rating teams on pre-slate data only…")
-    from build_board import load_prior_season
+    from history_data import all_fbs_ids, load_seasons
 
-    prior = load_prior_season(league, current_season_year() - 1)
+    season = current_season_year()
+    years = list(range(season - 5, season))
+    history = load_seasons(league, years)
+    top = all_fbs_ids(years + [season]) if league == "NCAAF" else set()
+    cfg = config_for_league(league)
+
     completed = fetch_completed_games(league)
     training = [
         g
@@ -231,8 +236,10 @@ def main() -> int:
         if g.date and datetime.fromisoformat(g.date.replace("Z", "+00:00")) < cutoff
     ]
     dropped = len(completed) - len(training)
-    elo = build_league_elo(training, prior_games=prior, league=league)
-    print(f"  {len(prior)} prior-season games + {len(training)} finished before {start}")
+    base = build_multi_season(history, league=league, config=cfg, top_division=top)
+    elo = EloSystem(config=cfg, top_division=top).seed_from(base).build(training)
+    hist_n = sum(len(v) for v in history.values())
+    print(f"  {hist_n} games {years[0]}-{years[-1]} + {len(training)} before {start}")
     print(f"  excluded {dropped} games at/after the cutoff (no look-ahead)")
     print(f"  {len(elo.ratings)} teams rated\n")
 

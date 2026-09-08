@@ -18,9 +18,9 @@ from datetime import datetime
 from typing import Dict, List, Optional
 
 from backtest import historical_odds
-from build_board import load_prior_season
-from elo import EloSystem, config_for_league
+from elo import EloSystem, build_multi_season, config_for_league
 from espn import current_season_year, fetch_completed_games
+from history_data import all_fbs_ids, load_seasons
 from odds import side_implied_prob
 
 BUCKETS = [(0, 10), (10, 20), (20, 30), (30, 40), (40, 50),
@@ -69,10 +69,16 @@ def main() -> int:
     league = args.league
 
     print(f"=== Walk-forward calibration: {league} ===\n")
-    prior = load_prior_season(league, current_season_year() - 1)
+    season = current_season_year()
+    years = list(range(season - 5, season))
+    history = load_seasons(league, years)
+    top = all_fbs_ids(years + [season]) if league == "NCAAF" else set()
     completed = fetch_completed_games(league)
     completed.sort(key=lambda g: (g.date or "", g.event_id or ""))
-    print(f"{len(completed)} finished games this season, {len(prior)} prior-season\n")
+    hist_n = sum(len(v) for v in history.values())
+    print(f"{len(completed)} finished games this season, "
+          f"{hist_n} across {years[0]}-{years[-1]}")
+    print(f"top division: {len(top) or 'n/a'} teams\n")
 
     print("Fetching pregame lines…")
     with futures.ThreadPoolExecutor(max_workers=8) as ex:
@@ -90,11 +96,13 @@ def main() -> int:
     model_pairs, market_pairs, edge_pairs = [], [], []
     seen_dates = sorted({g.date[:10] for g in completed if g.date})
 
+    # Seed once from the chained history, then re-apply only this season's
+    # earlier games for each date boundary.
+    base = build_multi_season(history, league=league, config=cfg, top_division=top)
+
     for day in seen_dates:
         training = [g for g in completed if g.date and g.date[:10] < day]
-        elo = EloSystem(config=cfg)
-        if prior:
-            elo.seed_from(EloSystem(config=cfg).build(prior))
+        elo = EloSystem(config=cfg, top_division=top).seed_from(base)
         elo.build(training)
 
         for g in [x for x in completed if x.date and x.date[:10] == day]:

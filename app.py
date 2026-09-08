@@ -47,17 +47,22 @@ def conf_badge(label: str, score: float) -> str:
 def load_league(league: str, cfg: ConfidenceConfig) -> dict:
     # Same rating path as the static build so both surfaces agree: prior-season
     # ratings (cached on disk) are regressed to the mean and seed this season.
-    from build_board import load_prior_season
-    from elo import build_league_elo
+    from elo import EloSystem, build_multi_season
     from espn import current_season_year
+    from history_data import all_fbs_ids, load_seasons
 
     games = get_upcoming_games(league)
     completed = fetch_completed_games(league)
+    season = current_season_year()
+    years = list(range(season - 5, season))
     try:
-        prior = load_prior_season(league, current_season_year() - 1)
+        history = load_seasons(league, years)
+        top = all_fbs_ids(years + [season]) if league == "NCAAF" else set()
     except Exception:
-        prior = []
-    elo = build_league_elo(completed, prior_games=prior, league=league)
+        history, top = {}, set()
+    cfg = config_for_league(league)
+    base = build_multi_season(history, league=league, config=cfg, top_division=top)
+    elo = EloSystem(config=cfg, top_division=top).seed_from(base).build(completed)
     picks = build_picks(games, elo, n=3, cfg=cfg)
     summary = summarize_board(games, elo, cfg=cfg)
     return {
