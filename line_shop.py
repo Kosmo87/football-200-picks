@@ -55,16 +55,23 @@ MAX_EDGE = 0.15      # above this it is a mistake, not an opportunity
 MIN_BOOKS = 5        # a consensus needs enough books to be one
 
 
-def fair_probs(book_prices: Dict[str, Dict[str, int]]) -> Dict[str, float]:
+def fair_probs(
+    book_prices: Dict[str, Dict[str, int]], exclude: Optional[str] = None
+) -> Dict[str, float]:
     """
     Consensus no-vig probability per side.
 
     Each book is de-vigged on its own first. Averaging raw prices instead would
     fold every book's margin into the estimate and make everything look fair.
+
+    `exclude` leaves one book out. When judging whether BetRivers is offering
+    value, BetRivers' own number must not be part of the standard it is measured
+    against -- including it pulls the consensus toward the outlier and quietly
+    understates exactly the gap being looked for.
     """
     per_side: Dict[str, List[float]] = defaultdict(list)
-    for prices in book_prices.values():
-        if len(prices) < 2:
+    for book, prices in book_prices.items():
+        if book == exclude or len(prices) < 2:
             continue
         raw = {s: american_to_implied_prob(p) for s, p in prices.items()}
         total = sum(raw.values())
@@ -83,12 +90,13 @@ def find_value(
 ) -> List[dict]:
     if len(book_prices) < min_books:
         return []
-    fair = fair_probs(book_prices)
-    if len(fair) < 2:
-        return []
     out = []
     for book, prices in book_prices.items():
         if book in IGNORE_BOOKS:
+            continue
+        # Leave-one-out: the book under judgement is not part of its own jury.
+        fair = fair_probs(book_prices, exclude=book)
+        if len(fair) < 2:
             continue
         for side, price in prices.items():
             p = fair.get(side)
