@@ -28,6 +28,8 @@ from typing import Dict, List, Optional
 
 import requests
 
+import keys  # noqa: F401  (loads ~/.football-picks.env)
+
 from archive import read_ndjson
 from shop_ledger import ledger_path
 

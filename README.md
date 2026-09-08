@@ -44,6 +44,34 @@ and diff the result — CI fails if they ever disagree.
 | `public/app.js` | Front end + JS port of the selection layer |
 | `app.py` | Optional local Streamlit view of the same pipeline |
 
+## Keys
+
+Everything that needs a credential reads one file:
+
+```bash
+python setup_keys.py --init      # creates ~/.football-picks.env
+# open it, fill in the blanks
+python setup_keys.py             # checks each value, pushes them to GitHub
+```
+
+Fill in the blanks and nothing else. No exports, no editing commands, no
+deciding which part of an example to replace — that last one has caused three
+separate silent failures here, each surfacing hours later in a job nobody was
+watching.
+
+Every value is checked for shape before it goes anywhere: Resend keys begin
+`re_`, Twilio SIDs begin `AC`, the Odds API key is 32 hex characters, and
+anything resembling example text is rejected outright. Values are never printed,
+only their length and first few characters, so a mistake is diagnosable without
+the secret landing in a terminal log.
+
+The file lives outside the repo at `~/.football-picks.env`, mode 600, and cannot
+be committed. Scripts import `keys`, which loads it without overwriting anything
+already in the environment — so CI keeps using its own secrets.
+
+`python setup_keys.py --check` reports what is present and what is missing
+without pushing or sending anything.
+
 ## Local development
 
 ```bash

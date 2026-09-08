@@ -33,6 +33,8 @@ from typing import Dict, List, Optional
 
 import requests
 
+import keys  # noqa: F401  (loads ~/.football-picks.env)
+
 from odds import american_to_decimal, american_to_implied_prob
 
 BASE = "https://api.the-odds-api.com/v4"

@@ -34,6 +34,8 @@ from typing import Dict, List, Optional, Tuple
 
 import requests
 
+import keys  # noqa: F401  (loads ~/.football-picks.env)
+
 from archive import ARCHIVE_DIR, append_ndjson, read_ndjson, utcnow
 from history_data import load_season
 

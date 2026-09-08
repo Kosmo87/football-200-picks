@@ -20,6 +20,8 @@ credits a month, comfortably inside the allowance with room to spare.
 from __future__ import annotations
 
 import argparse
+
+import keys  # noqa: F401  (loads ~/.football-picks.env)
 import os
 import re
 from datetime import datetime, timedelta, timezone
