@@ -153,6 +153,14 @@ def send_email(to: str, subject: str, html: str) -> bool:
     if not key:
         print("  RESEND_API_KEY not set — nothing sent.")
         return False
+    # Catch the placeholder before spending a request on it. Pasting the example
+    # command verbatim stores the literal words, and without this the failure
+    # arrives later as an opaque 401 from someone else's API.
+    if not key.startswith("re_"):
+        print(f"  RESEND_API_KEY does not look like a Resend key "
+              f"(they begin 're_', this one begins '{key[:6]}…'). "
+              f"Nothing sent — re-set the secret with the real value.")
+        return False
     sender = os.environ.get("RESEND_FROM", "onboarding@resend.dev")
     r = requests.post(
         RESEND_URL,
@@ -169,6 +177,10 @@ def send_sms(to: str, body: str) -> bool:
     sid = os.environ.get("TWILIO_ACCOUNT_SID", "").strip()
     token = os.environ.get("TWILIO_AUTH_TOKEN", "").strip()
     frm = os.environ.get("TWILIO_FROM", "").strip()
+    if sid and not sid.startswith("AC"):
+        print(f"  TWILIO_ACCOUNT_SID does not look like one (they begin 'AC'). "
+              f"Nothing sent.")
+        return False
     if not (sid and token and frm):
         print("  TWILIO_ACCOUNT_SID / TWILIO_AUTH_TOKEN / TWILIO_FROM not set — "
               "nothing sent.")
