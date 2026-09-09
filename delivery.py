@@ -163,7 +163,17 @@ def send_email(to: str, subject: str, html: str) -> bool:
               f"(they begin 're_', this one begins '{key[:6]}…'). "
               f"Nothing sent — re-set the secret with the real value.")
         return False
-    sender = os.environ.get("RESEND_FROM", "onboarding@resend.dev")
+    # `.get(name, default)` returns "" when the variable EXISTS and is empty,
+    # which is exactly what an unset GitHub Actions `vars.X` produces — so the
+    # default never applied and the send went out with a blank From. Resend
+    # rejects that, and `continue-on-error` on the workflow step meant the build
+    # stayed green while no mail left. Treat empty as unset.
+    sender = os.environ.get("RESEND_FROM", "").strip() or "onboarding@resend.dev"
+    if sender == "onboarding@resend.dev":
+        print("  RESEND_FROM is not set — using Resend's test sender, which only "
+              "delivers to the address the Resend account is registered under. "
+              "Set it to an address on a domain verified in Resend.")
+    print(f"  sending as {sender}")
     r = requests.post(
         RESEND_URL,
         headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
