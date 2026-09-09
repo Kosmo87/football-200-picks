@@ -43,6 +43,36 @@ TWILIO_URL = "https://api.twilio.com/2010-04-01/Accounts/{sid}/Messages.json"
 SEND_WINDOW_HOURS = 18
 
 
+# Relative to this file, not the working directory: the workflow runs it from
+# the repo root but a person will run it from anywhere.
+BOARD_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                          "public", "data", "board.json")
+
+
+def subject_for(rows: List[dict]) -> str:
+    """One subject line, so the preview and the send cannot disagree."""
+    if not rows:
+        return "Keep your money in your pocket"
+    return (f"{len(rows)} better-than-market price"
+            f"{'' if len(rows) == 1 else 's'} this morning")
+
+
+def _board() -> dict:
+    try:
+        with open(BOARD_PATH) as fh:
+            return json.load(fh)
+    except Exception:
+        return {}
+
+
+def _games_checked() -> int:
+    return sum(len(lg.get("games", [])) for lg in _board().get("leagues", {}).values())
+
+
+def _board_built() -> str:
+    return (_board().get("generated_at") or "unknown").replace("T", " ")[:16] + " UTC"
+
+
 def _dt(iso: str) -> Optional[datetime]:
     try:
         return datetime.fromisoformat((iso or "").replace("Z", "+00:00"))
@@ -88,7 +118,8 @@ def render_text(rows: List[dict]) -> str:
     acted on before kickoff. Mascots go, and only the top few make it.
     """
     if not rows:
-        return "No mispriced numbers this morning. Nothing worth betting."
+        return ("Keep your money in your pocket — nothing is mispriced this morning. "
+                f"Checked {_games_checked()} game(s); board built {_board_built()}.")
     lines = ["Better than market today:"]
     for r in rows[:4]:
         price = f"+{r['price']}" if r["price"] > 0 else str(r["price"])
@@ -107,7 +138,10 @@ def render_text(rows: List[dict]) -> str:
 def render_html(rows: List[dict]) -> str:
     if not rows:
         body = ("<p>No book is meaningfully out of line this morning. "
-                "Nothing worth betting.</p>")
+                "Keep your money in your pocket — nothing is mispriced this morning.</p>"
+                f"<p style='color:#64748b;font-size:13px'>Checked {_games_checked()} game(s); "
+                f"board built {_board_built()}. This message is sent on quiet days too, so that "
+                f"no message means something is wrong rather than nothing was on.</p>")
     else:
         cells = "".join(
             f"<tr>"
@@ -218,8 +252,8 @@ def main() -> int:
     ap.add_argument("--to", help="email address")
     ap.add_argument("--sms", help="phone number in E.164, e.g. +15555550123")
     ap.add_argument("--dry-run", action="store_true", help="render only, send nothing")
-    ap.add_argument("--send-empty", action="store_true",
-                    help="send even when nothing is mispriced (default: stay quiet)")
+    ap.add_argument("--quiet-when-empty", action="store_true",
+                    help="skip the send when nothing is mispriced (default: send anyway)")
     ap.add_argument("--hours", type=float, default=SEND_WINDOW_HOURS)
     args = ap.parse_args()
 
@@ -228,25 +262,30 @@ def main() -> int:
           f"kicking off within {args.hours:g}h\n")
 
     text = render_text(rows)
+    subject = subject_for(rows)
     if args.dry_run or not (args.to or args.sms):
         print("--- text message ---")
         print(text)
         print(f"\n({len(text)} characters, "
               f"{-(-len(text) // 160)} SMS segment(s))")
         print("\n--- email subject ---")
-        print(f"  {len(rows)} better-than-market price"
-              f"{'' if len(rows) == 1 else 's'} this morning")
+        print(" ", subject)
         print("\n(dry run: nothing sent)")
         return 0
 
-    if not rows and not args.send_empty:
-        # A daily "nothing today" is how a useful alert becomes one you skim
-        # past. Silence on quiet days is what keeps the message worth opening.
-        print("Nothing mispriced — staying quiet. (--send-empty to override.)")
+    if not rows and args.quiet_when_empty:
+        print("Nothing mispriced — staying quiet, because --quiet-when-empty was passed.")
         return 0
 
-    subject = (f"{len(rows)} better-than-market price"
-               f"{'' if len(rows) == 1 else 's'} this morning")
+    # A quiet day sends anyway, on purpose. The argument for silence is that a
+    # daily "nothing today" becomes something you skim past; the argument
+    # against is stronger, because silence is ALSO what a broken pipeline looks
+    # like. This job has been failing invisibly for weeks at a time — a blank
+    # From address, a parity check flipping on a rounding boundary — and in
+    # every case nothing arriving was the only symptom, indistinguishable from a
+    # quiet Tuesday. An email that says "keep your money in your pocket" costs a
+    # glance and turns silence back into a signal.
+
     if args.to:
         send_email(args.to, subject, render_html(rows))
     if args.sms:
