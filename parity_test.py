@@ -52,11 +52,13 @@ for name, lg in board["leagues"].items():
     out[name] = [
         {
             "combined": p.combined_odds,
-            "conf": f"{p.avg_confidence:.1f}",
-            "edge": f"{p.combined_edge_pp:.1f}",
-            "units": f"{p.stake_units:.1f}",
-            "winp": f"{p.win_prob:.4f}",
-            "mktp": f"{p.market_prob:.4f}",
+            # Raw floats; see the note in parity_test.js. Rounding here is what
+            # made this comparison flaky rather than strict.
+            "conf": p.avg_confidence,
+            "edge": p.combined_edge_pp,
+            "units": p.stake_units,
+            "winp": p.win_prob,
+            "mktp": p.market_prob,
             "trust": p.trust,
             "legs": [f"{l.team_abbr}@{l.odds_american}" for l in p.legs],
         }

@@ -109,7 +109,15 @@ def serialize_leg(leg) -> Dict:
         "odds": leg.odds_american,
         "model_prob": round(leg.model_win_prob, 5),
         "implied_prob": round(leg.implied_prob, 5),
-        "edge_pp": round(leg.edge * 100.0, 2),
+        # Six decimals, not two. edge_pp is derived from the two probabilities
+        # above, which are kept to five -- so rounding it harder than its own
+        # inputs made the stored number disagree with anything recomputed from
+        # them by up to 0.005pp. The browser trusts this field; the Python
+        # engine recomputes. They have to be the same number, because the gates
+        # they feed (min_edge_pp is floored at 7.5) are decided at 0.1pp and a
+        # leg sitting on the line went one way on the site and the other in the
+        # ledger.
+        "edge_pp": round(leg.edge * 100.0, 6),
         "fair_odds": leg.fair_odds,
         "sample": round(leg.sample_games, 2),
         "team_sample": round(leg.team_sample, 2),

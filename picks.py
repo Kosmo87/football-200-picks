@@ -283,7 +283,12 @@ def _make_pick(legs: List[Leg], combined: int) -> Pick:
     n = len(legs)
     if n == 1:
         leg = legs[0]
-        epp = edge_pp(leg.model_win_prob, leg.implied_prob)
+        # The edge the leg carries, not a fresh derivation from its
+        # probabilities. Those agree when this engine built the leg itself, and
+        # do not when the leg was rebuilt from board.json -- where the
+        # probabilities and the edge have been rounded independently. Trusting
+        # the field we were handed keeps one number in play instead of two.
+        epp = leg.edge * 100.0
         label = (
             f"Single: {leg.team_abbr} ML {leg.odds_american:+d} "
             f"(edge {epp:+.1f}pp, conf {leg.confidence:.0f}/{leg.confidence_label})"

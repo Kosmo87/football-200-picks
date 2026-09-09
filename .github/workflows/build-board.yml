@@ -22,6 +22,7 @@ on:
       - "history_data.py"
       - "parity_test.js"
       - "parity_test.py"
+      - "parity_check.py"
       # The site itself. Without this a front-end-only change never deploys and
       # sits unpublished until the next cron happens to run.
       - "public/**"
@@ -109,7 +110,7 @@ jobs:
         run: |
           node parity_test.js > /tmp/js.json
           python parity_test.py > /tmp/py.json
-          diff /tmp/js.json /tmp/py.json && echo "parity OK"
+          python parity_check.py /tmp/js.json /tmp/py.json
 
       - name: Commit refreshed data
         run: |
