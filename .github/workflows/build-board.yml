@@ -108,6 +108,16 @@ jobs:
           fi
           python delivery.py --to "$DELIVER_TO"
 
+      - name: Freeze closing prop lines
+        # Costs one scan (about 14 entities against 2,500 a month) and only in
+        # an hour when a logged line is actually about to start. After kickoff
+        # the market is gone and "did this price beat the market" can never be
+        # answered for that line again.
+        continue-on-error: true
+        run: |
+          if [ -z "$SGO_API_KEY" ]; then exit 0; fi
+          python props.py --close || true
+
       - name: Grade finished prop lines
         # Free — it reads box scores the board already pulls — so it runs every
         # hour rather than only in the collection hour. Collecting without

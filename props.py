@@ -31,7 +31,8 @@ import argparse
 import json
 import re
 import os
-from typing import Dict, List
+from datetime import datetime, timedelta, timezone
+from typing import Dict, List, Optional
 
 import requests
 
@@ -105,12 +106,105 @@ def scan(league: str = "NFL") -> List[dict]:
                     "seen_at": seen_at, "league": league, "event_id": event_id,
                     "starts_at": start, "matchup": matchup,
                     "player_id": entity, "side": side, "book": book,
-                    "line": b.get("overUnder") or odd.get("overUnder"),
+                    # Numeric, not the string the API returns. "1.5" and 1.5
+                    # group differently, and every later comparison — bucketing
+                    # by line, settling over/under — is arithmetic.
+                    "line": _num(b.get("overUnder") or odd.get("overUnder")),
                     "price": b.get("odds") or b.get("price"),
                     "odd_id": odd_id,
                 })
     return rows
 
+
+
+# ── Closing lines ─────────────────────────────────────────────────────────
+
+def _num(v) -> Optional[float]:
+    try:
+        return float(v)
+    except (TypeError, ValueError):
+        return None
+
+
+def _american_to_prob(odds) -> Optional[float]:
+    try:
+        o = int(odds)
+    except (TypeError, ValueError):
+        return None
+    return (-o) / ((-o) + 100) if o < 0 else 100 / (o + 100)
+
+
+def close(league: str = "NFL") -> int:
+    """
+    Freeze the consensus price for lines about to start, and record CLV.
+
+    Same reasoning as the moneyline ledger. Win/loss on a handful of props is
+    noise; whether the price taken beat where the market closed is readable far
+    sooner, and for line shopping it IS the claim. Cameron Ward over 1.5 ran
+    +170 at Bovada and +200 at ESPN BET on the same market at the same moment —
+    which of those was right is answerable, but only before kickoff. Afterwards
+    the market is gone and that line can never be asked again.
+
+    Costs one scan (about 14 entities against a 2,500 monthly allowance), and
+    only in an hour when something is actually about to start.
+    """
+    rows = read_ndjson(ledger_path())
+    now = datetime.now(timezone.utc)
+
+    due = []
+    for r in rows:
+        if r.get("close_price") is not None or r.get("actual_tds") is not None:
+            continue
+        try:
+            k = datetime.fromisoformat(str(r["starts_at"]).replace("Z", "+00:00"))
+        except (ValueError, KeyError, TypeError):
+            continue
+        if timedelta(0) < (k - now) <= timedelta(hours=1):
+            due.append(r)
+    if not due:
+        print("nothing closing in the next hour")
+        return 0
+
+    try:
+        live = scan(league)
+    except Exception as e:
+        print(f"  live prices unavailable: {e}")
+        return 0
+
+    # Consensus per player/side/LINE. The line matters: two books quoting
+    # over 1.5 and over 2.5 are not pricing the same bet, and averaging them
+    # would invent a number neither offered.
+    buckets: Dict[tuple, List[float]] = {}
+    for r in live:
+        pr = _american_to_prob(r.get("price"))
+        if pr is None:
+            continue
+        buckets.setdefault((r["player_id"], r["side"], str(r.get("line"))), []).append(pr)
+
+    closed = 0
+    for r in due:
+        key = (r["player_id"], r["side"], str(r.get("line")))
+        probs = sorted(buckets.get(key, []))
+        if not probs:
+            continue
+        mid = probs[len(probs) // 2]
+        taken = _american_to_prob(r.get("price"))
+        if taken is None:
+            continue
+        r["close_prob"] = round(mid, 5)
+        r["close_books"] = len(probs)
+        r["closed_at"] = utcnow()
+        # Probability points by which the taken price was cheaper than the
+        # close. Positive means the market moved toward you.
+        r["clv_pp"] = round((mid - taken) * 100, 3)
+        closed += 1
+
+    if closed:
+        with open(ledger_path(), "w") as f:
+            for r in rows:
+                f.write(json.dumps(r, sort_keys=True) + "\n")
+    print(f"closed {closed} of {len(due)} due")
+    return closed
 
 
 # ── Grading ───────────────────────────────────────────────────────────────
@@ -203,6 +297,36 @@ def report() -> None:
     # The point of collecting is a backtest, and a backtest needs closing lines
     # over many games. Say plainly how far off that is rather than implying the
     # data is ready.
+    # Closing line value, reported before results and separately from them.
+    # For line shopping CLV *is* the claim — "this book is longer than the
+    # market" is answered by where the market closed, not by whether the pass
+    # was thrown. It also reads far sooner: a handful of settled props is noise,
+    # while a handful of closes is already a signal.
+    closed = [r for r in rows if r.get("clv_pp") is not None]
+    if closed:
+        beat = [r for r in closed if r["clv_pp"] > 0]
+        avg = sum(r["clv_pp"] for r in closed) / len(closed)
+        print(f"\n  Closing line value (the price, not the result)")
+        print(f"    closed          {len(closed)}")
+        print(f"    beat the close  {len(beat)} of {len(closed)} ({len(beat)/len(closed)*100:.0f}%)")
+        print(f"    average CLV     {avg:+.2f} probability points")
+        best = max(closed, key=lambda r: r["clv_pp"])
+        print(f"    best            {best['player_id']} {best['side']} {best['line']} "
+              f"@ {best['price']} ({best['book']}) {best['clv_pp']:+.2f} pp")
+
+    graded = [r for r in rows if r.get("result")]
+    if graded:
+        won = [r for r in graded if r["result"] == "won"]
+        push = [r for r in graded if r["result"] == "push"]
+        staked = len(graded) - len(push)
+        print(f"\n  Settled")
+        print(f"    graded          {len(graded)}"
+              + (f", {len(push)} push" if push else ""))
+        if staked:
+            print(f"    hit rate        {len(won)}/{staked} ({len(won)/staked*100:.0f}%)")
+            print(f"    (a hit rate means nothing without the prices it was taken at —"
+                  f" CLV above is the number to watch first)")
+
     if len(days) < 14:
         print(f"\n  Too little history to test anything yet — {len(days)} day(s) in. "
               f"Keep it running; a model needs weeks, not runs.")
@@ -213,6 +337,8 @@ def main() -> int:
     ap.add_argument("--scan", action="store_true", help="fetch and log (spends objects)")
     ap.add_argument("--report", action="store_true", help="what has been collected")
     ap.add_argument("--grade", action="store_true", help="settle finished games (free)")
+    ap.add_argument("--close", action="store_true",
+                    help="freeze the closing consensus for lines starting within the hour")
     ap.add_argument("--league", default="NFL")
     ap.add_argument("--dry-run", action="store_true", help="fetch and print, store nothing")
     args = ap.parse_args()
@@ -222,6 +348,11 @@ def main() -> int:
     # a duplicate batch — an argument parser that does something you did not ask
     # for is worse than one that refuses.
     acted = False
+    if args.close:
+        if not _key():
+            print("SGO_API_KEY is not set."); return 1
+        close(args.league)
+        acted = True
     if args.grade:
         grade(args.league)
         acted = True
