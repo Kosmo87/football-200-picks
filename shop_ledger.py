@@ -111,6 +111,68 @@ def scan(leagues=DEFAULT_LEAGUES, min_edge: float = 0.03, force: bool = False) -
     return len(new)
 
 
+
+# ── What you actually bet ─────────────────────────────────────────────────
+# The scan records what it FOUND. That is the right thing to measure for
+# "does line shopping work", and the wrong thing to measure for "how am I
+# doing" — the two diverge the first time a gap is skipped, and after a month
+# the ledger is describing a strategy nobody followed.
+#
+# So placement is recorded separately and deliberately. A row with no stake is
+# a flagged opportunity; a row with one is a bet. The report keeps them apart
+# rather than averaging a thing you did with a thing you did not.
+
+def _label(r: dict) -> str:
+    return f"{r['side']} {r['price']:+d} {r['book']}"
+
+
+def show(only_open: bool = True) -> List[dict]:
+    """Numbered listing, so placing a bet does not mean typing a uuid."""
+    rows = read_ndjson(ledger_path())
+    shown = [r for r in rows if r["status"] == "open"] if only_open else rows
+    shown.sort(key=lambda r: r.get("kickoff") or "")
+    if not shown:
+        print("nothing open")
+        return shown
+    print(f"\n  {'#':>3}  {'side':28s} {'price':>6s} {'book':13s} {'edge':>6s} "
+          f"{'stake':>6s}  kickoff")
+    for i, r in enumerate(shown, 1):
+        st = f"{r['stake']:.2f}u" if r.get("stake") else "—"
+        print(f"  {i:>3}  {r['side'][:28]:28s} {r['price']:+6d} {r['book'][:13]:13s} "
+              f"{r['edge']*100:5.1f}% {st:>6s}  {str(r.get('kickoff'))[:16]}")
+    print(f"\n  place one with:  python shop_ledger.py --place N --stake 1")
+    return shown
+
+
+def place(index: int, stake: float) -> int:
+    """Record that a flagged gap was actually bet, at a real stake."""
+    rows = read_ndjson(ledger_path())
+    shown = [r for r in rows if r["status"] == "open"]
+    shown.sort(key=lambda r: r.get("kickoff") or "")
+    if not 1 <= index <= len(shown):
+        print(f"no open bet #{index} — there are {len(shown)}")
+        return 1
+    target = shown[index - 1]
+    if stake <= 0:
+        print("stake must be positive")
+        return 1
+
+    for r in rows:
+        if r is target or (r["event_id"] == target["event_id"]
+                           and r["side"] == target["side"]
+                           and r["book"] == target["book"]):
+            r["stake"] = float(stake)
+            r["placed_at"] = utcnow()
+            print(f"  placed {stake:.2f}u on {_label(r)} — {r['game']}")
+            break
+
+    with open(ledger_path(), "w") as f:
+        import json
+        for r in rows:
+            f.write(json.dumps(r, sort_keys=True) + "\n")
+    return 0
+
+
 def close(leagues=DEFAULT_LEAGUES) -> int:
     """
     Freeze the consensus price for bets about to start. Costs one scan.
@@ -255,9 +317,13 @@ def report() -> None:
     staked = len(won) + len(lost)
     units = sum(r["units"] or 0 for r in settled)
 
+    placed = [r for r in rows if r.get("stake")]
     print(f"\n  Line-shop ledger")
     print(f"  {'logged':<22}{len(rows)}")
     print(f"  {'still open':<22}{len([r for r in rows if r['status'] == 'open'])}")
+    print(f"  {'of those, bet':<22}{len(placed)}"
+          + ("  (nothing placed yet — the figures below describe what the scan"
+             " found, not what you did)" if not placed else ""))
     # CLV is reported before win/loss, and separately from it, because it
     # answers the question the ledger is actually asking. A price that beat the
     # close was a good bet whether or not it won; seventeen results are noise at
@@ -283,6 +349,18 @@ def report() -> None:
     print(f"  {'edge it claimed':<22}"
           f"{sum(r['edge'] for r in settled)/len(settled)*100:+.2f}%")
 
+    # Your actual book, if any of it was actually bet.
+    settled_placed = [r for r in settled if r.get("stake")]
+    if settled_placed:
+        pu = sum((r["units"] or 0) * r["stake"] for r in settled_placed)
+        st = sum(r["stake"] for r in settled_placed
+                 if r["status"] in ("won", "lost"))
+        print(f"\n  What you actually bet")
+        print(f"  {'  settled bets':<22}{len(settled_placed)}")
+        print(f"  {'  units':<22}{pu:+.2f} on {st:.2f}u staked")
+        if st:
+            print(f"  {'  return':<22}{pu/st*100:+.2f}%")
+
     print(f"\n  By book:")
     by_book: Dict[str, list] = {}
     for r in settled:
@@ -304,10 +382,18 @@ def main() -> int:
     ap.add_argument("--report", action="store_true")
     ap.add_argument("--force", action="store_true", help="scan regardless of the timer")
     ap.add_argument("--min-edge", type=float, default=0.03)
+    ap.add_argument("--list", action="store_true", help="numbered listing of open gaps")
+    ap.add_argument("--place", type=int, metavar="N", help="record bet N as actually placed")
+    ap.add_argument("--stake", type=float, default=1.0, help="units staked, with --place")
     args = ap.parse_args()
 
     if args.scan:
         scan(min_edge=args.min_edge, force=args.force)
+    if args.list:
+        show()
+        return 0
+    if args.place is not None:
+        return place(args.place, args.stake)
     if args.close:
         close()
     if args.grade:
