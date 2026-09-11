@@ -30,7 +30,7 @@ from typing import Dict, List, Optional
 from archive import ARCHIVE_DIR, append_ndjson, read_ndjson, utcnow
 from espn import current_season_year, fetch_completed_games
 from line_shop import SPORTS, fetch_live, find_value, games_from_live
-from odds import american_to_decimal
+from odds import american_to_decimal, american_to_implied_prob
 
 HOURS_BETWEEN_SCANS = 8.0
 DEFAULT_LEAGUES = ("NCAAF", "NFL")
@@ -111,6 +111,79 @@ def scan(leagues=DEFAULT_LEAGUES, min_edge: float = 0.03, force: bool = False) -
     return len(new)
 
 
+def close(leagues=DEFAULT_LEAGUES) -> int:
+    """
+    Freeze the consensus price for bets about to start. Costs one scan.
+
+    WHY THIS MATTERS MORE THAN WIN/LOSS. These are moneyline underdogs around
+    +400: four losses in five is what being RIGHT looks like. Seventeen of them
+    settled is indistinguishable from noise, and hundreds would take a season.
+
+    But line shopping does not claim to predict games. It claims this book is
+    priced longer than the market — and the direct test of that is whether the
+    price taken beat where the market closed. Take +450, watch it close +385,
+    and the edge was real whether or not the team won. That reads in weeks.
+
+    So the closing consensus is captured while it still exists. After kickoff
+    the market is gone and the question can never be answered for that bet.
+    """
+    rows = read_ndjson(ledger_path())
+    now = datetime.now(timezone.utc)
+
+    # Bets starting within the hour that have not been closed yet. Closer than
+    # that risks missing them entirely between runs; further out is not "close".
+    due = []
+    for r in rows:
+        if r.get("close_price") is not None or r["status"] != "open":
+            continue
+        try:
+            k = datetime.fromisoformat(r["kickoff"].replace("Z", "+00:00"))
+        except (ValueError, KeyError):
+            continue
+        if timedelta(0) < (k - now) <= timedelta(hours=1):
+            due.append(r)
+    if not due:
+        print("[shop] nothing closing in the next hour")
+        return 0
+
+    live_by_league: Dict[str, list] = {}
+    for league in {r["league"] for r in due}:
+        try:
+            live_by_league[league] = games_from_live(fetch_live(SPORTS[league]))
+        except Exception as e:
+            print(f"[shop] {league} live prices unavailable: {e}")
+
+    closed = 0
+    for r in due:
+        for g in live_by_league.get(r["league"], []):
+            if g.get("event_id") != r.get("event_id"):
+                continue
+            # The consensus across books at kickoff, not the price at one book:
+            # the claim was "longer than the market", so the market is the
+            # comparison.
+            prices = [b["price"] for b in g.get("sides", {}).get(r["side"], [])]
+            if not prices:
+                continue
+            mid = sorted(prices)[len(prices) // 2]
+            r["close_price"] = mid
+            r["close_books"] = len(prices)
+            r["closed_at"] = utcnow()
+            # CLV in probability points: how much cheaper the taken price was
+            # than the close. Positive means the market moved toward you.
+            r["clv_pp"] = round(
+                (american_to_implied_prob(mid) - american_to_implied_prob(r["price"])) * 100, 3)
+            closed += 1
+            break
+
+    if closed:
+        with open(ledger_path(), "w") as f:
+            import json
+            for r in rows:
+                f.write(json.dumps(r, sort_keys=True) + "\n")
+    print(f"[shop] closed {closed}")
+    return closed
+
+
 def grade(leagues=DEFAULT_LEAGUES) -> int:
     """Settle logged bets against finished games. Costs no credits."""
     path = ledger_path()
@@ -185,6 +258,22 @@ def report() -> None:
     print(f"\n  Line-shop ledger")
     print(f"  {'logged':<22}{len(rows)}")
     print(f"  {'still open':<22}{len([r for r in rows if r['status'] == 'open'])}")
+    # CLV is reported before win/loss, and separately from it, because it
+    # answers the question the ledger is actually asking. A price that beat the
+    # close was a good bet whether or not it won; seventeen results are noise at
+    # +400, but seventeen closing lines are evidence.
+    closed = [r for r in rows if r.get("clv_pp") is not None]
+    if closed:
+        beat = [r for r in closed if r["clv_pp"] > 0]
+        avg = sum(r["clv_pp"] for r in closed) / len(closed)
+        print(f"\n  Closing line value   (the price, not the result)")
+        print(f"  {'  closed':<22}{len(closed)}")
+        print(f"  {'  beat the close':<22}{len(beat)} of {len(closed)}"
+              f"  ({len(beat)/len(closed)*100:.0f}%)")
+        print(f"  {'  average CLV':<22}{avg:+.2f} probability points")
+        if len(closed) < 30:
+            print(f"  {'':<22}(thin — CLV reads long before results do, but not this early)")
+
     if not staked:
         print(f"\n  Nothing settled yet — first results land after kickoff.")
         return
@@ -210,6 +299,8 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--scan", action="store_true")
     ap.add_argument("--grade", action="store_true")
+    ap.add_argument("--close", action="store_true",
+                    help="freeze the closing consensus for bets starting within the hour")
     ap.add_argument("--report", action="store_true")
     ap.add_argument("--force", action="store_true", help="scan regardless of the timer")
     ap.add_argument("--min-edge", type=float, default=0.03)
@@ -217,9 +308,11 @@ def main() -> int:
 
     if args.scan:
         scan(min_edge=args.min_edge, force=args.force)
+    if args.close:
+        close()
     if args.grade:
         grade()
-    if args.report or not (args.scan or args.grade):
+    if args.report or not (args.scan or args.grade or args.close):
         report()
     return 0
 

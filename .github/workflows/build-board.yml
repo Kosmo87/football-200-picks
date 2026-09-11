@@ -68,10 +68,18 @@ jobs:
         continue-on-error: true
         run: python archive.py
 
-      - name: Scan for price gaps and grade the ledger
+      - name: Scan for price gaps, freeze closing lines, grade the ledger
         # Scanning is rate-limited inside the script to once every 8 hours, so
         # running on the hourly build costs about 6 credits a day against the
         # free tier's 500 a month. Grading costs nothing and runs regardless.
+        #
+        # --close costs a call per league only in an hour when a logged bet is
+        # actually about to start, which on a football weekend is perhaps ten
+        # hours out of the week — call it 80 a month on top of scanning's 180.
+        # Worth it: after kickoff the closing market is gone and the question
+        # "did this price beat the market" can never be answered for that bet.
+        # Win/loss on moneyline dogs at +400 is noise for a whole season; CLV
+        # is readable in weeks.
         continue-on-error: true
         run: |
           if [ -z "$ODDS_API_KEY" ]; then
@@ -79,7 +87,7 @@ jobs:
             echo "Set it with: gh secret set ODDS_API_KEY --repo Kosmo87/football-200-picks"
             exit 0
           fi
-          python shop_ledger.py --scan --grade
+          python shop_ledger.py --close --scan --grade
           python shop_ledger.py --report
 
       - name: Send the morning message
