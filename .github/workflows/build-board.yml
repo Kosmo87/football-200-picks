@@ -47,6 +47,7 @@ jobs:
       ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
       RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
       RESEND_FROM: ${{ vars.RESEND_FROM }}
+      SGO_API_KEY: ${{ secrets.SGO_API_KEY }}
       DELIVER_TO: ${{ vars.DELIVER_TO }}
       # Not a secret: site IDs are public in every deploy URL.
       NETLIFY_SITE_ID: fbbd4003-735c-46f1-b1da-bed28205ee4c
@@ -98,6 +99,30 @@ jobs:
             exit 0
           fi
           python delivery.py --to "$DELIVER_TO"
+
+      - name: Log QB passing-TD lines
+        # Collection, not a model. The free tier serves LIVE lines only, so the
+        # history a backtest would need does not exist anywhere and can only be
+        # accumulated forward — every week this does not run is a week that
+        # cannot be tested later.
+        #
+        # Once a day, not hourly. The allowance is 2,500 objects a month and one
+        # scan of the NFL slate is about 250, so daily is roughly 7,500 a month
+        # on a Sunday-heavy schedule — too many. Restricted to the 12:00 UTC
+        # hour, which puts it near opening lines on a game day.
+        continue-on-error: true
+        run: |
+          HOUR=$(date -u +%H)
+          if [ "$HOUR" != "12" ]; then
+            echo "Not the collection hour (UTC $HOUR) — skipping."
+            exit 0
+          fi
+          if [ -z "$SGO_API_KEY" ]; then
+            echo "::warning::SGO_API_KEY not set — no props collected."
+            exit 0
+          fi
+          python props.py --scan
+          python props.py --report
 
       - name: Build board
         run: |

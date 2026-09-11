@@ -30,11 +30,9 @@ from __future__ import annotations
 import argparse
 import json
 import os
-import urllib.error
-import urllib.parse
-import urllib.request
-from datetime import datetime, timezone
 from typing import Dict, List
+
+import requests
 
 import keys  # noqa: F401  (loads ~/.football-picks.env)
 from archive import ARCHIVE_DIR, append_ndjson, read_ndjson, utcnow
@@ -54,10 +52,14 @@ def _key() -> str:
 
 
 def _get(path: str, params: Dict[str, str]) -> dict:
-    url = f"{BASE}{path}?" + urllib.parse.urlencode(params)
-    req = urllib.request.Request(url, headers={"x-api-key": _key()})
-    with urllib.request.urlopen(req, timeout=30) as r:
-        return json.load(r)
+    # requests, not urllib, for the same reason delivery.py uses it: this Mac's
+    # Python.framework has no CA bundle configured, so urllib fails every HTTPS
+    # call with CERTIFICATE_VERIFY_FAILED. requests carries certifi's.
+    r = requests.get(f"{BASE}{path}", params=params,
+                     headers={"x-api-key": _key()}, timeout=30)
+    if r.status_code != 200:
+        raise RuntimeError(f"HTTP {r.status_code} {r.text[:200]}")
+    return r.json()
 
 
 def scan(league: str = "NFL") -> List[dict]:
@@ -142,9 +144,8 @@ def main() -> int:
 
     try:
         rows = scan(args.league)
-    except urllib.error.HTTPError as e:
-        body = e.read().decode("utf-8", "replace")[:200]
-        print(f"  {args.league}: HTTP {e.code} {body}")
+    except Exception as e:
+        print(f"  {args.league}: {e}")
         return 1
 
     print(f"{len(rows)} passing-TD prices across "
