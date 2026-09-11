@@ -27,6 +27,11 @@ on:
       # sits unpublished until the next cron happens to run.
       - "public/**"
       - "netlify.toml"
+      - "netlify/**"
+      - "placements.py"
+      - "placements_test.py"
+      - "package.json"
+      - "package-lock.json"
       - ".github/workflows/build-board.yml"
 
 permissions:
@@ -58,8 +63,18 @@ jobs:
         with:
           python-version: "3.12"
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
       - name: Install dependencies
-        run: pip install --quiet requests
+        run: |
+          pip install --quiet requests
+          # @netlify/blobs, for the bridge that lets the Python grader read the
+          # placements the board wrote. `npm ci` also puts it in node_modules
+          # for the CLI to bundle into the function.
+          npm ci
 
       - name: Archive lines and results
         # Runs before the board so a build failure cannot cost us a snapshot.
@@ -150,10 +165,28 @@ jobs:
           python props.py --scan
           python props.py --report
 
+      - name: Settle the bets you tagged
+        # Reads the blob store the board's checkboxes write to, settles what has
+        # finished against ESPN finals, writes the results back, and mirrors the
+        # rows into data/archive so they are in the repo and in a diff.
+        #
+        # Free: it reuses the box scores the board already pulls. Separate from
+        # the two ledgers above on purpose -- those measure whether a strategy
+        # works, this measures what was actually bet, and averaging the two
+        # would describe a strategy nobody followed.
+        continue-on-error: true
+        run: |
+          python placements.py --grade
+          python placements.py --publish
+          python placements.py --report
+
       - name: Build board
         run: |
           python build_board.py \
             ${{ inputs.refresh_prior && '--refresh-prior' || '' }}
+
+      - name: Test bet settlement
+        run: python placements_test.py
 
       - name: Verify engine parity
         # The browser re-implements pick selection; a drift here means the site
@@ -188,8 +221,13 @@ jobs:
             exit 0
           fi
           echo "Token present (${#NETLIFY_AUTH_TOKEN} chars). Deploying…"
+          # --functions is explicit rather than left to netlify.toml: --dir
+          # already overrides the configured publish directory, and a silently
+          # un-deployed function would take the board's checkboxes down without
+          # failing this step.
           npx --yes netlify-cli@27 deploy \
             --prod \
             --dir=public \
+            --functions=netlify/functions \
             --site="$NETLIFY_SITE_ID" \
             --message="Board $(date -u +'%Y-%m-%d %H:%M UTC')"

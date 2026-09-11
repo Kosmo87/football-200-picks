@@ -1,0 +1,9 @@
+{
+  "name": "football-200-picks",
+  "private": true,
+  "description": "Static picks board. Node is here only for the Netlify Function that records placed bets, the bridge that lets the Python grader reach the same store, and the JS/Python parity test.",
+  "//": "Deliberately NOT \"type\": \"module\" — that reclassifies every .js file as an ES module and parity_test.js uses require(), so setting it turns the parity gate red. The function and the bridge are .mjs, which are modules whatever this says.",
+  "dependencies": {
+    "@netlify/blobs": "^8.1.0"
+  }
+}

@@ -51,3 +51,7 @@ Thumbs.db
 # cfb_line_odds expands to ~136 MB; nflverse games is small but equally derived.
 /cache/cfb_line_odds.csv*
 /cache/nflverse_games.csv
+
+# Node, for the placements function only. The lockfile IS committed so CI
+# installs the exact bundle that was tested.
+node_modules/

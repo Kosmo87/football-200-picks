@@ -6,6 +6,12 @@
   publish = "public"
   command = ""
 
+# One endpoint, /api/placements, so a checkbox on the board has somewhere to
+# write. Everything else on this site is a prebuilt file.
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
 [[headers]]
   for = "/data/*.json"
   [headers.values]

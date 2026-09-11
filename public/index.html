@@ -28,8 +28,22 @@
 <div class="wrap">
 
   <section class="record" id="record" hidden>
-    <h2 class="section-title">Track record <span class="note">baseline gates, flat 1u</span></h2>
+    <h2 class="section-title">Model track record
+      <span class="note">every pick the engine surfaced, flat 1u &mdash; not what you bet</span></h2>
     <div class="stat-row" id="record-stats"></div>
+  </section>
+
+  <section class="record" id="yourbets" hidden>
+    <h2 class="section-title">Your bets
+      <span class="note">only what you ticked &middot; settled from final scores</span></h2>
+    <div class="stat-row" id="yourbets-stats"></div>
+    <div class="table-scroll">
+      <table class="data compact" id="yourbets-table">
+        <thead><tr><th>Bet</th><th class="num">Odds</th><th class="num">Stake</th>
+          <th class="num">Units</th><th>Status</th></tr></thead>
+        <tbody id="yourbets-body"></tbody>
+      </table>
+    </div>
   </section>
 
   <nav class="tabs" role="tablist" id="league-tabs"></nav>
@@ -75,6 +89,7 @@
       <table class="data" id="board-table">
         <thead>
           <tr>
+            <th class="bet-col">Bet</th>
             <th>Game</th><th>Kickoff</th><th>Side</th><th class="num">Odds</th>
             <th class="num">Model win%</th><th class="num">Market win%</th>
             <th class="num">Edge</th><th class="num">Fair</th>
@@ -116,6 +131,7 @@
       <li><strong>Edge</strong> — model win% minus implied win%, in percentage points.</li>
       <li><strong>Signal</strong> — sample depth (40) + edge size (35) + how short the price is (25), scored out of 100. Not a win probability. Prior-season games grant capped sample credit, so a week-2 team with a real carried-over rating isn't treated as an unknown.</li>
       <li><strong>Selection</strong> — gated legs only, no overlapping teams or games; prefer singles and short parlays that already clear +200, then stack 3–5 shorter legs. Ranked by confidence and edge, not by juiciest payout.</li>
+      <li><strong>Placed bets</strong> &mdash; ticking a bet records it server-side with the price and stake at that moment, and the hourly build settles it against the final score. A parlay is one ticket: one losing leg settles it, and a pushed leg drops out and re-prices the rest. &ldquo;Your bets&rdquo; is that record and nothing else &mdash; a recommendation you did not take never appears in it.</li>
       <li><strong>CLV</strong> — each tracked pick logs its price when first surfaced and keeps updating the latest price until kickoff. Positive CLV means the opening price was longer than the close.</li>
     </ol>
   </details>

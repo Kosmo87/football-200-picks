@@ -280,6 +280,274 @@ function buildPicks(allLegs, cfg, n = 3) {
 }
 
 // --------------------------------------------------------------------------
+// Placements — which of these did you actually bet
+//
+// The board recommends; this records. They are different questions and the
+// answers diverge the first time a flagged bet is skipped, so nothing here
+// infers a placement from a recommendation: a bet is placed when the box is
+// ticked and not otherwise.
+//
+// State lives server-side (netlify/functions/placements.mjs) rather than in
+// localStorage, so a bet tagged on the phone is tagged on the laptop, and so
+// the hourly build can settle it against the final score. The passphrase is
+// the one thing kept locally — it is a write credential, not data.
+// --------------------------------------------------------------------------
+
+const PLACEMENTS_API = "/api/placements";
+const KEY_STORAGE = "fb200.placementKey";
+
+const loadKey = () => {
+  try { return localStorage.getItem(KEY_STORAGE) || ""; } catch { return ""; }
+};
+const saveKey = (k) => {
+  try { k ? localStorage.setItem(KEY_STORAGE, k) : localStorage.removeItem(KEY_STORAGE); }
+  catch { /* private browsing; the key just will not persist */ }
+};
+
+/** Must match betId() in the function exactly, or the page and the store
+ *  disagree about whether a bet is already tagged. */
+const cleanIdPart = (v) => String(v ?? "").replace(/[^A-Za-z0-9_.-]/g, "");
+function betId(league, legs) {
+  const parts = legs
+    .map((l) => `${cleanIdPart(l.event_id)}.${cleanIdPart(l.side)}`)
+    .sort();
+  return `${cleanIdPart(league)}-${parts.join("+")}`;
+}
+
+/** A tip or a board row, in the shape the store keeps. */
+function betFromLegs(league, legs, combinedOdds, winProb, marketProb, edgePP) {
+  return {
+    league,
+    odds: combinedOdds,
+    model_prob: round5(winProb),
+    implied_prob: round5(marketProb),
+    edge_pp: Math.round(edgePP * 100) / 100,
+    legs: legs.map((l) => ({
+      event_id: l.eventId, side: l.side, team_id: l.team_id,
+      team_abbr: l.team_abbr, team_name: l.team_name, opp_abbr: l.oppAbbr,
+      matchup: l.matchup, kickoff: l.kickoff, odds: l.odds,
+      model_prob: round5(l.model_prob), implied_prob: round5(l.implied_prob),
+      edge_pp: l.edge_pp,
+    })),
+  };
+}
+const round5 = (n) => (n == null ? null : Math.round(n * 1e5) / 1e5);
+
+async function fetchPlacements() {
+  try {
+    const r = await fetch(`${PLACEMENTS_API}?t=${Date.now()}`);
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    const j = await r.json();
+    state.placementsConfigured = j.configured !== false;
+    state.placements = new Map((j.placements || []).map((p) => [p.id, p]));
+    state.placementsError = j.error || null;
+  } catch (e) {
+    // A static-only deploy has no function. Say so once rather than failing
+    // every checkbox click silently.
+    state.placementsConfigured = false;
+    state.placementsError = e.message;
+    state.placements = new Map();
+  }
+}
+
+/** Upsert or untag. Returns an error string, or null on success. */
+async function savePlacement(bet, stake) {
+  const key = state.placementKey || loadKey();
+  if (!key) return "need-key";
+  let r;
+  try {
+    r = await fetch(PLACEMENTS_API, {
+      method: "POST",
+      headers: { "content-type": "application/json", "x-placement-key": key },
+      body: JSON.stringify({ ...bet, stake }),
+    });
+  } catch (e) {
+    return e.message;
+  }
+  const j = await r.json().catch(() => ({}));
+  if (r.status === 401) {
+    saveKey("");
+    state.placementKey = "";
+    return "wrong passphrase — enter it again";
+  }
+  if (!r.ok) return j.error || `HTTP ${r.status}`;
+
+  const id = betId(bet.league, bet.legs);
+  if (j.removed) state.placements.delete(id);
+  else if (j.placement) state.placements.set(j.placement.id, j.placement);
+  return null;
+}
+
+function promptForKey() {
+  const k = window.prompt(
+    "Passphrase for recording bets\n\n"
+    + "This is the PLACEMENT_KEY set on the Netlify site. It is stored in this "
+    + "browser so you only type it once."
+  );
+  if (k) {
+    state.placementKey = k.trim();
+    saveKey(state.placementKey);
+  }
+  return Boolean(k);
+}
+
+/**
+ * The checkbox, plus the stake it was placed at.
+ *
+ * Stake defaults to what the engine recommends, because the common case is
+ * taking the advice, and it stays editable because the common case is not the
+ * only one. Changing it on an already-tagged bet rewrites the stake rather than
+ * logging a second bet — the id is derived from the legs, not the amount.
+ */
+function placementControls(bet, suggestedStake) {
+  const id = betId(bet.league, bet.legs);
+  const existing = state.placements.get(id);
+  const wrap = el("div", "place");
+
+  const box = el("input");
+  box.type = "checkbox";
+  box.checked = Boolean(existing);
+  box.id = `pl-${id}`;
+
+  const label = el("label", "place-label");
+  label.htmlFor = box.id;
+  label.textContent = existing ? "Placed" : "Tag as placed";
+  // The board hides the label to save a column, so the box carries the whole
+  // description itself for anyone reading it without one.
+  box.title = `${existing ? "Placed" : "Tag as placed"}: `
+    + (bet.legs.length === 1
+        ? `${bet.legs[0].team_abbr} ML ${fmtOdds(bet.odds)}`
+        : `${bet.legs.length}-leg ${fmtOdds(bet.odds)}`);
+  box.setAttribute("aria-label", box.title);
+
+  const stake = el("input", "place-stake");
+  stake.type = "number";
+  stake.min = "0";
+  stake.step = "0.25";
+  stake.value = existing ? Number(existing.stake).toFixed(2)
+                         : Number(suggestedStake || 1).toFixed(2);
+  stake.title = "Units staked";
+  stake.hidden = !existing;
+
+  const note = el("span", "place-note");
+  const settled = existing && existing.status && existing.status !== "open";
+  if (settled) {
+    box.disabled = true;
+    stake.disabled = true;
+    const u = Number(existing.units || 0);
+    note.className = `place-note ${u > 0 ? "pos" : u < 0 ? "neg" : "dim"}`;
+    note.textContent = `${existing.status.toUpperCase()} ${u >= 0 ? "+" : ""}${u.toFixed(2)}u`;
+  }
+
+  async function commit(checked, units) {
+    box.disabled = true;
+    note.className = "place-note dim";
+    note.textContent = "saving…";
+    if (checked && !state.placementKey && !loadKey()) {
+      if (!promptForKey()) {
+        box.checked = false;
+        box.disabled = false;
+        note.textContent = "";
+        return;
+      }
+    }
+    const err = await savePlacement(bet, checked ? units : 0);
+    box.disabled = false;
+    if (err) {
+      box.checked = Boolean(state.placements.get(id));
+      note.className = "place-note neg";
+      note.textContent = err === "need-key" ? "passphrase required" : err;
+      return;
+    }
+    note.textContent = "";
+    render();
+    renderYourBets();
+  }
+
+  box.addEventListener("change", () => commit(box.checked, parseFloat(stake.value) || 1));
+  stake.addEventListener("change", () => {
+    if (box.checked) commit(true, parseFloat(stake.value) || 1);
+  });
+
+  wrap.append(box, label);
+  wrap.appendChild(stake);
+  wrap.appendChild(note);
+  return wrap;
+}
+
+/** The panel that answers "how am I doing", which is not what the board says. */
+function renderYourBets() {
+  const section = $("#yourbets");
+  const body = $("#yourbets-body");
+  const stats = $("#yourbets-stats");
+  body.innerHTML = "";
+  stats.innerHTML = "";
+
+  const rows = [...state.placements.values()];
+  if (!rows.length) {
+    section.hidden = state.placementsConfigured !== false;
+    if (!state.placementsConfigured) {
+      section.hidden = false;
+      body.innerHTML = `<p class="empty-inline">Recording bets is not switched on for
+        this site${state.placementsError ? ` (${state.placementsError})` : ""}. Set a
+        <code>PLACEMENT_KEY</code> environment variable in Netlify and redeploy.</p>`;
+    }
+    return;
+  }
+  section.hidden = false;
+
+  const settled = rows.filter((r) => r.status && r.status !== "open");
+  const won = settled.filter((r) => r.status === "won");
+  const lost = settled.filter((r) => r.status === "lost");
+  const risked = [...won, ...lost].reduce((s, r) => s + Number(r.stake || 0), 0);
+  const units = settled.reduce((s, r) => s + Number(r.units || 0), 0);
+  const open = rows.filter((r) => !r.status || r.status === "open");
+  const atRisk = open.reduce((s, r) => s + Number(r.stake || 0), 0);
+
+  const cards = [
+    { label: "Tagged", value: `${rows.length}`, sub: `${open.length} still running`, tone: "" },
+    { label: "Record", value: settled.length ? `${won.length}–${lost.length}` : "—",
+      sub: settled.length ? `${settled.length} settled` : "nothing settled yet", tone: "" },
+    { label: "Units", value: settled.length ? `${units >= 0 ? "+" : ""}${units.toFixed(2)}u` : "—",
+      sub: risked ? `${risked.toFixed(2)}u risked` : "—",
+      tone: units > 0 ? "pos" : units < 0 ? "neg" : "" },
+    { label: "Return", value: risked ? `${units / risked >= 0 ? "+" : ""}${(units / risked * 100).toFixed(1)}%` : "—",
+      sub: "on settled bets", tone: units > 0 ? "pos" : units < 0 ? "neg" : "" },
+    { label: "At risk", value: `${atRisk.toFixed(2)}u`, sub: "open tickets", tone: "" },
+  ];
+  for (const c of cards) {
+    const card = el("div", "stat");
+    card.appendChild(el("div", "stat-label", c.label));
+    card.appendChild(el("div", `stat-value ${c.tone}`, c.value));
+    card.appendChild(el("div", "stat-sub", c.sub));
+    stats.appendChild(card);
+  }
+
+  rows.sort((a, b) => String(b.kickoff || "").localeCompare(String(a.kickoff || "")));
+  for (const r of rows) {
+    const legs = r.legs || [];
+    const label = legs.length === 1
+      ? `${legs[0].team_abbr} ML`
+      : `${legs.length}-leg: ${legs.map((l) => l.team_abbr).join(" + ")}`;
+    const u = r.units == null ? null : Number(r.units);
+    const tr = el("tr");
+    tr.innerHTML = `
+      <td class="team-cell">${label}
+        <div class="lg-game">${legs.map((l) => l.matchup).join(" · ")}</div></td>
+      <td class="num">${fmtOdds(r.odds)}</td>
+      <td class="num">${Number(r.stake || 0).toFixed(2)}u</td>
+      <td class="num ${u > 0 ? "pos" : u < 0 ? "neg" : "dim"}">${
+        u == null ? "—" : `${u >= 0 ? "+" : ""}${u.toFixed(2)}u`}</td>
+      <td class="${r.status === "won" ? "pos" : r.status === "lost" ? "neg" : "dim"}">
+        ${(r.status || "open").toUpperCase()}
+        <div class="lg-game">${(r.leg_results || [])
+          .map((lr) => `${{ won: "✓", lost: "✗", push: "=" }[lr.outcome] || "·"} ${lr.team_abbr}`)
+          .join(" ")}</div></td>`;
+    body.appendChild(tr);
+  }
+}
+
+// --------------------------------------------------------------------------
 // State
 // --------------------------------------------------------------------------
 
@@ -293,6 +561,11 @@ const state = {
   // Sliders the user has actually moved. Untouched ones follow the per-league
   // baseline when the tab changes (NCAAF wants a deeper sample than the NFL).
   touched: new Set(),
+  // Bets tagged as placed, by id, from /api/placements.
+  placements: new Map(),
+  placementKey: loadKey(),
+  placementsConfigured: true,
+  placementsError: null,
 };
 
 const SLIDER_SPECS = [
@@ -492,12 +765,18 @@ function renderTips() {
     table.appendChild(body);
     card.appendChild(table);
 
-    if (pick.legs.length > 1) {
-      const foot = el("div", "tip-head");
-      foot.innerHTML = `<span class="dim">${pick.legs.length} legs · no shared teams or games</span>
-        <span class="dim">1u returns ${pick.payout.toFixed(2)}u</span>`;
-      card.appendChild(foot);
-    }
+    const foot = el("div", "tip-foot");
+    foot.appendChild(placementControls(
+      betFromLegs(state.league, pick.legs, pick.combined, pick.winProb,
+                  pick.marketProb, pick.combinedEdgePP),
+      pick.stakeUnits
+    ));
+    foot.appendChild(el("span", "dim",
+      (pick.legs.length > 1
+        ? `${pick.legs.length} legs · no shared teams or games · `
+        : "")
+      + `1u returns ${pick.payout.toFixed(2)}u`));
+    card.appendChild(foot);
     box.appendChild(card);
   });
 }
@@ -511,14 +790,16 @@ function renderBoard() {
   const body = $("#board-table tbody");
   body.innerHTML = "";
   if (!legs.length) {
-    body.innerHTML = `<tr><td colspan="10" class="dim" style="padding:20px;text-align:center">
+    body.innerHTML = `<tr><td colspan="12" class="dim" style="padding:20px;text-align:center">
       No priced sides to show.</td></tr>`;
     return;
   }
   for (const l of legs) {
     const passes = passesGates(l, state.cfg);
+    const suggested = stakeUnits(l.model_prob, l.odds, l.implied_prob);
     const tr = el("tr");
     tr.innerHTML = `
+      <td class="bet-cell"></td>
       <td class="${passes ? "team-cell" : "dim"}">${l.matchup}${l.neutral ? ' <span class="dim">N</span>' : ""}</td>
       <td class="dim">${kickoffLabel(l.kickoff)}</td>
       <td class="${passes ? "team-cell" : "dim"}">${l.team_abbr} <span class="dim">vs ${l.oppAbbr}</span></td>
@@ -535,6 +816,11 @@ function renderBoard() {
           ? `<strong>${unitsLabel(u)}</strong>`
           : `<span class="dim">no bet</span>`;
       })()}</td>`;
+    // A single-leg ticket on this side, at whatever price is showing now.
+    tr.querySelector(".bet-cell").appendChild(placementControls(
+      betFromLegs(state.league, [l], l.odds, l.model_prob, l.implied_prob, l.edge_pp),
+      suggested > 0 ? suggested : 1
+    ));
     if (!passes) tr.style.opacity = "0.55";
     body.appendChild(tr);
   }
@@ -583,6 +869,7 @@ function renderHistory() {
 
 function render() {
   renderTabs();
+  renderYourBets();
   renderSliders();
   renderGateSummary();
   renderTips();
@@ -649,6 +936,9 @@ async function boot() {
 
   state.board = board;
   state.history = history;
+  // Not in the Promise.all above: a missing function must not take the board
+  // down with it, and the page is useful without the checkboxes.
+  await fetchPlacements();
   const leagues = Object.keys(board.leagues);
   if (!leagues.length) {
     $("#tips").appendChild(el("div", "empty",
