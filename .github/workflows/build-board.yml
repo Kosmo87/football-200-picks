@@ -108,6 +108,14 @@ jobs:
           fi
           python delivery.py --to "$DELIVER_TO"
 
+      - name: Grade finished prop lines
+        # Free — it reads box scores the board already pulls — so it runs every
+        # hour rather than only in the collection hour. Collecting without
+        # grading would accumulate prices nobody ever settles, which is a data
+        # set that cannot answer the question it was gathered for.
+        continue-on-error: true
+        run: python props.py --grade || true
+
       - name: Log QB passing-TD lines
         # Collection, not a model. The free tier serves LIVE lines only, so the
         # history a backtest would need does not exist anywhere and can only be

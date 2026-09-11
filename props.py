@@ -29,6 +29,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import os
 from typing import Dict, List
 
@@ -36,11 +37,17 @@ import requests
 
 import keys  # noqa: F401  (loads ~/.football-picks.env)
 from archive import ARCHIVE_DIR, append_ndjson, read_ndjson, utcnow
+from playerlogs import load_player_logs
+from espn import current_season_year
 
 BASE = "https://api.sportsgameodds.com/v2"
 STAT_ID = "passing_touchdowns"
 PERIOD = "game"
 BET_TYPE = "ou"
+
+
+def seen_at_day() -> str:
+    return utcnow()[:10]
 
 
 def ledger_path() -> str:
@@ -105,6 +112,82 @@ def scan(league: str = "NFL") -> List[dict]:
     return rows
 
 
+
+# ── Grading ───────────────────────────────────────────────────────────────
+# Free, and the half that makes collection worth anything. ESPN's box scores
+# already come down for the board, so settling "did he throw over 1.5" costs
+# nothing and needs no subscription.
+
+def _norm_name(s: str) -> str:
+    """Fold a name for comparison: case, punctuation and suffixes all go."""
+    s = re.sub(r"[^a-z ]", " ", str(s).lower())
+    s = re.sub(r"\b(jr|sr|ii|iii|iv|v)\b", " ", s)
+    return " ".join(s.split())
+
+
+def _player_from_odd_id(entity: str) -> str:
+    """
+    SGO names a player CAMERON_WARD_1_NFL. The trailing number disambiguates
+    two players sharing a name, and the league is already known — so the name
+    is everything before them.
+    """
+    parts = str(entity).split("_")
+    while parts and (parts[-1].isdigit() or parts[-1] in ("NFL", "NCAAF")):
+        parts.pop()
+    return _norm_name(" ".join(parts))
+
+
+def grade(league: str = "NFL") -> int:
+    """Settle logged prop lines against finished box scores. Costs nothing."""
+    path = ledger_path()
+    rows = read_ndjson(path)
+    open_rows = [r for r in rows if r.get("actual_tds") is None]
+    if not open_rows:
+        print("nothing ungraded")
+        return 0
+
+    logs = load_player_logs(league, current_season_year())
+    # One statline per player per game, keyed by name and calendar date. Date
+    # rather than event_id because the two feeds do not share game ids, and a
+    # quarterback plays at most once a day.
+    by_key: Dict[str, float] = {}
+    for l in logs:
+        if l.get("category") != "passing":
+            continue
+        tds = (l.get("stats") or {}).get("passingTouchdowns")
+        if tds is None:
+            continue
+        day = str(l.get("date", ""))[:10]
+        by_key[f"{_norm_name(l.get('player'))}|{day}"] = float(tds)
+
+    graded = 0
+    for r in open_rows:
+        day = str(r.get("starts_at") or "")[:10]
+        key = f"{_player_from_odd_id(r.get('player_id'))}|{day}"
+        actual = by_key.get(key)
+        if actual is None:
+            continue
+        r["actual_tds"] = actual
+        line = float(r.get("line") or 0)
+        # A half-point line cannot push; a whole number can, and a push is not a
+        # loss. Recording it as one would understate every under.
+        if actual == line:
+            r["result"] = "push"
+        elif r.get("side") == "over":
+            r["result"] = "won" if actual > line else "lost"
+        else:
+            r["result"] = "won" if actual < line else "lost"
+        r["graded_at"] = utcnow()
+        graded += 1
+
+    if graded:
+        with open(path, "w") as f:
+            for r in rows:
+                f.write(json.dumps(r, sort_keys=True) + "\n")
+    print(f"graded {graded} of {len(open_rows)} ungraded")
+    return graded
+
+
 def report() -> None:
     rows = read_ndjson(ledger_path())
     if not rows:
@@ -129,12 +212,25 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--scan", action="store_true", help="fetch and log (spends objects)")
     ap.add_argument("--report", action="store_true", help="what has been collected")
+    ap.add_argument("--grade", action="store_true", help="settle finished games (free)")
     ap.add_argument("--league", default="NFL")
     ap.add_argument("--dry-run", action="store_true", help="fetch and print, store nothing")
     args = ap.parse_args()
 
-    if args.report or not (args.scan or args.dry_run):
+    # Every action is opt-in; bare `props.py` reports. The earlier shape let
+    # --grade fall through into a scan, which silently spent objects and logged
+    # a duplicate batch — an argument parser that does something you did not ask
+    # for is worse than one that refuses.
+    acted = False
+    if args.grade:
+        grade(args.league)
+        acted = True
+    if args.report:
         report()
+        acted = True
+    if not (args.scan or args.dry_run):
+        if not acted:
+            report()
         return 0
 
     if not _key():
@@ -157,8 +253,21 @@ def main() -> int:
         print("\n(dry run: nothing stored)")
         return 0
 
-    append_ndjson(ledger_path(), rows)
-    print(f"\nlogged to {ledger_path()}")
+    # One observation per line per book per day. The collector is meant to run
+    # once a day near opening; running it twice by hand should not double the
+    # dataset, and an accidental second scan already did exactly that. Keeping
+    # the first is deliberate — it is the opening price, which is the one the
+    # daily schedule exists to capture.
+    existing = read_ndjson(ledger_path())
+    have = {(r.get("odd_id"), r.get("book"), str(r.get("seen_at", ""))[:10]) for r in existing}
+    today = str(seen_at_day())
+    fresh = [r for r in rows if (r["odd_id"], r["book"], today) not in have]
+    skipped = len(rows) - len(fresh)
+
+    if fresh:
+        append_ndjson(ledger_path(), fresh)
+    print(f"\nlogged {len(fresh)} to {ledger_path()}"
+          + (f" ({skipped} already recorded today)" if skipped else ""))
     return 0
 
 
