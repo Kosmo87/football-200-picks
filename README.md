@@ -259,6 +259,36 @@ One error, stated twice.
 When nothing survives, the board says which gate emptied it. "No tips" and "no
 tips worth backing" are different answers and only one means something broke.
 
+### Why every bet is "Medium" trust, and never "High"
+
+The trust label is the model's distance from the price. The edge gate is the
+same distance. `min_edge_pp = 5.0` demands a gap of **at least** 5 points;
+"High" trust means a gap of **at most** 5 points. For a single they are one
+number read in opposite directions — verified on a live board, 62 of 62 +EV
+sides — so a single can never be both *worth betting* and *close enough to the
+market to believe*.
+
+That is not a bug in the gates; it is the finding above restated. The engine
+only ever bets where the model disagrees with the price, and disagreement is
+precisely where the model has been measured wrong. Nothing in the selection
+layer can resolve that, which is why the README says what it says: until model
+Brier beats the market's, no selection logic layered on top can profit.
+
+What selection *can* do is refuse the worst of it, which it now does.
+
+### Distrust has to be a refusal, not a smaller stake
+
+`staking.disagreement_factor` shrinks a stake as the model strays from the
+market — the project's most important measured finding. Half-unit stakes broke
+it. A 12pp disagreement sized to 0.30U and a 3pp one to 0.50U; rounded to half
+units, **both become 0.5U**. The damper silently became a no-op for exactly the
+bets it existed to punish, and a bet measured to be probably wrong got the same
+stake as one we believed.
+
+So `min_trust_factor` (default 0.6, the Medium band) refuses anything further
+than 10 points from the price rather than merely sizing it down. If the stake
+cannot carry the warning, the bet does not get made.
+
 ### No knobs
 
 The board used to expose every gate as a slider. That made it a

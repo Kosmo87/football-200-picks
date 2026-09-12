@@ -16,7 +16,9 @@ from odds import (
 )
 from staking import (
     MIN_PLAYABLE_UNITS,
+    disagreement_factor,
     parlay_win_prob,
+    round1,
     stake_units,
     trust_label,
     units_label,
@@ -51,6 +53,22 @@ DEFAULT_MIN_WIN_PROB = 0.0
 # probability.
 DEFAULT_MIN_PICK_WIN_PROB = 0.0
 
+# How far the model may sit from the price before the bet is refused outright
+# rather than merely sized down.
+#
+# The damper in staking.py shrinks a stake as the model strays from the market,
+# because backtesting found claimed edge INVERSELY related to outcome. That
+# shrinking used to be visible: a 12pp disagreement sized to 0.30U next to a
+# 3pp one at 0.50U. Half-unit stakes cannot express it -- 0.30 and 0.50 both
+# round to half a unit -- so the damper silently became a no-op for exactly the
+# bets it existed to punish, and a bet we had measured ourselves to be wrong
+# about got the same stake as one we believed.
+#
+# If the stake cannot carry the warning, the bet does not get made. 0.6 is the
+# Medium band: the model within 10 points of the price. Anything further is
+# refused.
+DEFAULT_MIN_TRUST_FACTOR = 0.6
+
 
 @dataclass
 class ConfidenceConfig:
@@ -62,10 +80,14 @@ class ConfidenceConfig:
     max_parlay_legs: int = DEFAULT_MAX_PARLAY_LEGS  # 1–5 (1 = singles only)
     min_combined_odds: int = MIN_COMBINED_ODDS
     high_confidence_mode: bool = False
+    # Shortest price allowed on a single leg: do not lay more than 3.5 to 1.
+    # Mirrors DEFAULTS.minLegOdds in the browser.
+    min_leg_odds: int = -350
     # Noise gates. See the constants above for why these values.
     min_stake_units: float = DEFAULT_MIN_STAKE_UNITS
     min_win_prob: float = DEFAULT_MIN_WIN_PROB
     min_pick_win_prob: float = DEFAULT_MIN_PICK_WIN_PROB
+    min_trust_factor: float = DEFAULT_MIN_TRUST_FACTOR
     exclude_stale: bool = True
 
     def apply_high_confidence_preset(self, league: str = "NFL") -> "ConfidenceConfig":
@@ -204,7 +226,12 @@ def compute_confidence(
     else:
         short_frac = max(0.0, 1.0 - (abs(odds_american) - 100) / 200.0)
     short_score = short_frac * 25.0
-    score = round(sample_score + edge_score + short_score, 1)
+    # round1, not round(): Python rounds .x5 to even and JavaScript rounds it
+    # up, and eleven legs on a typical board land exactly there. A 0.1
+    # difference is invisible until it flips a sort, and then the two engines
+    # select different bets from the same board -- which is what happened the
+    # moment the pick cap was lifted and selection ran past the first three.
+    score = round1(sample_score + edge_score + short_score)
     score = max(0.0, min(100.0, score))
     return score, confidence_label_from_score(score)
 
@@ -287,7 +314,23 @@ def get_all_legs(
 
 
 def passes_confidence_gates(leg: Leg, cfg: ConfidenceConfig) -> bool:
+    """
+    Every gate, in the same order the browser applies them.
+
+    The minimum-price gate is here rather than only inside get_all_legs, which
+    is where it used to live. The browser applies it in passesGates, so the two
+    engines were enforcing the same rule at different layers -- identical in
+    production by luck, and NOT identical in the parity harness, which feeds
+    Python a leg list directly and so skipped Python's copy of the rule
+    entirely. The board carries prices down to -450 while selection allows -350,
+    so the harness was handing Python legs the browser could never choose. It
+    surfaced the moment the pick cap was lifted: Python took Pittsburgh at -375,
+    the browser could not see it, and the two engines returned different bets
+    from the same board.
+    """
     if cfg.exclude_stale and leg.stale:
+        return False
+    if leg.odds_american < cfg.min_leg_odds:
         return False
     if leg.model_win_prob < cfg.min_win_prob:
         return False
@@ -309,7 +352,11 @@ def get_plus_ev_legs(
     cfg: Optional[ConfidenceConfig] = None,
 ) -> List[Leg]:
     cfg = cfg or ConfidenceConfig()
-    legs = get_all_legs(games, elo, max_leg_odds=cfg.max_single_leg_odds)
+    legs = get_all_legs(
+        games, elo,
+        max_leg_odds=cfg.max_single_leg_odds,
+        min_leg_odds=cfg.min_leg_odds,
+    )
     return [l for l in legs if passes_confidence_gates(l, cfg)]
 
 
@@ -414,21 +461,60 @@ def _candidate_combos(
     return out
 
 
+def _is_minimal_parlay(legs: List[Leg], min_combined: int) -> bool:
+    """
+    True when every leg is needed to clear the payout floor.
+
+    A parlay exists to reach a price its legs cannot reach alone, so it should
+    stop the moment it gets there. Combined odds only lengthen as legs are
+    added, so if any leg can be dropped and the rest still clear the floor, the
+    extra leg is buying nothing but another slice of the house's cut.
+
+    This matters because Kelly gets MORE permissive as a parlay lengthens. A
+    two-leg parlay that sized under the stake floor comes back as a four-leg one
+    at a big enough price to pass -- not because the bet got better, but because
+    the payout got bigger while the win probability got smaller. That produced
+    DUKE +195 / OHIO -130 / MD +100 / KENN -340 at +1251 and a 16% chance, when
+    DUKE and MD alone already cleared +200 at +490 and had been rejected. The
+    model is known to be miscalibrated where it claims the most edge, so trusting
+    it to four decimal places of compounded probability is exactly the wrong
+    place to spend that trust.
+    """
+    if len(legs) < 2:
+        return True
+    for i in range(len(legs)):
+        rest = legs[:i] + legs[i + 1:]
+        if combine_odds([l.odds_american for l in rest]) >= min_combined:
+            return False
+    return True
+
+
 def build_picks(
     games: List[Game],
     elo: EloSystem,
-    n: int = 3,
+    n: Optional[int] = None,
     cfg: Optional[ConfidenceConfig] = None,
 ) -> List[Pick]:
     """
-    Build up to n independent +EV tips under confidence gates.
+    Every independent bet that clears the gates. No cap by default.
 
-    Prefer fewer legs when they already clear +200 with high confidence;
-    otherwise fill with 3/4/5-leg parlays from shorter +EV legs.
-    Every leg must pass gates (edge, sample, max odds) and edge > 0.
-    Ranked by avg confidence + avg edge (not juiciest combined odds).
+    Prefer fewer legs when they already clear the payout floor; otherwise fill
+    with 2-5 leg parlays from the legs that cannot get there alone. Every leg
+    must pass gates (edge, sample, max odds, staleness) and every pick must size
+    to at least the stake floor.
+
+    n used to default to 3, which was a display decision leaking into selection:
+    on a heavy slate the fourth-best bet was simply never computed, so a good
+    week looked identical to a thin one. The quality bar is the gates and the
+    stake floor -- if a bet clears those it should be placed, and how many of
+    them there are is information rather than clutter. Pass n only to truncate
+    deliberately.
+
+    The list is still bounded, and tightly: no pick may reuse a team or a game,
+    so the total cannot exceed the number of games on the board.
     """
     cfg = cfg or ConfidenceConfig()
+    limit = float("inf") if n is None else n
     max_legs = max(1, min(5, int(cfg.max_parlay_legs)))
     min_combined = int(cfg.min_combined_odds)
 
@@ -460,7 +546,7 @@ def build_picks(
     pool_caps = {1: 80, 2: 50, 3: 40, 4: 28, 5: 22}
 
     for n_legs in range(1, max_legs + 1):
-        if len(picks) >= n:
+        if len(picks) >= limit:
             break
         available = [l for l in plus_ev if can_use(l)]
         if len(available) < n_legs:
@@ -475,7 +561,7 @@ def build_picks(
             ]
             singles.sort(key=lambda l: (l.confidence, l.edge), reverse=True)
             for leg in singles:
-                if len(picks) >= n:
+                if len(picks) >= limit:
                     break
                 if not can_use(leg):
                     continue
@@ -486,25 +572,49 @@ def build_picks(
                     continue
                 if pick.win_prob < cfg.min_pick_win_prob:
                     continue
+                if disagreement_factor(pick.win_prob, pick.market_prob) < cfg.min_trust_factor:
+                    continue
                 picks.append(pick)
                 mark_used(leg)
             continue
 
+        # Only legs that CANNOT reach the payout floor alone may be stacked.
+        #
+        # A parlay's expectation is the product of its legs' expectations, so it
+        # is always worse than betting the same legs separately. The only thing
+        # it buys is reach: two short prices combining to clear a floor neither
+        # meets alone. A leg already paying +360 has nothing to reach for, and
+        # putting it in a parlay just pays the house's cut twice for one
+        # opinion.
+        #
+        # Without this the engine laundered its own rejects. A +360 single whose
+        # stake came in under the floor was dropped, then reappeared inside a
+        # three-leg parlay -- where the far longer combined price inflates the
+        # Kelly cap enough to clear the same floor. The result was tickets like
+        # DUKE +195 / SDSU +360 / GT +370 at +6278 and an 11% chance, built
+        # entirely from bets that had just been judged too weak to place.
+        stackable = [l for l in available if l.odds_american < min_combined]
+        if len(stackable) < n_legs:
+            continue
         candidates = _candidate_combos(
-            available,
+            stackable,
             n_legs,
             min_combined,
             pool_cap=pool_caps.get(n_legs, 25),
         )
         for _sc, legs_combo, comb in candidates:
-            if len(picks) >= n:
+            if len(picks) >= limit:
                 break
             if any(not can_use(l) for l in legs_combo):
+                continue
+            if not _is_minimal_parlay(legs_combo, min_combined):
                 continue
             pick = _make_pick(legs_combo, comb)
             if pick.stake_units < cfg.min_stake_units:
                 continue
             if pick.win_prob < cfg.min_pick_win_prob:
+                continue
+            if disagreement_factor(pick.win_prob, pick.market_prob) < cfg.min_trust_factor:
                 continue
             picks.append(pick)
             for l in legs_combo:
@@ -512,7 +622,7 @@ def build_picks(
 
     # Re-rank selected picks for display (confidence + edge)
     picks.sort(key=lambda p: (p.avg_confidence, p.combined_edge_pp), reverse=True)
-    return picks[:n]
+    return picks if n is None else picks[:n]
 
 
 def summarize_board(

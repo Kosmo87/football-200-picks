@@ -62,7 +62,7 @@ for name, lg in board["leagues"].items():
         ("default", _base()),
         ("certainty", _base().apply_high_certainty_preset()),
     ):
-     result = build_picks(games, elo, n=3, cfg=cfg)
+     result = build_picks(games, elo, cfg=cfg)
 
      out[f"{name}/{preset}"] = [
         {

@@ -19,6 +19,8 @@ on:
       - "espn.py"
       - "odds.py"
       - "picks.py"
+      - "selection_test.py"
+      - "staking.py"
       - "history_data.py"
       - "parity_test.js"
       - "parity_test.py"
@@ -187,6 +189,12 @@ jobs:
 
       - name: Test bet settlement
         run: python placements_test.py
+
+      - name: Test pick selection
+        # The parlay rules. Both were written after uncapping the list exposed
+        # what the engine does when allowed to keep going, and both regress
+        # silently -- the symptom is a longer list, not an error.
+        run: python selection_test.py
 
       - name: Verify engine parity
         # The browser re-implements pick selection; a drift here means the site

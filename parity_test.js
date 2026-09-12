@@ -27,7 +27,7 @@ const CONFIGS = {
 for (const [name, lg] of Object.entries(board.leagues)) {
  for (const [preset, apply] of Object.entries(CONFIGS)) {
   const cfg = apply({ ...sandbox.DEFAULTS, minSample: sandbox.LEAGUE_MIN_SAMPLE[name] ?? 3 });
-  const picks = sandbox.buildPicks(sandbox.flattenLegs(lg), cfg, 3);
+  const picks = sandbox.buildPicks(sandbox.flattenLegs(lg), cfg);
   out[`${name}/${preset}`] = picks.map((p) => ({
     combined: p.combined,
     // Raw floats, compared by parity_check.py with a real tolerance.

@@ -76,16 +76,26 @@ DISAGREEMENT_BANDS = [
 DISAGREEMENT_CUTOFF = 0.0   # beyond the last band, no bet
 
 
-def _round1(x: float) -> float:
+def round1(x: float) -> float:
     """
-    Round to one decimal, half away from zero.
+    Round to one decimal, half away from zero. For non-negative x only.
 
     Python's built-in round() is half-to-even, so round(0.15, 1) is 0.1 while
-    JavaScript's Math.round gives 0.2. The browser re-implements this sizing, and
-    a stake that differs between the two engines is a real disagreement about
-    what to bet -- so the rounding rule has to be stated rather than inherited.
+    JavaScript's Math.round gives 0.2. Both engines score the same board, and a
+    number that differs between them is a real disagreement about what to bet --
+    so the rounding rule is stated here rather than inherited from whichever
+    language is running.
+
+    Public because it is not a staking detail: anything the browser also
+    computes has to round this way. compute_confidence did not, and eleven legs
+    per board landed exactly on a .x5 boundary and scored 0.1 apart in the two
+    engines.
     """
     return math.floor(x * 10 + 0.5) / 10
+
+
+# Kept for readers of the old name.
+_round1 = round1
 
 
 def to_half_units(raw: float) -> float:

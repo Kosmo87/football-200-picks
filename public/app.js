@@ -124,6 +124,12 @@ const DEFAULTS = {
   // legs each cleared at 55% is a 9% parlay: gating legs and then multiplying
   // them produces exactly the bet the gate meant to exclude.
   minPickWinProb: 0,
+  // Refuse, rather than merely shrink, a bet the model sits too far from.
+  // The damper used to make a 12pp disagreement visibly smaller (0.3U against
+  // 0.5U); half-unit stakes cannot express that, so it became a no-op for
+  // exactly the bets it existed to punish. If the stake cannot carry the
+  // warning, the bet is not made. Mirrors DEFAULT_MIN_TRUST_FACTOR.
+  minTrustFactor: 0.6,
   // Drop both sides of a game the ratings cannot speak to.
   excludeStale: true,
 };
@@ -233,6 +239,26 @@ function candidateCombos(available, nLegs, minCombined, poolCap) {
   return out;
 }
 
+/**
+ * True when every leg is needed to clear the payout floor. Mirrors
+ * picks._is_minimal_parlay.
+ *
+ * Combined odds only lengthen as legs are added, so if a leg can be dropped and
+ * the rest still clear the floor, that leg buys nothing but another slice of
+ * the house's cut. Needed because Kelly gets MORE permissive as a parlay
+ * lengthens: a two-leg ticket that sized under the stake floor returns as a
+ * four-leg one at a price big enough to pass, which is the payout growing
+ * rather than the bet improving.
+ */
+function isMinimalParlay(legs, minCombined) {
+  if (legs.length < 2) return true;
+  for (let i = 0; i < legs.length; i++) {
+    const rest = legs.filter((_, j) => j !== i);
+    if (combineOdds(rest.map((l) => l.odds)) >= minCombined) return false;
+  }
+  return true;
+}
+
 function makePick(legs, combined) {
   const avgC = avgBy(legs, "confidence");
   const avgE = avgBy(legs, "edge_pp");
@@ -262,8 +288,15 @@ function makePick(legs, combined) {
 
 const POOL_CAPS = { 1: 80, 2: 50, 3: 40, 4: 28, 5: 22 };
 
-/** Port of picks.build_picks: up to n independent, gated tips. */
-function buildPicks(allLegs, cfg, n = 3) {
+/**
+ * Port of picks.build_picks: every independent gated bet, uncapped by default.
+ *
+ * n used to default to 3, which was a display decision leaking into selection:
+ * on a heavy slate the fourth-best bet was never computed, so a good week
+ * looked identical to a thin one. The quality bar is the gates and the stake
+ * floor. Still bounded — no pick reuses a team or a game.
+ */
+function buildPicks(allLegs, cfg, n = Infinity) {
   const maxLegs = Math.max(1, Math.min(5, cfg.maxParlayLegs));
   const gated = allLegs
     .filter((l) => passesGates(l, cfg))
@@ -295,25 +328,38 @@ function buildPicks(allLegs, cfg, n = 3) {
         // they can still appear in a combination.
         if (pick.stakeUnits < cfg.minStake) continue;
         if (pick.winProb < cfg.minPickWinProb) continue;
+        if (disagreementFactor(pick.winProb, pick.marketProb) < cfg.minTrustFactor) continue;
         picks.push(pick);
         markUsed(leg);
       }
       continue;
     }
 
-    for (const cand of candidateCombos(available, nLegs, cfg.minCombined, POOL_CAPS[nLegs] || 25)) {
+    // Only legs that cannot reach the payout floor alone may be stacked; see
+    // the note in picks.build_picks. A parlay buys reach, never edge, so a leg
+    // already paying more than the floor has nothing to reach for — and
+    // stacking it pays the house's cut twice for one opinion. Without this the
+    // engine recycled singles it had just rejected for being too weak into
+    // longer parlays, where the bigger combined price inflates the Kelly cap
+    // enough to let them back through.
+    const stackable = available.filter((l) => l.odds < cfg.minCombined);
+    if (stackable.length < nLegs) continue;
+
+    for (const cand of candidateCombos(stackable, nLegs, cfg.minCombined, POOL_CAPS[nLegs] || 25)) {
       if (picks.length >= n) break;
       if (cand.legs.some((l) => !canUse(l))) continue;
+      if (!isMinimalParlay(cand.legs, cfg.minCombined)) continue;
       const pick = makePick(cand.legs, cand.combined);
       if (pick.stakeUnits < cfg.minStake) continue;
       if (pick.winProb < cfg.minPickWinProb) continue;
+      if (disagreementFactor(pick.winProb, pick.marketProb) < cfg.minTrustFactor) continue;
       picks.push(pick);
       cand.legs.forEach(markUsed);
     }
   }
 
   picks.sort((a, b) => b.avgConfidence - a.avgConfidence || b.combinedEdgePP - a.combinedEdgePP);
-  return picks.slice(0, n);
+  return Number.isFinite(n) ? picks.slice(0, n) : picks;
 }
 
 /**
@@ -837,12 +883,27 @@ function renderTips() {
   const legs = flattenLegs(lg);
 
   const safeCfg = applyCertaintyTo(state.cfg);
-  const safe = buildPicks(legs, safeCfg, 3);
-  // Anything already in the safe list is not repeated below: the same bet under
-  // two headings reads as two bets.
-  const claimed = new Set(safe.map((p) => betId(state.league, legsOf(p))));
-  const value = buildPicks(legs, state.cfg, 3)
-    .filter((p) => !claimed.has(betId(state.league, legsOf(p))));
+  const safe = buildPicks(legs, safeCfg);
+
+  // The second list is built from what the first did not take.
+  //
+  // Deduping whole bets was not enough. The safe list took Wake Forest at -148
+  // as a single while the value list put Wake Forest in a parlay — two
+  // different bets, so nothing was duplicated, and anyone placing both lists
+  // would still be doubling down on one team. These are meant to be placeable
+  // together, so the value list gets the same treatment selection already gives
+  // itself: no reusing a team or a game.
+  const usedTeams = new Set();
+  const usedGames = new Set();
+  for (const p of safe) {
+    for (const l of p.legs) {
+      usedTeams.add(l.team_id);
+      usedTeams.add(l.oppId);
+      usedGames.add(l.eventId);
+    }
+  }
+  const free = legs.filter((l) => !usedTeams.has(l.team_id) && !usedGames.has(l.eventId));
+  const value = buildPicks(free, state.cfg);
 
   renderPickList($("#tips-safe"), safe, safeCfg, legs, gamesById);
   renderPickList($("#tips-value"), value, state.cfg, legs, gamesById);
