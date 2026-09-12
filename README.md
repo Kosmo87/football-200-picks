@@ -275,7 +275,50 @@ Both are gone. The card now shows model win%, market win%, their difference, the
 price, and **games of evidence** — the one input that was being blended into an
 index whose movement could not be attributed to anything.
 
-### What the model knows about the teams: nothing
+### Matchup model from play-by-play: tested, does not beat the close
+
+Built and backtested rather than argued about. `pbp_data.py` reduces ten seasons
+of nflverse play-by-play (329,347 plays, 2,639 games) to per-play EPA;
+`matchup.py` solves `epa ~ offence(team) + defence(opponent) + home` by ridge
+regression, separately for pass and run, so every offence is judged against the
+defences it actually faced; `matchup_test.py` fits the margin model on 2017–2022
+and evaluates on a held-out 2023–2025 against the **closing** spread.
+
+**The carry-over hypothesis is confirmed.** Rosters and philosophies mostly
+survive the off-season, and weighting prior-season plays in improves the
+forecast monotonically — and makes week-1 games predictable at all:
+
+| prior-season weight | model MAE | games predictable |
+| --- | --- | --- |
+| 0.0 | 11.102 | 807 |
+| 0.25 | 10.921 | 855 |
+| 0.5 | 10.883 | 855 |
+| 1.0 | **10.875** | 855 |
+
+**It still does not beat the market.** Closing-spread MAE is 9.786 against the
+model's 10.875, and against the spread it runs 50.5%, worse as the disagreement
+grows — the same inversion the Elo model shows. Nine configurations (three
+feature sets × three ridge values) topped out at 50.5%; the bar at −110 is
+52.4%.
+
+The decisive test is whether the model knows *anything* the price does not.
+Regressing the actual margin on both:
+
+| term | coef | std err | t |
+| --- | --- | --- | --- |
+| closing spread | 0.969 | 0.052 | **18.72** |
+| model prediction | 0.146 | 0.180 | **0.81** |
+
+A market coefficient of ~1.0 with a ~0 intercept says the closing line is an
+unbiased estimate of the margin. A model coefficient indistinguishable from zero
+says it adds nothing on top. Out of sample the blend is very slightly *worse*
+than the market alone (9.790 vs 9.786).
+
+So the play-by-play detail is real, the matchup asymmetries are real, and the
+market has already priced them. **None of this is wired into the board**, which
+is the point of testing first.
+
+### What the model knows about the teams: nothing### What the model knows about the teams: nothing
 
 Elo is built from final scores and margins. It has no notion of scheme,
 personnel, or which unit is weak — one number per team, updated by results.

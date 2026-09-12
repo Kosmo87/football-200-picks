@@ -62,3 +62,6 @@ deno.lock
 # nflverse play-by-play, ~19 MB a season and re-downloadable from a public URL
 # at any time. Same rule as the other derived caches: not committed.
 /cache/pbp_*.csv.gz
+
+# Reduced play-by-play, derived from the cached season files above.
+/cache/pbp_slim_*.parquet
