@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-12T01:09:27+00:00",
+  "generated_at": "2026-09-12T01:17:20+00:00",
   "season": 2026,
   "leagues": {
     "NFL": {
@@ -1517,7 +1517,7 @@
                     "position": "CB",
                     "status": "Out",
                     "detail": "Abdomen",
-                    "since": "2026-09-11T21:51Z"
+                    "since": "2026-09-12T00:59Z"
                   },
                   {
                     "player": "Isaiah World",
@@ -1535,6 +1535,13 @@
                 "qbs": [],
                 "players": [
                   {
+                    "player": "Isaiah Adams",
+                    "position": "G",
+                    "status": "Out",
+                    "detail": "Knee",
+                    "since": "2026-09-12T00:55Z"
+                  },
+                  {
                     "player": "Garrett Williams",
                     "position": "CB",
                     "status": "Out",
@@ -1547,13 +1554,6 @@
                     "status": "Out",
                     "detail": "Ribs",
                     "since": "2026-09-12T00:05Z"
-                  },
-                  {
-                    "player": "Isaiah Adams",
-                    "position": "G",
-                    "status": "Out",
-                    "detail": "Knee",
-                    "since": "2026-09-11T21:25Z"
                   },
                   {
                     "player": "Tip Reiman",
@@ -1666,7 +1666,7 @@
                     "position": "RB",
                     "status": "Out",
                     "detail": "Hip",
-                    "since": "2026-09-11T20:54Z"
+                    "since": "2026-09-12T01:09Z"
                   }
                 ]
               },
@@ -3809,8 +3809,20 @@
               "state": "TX",
               "indoor": false
             },
-            "weather": null,
-            "flags": []
+            "weather": {
+              "temp_f": 97.0,
+              "wind_mph": 9.0,
+              "gust_mph": 11.4,
+              "precip_pct": 1,
+              "snow_in": 0.0
+            },
+            "flags": [
+              {
+                "kind": "heat",
+                "severity": "low",
+                "text": "97\u00b0F at kickoff"
+              }
+            ]
           }
         },
         {
@@ -3901,8 +3913,25 @@
               "state": "AL",
               "indoor": false
             },
-            "weather": null,
-            "flags": []
+            "weather": {
+              "temp_f": 64.5,
+              "wind_mph": 10.7,
+              "gust_mph": 22.1,
+              "precip_pct": 75,
+              "snow_in": 0.0
+            },
+            "flags": [
+              {
+                "kind": "wind",
+                "severity": "high",
+                "text": "Wind 11 mph, gusting 22 \u2014 kicking and the deep ball suffer"
+              },
+              {
+                "kind": "rain",
+                "severity": "low",
+                "text": "75% chance of rain"
+              }
+            ]
           }
         },
         {
@@ -4230,13 +4259,7 @@
               "state": "TN",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 86.7,
-              "wind_mph": 3.9,
-              "gust_mph": 8.9,
-              "precip_pct": 4,
-              "snow_in": 0.0
-            },
+            "weather": null,
             "flags": []
           }
         },
@@ -4328,20 +4351,8 @@
               "state": "ID",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 87.3,
-              "wind_mph": 4.3,
-              "gust_mph": 15.7,
-              "precip_pct": 0,
-              "snow_in": 0.0
-            },
-            "flags": [
-              {
-                "kind": "wind",
-                "severity": "low",
-                "text": "Breezy: 4 mph, gusting 16"
-              }
-            ]
+            "weather": null,
+            "flags": []
           }
         },
         {
@@ -4615,7 +4626,7 @@
               "temp_f": 79.5,
               "wind_mph": 5.0,
               "gust_mph": 8.9,
-              "precip_pct": 21,
+              "precip_pct": 19,
               "snow_in": 0.0
             },
             "flags": []
@@ -4979,7 +4990,7 @@
               "temp_f": 76.7,
               "wind_mph": 7.3,
               "gust_mph": 14.3,
-              "precip_pct": 15,
+              "precip_pct": 12,
               "snow_in": 0.0
             },
             "flags": []
@@ -5077,7 +5088,7 @@
               "temp_f": 79.3,
               "wind_mph": 0.5,
               "gust_mph": 6.5,
-              "precip_pct": 25,
+              "precip_pct": 22,
               "snow_in": 0.0
             },
             "flags": []
@@ -5563,23 +5574,23 @@
           "kickoff": "2026-09-12T23:30Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "Draft Kings",
-          "spread": 4.5,
-          "spread_details": "NAVY -4.5",
+          "provider": "DraftKings",
+          "spread": 4.0,
+          "spread_details": "NAVY -4",
           "total": 58.5,
           "home": {
             "id": "2226",
             "name": "Florida Atlantic Owls",
             "abbr": "FAU",
             "elo": 1328.1,
-            "moneyline": 170
+            "moneyline": 164
           },
           "away": {
             "id": "2426",
             "name": "Navy Midshipmen",
             "abbr": "NAVY",
             "elo": 1639.9,
-            "moneyline": -205
+            "moneyline": -198
           },
           "legs": [
             {
@@ -5587,10 +5598,10 @@
               "team_id": "2426",
               "team_name": "Navy Midshipmen",
               "team_abbr": "NAVY",
-              "odds": -205,
+              "odds": -198,
               "model_prob": 0.81433,
-              "implied_prob": 0.64473,
-              "edge_pp": 16.960053,
+              "implied_prob": 0.6369,
+              "edge_pp": 17.742553,
               "fair_odds": -439,
               "sample": 5.0,
               "team_sample": 5.0,
@@ -5604,10 +5615,10 @@
               "team_id": "2226",
               "team_name": "Florida Atlantic Owls",
               "team_abbr": "FAU",
-              "odds": 170,
+              "odds": 164,
               "model_prob": 0.18567,
-              "implied_prob": 0.35527,
-              "edge_pp": -16.960053,
+              "implied_prob": 0.3631,
+              "edge_pp": -17.742553,
               "fair_odds": 439,
               "sample": 5.0,
               "team_sample": 5.0,
