@@ -198,6 +198,43 @@ Treat the tips as a model under evaluation, not as advice. `calibrate.py` is the
 scoreboard that matters: until model Brier beats the market's, no selection logic
 layered on top can profit.
 
+## Pricing a parlay you are considering
+
+`parlay_price.py` answers "which leg should I change", and the answer is almost
+never the one that feels weak.
+
+A parlay's expectation reduces to a single product:
+
+    EV + 1  =  product over legs of ( fair_prob / priced_prob )
+
+That ratio is a leg's **keep rate** — the share of a unit that survives the
+book's margin on that leg. Three things follow, and all three are
+counter-intuitive:
+
+**Expectation does not care how big a favourite a leg is.** A −3000 leg and a
+−110 leg contribute identically if their keep rates match.
+
+**The leg to drop is usually a heavy favourite.** Books take a wider cut on
+lopsided lines because almost nobody shops them. On a real six-leg ticket
+(Oregon, Texas A&M, Oklahoma, Penn State, Alabama, BYU at +216) the worst leg
+was Oregon −2500 at 95.71% keep and the *best* was Oklahoma −200 at 96.43% —
+6th best of 168 priced sides on the board. Swapping the leg that looked weakest
+was the least useful change available: +0.09pp.
+
+**Leg count sets the floor, so no swap rescues a long ticket.** Taking the best
+keep rate available at each count:
+
+| legs | combined | EV |
+| --- | --- | --- |
+| 1 | −165 | −3.5% |
+| 2 | +152 | −6.8% |
+| 3 | +581 | −10.2% |
+| 6 | +6755 | −19.8% |
+
+Meanwhile 22 of those 168 sides were **+EV as singles** at the best book of nine
+— the top one at +13.3%. That is the edge a parlay structurally cannot have,
+because a ticket sits at one book and takes that book's price on every leg.
+
 ## Cutting the noise
 
 Two filters run before a tip is displayed, both mirrored in `picks.py` and
