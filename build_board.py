@@ -20,6 +20,7 @@ from dataclasses import asdict
 from datetime import datetime, timezone
 from typing import Dict, List, Optional
 
+import context
 from elo import (
     CompletedGame,
     EloSystem,
@@ -190,6 +191,19 @@ def build_league(league: str, season: int, refresh_prior: bool):
                 "legs": [serialize_leg(l) for l in event_legs],
             }
         )
+
+    # Who is hurt and what the weather is doing. Attached to the board rather
+    # than folded into the ratings: there is no historical injury or weather
+    # archive to test a coefficient against, so this is displayed and never
+    # applied. See context.py.
+    try:
+        ctx = context.build_context(league, games_out)
+        for g in games_out:
+            g["context"] = ctx.get(str(g["event_id"]))
+    except Exception as e:
+        # The board was useful before any of this existed and stays useful when
+        # ESPN's injury feed 500s.
+        print(f"[board] {league} context unavailable: {e}")
 
     cfg = config_for_league(league)
     ratings = [

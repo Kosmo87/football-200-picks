@@ -622,6 +622,94 @@ function trustBadge(trust) {
 }
 
 // --------------------------------------------------------------------------
+// Context — what the ratings do not know
+//
+// Injuries and weather are attached to each game by context.py and are shown
+// here, never applied. There is no historical injury or weather archive to fit
+// a coefficient against, so a number would be invented; what IS already
+// established, by backtest, is that a large claimed edge usually means the
+// model is the one that is wrong. A quarterback ruled out is a mechanism for
+// exactly that, so it earns a warning next to the edge rather than a silent
+// adjustment to it.
+// --------------------------------------------------------------------------
+
+/** Flags for a game, highest severity first. */
+function gameFlags(game) {
+  const flags = (game.context && game.context.flags) || [];
+  return [...flags].sort((a, b) => (a.severity === "high" ? -1 : 1) - (b.severity === "high" ? -1 : 1));
+}
+
+/** Flags that bear on one side specifically, plus the game-wide ones. */
+function legFlags(leg, game) {
+  return gameFlags(game).filter((f) => !f.side || f.side === leg.side);
+}
+
+function weatherLine(game) {
+  const c = game.context || {};
+  const w = c.weather;
+  if (!w) {
+    return c.venue && c.venue.indoor ? `Indoors · ${c.venue.venue}` : null;
+  }
+  const bits = [`${Math.round(w.temp_f)}°F`];
+  bits.push(`wind ${Math.round(w.wind_mph)}${
+    w.gust_mph > w.wind_mph + 3 ? ` (gusts ${Math.round(w.gust_mph)})` : ""} mph`);
+  if (w.precip_pct >= 20) bits.push(`${Math.round(w.precip_pct)}% rain`);
+  if (w.snow_in > 0) bits.push("snow");
+  return bits.join(" · ") + ((c.venue && c.venue.venue) ? ` · ${c.venue.venue}` : "");
+}
+
+/** The strip under a tip: every warning that applies to its legs. */
+function flagStrip(legs, gamesById) {
+  const seen = new Set();
+  const out = [];
+  for (const leg of legs) {
+    const game = gamesById.get(leg.eventId);
+    if (!game) continue;
+    for (const f of legFlags(leg, game)) {
+      const k = `${f.kind}|${f.text}`;
+      if (seen.has(k)) continue;
+      seen.add(k);
+      out.push(f);
+    }
+  }
+  if (!out.length) return null;
+  const box = el("div", "flags");
+  for (const f of out) {
+    box.appendChild(el("div", `flag ${f.severity}`,
+      `<span class="flag-mark">${f.severity === "high" ? "!" : "i"}</span>${f.text}`));
+  }
+  return box;
+}
+
+/** A compact marker for the full board, where there is no room for sentences. */
+function flagBadge(game) {
+  const flags = gameFlags(game);
+  if (!flags.length) return "";
+  const high = flags.filter((f) => f.severity === "high");
+  const tip = flags.map((f) => f.text).join(" \n");
+  return ` <span class="flag-dot ${high.length ? "high" : "low"}" title="${
+    tip.replace(/"/g, "&quot;")}">${high.length ? "!" : "i"}</span>`;
+}
+
+/** Said once, at the top of the board, rather than implied by empty badges. */
+function injuryCoverageNote() {
+  const lg = state.board.leagues[state.league];
+  const meta = (lg.games.find((g) => g.context) || {}).context;
+  const inj = meta && meta.injuries;
+  if (!inj) return "";
+  if (inj.source === "espn") {
+    return `injury data for ${inj.teams_covered} of ${inj.teams_playing} teams playing`;
+  }
+  if (inj.source === "sparse") {
+    return `no usable injury data — ESPN lists ${inj.teams_covered} of `
+         + `${inj.teams_playing} teams playing, so an unflagged game here means `
+         + `unknown, not healthy`;
+  }
+  if (inj.source === "unavailable") return "injury feed unavailable this build";
+  return "no injuries reported";
+}
+
+// --------------------------------------------------------------------------
 // Rendering
 // --------------------------------------------------------------------------
 
@@ -711,11 +799,13 @@ function renderGateSummary() {
     `${m.upcoming_games} games · ${legs.length} priced sides · ${plusEV.length} +EV · ` +
     `${gated.length} pass gates · ${m.rated_teams} teams rated from ` +
     `${m.completed_games} finals` +
-    (m.carryover ? ` + ${m.prior_games_used} prior-season games` : " (no carryover)");
+    (m.carryover ? ` + ${m.prior_games_used} prior-season games` : " (no carryover)") +
+    (injuryCoverageNote() ? ` · ${injuryCoverageNote()}` : "");
 }
 
 function renderTips() {
   const lg = state.board.leagues[state.league];
+  const gamesById = new Map(lg.games.map((g) => [g.event_id, g]));
   const legs = flattenLegs(lg);
   const picks = buildPicks(legs, state.cfg, 3);
   const box = $("#tips");
@@ -754,6 +844,10 @@ function renderTips() {
         <td>
           <div class="lg-team">${l.team_name} ML</div>
           <div class="lg-game">${l.matchup}${l.neutral ? " · neutral" : ""} · ${kickoffLabel(l.kickoff)}</div>
+          ${(() => {
+            const wl = weatherLine(gamesById.get(l.eventId) || {});
+            return wl ? `<div class="lg-game dim">${wl}</div>` : "";
+          })()}
         </td>
         <td class="num">${fmtOdds(l.odds)}</td>
         <td class="num">${fmtPct(l.model_prob)}<div class="lg-game">model win%</div></td>
@@ -764,6 +858,9 @@ function renderTips() {
     }
     table.appendChild(body);
     card.appendChild(table);
+
+    const strip = flagStrip(pick.legs, gamesById);
+    if (strip) card.appendChild(strip);
 
     const foot = el("div", "tip-foot");
     foot.appendChild(placementControls(
@@ -783,6 +880,7 @@ function renderTips() {
 
 function renderBoard() {
   const lg = state.board.leagues[state.league];
+  const gamesById = new Map(lg.games.map((g) => [g.event_id, g]));
   let legs = flattenLegs(lg);
   if (state.onlyEV) legs = legs.filter((l) => l.edge_pp > 0);
   legs.sort((a, b) => b.edge_pp - a.edge_pp);
@@ -800,7 +898,7 @@ function renderBoard() {
     const tr = el("tr");
     tr.innerHTML = `
       <td class="bet-cell"></td>
-      <td class="${passes ? "team-cell" : "dim"}">${l.matchup}${l.neutral ? ' <span class="dim">N</span>' : ""}</td>
+      <td class="${passes ? "team-cell" : "dim"}">${l.matchup}${l.neutral ? ' <span class="dim">N</span>' : ""}${flagBadge(gamesById.get(l.eventId) || {})}</td>
       <td class="dim">${kickoffLabel(l.kickoff)}</td>
       <td class="${passes ? "team-cell" : "dim"}">${l.team_abbr} <span class="dim">vs ${l.oppAbbr}</span></td>
       <td class="num">${fmtOdds(l.odds)}</td>

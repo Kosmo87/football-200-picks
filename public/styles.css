@@ -274,3 +274,30 @@ table.compact td, table.compact th { padding: 7px 11px; }
 @media (max-width: 720px) {
   .tip-foot { align-items: flex-start; }
 }
+
+/* Warnings from context.py. Styled to interrupt, not to decorate: a claimed
+   edge sitting next to a quarterback ruled out is the single most likely way
+   this board is wrong, and it should be hard to scroll past. */
+.flags { margin-top: 10px; display: grid; gap: 6px; }
+.flag {
+  display: flex; align-items: flex-start; gap: 8px;
+  padding: 8px 10px; border-radius: 6px; font-size: 12.5px; line-height: 1.45;
+  background: var(--panel-2); border: 1px solid var(--line); color: var(--ink-dim);
+}
+.flag.high {
+  border-color: #5a4420; background: #241c0f; color: #e8d9b8;
+}
+.flag-mark {
+  flex: none; width: 16px; height: 16px; border-radius: 50%;
+  display: grid; place-items: center; margin-top: 1px;
+  font: 700 11px/1 var(--mono); background: var(--line); color: var(--ink-dim);
+}
+.flag.high .flag-mark { background: var(--warn, #d9a441); color: #1a1208; }
+
+.flag-dot {
+  display: inline-grid; place-items: center; width: 14px; height: 14px;
+  border-radius: 50%; font: 700 10px/1 var(--mono); cursor: help;
+  vertical-align: middle; margin-left: 4px;
+}
+.flag-dot.high { background: var(--warn, #d9a441); color: #1a1208; }
+.flag-dot.low { background: var(--line); color: var(--ink-dim); }
