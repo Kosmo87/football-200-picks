@@ -144,14 +144,14 @@
       "logged_at": "2026-09-07T23:25:36+00:00",
       "open_odds": 154,
       "open_implied": 0.37753,
-      "close_odds": 220,
-      "close_implied": 0.29984,
+      "close_odds": 215,
+      "close_implied": 0.30423,
       "model_prob": 0.44196,
       "edge_pp": 6.44,
       "sample": 7.0,
       "status": "open",
       "result": null,
-      "clv_pp": -7.77,
+      "clv_pp": -7.33,
       "graded_at": null
     },
     {
@@ -346,10 +346,15 @@
       "model_prob": 0.31164,
       "edge_pp": 13.88,
       "sample": 5.0,
-      "status": "open",
-      "result": null,
+      "status": "lost",
+      "result": {
+        "home_abbr": "TA&M",
+        "away_abbr": "ASU",
+        "home_score": 48,
+        "away_score": 20
+      },
       "clv_pp": -1.29,
-      "graded_at": null
+      "graded_at": "2026-09-12T22:23:46+00:00"
     },
     {
       "id": "NCAAF:401856679:130",
@@ -370,10 +375,15 @@
       "model_prob": 0.53933,
       "edge_pp": 19.68,
       "sample": 5.0,
-      "status": "open",
-      "result": null,
+      "status": "won",
+      "result": {
+        "home_abbr": "MICH",
+        "away_abbr": "OU",
+        "home_score": 17,
+        "away_score": 10
+      },
       "clv_pp": -0.62,
-      "graded_at": null
+      "graded_at": "2026-09-12T22:23:46+00:00"
     },
     {
       "id": "NCAAF:401862702:58",
@@ -658,14 +668,14 @@
       "logged_at": "2026-09-07T23:25:50+00:00",
       "open_odds": 400,
       "open_implied": 0.19184,
-      "close_odds": 360,
-      "close_implied": 0.20864,
+      "close_odds": 370,
+      "close_implied": 0.20422,
       "model_prob": 0.51447,
       "edge_pp": 32.26,
       "sample": 5.0,
       "status": "open",
       "result": null,
-      "clv_pp": 1.68,
+      "clv_pp": 1.24,
       "graded_at": null
     },
     {
@@ -778,14 +788,14 @@
       "logged_at": "2026-09-07T23:25:50+00:00",
       "open_odds": 470,
       "open_implied": 0.16835,
-      "close_odds": 455,
-      "close_implied": 0.1737,
+      "close_odds": 470,
+      "close_implied": 0.16835,
       "model_prob": 0.32177,
       "edge_pp": 15.34,
       "sample": 5.0,
       "status": "open",
       "result": null,
-      "clv_pp": 0.53,
+      "clv_pp": 0.0,
       "graded_at": null
     },
     {
@@ -903,10 +913,15 @@
       "model_prob": 0.69929,
       "edge_pp": 7.68,
       "sample": 5.0,
-      "status": "open",
-      "result": null,
+      "status": "won",
+      "result": {
+        "home_abbr": "PUR",
+        "away_abbr": "WAKE",
+        "home_score": 36,
+        "away_score": 38
+      },
       "clv_pp": -3.95,
-      "graded_at": null
+      "graded_at": "2026-09-12T22:23:46+00:00"
     },
     {
       "id": "NCAAF:401856790:221",
@@ -999,10 +1014,15 @@
       "model_prob": 0.76422,
       "edge_pp": 5.07,
       "sample": 5.0,
-      "status": "open",
-      "result": null,
+      "status": "lost",
+      "result": {
+        "home_abbr": "ECU",
+        "away_abbr": "APP",
+        "home_score": 24,
+        "away_score": 27
+      },
       "clv_pp": -1.78,
-      "graded_at": null
+      "graded_at": "2026-09-12T22:23:46+00:00"
     },
     {
       "id": "NCAAF:401864578:62",
@@ -1071,10 +1091,15 @@
       "model_prob": 0.32043,
       "edge_pp": 17.837144,
       "sample": 5.0,
-      "status": "open",
-      "result": null,
+      "status": "lost",
+      "result": {
+        "home_abbr": "KSU",
+        "away_abbr": "WSU",
+        "home_score": 34,
+        "away_score": 7
+      },
       "clv_pp": 0.0,
-      "graded_at": null
+      "graded_at": "2026-09-12T22:23:46+00:00"
     },
     {
       "id": "NFL:401872929:28",
@@ -1222,15 +1247,15 @@
     }
   ],
   "summary": {
-    "open": 46,
-    "won": 3,
-    "lost": 1,
+    "open": 41,
+    "won": 5,
+    "lost": 4,
     "pushed": 0,
-    "units": 2.67,
-    "roi_pct": 66.7,
-    "win_pct": 75.0,
-    "avg_clv_pp": 0.33,
-    "beat_close_pct": 50.0,
+    "units": 2.01,
+    "roi_pct": 22.3,
+    "win_pct": 55.6,
+    "avg_clv_pp": -0.7,
+    "beat_close_pct": 22.2,
     "by_league": {
       "NFL": {
         "won": 2,
@@ -1239,12 +1264,12 @@
         "roi_pct": 106.4
       },
       "NCAAF": {
-        "won": 1,
-        "lost": 1,
-        "units": 0.54,
-        "roi_pct": 27.0
+        "won": 3,
+        "lost": 4,
+        "units": -0.12,
+        "roi_pct": -1.7
       }
     }
   },
-  "updated_at": "2026-09-12T19:27:59+00:00"
+  "updated_at": "2026-09-12T22:23:46+00:00"
 }
