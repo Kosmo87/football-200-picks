@@ -197,6 +197,25 @@ jobs:
           python parity_check.py /tmp/js.json /tmp/py.json
 
       - name: Commit refreshed data
+        # The push RACES anything else landing on main.
+        #
+        # This job checks out main, spends five to seven minutes fetching and
+        # building, and only then pushes. Any commit that lands in that window
+        # -- a person pushing, or the previous hourly run finishing late --
+        # makes this push a non-fast-forward, and the job fails with everything
+        # else already green: board built, parity passed, tests passed. It also
+        # skips the deploy, so a perfectly good build never reaches the site.
+        # Three runs failed this way in one evening, all of them "rejected
+        # (fetch first)" and nothing else wrong.
+        #
+        # So: rebase onto whatever arrived and try again.
+        #
+        # -X theirs is correct here and reads backwards. During a rebase the
+        # checked-out side is the branch being replayed ONTO (origin/main, the
+        # newer commit), and "theirs" is the commit being replayed -- ours, the
+        # one holding the data we just built. Conflicts can only occur in files
+        # this commit touches, and every one of those is generated output, so
+        # preferring the freshly built version is always right.
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -206,7 +225,23 @@ jobs:
             exit 0
           fi
           git commit -m "Rebuild board $(date -u +'%Y-%m-%d %H:%M UTC')"
-          git push
+
+          for attempt in 1 2 3; do
+            if git push; then
+              echo "Pushed on attempt $attempt."
+              exit 0
+            fi
+            echo "Push rejected — main moved while this build was running."
+            git fetch origin main || exit 1
+            if ! git rebase -X theirs origin/main; then
+              git rebase --abort || true
+              echo "::error::Could not rebase onto origin/main; leaving main alone."
+              exit 1
+            fi
+            echo "Rebased onto $(git rev-parse --short origin/main), retrying."
+          done
+          echo "::error::Still could not push after 3 attempts."
+          exit 1
 
       - name: Deploy to Netlify
         # Uploads the finished public/ folder. Netlify never clones the repo, so
