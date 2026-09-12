@@ -72,14 +72,14 @@
       "logged_at": "2026-09-07T23:25:36+00:00",
       "open_odds": 245,
       "open_implied": 0.27792,
-      "close_odds": 260,
-      "close_implied": 0.26646,
+      "close_odds": 270,
+      "close_implied": 0.25913,
       "model_prob": 0.3279,
       "edge_pp": 5.0,
       "sample": 7.0,
       "status": "open",
       "result": null,
-      "clv_pp": -1.15,
+      "clv_pp": -1.88,
       "graded_at": null
     },
     {
@@ -317,10 +317,15 @@
       "model_prob": 0.5013,
       "edge_pp": 15.88,
       "sample": 5.0,
-      "status": "open",
-      "result": null,
+      "status": "lost",
+      "result": {
+        "home_abbr": "KU",
+        "away_abbr": "MIZ",
+        "home_score": 21,
+        "away_score": 38
+      },
       "clv_pp": 1.27,
-      "graded_at": null
+      "graded_at": "2026-09-12T05:58:41+00:00"
     },
     {
       "id": "NCAAF:401856683:9",
@@ -648,14 +653,14 @@
       "logged_at": "2026-09-07T23:25:50+00:00",
       "open_odds": 400,
       "open_implied": 0.19184,
-      "close_odds": 350,
-      "close_implied": 0.21326,
+      "close_odds": 360,
+      "close_implied": 0.20864,
       "model_prob": 0.51447,
       "edge_pp": 32.26,
       "sample": 5.0,
       "status": "open",
       "result": null,
-      "clv_pp": 2.14,
+      "clv_pp": 1.68,
       "graded_at": null
     },
     {
@@ -936,14 +941,14 @@
       "logged_at": "2026-09-08T00:37:24+00:00",
       "open_odds": 140,
       "open_implied": 0.40036,
-      "close_odds": 154,
-      "close_implied": 0.37753,
+      "close_odds": 150,
+      "close_implied": 0.38356,
       "model_prob": 0.46115,
       "edge_pp": 6.08,
       "sample": 5.0,
       "status": "open",
       "result": null,
-      "clv_pp": -2.28,
+      "clv_pp": -1.68,
       "graded_at": null
     },
     {
@@ -1188,15 +1193,15 @@
     }
   ],
   "summary": {
-    "open": 47,
+    "open": 46,
     "won": 2,
-    "lost": 0,
+    "lost": 1,
     "pushed": 0,
-    "units": 2.13,
-    "roi_pct": 106.4,
-    "win_pct": 100.0,
-    "avg_clv_pp": -1.11,
-    "beat_close_pct": 0.0,
+    "units": 1.13,
+    "roi_pct": 37.6,
+    "win_pct": 66.7,
+    "avg_clv_pp": -0.32,
+    "beat_close_pct": 33.3,
     "by_league": {
       "NFL": {
         "won": 2,
@@ -1206,11 +1211,11 @@
       },
       "NCAAF": {
         "won": 0,
-        "lost": 0,
-        "units": 0,
-        "roi_pct": 0.0
+        "lost": 1,
+        "units": -1,
+        "roi_pct": -100.0
       }
     }
   },
-  "updated_at": "2026-09-12T01:49:30+00:00"
+  "updated_at": "2026-09-12T05:58:41+00:00"
 }
