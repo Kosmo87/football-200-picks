@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-12T01:17:20+00:00",
+  "generated_at": "2026-09-12T01:26:10+00:00",
   "season": 2026,
   "leagues": {
     "NFL": {
@@ -2432,14 +2432,14 @@
             "name": "Purdue Boilermakers",
             "abbr": "PUR",
             "elo": 1353.7,
-            "moneyline": 124
+            "moneyline": 130
           },
           "away": {
             "id": "154",
             "name": "Wake Forest Demon Deacons",
             "abbr": "WAKE",
             "elo": 1555.3,
-            "moneyline": -148
+            "moneyline": -155
           },
           "legs": [
             {
@@ -2447,10 +2447,10 @@
               "team_id": "154",
               "team_name": "Wake Forest Demon Deacons",
               "team_abbr": "WAKE",
-              "odds": -148,
+              "odds": -155,
               "model_prob": 0.69929,
-              "implied_prob": 0.57206,
-              "edge_pp": 12.722588,
+              "implied_prob": 0.58299,
+              "edge_pp": 11.629287,
               "fair_odds": -233,
               "sample": 5.0,
               "team_sample": 5.0,
@@ -2464,10 +2464,10 @@
               "team_id": "2509",
               "team_name": "Purdue Boilermakers",
               "team_abbr": "PUR",
-              "odds": 124,
+              "odds": 130,
               "model_prob": 0.30071,
-              "implied_prob": 0.42794,
-              "edge_pp": -12.722588,
+              "implied_prob": 0.41701,
+              "edge_pp": -11.629287,
               "fair_odds": 233,
               "sample": 5.0,
               "team_sample": 5.0,
@@ -2600,7 +2600,7 @@
               "temp_f": 85.5,
               "wind_mph": 3.4,
               "gust_mph": 9.4,
-              "precip_pct": 6,
+              "precip_pct": 7,
               "snow_in": 0.0
             },
             "flags": []
@@ -2698,7 +2698,7 @@
               "temp_f": 85.7,
               "wind_mph": 4.1,
               "gust_mph": 6.5,
-              "precip_pct": 12,
+              "precip_pct": 8,
               "snow_in": 0.0
             },
             "flags": []
@@ -2947,7 +2947,7 @@
               "temp_f": 73.1,
               "wind_mph": 7.3,
               "gust_mph": 10.5,
-              "precip_pct": 19,
+              "precip_pct": 22,
               "snow_in": 0.0
             },
             "flags": []
@@ -3357,7 +3357,7 @@
               "temp_f": 79.1,
               "wind_mph": 20.0,
               "gust_mph": 29.1,
-              "precip_pct": 33,
+              "precip_pct": 34,
               "snow_in": 0.0
             },
             "flags": [
@@ -3575,14 +3575,14 @@
             "name": "Michigan State Spartans",
             "abbr": "MSU",
             "elo": 1464.5,
-            "moneyline": -950
+            "moneyline": -900
           },
           "away": {
             "id": "2199",
             "name": "Eastern Michigan Eagles",
             "abbr": "EMU",
             "elo": 1363.4,
-            "moneyline": 625
+            "moneyline": 600
           },
           "legs": [
             {
@@ -3590,10 +3590,10 @@
               "team_id": "2199",
               "team_name": "Eastern Michigan Eagles",
               "team_abbr": "EMU",
-              "odds": 625,
+              "odds": 600,
               "model_prob": 0.28931,
-              "implied_prob": 0.13228,
-              "edge_pp": 15.702834,
+              "implied_prob": 0.13699,
+              "edge_pp": 15.23255,
               "fair_odds": 246,
               "sample": 5.0,
               "team_sample": 6.0,
@@ -3809,20 +3809,8 @@
               "state": "TX",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 97.0,
-              "wind_mph": 9.0,
-              "gust_mph": 11.4,
-              "precip_pct": 1,
-              "snow_in": 0.0
-            },
-            "flags": [
-              {
-                "kind": "heat",
-                "severity": "low",
-                "text": "97\u00b0F at kickoff"
-              }
-            ]
+            "weather": null,
+            "flags": []
           }
         },
         {
@@ -3913,25 +3901,8 @@
               "state": "AL",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 64.5,
-              "wind_mph": 10.7,
-              "gust_mph": 22.1,
-              "precip_pct": 75,
-              "snow_in": 0.0
-            },
-            "flags": [
-              {
-                "kind": "wind",
-                "severity": "high",
-                "text": "Wind 11 mph, gusting 22 \u2014 kicking and the deep ball suffer"
-              },
-              {
-                "kind": "rain",
-                "severity": "low",
-                "text": "75% chance of rain"
-              }
-            ]
+            "weather": null,
+            "flags": []
           }
         },
         {
@@ -4259,7 +4230,13 @@
               "state": "TN",
               "indoor": false
             },
-            "weather": null,
+            "weather": {
+              "temp_f": 86.7,
+              "wind_mph": 3.9,
+              "gust_mph": 8.9,
+              "precip_pct": 6,
+              "snow_in": 0.0
+            },
             "flags": []
           }
         },
@@ -4351,8 +4328,20 @@
               "state": "ID",
               "indoor": false
             },
-            "weather": null,
-            "flags": []
+            "weather": {
+              "temp_f": 87.3,
+              "wind_mph": 4.3,
+              "gust_mph": 15.7,
+              "precip_pct": 0,
+              "snow_in": 0.0
+            },
+            "flags": [
+              {
+                "kind": "wind",
+                "severity": "low",
+                "text": "Breezy: 4 mph, gusting 16"
+              }
+            ]
           }
         },
         {
@@ -4559,8 +4548,8 @@
           "status": "Scheduled",
           "neutral": false,
           "provider": "Draft Kings",
-          "spread": 12.5,
-          "spread_details": "TENN -12.5",
+          "spread": 11.5,
+          "spread_details": "TENN -11.5",
           "total": 55.5,
           "home": {
             "id": "59",
@@ -5012,14 +5001,14 @@
             "name": "Kennesaw State Owls",
             "abbr": "KENN",
             "elo": 1506.7,
-            "moneyline": -325
+            "moneyline": -340
           },
           "away": {
             "id": "2247",
             "name": "Georgia State Panthers",
             "abbr": "GAST",
             "elo": 1299.5,
-            "moneyline": 260
+            "moneyline": 270
           },
           "legs": [
             {
@@ -5027,10 +5016,10 @@
               "team_id": "2247",
               "team_name": "Georgia State Panthers",
               "team_abbr": "GAST",
-              "odds": 260,
+              "odds": 270,
               "model_prob": 0.18101,
-              "implied_prob": 0.26646,
-              "edge_pp": -8.544323,
+              "implied_prob": 0.25913,
+              "edge_pp": -7.811394,
               "fair_odds": 452,
               "sample": 4.85,
               "team_sample": 4.85,
@@ -5044,10 +5033,10 @@
               "team_id": "338",
               "team_name": "Kennesaw State Owls",
               "team_abbr": "KENN",
-              "odds": -325,
+              "odds": -340,
               "model_prob": 0.81899,
-              "implied_prob": 0.73354,
-              "edge_pp": 8.544323,
+              "implied_prob": 0.74087,
+              "edge_pp": 7.811394,
               "fair_odds": -452,
               "sample": 4.85,
               "team_sample": 5.0,
@@ -5260,14 +5249,14 @@
             "name": "UCLA Bruins",
             "abbr": "UCLA",
             "elo": 1500.2,
-            "moneyline": -455
+            "moneyline": -470
           },
           "away": {
             "id": "21",
             "name": "San Diego State Aztecs",
             "abbr": "SDSU",
             "elo": 1525.8,
-            "moneyline": 350
+            "moneyline": 360
           },
           "legs": [
             {
@@ -5275,10 +5264,10 @@
               "team_id": "21",
               "team_name": "San Diego State Aztecs",
               "team_abbr": "SDSU",
-              "odds": 350,
+              "odds": 360,
               "model_prob": 0.45778,
-              "implied_prob": 0.21326,
-              "edge_pp": 24.452517,
+              "implied_prob": 0.20864,
+              "edge_pp": 24.914329,
               "fair_odds": 118,
               "sample": 5.0,
               "team_sample": 5.0,
@@ -5315,7 +5304,13 @@
               "state": "CA",
               "indoor": false
             },
-            "weather": null,
+            "weather": {
+              "temp_f": 89.8,
+              "wind_mph": 6.5,
+              "gust_mph": 13.6,
+              "precip_pct": 5,
+              "snow_in": 0.0
+            },
             "flags": []
           }
         },
@@ -5557,13 +5552,7 @@
               "state": "SC",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 82.1,
-              "wind_mph": 7.2,
-              "gust_mph": 9.6,
-              "precip_pct": 19,
-              "snow_in": 0.0
-            },
+            "weather": null,
             "flags": []
           }
         },
@@ -5574,7 +5563,7 @@
           "kickoff": "2026-09-12T23:30Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": 4.0,
           "spread_details": "NAVY -4",
           "total": 58.5,
@@ -5872,14 +5861,14 @@
             "name": "Utah Utes",
             "abbr": "UTAH",
             "elo": 1722.8,
-            "moneyline": -485
+            "moneyline": -520
           },
           "away": {
             "id": "8",
             "name": "Arkansas Razorbacks",
             "abbr": "ARK",
             "elo": 1426.5,
-            "moneyline": 370
+            "moneyline": 390
           },
           "legs": [
             {
@@ -5887,10 +5876,10 @@
               "team_id": "8",
               "team_name": "Arkansas Razorbacks",
               "team_abbr": "ARK",
-              "odds": 370,
+              "odds": 390,
               "model_prob": 0.11688,
-              "implied_prob": 0.20422,
-              "edge_pp": -8.734495,
+              "implied_prob": 0.19571,
+              "edge_pp": -7.882789,
               "fair_odds": 756,
               "sample": 5.0,
               "team_sample": 5.0,
@@ -6040,14 +6029,14 @@
             "name": "Nevada Wolf Pack",
             "abbr": "NEV",
             "elo": 1454.8,
-            "moneyline": 136
+            "moneyline": 140
           },
           "away": {
             "id": "147",
             "name": "Montana State Bobcats",
             "abbr": "MTST",
             "elo": 1029.0,
-            "moneyline": -162
+            "moneyline": -166
           },
           "legs": [
             {
@@ -6055,10 +6044,10 @@
               "team_id": "147",
               "team_name": "Montana State Bobcats",
               "team_abbr": "MTST",
-              "odds": -162,
+              "odds": -166,
               "model_prob": 0.05909,
-              "implied_prob": 0.59337,
-              "edge_pp": -53.428422,
+              "implied_prob": 0.59964,
+              "edge_pp": -54.055324,
               "fair_odds": 1592,
               "sample": 0.35,
               "team_sample": 0.35,
@@ -6072,10 +6061,10 @@
               "team_id": "2440",
               "team_name": "Nevada Wolf Pack",
               "team_abbr": "NEV",
-              "odds": 136,
+              "odds": 140,
               "model_prob": 0.94091,
-              "implied_prob": 0.40663,
-              "edge_pp": 53.428422,
+              "implied_prob": 0.40036,
+              "edge_pp": 54.055324,
               "fair_odds": -1592,
               "sample": 0.35,
               "team_sample": 5.0,
