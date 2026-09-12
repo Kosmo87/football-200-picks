@@ -319,3 +319,10 @@ table.compact td, table.compact th { padding: 7px 11px; }
   color: var(--ink-dim);
 }
 .list-sub em { color: var(--warn); font-style: normal; font-weight: 600; }
+
+/* Why the list has the leg counts it has. Answers the question the board kept
+   provoking — "where are the parlays" — rather than leaving it to be inferred. */
+.list-note {
+  margin: 10px 2px 0; max-width: 78ch;
+  font-size: 12px; line-height: 1.55; color: var(--ink-faint);
+}

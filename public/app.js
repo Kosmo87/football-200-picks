@@ -857,6 +857,50 @@ function renderTips() {
 /** The leg shape betId() expects, from a built pick. */
 const legsOf = (pick) => pick.legs.map((l) => ({ event_id: l.eventId, side: l.side }));
 
+/**
+ * Why the list looks the way it does on leg count.
+ *
+ * Selection walks singles first and stops once it has enough picks, so parlays
+ * only appear when singles cannot reach the payout floor on their own. That
+ * ordering is deliberate and it is the one thing about this board people ask
+ * about, because a night of all singles looks like a missing feature.
+ *
+ * It is not. A parlay's expectation is the product of its legs' expectations,
+ * so stacking two legs roughly doubles the house's cut for the same opinion. A
+ * parlay is a way to REACH a payout, never a source of edge — so when a single
+ * already pays +295 there is nothing to reach for, and stacking would only cost
+ * more.
+ */
+function legCountNote(picks, cfg) {
+  if (!picks.length) return null;
+  const parlays = picks.filter((p) => p.legs.length > 1).length;
+  if (parlays === picks.length) {
+    return `Every one of these is a parlay: no single side pays `
+         + `${fmtOdds(cfg.minCombined)} on its own tonight, so legs are stacked to `
+         + `reach it. Stacking costs — a parlay's expectation is the product of its `
+         + `legs', so two legs roughly double the house's cut on the same opinion.`;
+  }
+  if (parlays === 0) {
+    // Say what actually happened: singles filled the list. Naming the payout
+    // floor here was wrong on the safe list, where the floor is -400 and every
+    // single clears it trivially — the reason was never the floor.
+    let why = `All singles tonight — ${picks.length} cleared on their own, and `
+            + `singles are taken first. Parlays only appear when singles cannot fill `
+            + `the list, because a parlay is a way to reach a payout, not a source of `
+            + `edge: its expectation is the product of its legs', so stacking two `
+            + `roughly doubles the house's cut on the same opinion.`;
+    if (cfg.minPickWinProb > 0) {
+      why += ` Here a parlay also has to stay above `
+           + `${(cfg.minPickWinProb * 100).toFixed(0)}% as a whole ticket, which two `
+           + `likely winners only just manage — 76% and 70% multiply to 53%.`;
+    }
+    return why;
+  }
+  return `${parlays} of these stack legs to reach ${fmtOdds(cfg.minCombined)}; the `
+       + `rest get there on their own. Singles are preferred — a parlay multiplies `
+       + `the house's cut along with the payout.`;
+}
+
 function renderPickList(box, picks, cfg, legs, gamesById) {
   box.innerHTML = "";
 
@@ -953,6 +997,9 @@ function renderPickList(box, picks, cfg, legs, gamesById) {
     card.appendChild(foot);
     box.appendChild(card);
   });
+
+  const note = legCountNote(picks, cfg);
+  if (note) box.appendChild(el("p", "list-note", note));
 }
 
 function renderBoard() {
