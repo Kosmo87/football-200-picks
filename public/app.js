@@ -41,6 +41,15 @@ const LADDER = [[0.60, 0.5], [0.70, 1.0], [0.80, 2.0], [0.90, 3.0], [0.95, 4.0],
 const MAX_UNITS = 5.0;
 const KELLY_FRACTION = 0.25;
 
+// Published stakes come in half units and nothing finer. Mirrors
+// staking.UNIT_STEP / to_half_units — a decision about what a stake IS, not a
+// display choice: "half a unit" is an instruction, 0.3U is an optimisation
+// result, and only one of them gets acted on. Rounding half away from zero to
+// match Python's floor(x/step + 0.5).
+const UNIT_STEP = 0.5;
+const toHalfUnits = (raw) =>
+  raw < UNIT_STEP / 2 ? 0 : Math.floor(raw / UNIT_STEP + 0.5) * UNIT_STEP;
+
 function ladderUnits(p) {
   for (const [ceiling, units] of LADDER) if (p < ceiling) return units;
   return MAX_UNITS;
@@ -73,16 +82,22 @@ function trustLabel(p, marketP) {
   return f >= 1 ? "High" : f >= 0.6 ? "Medium" : f > 0 ? "Low" : "None";
 }
 
-/** Published stake: the ladder, capped by the price, shrunk by disagreement. */
+/** Published stake: the ladder, capped by the price, shrunk by disagreement,
+ *  then snapped to a half unit. */
 const stakeUnits = (p, odds, marketP) =>
-  Math.round(
-    Math.min(ladderUnits(p), kellyUnits(p, odds)) * disagreementFactor(p, marketP) * 10
-  ) / 10;
+  toHalfUnits(
+    Math.round(
+      Math.min(ladderUnits(p), kellyUnits(p, odds)) * disagreementFactor(p, marketP) * 10
+    ) / 10
+  );
 
 /** A parlay lands only if every leg does. Independence is why legs never share a game. */
 const parlayWinProb = (probs) => probs.reduce((a, b) => a * b, 1);
 
 const unitsLabel = (u) => (u <= 0 ? "no bet" : `${+u.toFixed(1)}U`);
+/** Mirrors staking.stake_words: the stake as an instruction, not a number. */
+const stakeWords = (u) =>
+  u <= 0 ? "no bet" : u === 0.5 ? "half a unit" : u === 1 ? "one unit" : `${+u.toFixed(1)} units`;
 
 // --------------------------------------------------------------------------
 // picks.py port — confidence, gates, selection
@@ -95,12 +110,11 @@ const DEFAULTS = {
   maxParlayLegs: 5,
   minCombined: 200,
   minLegOdds: -350,
-  // A pick the engine would stake 0.2U on is the engine saying it barely
-  // believes it, and showing that as "#1 Tip" reads as conviction it does not
-  // have. 0.3 was measured, not picked: across a full board every stake fell
-  // between 0.1U and 0.8U, and 0.3 cut 9 of 10 staked NFL sides while keeping
-  // the two genuinely larger college ones. Mirrors DEFAULT_MIN_STAKE_UNITS.
-  minStake: 0.3,
+  // Half a unit is the smallest stake that exists now, so it is also the floor.
+  // Anything that sized under a quarter unit rounds to nothing and is not a bet
+  // — which is the engine saying it does not believe it, and the right answer
+  // rather than a failure. Mirrors MIN_PLAYABLE_UNITS.
+  minStake: 0.5,
   // "Likely to win" rather than "well priced" — a different gate, and one that
   // points the other way, since claimed edge measured inversely related to
   // outcome. Off by default: a bet paying +200 is a one-in-three shot by
@@ -595,42 +609,20 @@ const state = {
   board: null,
   history: null,
   league: null,
+  // One configuration, fixed. The board used to expose every gate as a slider,
+  // which made it a build-your-own-bet tool: whatever it recommended was
+  // whatever you had just asked it to recommend, and the track record below
+  // described a strategy no visitor was actually running. The gates are a
+  // finding, not a preference — they came out of backtests — so they are
+  // applied rather than offered.
   cfg: { ...DEFAULTS },
   onlyEV: true,
-  preset: false,
-  certainty: false,
-  // Sliders the user has actually moved. Untouched ones follow the per-league
-  // baseline when the tab changes (NCAAF wants a deeper sample than the NFL).
-  touched: new Set(),
   // Bets tagged as placed, by id, from /api/placements.
   placements: new Map(),
   placementKey: loadKey(),
   placementsConfigured: true,
   placementsError: null,
 };
-
-const SLIDER_SPECS = [
-  { key: "minEdgePP", label: "Min edge", min: 0, max: 25, step: 0.5,
-    fmt: (v) => `${v.toFixed(1)}pp`, hint: "model win% over implied" },
-  { key: "minSample", label: "Min sample", min: 0, max: 12, step: 0.5,
-    fmt: (v) => `${v} gm`, hint: "incl. prior-season credit" },
-  { key: "maxLegOdds", label: "Max leg price", min: 150, max: 1000, step: 25,
-    fmt: (v) => fmtOdds(v), hint: "longest single leg allowed" },
-  { key: "maxParlayLegs", label: "Max legs", min: 1, max: 5, step: 1,
-    fmt: (v) => `${v}`, hint: "1 = singles only" },
-  // Range reaches below zero so certainty is reachable at all. American odds
-  // compare correctly as signed integers (-400 < -150 < +100 < +200, which is
-  // also increasing payout), so a negative floor means "any price at or longer
-  // than this".
-  { key: "minCombined", label: "Min combined", min: -400, max: 600, step: 25,
-    fmt: (v) => fmtOdds(v), hint: "target payout floor" },
-  { key: "minStake", label: "Min stake", min: 0, max: 2, step: 0.1,
-    fmt: (v) => (v <= 0 ? "any" : `${v.toFixed(1)}U`),
-    hint: "hide tips we'd barely back" },
-  { key: "minWinProb", label: "Min win chance", min: 0, max: 0.8, step: 0.05,
-    fmt: (v) => (v <= 0 ? "any" : `${(v * 100).toFixed(0)}%`),
-    hint: "likely to win, not well priced" },
-];
 
 const $ = (sel) => document.querySelector(sel);
 const el = (tag, cls, html) => {
@@ -803,114 +795,109 @@ function renderTabs() {
     b.setAttribute("aria-selected", String(name === state.league));
     b.onclick = () => {
       state.league = name;
-      applyLeagueDefaults();
+      applyLeagueConfig();
       render();
     };
     nav.appendChild(b);
   }
 }
 
-function renderSliders() {
-  const box = $("#sliders");
-  if (box.childElementCount) {
-    // Already built — just sync values (preset/reset may have changed them)
-    for (const spec of SLIDER_SPECS) {
-      const input = box.querySelector(`input[data-key="${spec.key}"]`);
-      input.value = state.cfg[spec.key];
-      box.querySelector(`[data-val="${spec.key}"]`).textContent = spec.fmt(state.cfg[spec.key]);
-    }
-    return;
-  }
-  for (const spec of SLIDER_SPECS) {
-    const wrap = el("div", "slider");
-    wrap.innerHTML = `
-      <label>${spec.label}<span class="val" data-val="${spec.key}">${spec.fmt(state.cfg[spec.key])}</span></label>
-      <input type="range" data-key="${spec.key}" min="${spec.min}" max="${spec.max}"
-             step="${spec.step}" value="${state.cfg[spec.key]}">
-      <div class="hint">${spec.hint}</div>`;
-    wrap.querySelector("input").addEventListener("input", (e) => {
-      state.cfg[spec.key] = parseFloat(e.target.value);
-      state.touched.add(spec.key);
-      wrap.querySelector(".val").textContent = spec.fmt(state.cfg[spec.key]);
-      renderTips();
-      renderBoard();
-      renderGateSummary();
-    });
-    box.appendChild(wrap);
-  }
-}
-
+/** What was examined to arrive at the list above. Not a set of controls. */
 function renderGateSummary() {
   const lg = state.board.leagues[state.league];
   const legs = flattenLegs(lg);
   const gated = legs.filter((l) => passesGates(l, state.cfg));
   const plusEV = legs.filter((l) => l.edge_pp > 0);
+  const stale = legs.filter((l) => l.stale).length;
   const m = lg.meta;
   $("#gate-summary").textContent =
-    `${m.upcoming_games} games · ${legs.length} priced sides · ${plusEV.length} +EV · ` +
-    `${gated.length} pass gates · ${m.rated_teams} teams rated from ` +
-    `${m.completed_games} finals` +
+    `Looked at ${m.upcoming_games} games · ${legs.length} priced sides · ` +
+    `${plusEV.length} +EV · ${gated.length} cleared every gate` +
+    (stale ? ` · ${stale} dropped for a late quarterback ruling` : "") +
+    ` · ${m.rated_teams} teams rated from ${m.completed_games} finals` +
     (m.carryover ? ` + ${m.prior_games_used} prior-season games` : " (no carryover)") +
     (injuryCoverageNote() ? ` · ${injuryCoverageNote()}` : "");
 }
 
+/**
+ * Two decided lists, not one list and a pile of sliders.
+ *
+ * "Safest" and "Best priced" are the same engine and the same gates read in the
+ * two directions a bet can be good: likely to land, or generously priced. They
+ * are genuinely different bets — the market prices certainty, so a likely
+ * winner pays little and a big payout is a longshot, and no single ordering can
+ * be both. Showing both as finished lists keeps the choice ("which kind of bet
+ * am I making today") without handing back the choice that ruined the old
+ * board ("which gates should the model use"), where whatever it recommended was
+ * whatever you had just asked it to recommend.
+ */
 function renderTips() {
   const lg = state.board.leagues[state.league];
   const gamesById = new Map(lg.games.map((g) => [g.event_id, g]));
   const legs = flattenLegs(lg);
-  const picks = buildPicks(legs, state.cfg, 3);
-  const box = $("#tips");
+
+  const safeCfg = applyCertaintyTo(state.cfg);
+  const safe = buildPicks(legs, safeCfg, 3);
+  // Anything already in the safe list is not repeated below: the same bet under
+  // two headings reads as two bets.
+  const claimed = new Set(safe.map((p) => betId(state.league, legsOf(p))));
+  const value = buildPicks(legs, state.cfg, 3)
+    .filter((p) => !claimed.has(betId(state.league, legsOf(p))));
+
+  renderPickList($("#tips-safe"), safe, safeCfg, legs, gamesById);
+  renderPickList($("#tips-value"), value, state.cfg, legs, gamesById);
+
+  const all = [...safe, ...value];
+  const totalUnits = all.reduce((t, p) => t + p.stakeUnits, 0);
+  $("#tips-note").textContent = all.length
+    ? `${all.length} bet${all.length > 1 ? "s" : ""} · ${+totalUnits.toFixed(1)}U total`
+    : "nothing today";
+}
+
+/** The leg shape betId() expects, from a built pick. */
+const legsOf = (pick) => pick.legs.map((l) => ({ event_id: l.eventId, side: l.side }));
+
+function renderPickList(box, picks, cfg, legs, gamesById) {
   box.innerHTML = "";
 
-  const gated = legs.filter((l) => passesGates(l, state.cfg)).length;
-  $("#tips-note").textContent = picks.length
-    ? `${picks.length} independent · from ${gated} qualifying sides`
-    : "";
-
+  const gated = legs.filter((l) => passesGates(l, cfg)).length;
   if (!picks.length) {
     // Which gate emptied the board, counted rather than guessed. "No tips" and
     // "no tips worth backing" are different answers and only one of them means
     // something is wrong.
     const staleCut = legs.filter((l) => l.stale).length;
-    const certaintyCut = state.cfg.minWinProb > 0
-      ? legs.filter((l) => !l.stale && l.model_prob < state.cfg.minWinProb).length : 0;
+    const certaintyCut = cfg.minWinProb > 0
+      ? legs.filter((l) => !l.stale && l.model_prob < cfg.minWinProb).length : 0;
     const best = legs
-      .filter((l) => passesGates(l, state.cfg))
+      .filter((l) => passesGates(l, cfg))
       .map((l) => stakeUnits(l.model_prob, l.odds, l.implied_prob))
       .reduce((a, b) => Math.max(a, b), 0);
 
     let why;
-    if (gated && best > 0 && best < state.cfg.minStake) {
-      why = `${gated} sides pass the gates, but the largest stake the engine `
-          + `would put on any of them is <strong>${best.toFixed(1)}U</strong>, under `
-          + `the ${state.cfg.minStake.toFixed(1)}U floor. That is the engine saying it `
-          + `does not believe these enough to back them — which is an answer, not a `
-          + `failure. Lower &ldquo;Min stake&rdquo; to see them anyway.`;
+    if (gated && best <= 0) {
+      why = `${gated} sides cleared the gates, but every one of them sized under `
+          + `half a unit — which is the engine saying it does not believe them `
+          + `enough to back them. That is an answer, not a failure.`;
     } else if (gated) {
-      why = `${gated} sides pass the gates, but none combine to `
-          + `${fmtOdds(state.cfg.minCombined)} without overlapping teams. `
-          + `Raise max legs or lower the combined floor.`;
-    } else if (state.cfg.minWinProb > 0) {
-      why = `Nothing clears a ${(state.cfg.minWinProb * 100).toFixed(0)}% win chance `
-          + `${state.cfg.minCombined > 100 ? `at ${fmtOdds(state.cfg.minCombined)} or longer — `
-              + `and it cannot, because a bet paying ${fmtOdds(state.cfg.minCombined)} is `
-              + `about ${(100 / (americanToDecimal(state.cfg.minCombined))).toFixed(0)}% by `
-              + `construction. Drop the combined floor to +100 to price certainty instead `
-              + `of payout.`
-            : `(${certaintyCut} sides were cut by it). The market prices certainty, so `
-              + `the ones that would qualify pay too little to clear the other gates.`}`;
+      why = `${gated} sides cleared the gates, but none combine to `
+          + `${fmtOdds(cfg.minCombined)} without overlapping teams.`;
+    } else if (cfg.minWinProb > 0) {
+      why = `Nothing clears a ${(cfg.minWinProb * 100).toFixed(0)}% win chance with an `
+          + `edge on the price — ${certaintyCut} sides were cut by the win-chance floor `
+          + `alone. The market prices certainty accurately, so the likely winners `
+          + `usually pay too little to be worth backing.`;
     } else {
-      why = `No sides clear ${state.cfg.minEdgePP.toFixed(1)}pp edge at `
-          + `${state.cfg.minSample} games of sample. Loosen the gates to see `
-          + `marginal plays.`;
+      why = `No side clears ${cfg.minEdgePP.toFixed(1)}pp of edge on `
+          + `${cfg.minSample}+ games of sample. Nothing here is worth a bet today `
+          + `— keep your money in your pocket.`;
     }
-    if (staleCut && state.cfg.excludeStale) {
+    if (staleCut && cfg.excludeStale) {
       why += `<div class="empty-extra">${staleCut} side${staleCut > 1 ? "s were" : " was"} `
            + `excluded outright: a quarterback was ruled out after the ratings were `
            + `built, so the model has no informed opinion on either side of `
            + `${staleCut > 2 ? "those games" : "that game"}.</div>`;
     }
-    box.appendChild(el("div", "empty", `<strong>Nothing worth backing</strong>${why}`));
+    box.appendChild(el("div", "empty", `<strong>No bets today</strong>${why}`));
     return;
   }
 
@@ -1058,7 +1045,6 @@ function renderHistory() {
 function render() {
   renderTabs();
   renderYourBets();
-  renderSliders();
   renderGateSummary();
   renderTips();
   renderBoard();
@@ -1067,72 +1053,15 @@ function render() {
 }
 
 // --------------------------------------------------------------------------
-// Presets + boot
+// Boot
 // --------------------------------------------------------------------------
 
-/** Re-apply league baselines to any gate the user has not set themselves. */
-function applyLeagueDefaults() {
-  if (state.certainty) {
-    applyCertaintyValues();
-    return;
-  }
-  if (state.preset) {
-    applyPresetValues();
-    return;
-  }
-  if (!state.touched.has("minSample")) {
-    state.cfg.minSample = LEAGUE_MIN_SAMPLE[state.league] ?? DEFAULTS.minSample;
-  }
-}
-
-function applyPresetValues() {
-  // Mirrors ConfidenceConfig.apply_high_confidence_preset
-  state.cfg.minEdgePP = Math.max(state.cfg.minEdgePP, 7.5);
-  state.cfg.minSample = Math.max(state.cfg.minSample, state.league === "NFL" ? 5 : 6);
-  state.cfg.maxLegOdds = Math.min(state.cfg.maxLegOdds, 350);
-  state.cfg.maxParlayLegs = 5;
-}
-
-/**
- * Mirrors ConfidenceConfig.apply_high_certainty_preset.
- *
- * Drops the combined floor to +100 on purpose: requiring better than an even
- * chance rules out every +200 single, because that price IS a one-in-three
- * shot. Keeping the payout target would make this preset return nothing and
- * look broken rather than return favourites and look small.
- */
-function applyCertaintyValues() {
-  state.cfg = applyCertaintyTo(state.cfg);
-}
-
-function applyPreset(on) {
-  state.preset = on;
-  state.certainty = false;
-  $("#preset-certain").checked = false;
-  if (on) applyPresetValues();
-  else resetCfg();
-  render();
-}
-
-function applyCertainty(on) {
-  state.certainty = on;
-  state.preset = false;
-  $("#preset-high").checked = false;
-  if (on) {
-    resetCfg();
-    applyCertaintyValues();
-  } else {
-    resetCfg();
-  }
-  render();
-}
-
-function resetCfg() {
+/** The only thing that varies by league: college needs a deeper sample. */
+function applyLeagueConfig() {
   state.cfg = {
     ...DEFAULTS,
     minSample: LEAGUE_MIN_SAMPLE[state.league] ?? DEFAULTS.minSample,
   };
-  state.touched.clear();
 }
 
 async function boot() {
@@ -1162,23 +1091,13 @@ async function boot() {
     return;
   }
   state.league = leagues[0];
-  resetCfg();
+  applyLeagueConfig();
 
   const gen = new Date(board.generated_at);
   $("#updated").textContent = `updated ${gen.toLocaleString(undefined, {
     month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}`;
   $("#season").textContent = `${board.season} season`;
 
-  $("#preset-high").addEventListener("change", (e) => applyPreset(e.target.checked));
-  $("#preset-certain").addEventListener("change", (e) => applyCertainty(e.target.checked));
-  $("#reset").addEventListener("click", () => {
-    $("#preset-high").checked = false;
-    $("#preset-certain").checked = false;
-    state.preset = false;
-    state.certainty = false;
-    resetCfg();
-    render();
-  });
   $("#only-ev").addEventListener("change", (e) => {
     state.onlyEV = e.target.checked;
     renderBoard();

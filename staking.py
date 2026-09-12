@@ -38,6 +38,24 @@ LADDER = [
 MAX_UNITS = 5.0
 KELLY_FRACTION = 0.25  # quarter Kelly: full Kelly is far too violent in practice
 
+# Published stakes come in half units and nothing finer.
+#
+# This is a decision about what a stake IS, not a display choice. A board that
+# says 0.3U is describing an optimisation result; a board that says "half a
+# unit" is telling you what to put on the bet, and the second is the only one
+# anybody acts on. It also stops false precision: the difference between 0.2U
+# and 0.3U is far inside the error on a win probability estimated from Elo, so
+# printing it claims an accuracy the model does not have.
+#
+# Rounding to nearest can raise a stake -- 0.3 becomes 0.5, two thirds more than
+# quarter Kelly asked for. That is deliberate and safe in this direction: the
+# ladder is already capped at a quarter of Kelly, so even the largest upward
+# round lands nearer three-eighths Kelly, well short of the full-Kelly sizing
+# that is genuinely dangerous. Anything under a quarter unit rounds to nothing
+# and is not a bet, which is the more common outcome and the one that matters.
+UNIT_STEP = 0.5
+MIN_PLAYABLE_UNITS = 0.5
+
 # How far the model may disagree with the market before the disagreement is
 # treated as the model's error rather than the market's.
 #
@@ -68,6 +86,18 @@ def _round1(x: float) -> float:
     what to bet -- so the rounding rule has to be stated rather than inherited.
     """
     return math.floor(x * 10 + 0.5) / 10
+
+
+def to_half_units(raw: float) -> float:
+    """
+    Snap a raw stake to the nearest half unit; below a quarter unit, no bet.
+
+    Rounds half away from zero, matching _round1 and the browser's Math.round,
+    because the two engines must agree on what to bet.
+    """
+    if raw < UNIT_STEP / 2:
+        return 0.0
+    return math.floor(raw / UNIT_STEP + 0.5) * UNIT_STEP
 
 
 def ladder_units(win_prob: float) -> float:
@@ -126,7 +156,7 @@ def stake_units(
     believed.
     """
     base = min(ladder_units(win_prob), kelly_units(win_prob, odds_american))
-    return _round1(base * disagreement_factor(win_prob, market_prob))
+    return to_half_units(_round1(base * disagreement_factor(win_prob, market_prob)))
 
 
 def parlay_win_prob(leg_probs: List[float]) -> float:
@@ -163,3 +193,14 @@ def units_label(units: float) -> str:
     if units <= 0:
         return "no bet"
     return f"{units:g}U"
+
+
+def stake_words(units: float) -> str:
+    """The stake as an instruction rather than a number."""
+    if units <= 0:
+        return "no bet"
+    if units == 0.5:
+        return "half a unit"
+    if units == 1:
+        return "one unit"
+    return f"{units:g} units"

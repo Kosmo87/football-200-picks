@@ -306,3 +306,16 @@ table.compact td, table.compact th { padding: 7px 11px; }
   margin-top: 10px; padding-top: 9px; border-top: 1px solid var(--line);
   color: var(--ink-faint); font-size: 12.5px;
 }
+
+/* Two decided lists. The headings carry the difference between them, because
+   the board no longer has controls to explain it. */
+.list-head { margin: 22px 0 10px; }
+.list-title {
+  font-size: 15px; font-weight: 650; color: var(--ink); margin: 0 0 4px;
+  letter-spacing: -0.01em;
+}
+.list-sub {
+  margin: 0; max-width: 76ch; font-size: 12.5px; line-height: 1.55;
+  color: var(--ink-dim);
+}
+.list-sub em { color: var(--warn); font-style: normal; font-weight: 600; }

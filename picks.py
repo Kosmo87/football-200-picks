@@ -15,6 +15,7 @@ from odds import (
     side_implied_prob,
 )
 from staking import (
+    MIN_PLAYABLE_UNITS,
     parlay_win_prob,
     stake_units,
     trust_label,
@@ -28,17 +29,11 @@ DEFAULT_MIN_SAMPLE_NFL = 3
 DEFAULT_MIN_SAMPLE_NCAAF = 4
 DEFAULT_MAX_PARLAY_LEGS = 5
 
-# A pick the engine would stake 0.2U on is the engine saying it barely believes
-# it, and presenting that as "#1 Tip" reads as conviction it does not have.
-#
-# The floor is 0.3 because the distribution was measured before it was chosen.
-# Across a full board every stake fell between 0.1U and 0.8U -- nothing reached
-# 1U, because the stake is the ladder capped by Kelly and shrunk by
-# disagreement, and at +200-and-longer prices Kelly is small. 0.3 cut 9 of 10
-# staked NFL sides and kept the two genuinely larger college ones, which is the
-# intended shape: fewer tips, and the ones left are the ones the engine would
-# actually back.
-DEFAULT_MIN_STAKE_UNITS = 0.3
+# Half a unit is the smallest stake that exists (see staking.to_half_units), so
+# it is also the floor. A pick sizing under a quarter unit rounds to nothing and
+# is not a bet -- that is the engine saying it does not believe it, which is an
+# answer rather than a failure.
+DEFAULT_MIN_STAKE_UNITS = MIN_PLAYABLE_UNITS
 
 # "High certainty of happening" is a different gate from "high edge", and the
 # two point opposite ways here: the backtest found claimed edge INVERSELY

@@ -259,9 +259,29 @@ One error, stated twice.
 When nothing survives, the board says which gate emptied it. "No tips" and "no
 tips worth backing" are different answers and only one means something broke.
 
+### No knobs
+
+The board used to expose every gate as a slider. That made it a
+build-your-own-bet tool: whatever it recommended was whatever you had just asked
+it to recommend, and the track record described a strategy no visitor was
+running. The gates came out of backtests — they are findings, not preferences —
+so they are applied rather than offered, and the page shows one decided list per
+posture.
+
+Stakes come in **half units and nothing finer** (`staking.to_half_units`). This
+is a decision about what a stake is, not a display choice: "half a unit" is an
+instruction, "0.3U" is an optimisation result, and only one of them gets acted
+on. It also stops false precision — the gap between 0.2U and 0.3U is well inside
+the error on a win probability estimated from Elo. Rounding to nearest can raise
+a stake, which is safe in this direction because the ladder is already capped at
+quarter-Kelly, so even the largest upward round lands near three-eighths Kelly.
+Under a quarter unit rounds to nothing and is not a bet.
+
 ### The certainty / payout trade
 
-The **high-certainty preset** asks for a likely winner rather than a good price,
+The page shows two decided lists, **Safest** and **Best priced** — the same
+engine and gates read in the two directions a bet can be good, with no bet
+appearing in both. Safest asks for a likely winner rather than a good price,
 and applies its floor to the *ticket*, not to each leg — gating legs alone
 produced a four-leg parlay of 55%-plus sides that was 21% to land, technically
 "certain" leg by leg and a longshot as a bet.
@@ -270,10 +290,10 @@ It also drops the payout floor to −400, because a bet paying +200 is a
 one-in-three shot by construction and asking for both is asking for nothing. The
 difference is the whole point:
 
-| | tips | pays | model win% |
+| list | bets | pays | model win% |
 | --- | --- | --- | --- |
-| default (+200 target) | ISU +425, ASU +500 | big | 26–27% |
-| high certainty | ECU −265, WAKE −148 | small | 70–76% |
+| Best priced (+200 target) | ISU +425, ASU +500 | big | 26–27% |
+| Safest | ECU −265, WAKE −148 | small | 70–76% |
 
 The market prices certainty. There is no setting that gives both.
 

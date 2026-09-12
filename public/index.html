@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Football +200 Picks — Elo tip engine</title>
-<meta name="description" content="Elo model vs market implied odds: confidence-gated +EV moneyline tips for NFL and NCAAF.">
+<title>Football +200 Picks — the bets, already decided</title>
+<meta name="description" content="A decided list of NFL and NCAAF moneyline bets with half-unit stakes, from an Elo model gated against market prices.">
 <link rel="preload" href="data/board.json" as="fetch" crossorigin>
 <link rel="stylesheet" href="styles.css">
 </head>
@@ -15,7 +15,7 @@
       <span class="brand-mark">+200</span>
       <div>
         <h1>Football Tip Engine</h1>
-        <p class="sub">Elo model vs market prices &middot; a model under evaluation, not advice</p>
+        <p class="sub">We did the math &middot; a model under evaluation, not advice</p>
       </div>
     </div>
     <div class="freshness">
@@ -48,42 +48,44 @@
 
   <nav class="tabs" role="tablist" id="league-tabs"></nav>
 
-  <section class="panel controls">
-    <div class="controls-head">
-      <h2 class="section-title">Pick filters</h2>
-      <div class="controls-actions">
-        <label class="toggle">
-          <input type="checkbox" id="preset-high">
-          <span>High-confidence preset</span>
-        </label>
-        <label class="toggle">
-          <input type="checkbox" id="preset-certain">
-          <span title="Likely to win rather than well priced. Drops the payout floor to +100, because a bet paying +200 is a one-in-three shot by construction.">High-certainty preset</span>
-        </label>
-        <button type="button" id="reset" class="btn-ghost">Reset</button>
-      </div>
+
+  <section>
+    <h2 class="section-title">Place these
+      <span class="note" id="tips-note"></span></h2>
+    <p class="legend">These are the bets, already decided. Stakes are in
+    <strong>half-unit steps</strong> and nothing finer — the gap between 0.2 and
+    0.3 of a unit is well inside the error on a win probability estimated from
+    Elo, so printing it would claim an accuracy the model does not have. Anything
+    that sized under a quarter unit is not here at all.
+    <strong>Model win%</strong> is our estimated chance the bet lands;
+    <strong>Market win%</strong> is the same thing according to the price. When
+    those two disagree badly <em>we are usually the ones who are wrong</em>, so a
+    wide gap shrinks the stake instead of growing it. A parlay needs every leg,
+    so its chance is much lower than any single leg's.</p>
+    <div class="list-head">
+      <h3 class="list-title">Safest</h3>
+      <p class="list-sub">Most likely to land. The model gives every one of these
+      better than an even chance, and the ticket is judged as a whole rather than
+      leg by leg — four legs each cleared at 55% is a 9% parlay. You are buying
+      the hit rate and paying for it in payout.</p>
     </div>
-    <div class="sliders" id="sliders"></div>
+    <div id="tips-safe" class="tips"></div>
+
+    <div class="list-head">
+      <h3 class="list-title">Best priced</h3>
+      <p class="list-sub">Where the model sees the largest gap between its own
+      number and the price. Bigger payouts, and most of these lose — that is what
+      a +300 shot is. Nothing here overlaps the list above.</p>
+    </div>
+    <div id="tips-value" class="tips"></div>
+
     <p class="gate-summary" id="gate-summary"></p>
   </section>
 
   <section>
-    <h2 class="section-title">Tips <span class="note" id="tips-note"></span></h2>
-    <p class="legend">Four numbers, in the order they matter.
-    <strong>Stake</strong> is how much to bet, in units.
-    <strong>Trust</strong> is how far our number sits from the market's — and when
-    those two disagree badly, <em>we are usually the ones who are wrong</em>, so a
-    wide gap shrinks the stake instead of growing it.
-    <strong>Model win%</strong> is our estimated chance the bet lands;
-    <strong>Market win%</strong> is the same thing according to the price.
-    A parlay needs every leg to hit, so its chance is much lower than any single
-    leg's — which is why a confident-looking parlay still gets a small stake.</p>
-    <div id="tips" class="tips"></div>
-  </section>
-
-  <section>
     <div class="section-head">
-      <h2 class="section-title">Full board</h2>
+      <h2 class="section-title">Full board
+        <span class="note">everything priced, for reference — the bets are above</span></h2>
       <label class="toggle small">
         <input type="checkbox" id="only-ev" checked>
         <span>+EV sides only</span>
@@ -134,9 +136,10 @@
       <li><strong>Implied win%</strong> — from the priced side, de-vigged against the other side's moneyline so both probabilities sum to 1.</li>
       <li><strong>Edge</strong> — model win% minus implied win%, in percentage points.</li>
       <li><strong>Signal</strong> — sample depth (40) + edge size (35) + how short the price is (25), scored out of 100. Not a win probability. Prior-season games grant capped sample credit, so a week-2 team with a real carried-over rating isn't treated as an unknown.</li>
-      <li><strong>Selection</strong> — gated legs only, no overlapping teams or games; prefer singles and short parlays that already clear +200, then stack 3–5 shorter legs. Ranked by confidence and edge, not by juiciest payout.</li>
+      <li><strong>Selection</strong> — gated legs only, no overlapping teams or games; prefer singles and short parlays that already clear the payout floor, then stack 3–5 shorter legs. Ranked by confidence and edge, not by juiciest payout. The gates are fixed, not adjustable: they came out of backtests, so they are findings rather than preferences, and a board whose filters you set would only ever recommend what you had just asked it to recommend.</li>
+      <li><strong>Stakes</strong> — the capper ladder by win probability, capped by quarter-Kelly so a fairly priced favourite gets nothing, shrunk by how far the model has strayed from the price, then snapped to the nearest <strong>half unit</strong>. Under a quarter unit is no bet.</li>
       <li><strong>What gets hidden</strong> — two filters run before anything is shown. A tip the engine would stake under <strong>0.3U</strong> on is dropped: that is the engine saying it barely believes it, and presenting it as &ldquo;#1 Tip&rdquo; reads as conviction it does not have. And <strong>both sides</strong> of a game are dropped when a quarterback has been ruled out, because the ratings are stale for that game in both directions — the same uninformed number says &ldquo;back the injured team&rdquo; on one side and &ldquo;fade their opponent&rdquo; on the other.</li>
-      <li><strong>High-certainty preset</strong> — asks for a likely winner instead of a good price, and applies the floor to the <em>ticket</em> rather than each leg, because four legs each cleared at 55% is a 9% parlay. It drops the payout floor to −400, since a bet paying +200 is a one-in-three shot by construction. The market prices certainty: buying a likely winner means accepting a small payout, and no setting gives both.</li>
+      <li><strong>Two lists</strong> — the same engine and the same gates, read in the two directions a bet can be good. <em>Safest</em> requires the whole ticket to be better than a coin flip (not each leg: four legs each cleared at 55% is a 9% parlay) and drops the payout floor to −400, since a bet paying +200 is a one-in-three shot by construction. <em>Best priced</em> keeps the +200 target and takes the largest gaps. A bet never appears in both. The market prices certainty accurately, so a likely winner pays little and a big payout is a longshot — there is no third list where both are true.</li>
       <li><strong>Placed bets</strong> &mdash; ticking a bet records it server-side with the price and stake at that moment, and the hourly build settles it against the final score. A parlay is one ticket: one losing leg settles it, and a pushed leg drops out and re-prices the rest. &ldquo;Your bets&rdquo; is that record and nothing else &mdash; a recommendation you did not take never appears in it.</li>
       <li><strong>CLV</strong> — each tracked pick logs its price when first surfaced and keeps updating the latest price until kickoff. Positive CLV means the opening price was longer than the close.</li>
     </ol>
