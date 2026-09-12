@@ -36,7 +36,7 @@ def close(a, b):
 
 def compare(js, py, problems):
     if set(js) != set(py):
-        problems.append(f"different leagues: {sorted(js)} vs {sorted(py)}")
+        problems.append(f"different cases: {sorted(js)} vs {sorted(py)}")
         return
     for league in sorted(js):
         a, b = js[league], py[league]
@@ -70,7 +70,9 @@ def main() -> int:
         return 1
 
     n = sum(len(v) for v in js.values())
-    print(f"parity OK — {n} picks across {len(js)} leagues agree within {TOL:g}")
+    # Keys are "<LEAGUE>/<preset>", so this counts configurations, not leagues.
+    print(f"parity OK — {n} picks across {len(js)} configurations "
+          f"({', '.join(sorted(js))}) agree within {TOL:g}")
     return 0
 
 

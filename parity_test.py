@@ -35,6 +35,11 @@ for name, lg in board["leagues"].items():
                 implied_prob=rl["implied_prob"], edge=rl["edge_pp"] / 100.0,
                 fair_odds=rl["fair_odds"], sample_games=rl["sample"],
                 team_sample=rl["team_sample"], opp_sample=rl["opp_sample"],
+                # Carried through, not re-derived. The gate that reads it is the
+                # one most likely to diverge between the two engines, because
+                # it is the only one whose input is not a price.
+                stale=bool(rl.get("stale")),
+                stale_reason=rl.get("stale_reason", ""),
             ))
 
     from picks import compute_confidence
@@ -43,13 +48,23 @@ for name, lg in board["leagues"].items():
             l.edge, l.odds_american, l.sample_games
         )
 
-    cfg = ConfidenceConfig(min_sample_games=lg["meta"]["default_min_sample"])
-
     import picks as picks_mod
     picks_mod.get_all_legs = lambda *a, **k: all_legs  # feed the identical board
-    result = build_picks(games, elo, n=3, cfg=cfg)
 
-    out[name] = [
+    # Both configurations. The certainty preset reaches gates the default path
+    # never evaluates -- the pick-level win-probability floor and a negative
+    # combined-odds floor -- so testing only the defaults would leave the newest
+    # engine logic unchecked exactly where a port is most likely to drift.
+    def _base():
+        return ConfidenceConfig(min_sample_games=lg["meta"]["default_min_sample"])
+
+    for preset, cfg in (
+        ("default", _base()),
+        ("certainty", _base().apply_high_certainty_preset()),
+    ):
+     result = build_picks(games, elo, n=3, cfg=cfg)
+
+     out[f"{name}/{preset}"] = [
         {
             "combined": p.combined_odds,
             # Raw floats; see the note in parity_test.js. Rounding here is what
@@ -63,6 +78,6 @@ for name, lg in board["leagues"].items():
             "legs": [f"{l.team_abbr}@{l.odds_american}" for l in p.legs],
         }
         for p in result
-    ]
+     ]
 
 print(json.dumps(out, indent=2))

@@ -101,6 +101,35 @@ def load_prior_season(league: str, season: int, refresh: bool = False) -> List[C
 # Board
 # ---------------------------------------------------------------------------
 
+def mark_stale_legs(game: Dict) -> None:
+    """
+    Flag BOTH sides of a game the ratings cannot speak to.
+
+    A quarterback ruled out makes the Elo rating stale for that game, and it is
+    stale in both directions -- which is the part that is easy to get wrong. The
+    obvious move is to drop the injured team's side and keep the opponent's, but
+    the model's opinion of the opponent is built from the same rating and is
+    wrong the same way. On Atlanta at Pittsburgh the model put Atlanta at 45.1%
+    against a market price of 30.4%, which reads as "back Atlanta"; on the other
+    side the identical rating put Pittsburgh at 54.9% against 69.6%, which reads
+    as "Pittsburgh is overpriced". Both are the same error, stated twice. The
+    market has repriced the game and the rating has not, so neither side of it
+    is ours to have an opinion about.
+
+    Written onto the legs rather than read from game context at selection time
+    so the browser engine and the Python engine see one identical field instead
+    of each re-deriving it.
+    """
+    flags = ((game.get("context") or {}).get("flags") or [])
+    blocking = [f for f in flags if f.get("kind") == "qb_out"]
+    if not blocking:
+        return
+    reason = "; ".join(f["text"].split(".")[0] for f in blocking)
+    for leg in game.get("legs") or []:
+        leg["stale"] = True
+        leg["stale_reason"] = reason
+
+
 def serialize_leg(leg) -> Dict:
     return {
         "side": leg.side,
@@ -200,6 +229,7 @@ def build_league(league: str, season: int, refresh_prior: bool):
         ctx = context.build_context(league, games_out)
         for g in games_out:
             g["context"] = ctx.get(str(g["event_id"]))
+            mark_stale_legs(g)
     except Exception as e:
         # The board was useful before any of this existed and stays useful when
         # ESPN's injury feed 500s.

@@ -28,6 +28,34 @@ DEFAULT_MIN_SAMPLE_NFL = 3
 DEFAULT_MIN_SAMPLE_NCAAF = 4
 DEFAULT_MAX_PARLAY_LEGS = 5
 
+# A pick the engine would stake 0.2U on is the engine saying it barely believes
+# it, and presenting that as "#1 Tip" reads as conviction it does not have.
+#
+# The floor is 0.3 because the distribution was measured before it was chosen.
+# Across a full board every stake fell between 0.1U and 0.8U -- nothing reached
+# 1U, because the stake is the ladder capped by Kelly and shrunk by
+# disagreement, and at +200-and-longer prices Kelly is small. 0.3 cut 9 of 10
+# staked NFL sides and kept the two genuinely larger college ones, which is the
+# intended shape: fewer tips, and the ones left are the ones the engine would
+# actually back.
+DEFAULT_MIN_STAKE_UNITS = 0.3
+
+# "High certainty of happening" is a different gate from "high edge", and the
+# two point opposite ways here: the backtest found claimed edge INVERSELY
+# related to outcome, while certainty is just the model's win probability. Off
+# by default (0.0) because a +200 target and a likely winner are close to
+# mutually exclusive -- a bet paying +200 is about 33% by construction -- so
+# switching it on is a deliberate choice to trade payout for hit rate.
+DEFAULT_MIN_WIN_PROB = 0.0
+
+# The same question asked of the TICKET rather than of each leg, which is the
+# one that actually matters and the one a per-leg gate silently fails. Four legs
+# each cleared at 55% is a 9% parlay; requiring "certainty" leg by leg and then
+# multiplying them together produces exactly the bet the gate was meant to
+# exclude. Applied after the parlay is assembled, to its combined win
+# probability.
+DEFAULT_MIN_PICK_WIN_PROB = 0.0
+
 
 @dataclass
 class ConfidenceConfig:
@@ -39,6 +67,11 @@ class ConfidenceConfig:
     max_parlay_legs: int = DEFAULT_MAX_PARLAY_LEGS  # 1–5 (1 = singles only)
     min_combined_odds: int = MIN_COMBINED_ODDS
     high_confidence_mode: bool = False
+    # Noise gates. See the constants above for why these values.
+    min_stake_units: float = DEFAULT_MIN_STAKE_UNITS
+    min_win_prob: float = DEFAULT_MIN_WIN_PROB
+    min_pick_win_prob: float = DEFAULT_MIN_PICK_WIN_PROB
+    exclude_stale: bool = True
 
     def apply_high_confidence_preset(self, league: str = "NFL") -> "ConfidenceConfig":
         """Raise gates and prefer stacking shorter prices (more legs allowed)."""
@@ -49,6 +82,34 @@ class ConfidenceConfig:
         self.min_sample_games = max(self.min_sample_games, floor)
         self.max_single_leg_odds = min(self.max_single_leg_odds, 350)
         self.max_parlay_legs = max(self.max_parlay_legs, 5)
+        return self
+
+    def apply_high_certainty_preset(self) -> "ConfidenceConfig":
+        """
+        Likely to win, rather than well priced.
+
+        Two floors, and the second is the one that does the work: the ticket
+        must be better than a coin flip, not merely built from legs that were.
+        Gating legs alone produced a four-leg parlay of 55%-plus sides that was
+        21% to land -- technically every leg "certain", the bet itself a
+        longshot.
+
+        The payout floor drops to -400 to make that possible at all. American
+        odds compare correctly as signed integers (-400 < -150 < +100 < +200,
+        which is also increasing payout), so a negative floor reads as "any
+        price at or longer than -400". Leaving it at +200 would be asking for a
+        one-in-three shot to come in more than half the time, which has no
+        answer -- the board would go empty and look broken rather than show
+        favourites and look small.
+
+        This is the trade stated in one place: the market prices certainty, so
+        buying a likely winner means accepting a small payout. There is no
+        setting that gives both.
+        """
+        self.min_win_prob = max(self.min_win_prob, 0.55)
+        self.min_pick_win_prob = max(self.min_pick_win_prob, 0.50)
+        self.min_combined_odds = min(self.min_combined_odds, -400)
+        self.min_stake_units = max(self.min_stake_units, DEFAULT_MIN_STAKE_UNITS)
         return self
 
 
@@ -76,6 +137,11 @@ class Leg:
     prior_credit: float = 0.0  # sample credit from last season's rating
     confidence: float = 0.0  # 0–100
     confidence_label: str = "Low"
+    # Set by build_board.mark_stale_legs: the ratings cannot speak to this game
+    # because a quarterback was ruled out after they were computed. True on BOTH
+    # sides of such a game, deliberately.
+    stale: bool = False
+    stale_reason: str = ""
 
 
 @dataclass
@@ -226,6 +292,10 @@ def get_all_legs(
 
 
 def passes_confidence_gates(leg: Leg, cfg: ConfidenceConfig) -> bool:
+    if cfg.exclude_stale and leg.stale:
+        return False
+    if leg.model_win_prob < cfg.min_win_prob:
+        return False
     if leg.edge * 100.0 < cfg.min_edge_pp:
         return False
     if leg.sample_games < cfg.min_sample_games:
@@ -415,9 +485,11 @@ def build_picks(
                 if not can_use(leg):
                     continue
                 pick = _make_pick([leg], leg.odds_american)
-                # A pick we would stake nothing on is not a pick. Leave its
-                # teams free so they can still appear in a combination.
-                if pick.stake_units <= 0:
+                # A pick we would barely stake is not a pick. Leave its teams
+                # free so they can still appear in a combination.
+                if pick.stake_units < cfg.min_stake_units:
+                    continue
+                if pick.win_prob < cfg.min_pick_win_prob:
                     continue
                 picks.append(pick)
                 mark_used(leg)
@@ -435,7 +507,9 @@ def build_picks(
             if any(not can_use(l) for l in legs_combo):
                 continue
             pick = _make_pick(legs_combo, comb)
-            if pick.stake_units <= 0:
+            if pick.stake_units < cfg.min_stake_units:
+                continue
+            if pick.win_prob < cfg.min_pick_win_prob:
                 continue
             picks.append(pick)
             for l in legs_combo:

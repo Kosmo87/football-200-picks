@@ -95,6 +95,23 @@ const DEFAULTS = {
   maxParlayLegs: 5,
   minCombined: 200,
   minLegOdds: -350,
+  // A pick the engine would stake 0.2U on is the engine saying it barely
+  // believes it, and showing that as "#1 Tip" reads as conviction it does not
+  // have. 0.3 was measured, not picked: across a full board every stake fell
+  // between 0.1U and 0.8U, and 0.3 cut 9 of 10 staked NFL sides while keeping
+  // the two genuinely larger college ones. Mirrors DEFAULT_MIN_STAKE_UNITS.
+  minStake: 0.3,
+  // "Likely to win" rather than "well priced" — a different gate, and one that
+  // points the other way, since claimed edge measured inversely related to
+  // outcome. Off by default: a bet paying +200 is a one-in-three shot by
+  // construction, so certainty and payout cannot both be maximised.
+  minWinProb: 0,
+  // The same question asked of the TICKET, which is the one that matters. Four
+  // legs each cleared at 55% is a 9% parlay: gating legs and then multiplying
+  // them produces exactly the bet the gate meant to exclude.
+  minPickWinProb: 0,
+  // Drop both sides of a game the ratings cannot speak to.
+  excludeStale: true,
 };
 
 // Baseline min-sample differs by league (college needs a touch more).
@@ -139,6 +156,10 @@ function flattenLegs(league) {
 }
 
 function passesGates(leg, cfg) {
+  // Order mirrors passes_confidence_gates in picks.py. The staleness check is
+  // first because it is a statement about the input, not about the price.
+  if (cfg.excludeStale && leg.stale) return false;
+  if (leg.model_prob < cfg.minWinProb) return false;
   if (leg.edge_pp < cfg.minEdgePP) return false;
   if (leg.sample < cfg.minSample) return false;
   if (leg.odds > cfg.maxLegOdds) return false;
@@ -256,9 +277,10 @@ function buildPicks(allLegs, cfg, n = 3) {
         if (picks.length >= n) break;
         if (!canUse(leg)) continue;
         const pick = makePick([leg], leg.odds);
-        // A pick we would stake nothing on is not a pick. Leave its teams free
-        // so they can still appear in a combination.
-        if (pick.stakeUnits <= 0) continue;
+        // A pick we would barely stake is not a pick. Leave its teams free so
+        // they can still appear in a combination.
+        if (pick.stakeUnits < cfg.minStake) continue;
+        if (pick.winProb < cfg.minPickWinProb) continue;
         picks.push(pick);
         markUsed(leg);
       }
@@ -269,7 +291,8 @@ function buildPicks(allLegs, cfg, n = 3) {
       if (picks.length >= n) break;
       if (cand.legs.some((l) => !canUse(l))) continue;
       const pick = makePick(cand.legs, cand.combined);
-      if (pick.stakeUnits <= 0) continue;
+      if (pick.stakeUnits < cfg.minStake) continue;
+      if (pick.winProb < cfg.minPickWinProb) continue;
       picks.push(pick);
       cand.legs.forEach(markUsed);
     }
@@ -277,6 +300,23 @@ function buildPicks(allLegs, cfg, n = 3) {
 
   picks.sort((a, b) => b.avgConfidence - a.avgConfidence || b.combinedEdgePP - a.combinedEdgePP);
   return picks.slice(0, n);
+}
+
+/**
+ * Mirrors ConfidenceConfig.apply_high_certainty_preset.
+ *
+ * Pure, and defined in the engine half on purpose: the parity harness loads
+ * everything above the State section, and a preset the harness cannot reach is
+ * a preset nothing checks. Both engines must agree here too.
+ */
+function applyCertaintyTo(cfg) {
+  return {
+    ...cfg,
+    minWinProb: Math.max(cfg.minWinProb, 0.55),
+    minPickWinProb: Math.max(cfg.minPickWinProb, 0.5),
+    minCombined: Math.min(cfg.minCombined, -400),
+    minStake: Math.max(cfg.minStake, DEFAULTS.minStake),
+  };
 }
 
 // --------------------------------------------------------------------------
@@ -558,6 +598,7 @@ const state = {
   cfg: { ...DEFAULTS },
   onlyEV: true,
   preset: false,
+  certainty: false,
   // Sliders the user has actually moved. Untouched ones follow the per-league
   // baseline when the tab changes (NCAAF wants a deeper sample than the NFL).
   touched: new Set(),
@@ -577,8 +618,18 @@ const SLIDER_SPECS = [
     fmt: (v) => fmtOdds(v), hint: "longest single leg allowed" },
   { key: "maxParlayLegs", label: "Max legs", min: 1, max: 5, step: 1,
     fmt: (v) => `${v}`, hint: "1 = singles only" },
-  { key: "minCombined", label: "Min combined", min: 100, max: 600, step: 25,
+  // Range reaches below zero so certainty is reachable at all. American odds
+  // compare correctly as signed integers (-400 < -150 < +100 < +200, which is
+  // also increasing payout), so a negative floor means "any price at or longer
+  // than this".
+  { key: "minCombined", label: "Min combined", min: -400, max: 600, step: 25,
     fmt: (v) => fmtOdds(v), hint: "target payout floor" },
+  { key: "minStake", label: "Min stake", min: 0, max: 2, step: 0.1,
+    fmt: (v) => (v <= 0 ? "any" : `${v.toFixed(1)}U`),
+    hint: "hide tips we'd barely back" },
+  { key: "minWinProb", label: "Min win chance", min: 0, max: 0.8, step: 0.05,
+    fmt: (v) => (v <= 0 ? "any" : `${(v * 100).toFixed(0)}%`),
+    hint: "likely to win, not well priced" },
 ];
 
 const $ = (sel) => document.querySelector(sel);
@@ -817,10 +868,49 @@ function renderTips() {
     : "";
 
   if (!picks.length) {
-    const why = gated
-      ? `${gated} sides pass the gates, but none combine to ${fmtOdds(state.cfg.minCombined)} without overlapping teams. Raise max legs or lower the combined floor.`
-      : `No sides clear ${state.cfg.minEdgePP.toFixed(1)}pp edge at ${state.cfg.minSample} games of sample. Loosen the gates to see marginal plays.`;
-    box.appendChild(el("div", "empty", `<strong>No qualifying tips</strong>${why}`));
+    // Which gate emptied the board, counted rather than guessed. "No tips" and
+    // "no tips worth backing" are different answers and only one of them means
+    // something is wrong.
+    const staleCut = legs.filter((l) => l.stale).length;
+    const certaintyCut = state.cfg.minWinProb > 0
+      ? legs.filter((l) => !l.stale && l.model_prob < state.cfg.minWinProb).length : 0;
+    const best = legs
+      .filter((l) => passesGates(l, state.cfg))
+      .map((l) => stakeUnits(l.model_prob, l.odds, l.implied_prob))
+      .reduce((a, b) => Math.max(a, b), 0);
+
+    let why;
+    if (gated && best > 0 && best < state.cfg.minStake) {
+      why = `${gated} sides pass the gates, but the largest stake the engine `
+          + `would put on any of them is <strong>${best.toFixed(1)}U</strong>, under `
+          + `the ${state.cfg.minStake.toFixed(1)}U floor. That is the engine saying it `
+          + `does not believe these enough to back them — which is an answer, not a `
+          + `failure. Lower &ldquo;Min stake&rdquo; to see them anyway.`;
+    } else if (gated) {
+      why = `${gated} sides pass the gates, but none combine to `
+          + `${fmtOdds(state.cfg.minCombined)} without overlapping teams. `
+          + `Raise max legs or lower the combined floor.`;
+    } else if (state.cfg.minWinProb > 0) {
+      why = `Nothing clears a ${(state.cfg.minWinProb * 100).toFixed(0)}% win chance `
+          + `${state.cfg.minCombined > 100 ? `at ${fmtOdds(state.cfg.minCombined)} or longer — `
+              + `and it cannot, because a bet paying ${fmtOdds(state.cfg.minCombined)} is `
+              + `about ${(100 / (americanToDecimal(state.cfg.minCombined))).toFixed(0)}% by `
+              + `construction. Drop the combined floor to +100 to price certainty instead `
+              + `of payout.`
+            : `(${certaintyCut} sides were cut by it). The market prices certainty, so `
+              + `the ones that would qualify pay too little to clear the other gates.`}`;
+    } else {
+      why = `No sides clear ${state.cfg.minEdgePP.toFixed(1)}pp edge at `
+          + `${state.cfg.minSample} games of sample. Loosen the gates to see `
+          + `marginal plays.`;
+    }
+    if (staleCut && state.cfg.excludeStale) {
+      why += `<div class="empty-extra">${staleCut} side${staleCut > 1 ? "s were" : " was"} `
+           + `excluded outright: a quarterback was ruled out after the ratings were `
+           + `built, so the model has no informed opinion on either side of `
+           + `${staleCut > 2 ? "those games" : "that game"}.</div>`;
+    }
+    box.appendChild(el("div", "empty", `<strong>Nothing worth backing</strong>${why}`));
     return;
   }
 
@@ -982,6 +1072,10 @@ function render() {
 
 /** Re-apply league baselines to any gate the user has not set themselves. */
 function applyLeagueDefaults() {
+  if (state.certainty) {
+    applyCertaintyValues();
+    return;
+  }
   if (state.preset) {
     applyPresetValues();
     return;
@@ -999,10 +1093,34 @@ function applyPresetValues() {
   state.cfg.maxParlayLegs = 5;
 }
 
+/**
+ * Mirrors ConfidenceConfig.apply_high_certainty_preset.
+ *
+ * Drops the combined floor to +100 on purpose: requiring better than an even
+ * chance rules out every +200 single, because that price IS a one-in-three
+ * shot. Keeping the payout target would make this preset return nothing and
+ * look broken rather than return favourites and look small.
+ */
+function applyCertaintyValues() {
+  state.cfg = applyCertaintyTo(state.cfg);
+}
+
 function applyPreset(on) {
   state.preset = on;
+  state.certainty = false;
+  $("#preset-certain").checked = false;
+  if (on) applyPresetValues();
+  else resetCfg();
+  render();
+}
+
+function applyCertainty(on) {
+  state.certainty = on;
+  state.preset = false;
+  $("#preset-high").checked = false;
   if (on) {
-    applyPresetValues();
+    resetCfg();
+    applyCertaintyValues();
   } else {
     resetCfg();
   }
@@ -1052,9 +1170,12 @@ async function boot() {
   $("#season").textContent = `${board.season} season`;
 
   $("#preset-high").addEventListener("change", (e) => applyPreset(e.target.checked));
+  $("#preset-certain").addEventListener("change", (e) => applyCertainty(e.target.checked));
   $("#reset").addEventListener("click", () => {
     $("#preset-high").checked = false;
+    $("#preset-certain").checked = false;
     state.preset = false;
+    state.certainty = false;
     resetCfg();
     render();
   });

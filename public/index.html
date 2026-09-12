@@ -56,6 +56,10 @@
           <input type="checkbox" id="preset-high">
           <span>High-confidence preset</span>
         </label>
+        <label class="toggle">
+          <input type="checkbox" id="preset-certain">
+          <span title="Likely to win rather than well priced. Drops the payout floor to +100, because a bet paying +200 is a one-in-three shot by construction.">High-certainty preset</span>
+        </label>
         <button type="button" id="reset" class="btn-ghost">Reset</button>
       </div>
     </div>
@@ -131,6 +135,8 @@
       <li><strong>Edge</strong> — model win% minus implied win%, in percentage points.</li>
       <li><strong>Signal</strong> — sample depth (40) + edge size (35) + how short the price is (25), scored out of 100. Not a win probability. Prior-season games grant capped sample credit, so a week-2 team with a real carried-over rating isn't treated as an unknown.</li>
       <li><strong>Selection</strong> — gated legs only, no overlapping teams or games; prefer singles and short parlays that already clear +200, then stack 3–5 shorter legs. Ranked by confidence and edge, not by juiciest payout.</li>
+      <li><strong>What gets hidden</strong> — two filters run before anything is shown. A tip the engine would stake under <strong>0.3U</strong> on is dropped: that is the engine saying it barely believes it, and presenting it as &ldquo;#1 Tip&rdquo; reads as conviction it does not have. And <strong>both sides</strong> of a game are dropped when a quarterback has been ruled out, because the ratings are stale for that game in both directions — the same uninformed number says &ldquo;back the injured team&rdquo; on one side and &ldquo;fade their opponent&rdquo; on the other.</li>
+      <li><strong>High-certainty preset</strong> — asks for a likely winner instead of a good price, and applies the floor to the <em>ticket</em> rather than each leg, because four legs each cleared at 55% is a 9% parlay. It drops the payout floor to −400, since a bet paying +200 is a one-in-three shot by construction. The market prices certainty: buying a likely winner means accepting a small payout, and no setting gives both.</li>
       <li><strong>Placed bets</strong> &mdash; ticking a bet records it server-side with the price and stake at that moment, and the hourly build settles it against the final score. A parlay is one ticket: one losing leg settles it, and a pushed leg drops out and re-prices the rest. &ldquo;Your bets&rdquo; is that record and nothing else &mdash; a recommendation you did not take never appears in it.</li>
       <li><strong>CLV</strong> — each tracked pick logs its price when first surfaced and keeps updating the latest price until kickoff. Positive CLV means the opening price was longer than the close.</li>
     </ol>

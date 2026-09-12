@@ -198,6 +198,48 @@ Treat the tips as a model under evaluation, not as advice. `calibrate.py` is the
 scoreboard that matters: until model Brier beats the market's, no selection logic
 layered on top can profit.
 
+## Cutting the noise
+
+Two filters run before a tip is displayed, both mirrored in `picks.py` and
+`public/app.js` and both covered by the parity test.
+
+**A stake floor of 0.3U.** The stake distribution was measured before the floor
+was chosen: across a full board every stake fell between 0.1U and 0.8U — nothing
+reached 1U, because the stake is the ladder capped by Kelly and shrunk by
+disagreement, and at +200-and-longer prices Kelly is small. A tip the engine
+would put 0.2U on is the engine saying it barely believes it; showing that as
+"#1 Tip" reads as conviction it does not have. The floor cut 9 of 10 staked NFL
+sides.
+
+**Stale games, both sides.** When a quarterback is ruled out after the ratings
+were built, `build_board.mark_stale_legs` marks *both* legs. The obvious move is
+to drop the injured team and keep the opponent, and it is wrong: the opponent's
+number comes from the same rating and is wrong the same way. On Atlanta at
+Pittsburgh the model read 45.1% on Atlanta against a market 30.4% ("back
+Atlanta") and 54.9% on Pittsburgh against 69.6% ("Pittsburgh is overpriced").
+One error, stated twice.
+
+When nothing survives, the board says which gate emptied it. "No tips" and "no
+tips worth backing" are different answers and only one means something broke.
+
+### The certainty / payout trade
+
+The **high-certainty preset** asks for a likely winner rather than a good price,
+and applies its floor to the *ticket*, not to each leg — gating legs alone
+produced a four-leg parlay of 55%-plus sides that was 21% to land, technically
+"certain" leg by leg and a longshot as a bet.
+
+It also drops the payout floor to −400, because a bet paying +200 is a
+one-in-three shot by construction and asking for both is asking for nothing. The
+difference is the whole point:
+
+| | tips | pays | model win% |
+| --- | --- | --- | --- |
+| default (+200 target) | ISU +425, ASU +500 | big | 26–27% |
+| high certainty | ECU −265, WAKE −148 | small | 70–76% |
+
+The market prices certainty. There is no setting that gives both.
+
 ## Which bets you actually placed
 
 The board recommends; `placements.py` records. They are different questions and

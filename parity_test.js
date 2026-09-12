@@ -9,14 +9,26 @@ const fs = require("fs");
 const src = fs.readFileSync("public/app.js", "utf8");
 const engine = src.split("// --------------------------------------------------------------------------\n// State")[0];
 const sandbox = {};
-new Function("exports", engine + "\nObject.assign(exports, {flattenLegs, buildPicks, DEFAULTS, LEAGUE_MIN_SAMPLE, computeConfidence, combineOdds, stakeUnits});")(sandbox);
+new Function("exports", engine + "\nObject.assign(exports, {flattenLegs, buildPicks, DEFAULTS, LEAGUE_MIN_SAMPLE, computeConfidence, combineOdds, stakeUnits, applyCertaintyTo});")(sandbox);
 
 const board = JSON.parse(fs.readFileSync("public/data/board.json", "utf8"));
 const out = {};
+
+// Both configurations, not just the defaults. The certainty preset reaches gates
+// the default path never evaluates -- the pick-level win-probability floor and a
+// negative combined-odds floor -- so testing only the defaults would leave the
+// newest engine logic unchecked in exactly the place a port is most likely to
+// drift.
+const CONFIGS = {
+  default: (cfg) => cfg,
+  certainty: (cfg) => sandbox.applyCertaintyTo(cfg),
+};
+
 for (const [name, lg] of Object.entries(board.leagues)) {
-  const cfg = { ...sandbox.DEFAULTS, minSample: sandbox.LEAGUE_MIN_SAMPLE[name] ?? 3 };
+ for (const [preset, apply] of Object.entries(CONFIGS)) {
+  const cfg = apply({ ...sandbox.DEFAULTS, minSample: sandbox.LEAGUE_MIN_SAMPLE[name] ?? 3 });
   const picks = sandbox.buildPicks(sandbox.flattenLegs(lg), cfg, 3);
-  out[name] = picks.map((p) => ({
+  out[`${name}/${preset}`] = picks.map((p) => ({
     combined: p.combined,
     // Raw floats, compared by parity_check.py with a real tolerance.
     //
@@ -36,5 +48,6 @@ for (const [name, lg] of Object.entries(board.leagues)) {
     trust: p.trust,
     legs: p.legs.map((l) => `${l.team_abbr}@${l.odds}`),
   }));
+ }
 }
 console.log(JSON.stringify(out, null, 2));
