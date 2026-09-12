@@ -105,7 +105,7 @@
             <th>Game</th><th>Kickoff</th><th>Side</th><th class="num">Odds</th>
             <th class="num">Model win%</th><th class="num">Market win%</th>
             <th class="num">Edge</th><th class="num">Fair</th>
-            <th class="num">Sample</th><th class="num">Signal</th><th class="num">Stake</th>
+            <th class="num">Evidence</th><th class="num">Stake</th>
           </tr>
         </thead>
         <tbody></tbody>
@@ -141,7 +141,7 @@
       <li><strong>Model win%</strong> — logistic Elo expectation from the rating gap plus home-field.</li>
       <li><strong>Implied win%</strong> — from the priced side, de-vigged against the other side's moneyline so both probabilities sum to 1.</li>
       <li><strong>Edge</strong> — model win% minus implied win%, in percentage points.</li>
-      <li><strong>Signal</strong> — sample depth (40) + edge size (35) + how short the price is (25), scored out of 100. Not a win probability. Prior-season games grant capped sample credit, so a week-2 team with a real carried-over rating isn't treated as an unknown.</li>
+      <li><strong>Sample</strong> — games of evidence behind the rating, including capped credit for last season, so a week-2 team with a real carried-over rating isn't treated as an unknown. This replaced a 0&ndash;100 &ldquo;signal&rdquo; score: 35 of its points were the claimed edge and 25 were a function of the price, both of which are already columns on the same row, so only the sample portion said anything new.</li>
       <li><strong>Selection</strong> — gated legs only, no overlapping teams or games; prefer singles and short parlays that already clear the payout floor, then stack 3–5 shorter legs. Ranked by confidence and edge, not by juiciest payout. The gates are fixed, not adjustable: they came out of backtests, so they are findings rather than preferences, and a board whose filters you set would only ever recommend what you had just asked it to recommend.</li>
       <li><strong>Stakes</strong> — the capper ladder by win probability (under 60% → 0.5U, under 70% → 1U, under 80% → 2U, and so on), capped by quarter-Kelly so a fairly priced favourite gets nothing however likely it looks, then snapped to the nearest <strong>half unit</strong>. Under a quarter unit is no bet. Distance from the market is handled by refusing the bet, not by shrinking it: applying it twice flattened every stake to the floor, because each surviving bet sits in the same trust band and the multiplier could only shrink them all alike.</li>
       <li><strong>What gets hidden</strong> — two filters run before anything is shown. A tip the engine would stake under <strong>0.3U</strong> on is dropped: that is the engine saying it barely believes it, and presenting it as &ldquo;#1 Tip&rdquo; reads as conviction it does not have. And <strong>both sides</strong> of a game are dropped when a quarterback has been ruled out, because the ratings are stale for that game in both directions — the same uninformed number says &ldquo;back the injured team&rdquo; on one side and &ldquo;fade their opponent&rdquo; on the other.</li>

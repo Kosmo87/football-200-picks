@@ -259,6 +259,42 @@ One error, stated twice.
 When nothing survives, the board says which gate emptied it. "No tips" and "no
 tips worth backing" are different answers and only one means something broke.
 
+### What the card shows, and what it used to show
+
+A pick card carried five numbers where three were functions of the other two:
+model win%, market win%, **edge** (the subtraction of those two), **Trust** (a
+relabelling of that same subtraction), and a **0–100 signal score** of which 35
+points were the edge again and 25 were a function of the price already displayed
+alongside. Only the score's 40 sample points said anything new.
+
+The Trust badge was also constant. The gate refuses anything more than ten
+points from the price, so every pick that reaches the page is in the same band
+and the badge read "Medium" every time.
+
+Both are gone. The card now shows model win%, market win%, their difference, the
+price, and **games of evidence** — the one input that was being blended into an
+index whose movement could not be attributed to anything.
+
+### What the model knows about the teams: nothing
+
+Elo is built from final scores and margins. It has no notion of scheme,
+personnel, or which unit is weak — one number per team, updated by results.
+
+The data to do better is free and unused. nflverse publishes NFL play-by-play at
+~19 MB a season, 372 columns, including `shotgun`, `no_huddle`, `run_location`,
+`pass_location`, `air_yards`, down and distance, and EPA split by pass and rush.
+On tonight's top NFL pick (Tennessee −122 vs the Jets) it says the Jets have the
+league's worst pass defence at +0.253 EPA allowed per play and Tennessee the
+second worst at +0.167 — two defences failing in the same specific way, which
+two similar Elo ratings cannot express.
+
+Two honest caveats before anyone builds on it. In week 2 the current season's
+file holds 234 plays, so any read is last season's; and `efficiency.py` already
+does opponent-adjusted ratings from box scores, and `cfb_spread_test.py` tested
+it over 1,800 games against Pinnacle without beating the closing line. Richer
+inputs are not the same as an edge, and this project's standard is a backtest
+against the close, not a plausible story.
+
 ### Why every bet is "Medium" trust, and never "High"
 
 The trust label is the model's distance from the price. The edge gate is the

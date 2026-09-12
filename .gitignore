@@ -58,3 +58,7 @@ node_modules/
 
 # Written by netlify dev when it sets up the edge-functions runtime. Not ours.
 deno.lock
+
+# nflverse play-by-play, ~19 MB a season and re-downloadable from a public URL
+# at any time. Same rule as the other derived caches: not committed.
+/cache/pbp_*.csv.gz

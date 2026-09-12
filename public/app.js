@@ -698,26 +698,24 @@ function kickoffLabel(iso) {
   });
 }
 
-function confBadge(score) {
-  const label = confidenceLabel(score);
+/**
+ * Games of evidence behind the rating.
+ *
+ * This replaced a 0-100 "signal" score that was mostly a restatement of numbers
+ * already on the card: 35 of its points were the claimed edge, which is the
+ * subtraction of the model and market columns sitting next to it, and 25 were a
+ * function of the price, also shown. Only the 40 sample points said anything
+ * new, so the card now shows that directly instead of blended into an index
+ * whose movement could not be attributed to anything.
+ */
+function sampleBadge(sample) {
+  const tone = sample >= 6 ? "high" : sample >= 3 ? "med" : "low";
+  const word = sample >= 6 ? "deep" : sample >= 3 ? "fair" : "thin";
   return (
-    `<span class="badge ${label.toLowerCase()}" title="Signal score, not a win ` +
-    `probability. Combines sample depth (40), claimed edge (35) and how short ` +
-    `the price is (25).">${label} ${Math.round(score)}/100</span>`
+    `<span class="badge ${tone}" title="Games of evidence behind this rating, ` +
+    `including capped credit for last season. Thin samples move a rating a long ` +
+    `way on one result.">${sample.toFixed(1)} gm · ${word}</span>`
   );
-}
-
-/** How much to believe our own number, from how far it sits from the price. */
-function trustBadge(trust) {
-  const cls = { High: "high", Medium: "med", Low: "low", None: "low" }[trust];
-  const tip = {
-    High: "Our number is within 5 points of the market — worth acting on.",
-    Medium: "We are 5-10 points from the market. Reduced stake.",
-    Low: "We are 10-15 points from the market. Heavily reduced stake.",
-    None: "We are more than 15 points from the market, which historically means "
-        + "we are the ones who are wrong. No stake.",
-  }[trust];
-  return `<span class="badge ${cls}" title="${tip}">Trust: ${trust}</span>`;
 }
 
 // --------------------------------------------------------------------------
@@ -1019,10 +1017,13 @@ function renderPickList(box, picks, cfg, legs, gamesById) {
   picks.forEach((pick, i) => {
     const card = el("div", "tip");
     const head = el("div", "tip-head");
+    // No trust badge: the gate now refuses anything past ten points from the
+    // price, so every pick that reaches this page is in the same band and the
+    // badge was the same word every time. The gap itself is still shown, as the
+    // two probabilities and their difference.
     head.innerHTML = `
       <div class="tip-title"><span class="tip-rank">#${i + 1}</span>${pick.label}</div>
       <div class="tip-meta">
-        ${trustBadge(pick.trust)}
         <span class="dim">we say ${fmtPct(pick.winProb)} · market says ${fmtPct(pick.marketProb)}</span>
         <span class="tip-odds ${pick.combined > 0 ? "pos" : ""}">${fmtOdds(pick.combined)}</span>
       </div>`;
@@ -1045,7 +1046,7 @@ function renderPickList(box, picks, cfg, legs, gamesById) {
         <td class="num">${fmtPct(l.model_prob)}<div class="lg-game">model win%</div></td>
         <td class="num">${fmtPct(l.implied_prob)}<div class="lg-game">market win%</div></td>
         <td class="num pos">${fmtPP(l.edge_pp)}<div class="lg-game">fair ${fmtOdds(l.fair_odds)}</div></td>
-        <td class="num">${confBadge(l.confidence)}</td>`;
+        <td class="num">${sampleBadge(l.sample)}</td>`;
       body.appendChild(tr);
     }
     table.appendChild(body);
@@ -1083,7 +1084,7 @@ function renderBoard() {
   const body = $("#board-table tbody");
   body.innerHTML = "";
   if (!legs.length) {
-    body.innerHTML = `<tr><td colspan="12" class="dim" style="padding:20px;text-align:center">
+    body.innerHTML = `<tr><td colspan="11" class="dim" style="padding:20px;text-align:center">
       No priced sides to show.</td></tr>`;
     return;
   }
@@ -1101,8 +1102,7 @@ function renderBoard() {
       <td class="num dim">${fmtPct(l.implied_prob)}</td>
       <td class="num ${l.edge_pp > 0 ? "pos" : "neg"}">${fmtPP(l.edge_pp)}</td>
       <td class="num dim">${fmtOdds(l.fair_odds)}</td>
-      <td class="num dim">${l.sample.toFixed(1)}</td>
-      <td class="num">${confBadge(l.confidence)}</td>
+      <td class="num">${sampleBadge(l.sample)}</td>
       <td class="num">${(() => {
         const u = stakeUnits(l.model_prob, l.odds, l.implied_prob);
         return u > 0
