@@ -82,14 +82,19 @@ function trustLabel(p, marketP) {
   return f >= 1 ? "High" : f >= 0.6 ? "Medium" : f > 0 ? "Low" : "None";
 }
 
-/** Published stake: the ladder, capped by the price, shrunk by disagreement,
- *  then snapped to a half unit. */
+/**
+ * Published stake: the ladder, capped by what the price justifies, snapped to a
+ * half unit.
+ *
+ * The disagreement damper is deliberately NOT applied here — it is applied
+ * earlier as a refusal (cfg.minTrustFactor). Doing both double-counted, and the
+ * second application only flattened: every surviving bet is in the same trust
+ * band, so the multiplier was the same 0.6 on all of them, and with half-unit
+ * rounding that turned raw stakes of 0.30 through 0.70 into identical 0.5U
+ * bets. Mirrors staking.stake_units.
+ */
 const stakeUnits = (p, odds, marketP) =>
-  toHalfUnits(
-    Math.round(
-      Math.min(ladderUnits(p), kellyUnits(p, odds)) * disagreementFactor(p, marketP) * 10
-    ) / 10
-  );
+  toHalfUnits(Math.round(Math.min(ladderUnits(p), kellyUnits(p, odds)) * 10) / 10);
 
 /** A parlay lands only if every leg does. Independence is why legs never share a game. */
 const parlayWinProb = (probs) => probs.reduce((a, b) => a * b, 1);
@@ -358,7 +363,12 @@ function buildPicks(allLegs, cfg, n = Infinity) {
     }
   }
 
-  picks.sort((a, b) => b.avgConfidence - a.avgConfidence || b.combinedEdgePP - a.combinedEdgePP);
+  // Likeliest to land first — that is what the page is read for. Confidence and
+  // edge stay as tie-breakers. Mirrors picks.build_picks.
+  picks.sort((a, b) =>
+    b.winProb - a.winProb
+    || b.avgConfidence - a.avgConfidence
+    || b.combinedEdgePP - a.combinedEdgePP);
   return Number.isFinite(n) ? picks.slice(0, n) : picks;
 }
 

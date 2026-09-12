@@ -94,11 +94,19 @@ def main():
     # half a unit, so the warning has to be a refusal instead.
     from staking import stake_units, trust_label
     low = leg("L", -130, 0.661, 0.543, "9")        # 11.8pp apart: Low trust
-    r.append(check("the two stakes really are indistinguishable now",
-                   stake_units(0.661, -130, 0.543) == stake_units(0.60, -130, 0.57),
-                   True))
     r.append(check("that leg is Low trust", trust_label(0.661, 0.543), "Low"))
-    r.append(check("and is refused", len(run([low])), 0))
+    r.append(check("and is refused outright", len(run([low])), 0))
+
+    # Trust is enforced in exactly one place. stake_units must NOT also damp,
+    # or the two applications double-count -- and because every surviving bet
+    # sits in the same trust band the second one cannot change any stake
+    # relative to another, it can only shrink them all into the floor.
+    r.append(check("stake_units ignores the market probability",
+                   stake_units(0.82, -325, 0.74) == stake_units(0.82, -325, None),
+                   True))
+    r.append(check("and so sizing can still differentiate",
+                   stake_units(0.82, -325) != stake_units(0.30, 250),
+                   True))
 
     # Medium still plays.
     med = leg("M", 250, 0.38, 0.32, "10")

@@ -161,12 +161,28 @@ def stake_units(
     The published stake: the ladder, capped by what the price justifies, then
     shrunk by how far the model has strayed from the market.
 
-    Zero is a real answer and means one of two things — the price does not pay
-    enough to back the opinion, or the opinion is too far from the market to be
-    believed.
+    Zero is a real answer: the price does not pay enough to back the opinion.
+
+    THE DISAGREEMENT DAMPER IS NOT APPLIED HERE ANY MORE. It is applied earlier,
+    as a refusal -- picks.min_trust_factor drops any bet more than ten points
+    from the price instead of sizing it down.
+
+    Applying it in both places double-counted, and the second application did
+    nothing but flatten. Every bet that survives the gate is in the same trust
+    band, so the multiplier is the same 0.6 on all of them: it cannot change one
+    stake relative to another, it can only shrink them all by forty percent.
+    Combined with half-unit rounding that was fatal to the whole idea of sizing.
+    On a real board it turned raw stakes of 0.30 through 0.70 into eleven
+    identical 0.5U bets -- Kennesaw, which the ladder wanted at 3U and Kelly
+    allowed at 1.2U, got the same stake as a bet worth 0.3U.
+
+    Refusing is strictly more conservative than shrinking, so the finding the
+    damper encodes is still honoured; it is just honoured once, where it can
+    actually be expressed.
     """
-    base = min(ladder_units(win_prob), kelly_units(win_prob, odds_american))
-    return to_half_units(_round1(base * disagreement_factor(win_prob, market_prob)))
+    return to_half_units(
+        _round1(min(ladder_units(win_prob), kelly_units(win_prob, odds_american)))
+    )
 
 
 def parlay_win_prob(leg_probs: List[float]) -> float:

@@ -620,8 +620,17 @@ def build_picks(
             for l in legs_combo:
                 mark_used(l)
 
-    # Re-rank selected picks for display (confidence + edge)
-    picks.sort(key=lambda p: (p.avg_confidence, p.combined_edge_pp), reverse=True)
+    # Ranked by how likely the bet is to land.
+    #
+    # It used to rank by the confidence score, which is a composite of sample
+    # depth, edge size and price shortness -- a decent measure of how much
+    # evidence sits behind a pick, and not the question anyone reads the page
+    # for. The top of the list should be the bet most likely to come in.
+    # Confidence and edge stay as tie-breakers.
+    picks.sort(
+        key=lambda p: (p.win_prob, p.avg_confidence, p.combined_edge_pp),
+        reverse=True,
+    )
     return picks if n is None else picks[:n]
 
 
