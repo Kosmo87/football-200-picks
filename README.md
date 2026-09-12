@@ -198,6 +198,62 @@ Treat the tips as a model under evaluation, not as advice. `calibrate.py` is the
 scoreboard that matters: until model Brier beats the market's, no selection logic
 layered on top can profit.
 
+## Which bets you actually placed
+
+The board recommends; `placements.py` records. They are different questions and
+the answers diverge the first time a flagged bet is skipped — after a month a
+ledger of everything the engine surfaced describes a strategy nobody followed.
+
+Every tip and every board row has a checkbox. Ticking it writes the bet
+server-side through `netlify/functions/placements.mjs` (a Netlify blob store, so
+a bet tagged on the phone is tagged on the laptop) with the price and stake at
+that moment. The hourly build settles what has finished against final scores and
+writes the result back, and **Your bets** on the page shows that record alone.
+
+A bet is a list of legs, always, even when there is one, because most of what
+this board recommends is a parlay and a parlay is not its legs added up. One
+losing leg settles the ticket immediately; a pushed leg drops out and the rest
+re-prices. `placements_test.py` pins all of it.
+
+`PLACEMENT_KEY` on the Netlify site is the passphrase; without it the checkboxes
+disable themselves and say so.
+
+## What the ratings do not know
+
+`context.py` attaches injuries and weather to every game. **Displayed, never
+applied** — ESPN's injury feed is a snapshot of today, so there is no archive to
+fit "what is a missing quarterback worth in Elo points" against, and the finding
+above is what happens when a number gets invented instead of measured.
+
+The case that justifies it: the board's top tip was once Atlanta ML +215 with a
+claimed +14.7pp edge, on a morning when both Atlanta quarterbacks had been ruled
+out. The market's 30.4% knew. A rating built from final scores cannot.
+
+Two measurements shaped it. Injured Reserve is counted but never flagged — it
+was 121 of 209 NFL absences, so including it fired on all 32 teams, and a player
+out for weeks is one the ratings already absorbed. And injury *coverage* is
+reported, because the same endpoint serves 28 of 28 NFL teams and 1 of 105
+college teams: an unflagged college game means unknown, not healthy.
+
+## Parlays
+
+`parlay_math.py` has the general form: a parlay returns R^n where R is one leg's
+expected return, so it amplifies an edge, amplifies a loss, and cannot turn the
+second into the first.
+
+`parlay_top25.py` runs it on the live board. On one representative week, all 147
+independent 3-leg parlays of top-25 college teams were negative at *the market's
+own de-vigged numbers* — best case −11.5%, which is just the per-leg margin
+compounded. Mixing markets on one team does not help: "team wins" and "team goes
+over" are positively correlated, which is exactly why no book sells the pair at
+the product of its parts.
+
+The decisive number is the forfeit. Line shopping is the one signal here that
+has measured positive, and it needs the best price across nine books. A parlay
+has to sit at one book: the three largest logged gaps pay 184.8x as singles at
+their own best books and 147.3x as one parlay — **20% of the payout surrendered
+to a bet shape that cannot use the only edge we have.**
+
 ## Results tracking & CLV
 
 Every leg clearing the **baseline** gates (5.0pp edge, sample ≥ 3 NFL / 4 NCAAF,
