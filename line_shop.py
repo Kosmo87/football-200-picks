@@ -151,7 +151,7 @@ def fetch_live(sport: str, market: str, regions: str) -> List[dict]:
     return r.json()
 
 
-def games_from_live(payload: List[dict], market: str):
+def games_from_live(payload: List[dict], market: str, min_books: int = 3):
     for ev in payload:
         prices: Dict[str, Dict[str, int]] = {}
         for bk in ev.get("bookmakers") or []:
@@ -168,7 +168,13 @@ def games_from_live(payload: List[dict], market: str):
                     sides[name] = int(oc.get("price"))
                 if len(sides) >= 2:
                     prices[bk.get("key")] = sides
-        if len(prices) >= 3:
+        # Three books is the floor for judging a price against its peers --
+        # a "consensus" of two is one book and a witness. It is the wrong floor
+        # for asking "what can I bet", where a market only two books quote is
+        # still a real, placeable bet: Oklahoma's moneyline (FanDuel -2800,
+        # DraftKings -2400) was dropped entirely for want of a third quote.
+        # So callers who want the board rather than the edge pass min_books=2.
+        if len(prices) >= min_books:
             yield f"{ev.get('away_team')} @ {ev.get('home_team')}", ev.get("commence_time"), prices
 
 

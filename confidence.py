@@ -42,13 +42,13 @@ def risk_to_win(american: int, win: float = 60.0) -> str:
 
 
 def scan(league: str, min_chance: float, days: int = 8,
-         only_books: List[str] = None) -> List[dict]:
+         only_books: List[str] = None, min_books: int = 2) -> List[dict]:
     now = datetime.now(timezone.utc)
     end = now + timedelta(days=days)
     out: List[dict] = []
     for market in ("h2h", "spreads", "totals"):
         payload = LS.fetch_live(league, market, "us")
-        for game, kick, prices in LS.games_from_live(payload, market):
+        for game, kick, prices in LS.games_from_live(payload, market, min_books):
             try:
                 k = datetime.fromisoformat(kick.replace("Z", "+00:00"))
             except (ValueError, AttributeError):
@@ -56,26 +56,33 @@ def scan(league: str, min_chance: float, days: int = 8,
             if not (now < k <= end):
                 continue
             fair = LS.fair_probs(prices)
-            best: Dict[str, tuple] = {}
+            n_books = len(prices)
+            # One row per (book, side), NOT one per side.
+            #
+            # Collapsing to the best price across books reads sensibly and is
+            # wrong the moment the output is grouped by book: a team priced
+            # better at BetMGM vanished from the FanDuel list entirely, even
+            # though FanDuel was quoting it. Alabama was on FanDuel at -1800
+            # the whole time and simply never appeared, because MGM had -1200.
+            #
+            # A per-book list has to be COMPLETE for that book, or a parlay
+            # built from it is missing legs the reader can actually place.
             for book, sides in prices.items():
                 if book in LS.IGNORE_BOOKS:
                     continue
-                # Best price AT A BOOK YOU HOLD. The best number in the world
-                # at a book without your money in it is not a bet.
+                # A price at a book without your money in it is not a bet.
                 if only_books and not any(b in book.lower() for b in only_books):
                     continue
                 for side, price in sides.items():
-                    if side not in best or price > best[side][1]:
-                        best[side] = (book, price)
-            for side, (book, price) in best.items():
-                p = fair.get(side)
-                if p is None or p < min_chance:
-                    continue
-                out.append({
-                    "side": side, "price": price, "book": book, "game": game,
-                    "chance": p, "needs": implied(price),
-                    "gap": p - implied(price), "market": market, "kickoff": k,
-                })
+                    p = fair.get(side)
+                    if p is None or p < min_chance:
+                        continue
+                    out.append({
+                        "side": side, "price": price, "book": book, "game": game,
+                        "chance": p, "needs": implied(price),
+                        "gap": p - implied(price), "market": market, "kickoff": k,
+                        "n_books": n_books,
+                    })
     return sorted(out, key=lambda r: -r["chance"])
 
 
@@ -83,12 +90,14 @@ def report(rows: List[dict], min_chance: float) -> None:
     if not rows:
         print(f"Nothing on the board is {min_chance*100:.0f}% or better.")
         return
-    print(f"\n{'bet':<34}{'price':>7}{'CHANCE':>8}{'NEEDS':>7}{'GAP':>7}  {'book':<12}kick")
+    print(f"\n{'bet':<34}{'price':>7}{'CHANCE':>8}{'NEEDS':>7}{'GAP':>7}  {'book':<12}books")
     for r in rows:
-        flag = "  <<" if r["gap"] > 0 else ""
+        # Fewer books behind a number means a shakier CHANCE, and that has to
+        # be visible rather than implied by its absence.
+        thin = " thin" if r.get("n_books", 9) < 4 else ""
         print(f"{r['side'][:33]:<34}{r['price']:>+7}{r['chance']*100:>7.1f}%"
               f"{r['needs']*100:>6.1f}%{r['gap']*100:>+6.1f}  {r['book']:<12}"
-              f"{r['kickoff'].strftime('%a %H:%M')}{flag}")
+              f"{r.get('n_books','?'):>2}bk{thin}")
     good = [r for r in rows if r["gap"] > 0]
     print(f"\n{len(rows)} bet(s) at {min_chance*100:.0f}%+ confidence; "
           f"{len(good)} of them priced better than their chance.")
