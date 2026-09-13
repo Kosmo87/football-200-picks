@@ -31,6 +31,7 @@ from archive import ARCHIVE_DIR, append_ndjson, read_ndjson, utcnow
 from espn import current_season_year, fetch_completed_games
 from line_shop import SPORTS, fetch_live, find_value, games_from_live
 from odds import american_to_decimal, american_to_implied_prob
+from teamnames import same_team
 
 HOURS_BETWEEN_SCANS = 8.0
 DEFAULT_LEAGUES = ("NCAAF", "NFL")
@@ -208,34 +209,57 @@ def close(leagues=DEFAULT_LEAGUES) -> int:
         print("[shop] nothing closing in the next hour")
         return 0
 
-    live_by_league: Dict[str, list] = {}
+    # THIS WHOLE FUNCTION HAD NEVER RUN.
+    #
+    # It called fetch_live(SPORTS[league]) — passing the sport key where the
+    # league name goes, and omitting both of the other required arguments — so
+    # every invocation raised TypeError before reaching the network. The raise
+    # was caught by the broad except below, reported as "live prices
+    # unavailable", and then swallowed again by `continue-on-error` in CI. The
+    # result was a ledger with twenty-three rows and zero closing prices: the
+    # one measurement this file argues is the important one, never collected,
+    # for a week, silently.
+    #
+    # Two other errors in the same few lines: games_from_live also takes the
+    # market, and it yields (game, kickoff, prices) tuples rather than dicts,
+    # so the `g.get("event_id")` below could never have matched anything even
+    # if the fetch had worked.
+    live_by_league: Dict[str, dict] = {}
     for league in {r["league"] for r in due}:
         try:
-            live_by_league[league] = games_from_live(fetch_live(SPORTS[league]))
+            payload = fetch_live(league, MARKET, "us")
+        except SystemExit:
+            raise
         except Exception as e:
             print(f"[shop] {league} live prices unavailable: {e}")
+            continue
+        # Keyed by the same synthetic id scan() writes, so a row can find its
+        # own game: the flattened view carries no event id of its own.
+        by_id = {}
+        for game, kickoff, prices in games_from_live(payload, MARKET):
+            by_id[f"{_norm(game)}|{kickoff}"] = prices
+        live_by_league[league] = by_id
 
     closed = 0
     for r in due:
-        for g in live_by_league.get(r["league"], []):
-            if g.get("event_id") != r.get("event_id"):
-                continue
-            # The consensus across books at kickoff, not the price at one book:
-            # the claim was "longer than the market", so the market is the
-            # comparison.
-            prices = [b["price"] for b in g.get("sides", {}).get(r["side"], [])]
-            if not prices:
-                continue
-            mid = sorted(prices)[len(prices) // 2]
-            r["close_price"] = mid
-            r["close_books"] = len(prices)
-            r["closed_at"] = utcnow()
-            # CLV in probability points: how much cheaper the taken price was
-            # than the close. Positive means the market moved toward you.
-            r["clv_pp"] = round(
-                (american_to_implied_prob(mid) - american_to_implied_prob(r["price"])) * 100, 3)
-            closed += 1
-            break
+        prices = (live_by_league.get(r["league"]) or {}).get(r.get("event_id"))
+        if not prices:
+            continue
+        # The consensus across books at kickoff, not the price at one book: the
+        # claim was "longer than the market", so the market is the comparison.
+        quotes = [side_prices[r["side"]] for side_prices in prices.values()
+                  if r["side"] in side_prices]
+        if not quotes:
+            continue
+        mid = sorted(quotes)[len(quotes) // 2]
+        r["close_price"] = mid
+        r["close_books"] = len(quotes)
+        r["closed_at"] = utcnow()
+        # CLV in probability points: how much cheaper the taken price was than
+        # the close. Positive means the market moved toward you.
+        r["clv_pp"] = round(
+            (american_to_implied_prob(mid) - american_to_implied_prob(r["price"])) * 100, 3)
+        closed += 1
 
     if closed:
         with open(ledger_path(), "w") as f:
@@ -262,15 +286,22 @@ def grade(leagues=DEFAULT_LEAGUES) -> int:
         except Exception as e:
             print(f"[shop] {league} results unavailable: {e}")
 
-    # Index finished games by each side's normalised name.
+    # Indexed by exact normalised name for the common case, but the sources do
+    # not always agree on a name -- ESPN says "App State Mountaineers" where the
+    # odds API says "Appalachian State Mountaineers" -- so a miss falls back to
+    # token matching over every final. See teamnames.py.
     by_team: Dict[str, list] = {}
     for g in finals:
         for name in (g.home_name, g.away_name):
             by_team.setdefault(_norm(name), []).append(g)
 
     graded = 0
+    unmatched = []
     for r in openers:
-        cands = by_team.get(_norm(r["side"]), [])
+        cands = by_team.get(_norm(r["side"]))
+        if not cands:
+            cands = [g for g in finals
+                     if same_team(r["side"], g.home_name) or same_team(r["side"], g.away_name)]
         match = None
         for g in cands:
             if not g.date or not r.get("kickoff"):
@@ -284,9 +315,15 @@ def grade(leagues=DEFAULT_LEAGUES) -> int:
                 match = g
                 break
         if match is None:
+            # Worth saying out loud. These sat silent for a day with their games
+            # long finished, and a bet that fails to grade quietly understates
+            # the record -- selectively, since whether it grades has nothing to
+            # do with whether it won.
+            unmatched.append(r)
             continue
 
-        picked_home = _norm(match.home_name) == _norm(r["side"])
+        picked_home = (_norm(match.home_name) == _norm(r["side"])
+                       or same_team(r["side"], match.home_name))
         if match.home_score == match.away_score:
             r["status"], r["units"] = "push", 0.0
         else:
@@ -303,6 +340,16 @@ def grade(leagues=DEFAULT_LEAGUES) -> int:
             for r in rows:
                 f.write(json.dumps(r, sort_keys=True) + "\n")
     print(f"[shop] graded {graded}")
+    for r in unmatched:
+        try:
+            from datetime import datetime as _dt
+            k = _dt.fromisoformat(r["kickoff"].replace("Z", "+00:00"))
+            late = (datetime.now(timezone.utc) - k).total_seconds() / 3600
+        except Exception:
+            late = 0
+        if late > 12:
+            print(f"[shop] STILL UNGRADED {late:.0f}h after kickoff: "
+                  f"{r['side']} — no finished game matched that name")
     return graded
 
 

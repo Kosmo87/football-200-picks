@@ -20,6 +20,10 @@ on:
       - "odds.py"
       - "picks.py"
       - "selection_test.py"
+      - "shop_ledger.py"
+      - "shop_close_test.py"
+      - "teamnames.py"
+      - "test-teamnames.py"
       - "staking.py"
       - "history_data.py"
       - "parity_test.js"
@@ -189,6 +193,17 @@ jobs:
 
       - name: Test bet settlement
         run: python placements_test.py
+
+      - name: Test the ledger's closing and grading
+        # close() raised TypeError on its first line for a week. The raise was
+        # caught by a broad except, reported as "live prices unavailable", and
+        # swallowed again by continue-on-error on the step that calls it — so
+        # the ledger collected twenty-three rows and zero closing prices with
+        # nothing anywhere saying so. These stub the network, so they run here
+        # whether or not a key is present, and they are NOT continue-on-error.
+        run: |
+          python shop_close_test.py
+          python test-teamnames.py
 
       - name: Test pick selection
         # The parlay rules. Both were written after uncapping the list exposed
