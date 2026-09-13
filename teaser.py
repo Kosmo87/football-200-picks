@@ -1,0 +1,366 @@
+"""
+Wong teaser scanner: the only structure in this project that survived its test.
+
+WHAT THIS EXPLOITS, AND WHAT IT DOES NOT.
+
+It does not predict games. Every prediction model in this repo has been graded
+against the closing line and lost -- the play-by-play matchup model finished at
+a t-stat of 0.81, meaning the price already contained everything it knew. This
+scanner assumes the line is right and profits from the SHAPE of the outcome
+distribution instead.
+
+NFL margins are not smooth. Measured over 6,967 regular-season games:
+
+    3 points ..... 15.0% of all games
+    7 points ......  9.1%
+    together ..... 24.1%
+
+A teaser buys 6 points of spread at a fixed price. Those 6 points are worth
+wildly different amounts depending on WHERE they start. Dragging a side from
+-7.5 to -1.5 crosses both spikes and picks up a quarter of the distribution.
+Buying from -3.5 to +2.5 crosses nothing that matters and is the worst band on
+the board despite feeling safer.
+
+So the qualifying condition is the NUMBER, never the team. Splitting the
+qualifying legs every way available shows no team-quality signal at all:
+
+    favourites -8.5..-6.5 .... 73.34%
+    underdogs  +1.5..+2.5 .... 74.09%
+    home legs ................ 73.17%
+    away legs ................ 74.27%
+
+All inside one standard error of each other. Selecting on offence or defence
+rank does not strengthen a teaser; it pulls you out of the band, which is the
+entire edge. This module therefore ignores ratings on purpose.
+
+THE EDGE IS THE JUICE. A 2-team 6-point teaser needs 72.37% per leg at -110 and
+75.18% at -130. The window delivers 73.61% +/- 1.04. That clears -110, sits
+inside the noise at -120, and is clearly dead at -130 -- so the price decides
+whether the bet exists, not the matchup. The scanner's real job is to refuse
+anything priced above break-even, and `max_price()` is the number to act on.
+
+    python teaser.py                 # scan the live board
+    python teaser.py --calibrate     # re-derive the bands from nflverse
+"""
+
+from __future__ import annotations
+
+import argparse
+import math
+import os
+import sys
+from dataclasses import dataclass
+from typing import Dict, Iterable, List, Optional, Tuple
+
+TEASE_POINTS = 6.0
+
+# Empirical win rates, pushes excluded from the denominator, 1999-2025 regular
+# season. Re-derive with --calibrate; these are pasted from that run so the
+# scanner does not need the play-by-play cache present to size a bet.
+@dataclass(frozen=True)
+class Band:
+    lo: float            # exclusive
+    hi: float            # inclusive
+    rate: float          # win rate given a decision
+    stderr: float
+    n: int
+    label: str
+
+BANDS: Tuple[Band, ...] = (
+    Band(-8.5, -7.5, 0.7238, 0.0235, 362, "fav -8.5..-7.5"),
+    Band(-7.5, -6.5, 0.7379, 0.0157, 782, "fav -7.5..-6.5"),
+    Band( 1.5,  2.5, 0.7409, 0.0171, 660, "dog +1.5..+2.5"),
+)
+
+# Teased lines that land on a whole number push 2.51% of the time; half-point
+# teased lines pushed exactly 0 times in 1,104 observations. Most books grade a
+# push inside a 2-team teaser as a loss, so this is charged against the leg.
+PUSH_RATE_INTEGER = 0.0251
+PUSH_RATE_HALF = 0.0
+
+IGNORE_BOOKS = {"betfair_ex_us", "matchbook"}   # exchanges do not offer teasers
+
+
+def band_for(spread: float) -> Optional[Band]:
+    """The qualifying band a side's ORIGINAL spread falls in, if any."""
+    for b in BANDS:
+        if b.lo < spread <= b.hi:
+            return b
+    return None
+
+
+def leg_probability(band: Band, teased: float, push_is_loss: bool = True) -> float:
+    """
+    Probability this leg wins, charged for push risk.
+
+    `band.rate` is conditional on a decision, so the push mass has to be put
+    back before it can be taken away again under the book's grading rule.
+    """
+    push = PUSH_RATE_INTEGER if float(teased).is_integer() else PUSH_RATE_HALF
+    p_win = (1.0 - push) * band.rate
+    if push_is_loss:
+        return p_win
+    return p_win / (1.0 - push) if push < 1.0 else p_win
+
+
+def payout(price: int) -> float:
+    """Profit per unit risked, from an American price."""
+    return price / 100.0 if price > 0 else 100.0 / abs(price)
+
+
+def to_american(profit: float) -> int:
+    """Inverse of payout(), rounded toward the bettor's disadvantage."""
+    if profit >= 1.0:
+        return int(math.floor(profit * 100))
+    return -int(math.ceil(100.0 / profit))
+
+
+def teaser_ev(leg_probs: Iterable[float], price: int) -> float:
+    """EV per unit risked. Legs are treated as independent."""
+    p = 1.0
+    for q in leg_probs:
+        p *= q
+    return p * payout(price) - (1.0 - p)
+
+
+def max_price(leg_probs: Iterable[float]) -> int:
+    """
+    The worst price at which this combination is still break-even.
+
+    This is the number to carry to the book: "play only at X or better". It is
+    a THRESHOLD, not a quote, so it rounds toward the bettor -- to_american()
+    rounds the other way and would hand back the one price that is already
+    negative. A fair -120.61 is reported as -120 (acceptable) and never -121.
+    """
+    p = 1.0
+    for q in leg_probs:
+        p *= q
+    if p <= 0 or p >= 1:
+        return 0
+    profit = (1.0 - p) / p
+    if profit < 1.0:
+        return -int(math.floor(100.0 / profit))   # less juice is better
+    return int(math.ceil(profit * 100.0))          # more plus-money is better
+
+
+def combined_rate(bands: Iterable[Band]) -> Tuple[float, float]:
+    """Pooled win rate and standard error across bands, for reporting."""
+    bs = list(bands)
+    n = sum(b.n for b in bs)
+    if not n:
+        return 0.0, 0.0
+    r = sum(b.rate * b.n for b in bs) / n
+    return r, math.sqrt(r * (1 - r) / n)
+
+
+# ---------------------------------------------------------------- live board
+
+import keys  # noqa: F401  -- importing fills ODDS_API_KEY from the key file
+
+BASE = "https://api.the-odds-api.com/v4"
+SPORTS = {"NFL": "americanfootball_nfl", "NCAAF": "americanfootball_ncaaf"}
+
+
+@dataclass
+class Leg:
+    game: str
+    kickoff: str
+    side: str
+    spread: float
+    band: Band
+    book: str
+
+    @property
+    def teased(self) -> float:
+        return self.spread + TEASE_POINTS
+
+    @property
+    def prob(self) -> float:
+        return leg_probability(self.band, self.teased)
+
+    @property
+    def push_risk(self) -> bool:
+        return float(self.teased).is_integer()
+
+
+def fetch_spreads(league: str, regions: str = "us") -> List[dict]:
+    import requests
+    key = os.environ.get("ODDS_API_KEY", "").strip()
+    if not key:
+        sys.exit("ODDS_API_KEY is not set. export ODDS_API_KEY=...")
+    r = requests.get(
+        f"{BASE}/sports/{SPORTS[league]}/odds",
+        params={"apiKey": key, "regions": regions, "markets": "spreads",
+                "oddsFormat": "american"},
+        timeout=40,
+    )
+    if r.status_code != 200:
+        sys.exit(f"HTTP {r.status_code}: {r.text[:200]}")
+    print(f"  credits used {r.headers.get('x-requests-used','?')}, "
+          f"remaining {r.headers.get('x-requests-remaining','?')}")
+    return r.json()
+
+
+def qualifying_legs(payload: List[dict], within_days: int = 8) -> List[Leg]:
+    """
+    Every side, at every book, whose own number sits in a qualifying band.
+
+    Per book rather than pooled: a teaser is built inside one book, so a leg
+    that only qualifies at DraftKings is no use in a FanDuel teaser. Books
+    disagree by a half point often enough that this is the difference between
+    a leg existing and not.
+
+    Windowed, because the feed returns the whole remaining season -- 212 events
+    in September. A number hung on a January game is a placeholder nobody has
+    bet into, and pooling it with this week's slate produced a board with the
+    same team qualifying six times.
+    """
+    from datetime import datetime, timedelta, timezone
+    cutoff = datetime.now(timezone.utc) + timedelta(days=within_days)
+    out: List[Leg] = []
+    for ev in payload:
+        ct = ev.get("commence_time", "")
+        try:
+            if datetime.fromisoformat(ct.replace("Z", "+00:00")) > cutoff:
+                continue
+        except ValueError:
+            continue
+        game = f"{ev.get('away_team')} @ {ev.get('home_team')}"
+        for bk in ev.get("bookmakers") or []:
+            if bk.get("key") in IGNORE_BOOKS:
+                continue
+            for mk in bk.get("markets") or []:
+                if mk.get("key") != "spreads":
+                    continue
+                for oc in mk.get("outcomes") or []:
+                    pt = oc.get("point")
+                    if pt is None:
+                        continue
+                    b = band_for(float(pt))
+                    if b:
+                        out.append(Leg(game, ev.get("commence_time", ""),
+                                       oc.get("name", "?"), float(pt), b,
+                                       bk.get("title") or bk.get("key")))
+    return out
+
+
+def by_book(legs: Iterable[Leg]) -> Dict[str, List[Leg]]:
+    d: Dict[str, List[Leg]] = {}
+    for l in legs:
+        d.setdefault(l.book, []).append(l)
+    # one leg per game per book: the same side cannot appear twice in a teaser
+    for bk, ls in d.items():
+        seen: Dict[str, Leg] = {}
+        for l in ls:
+            if l.game not in seen or l.prob > seen[l.game].prob:
+                seen[l.game] = l
+        d[bk] = sorted(seen.values(), key=lambda x: -x.prob)
+    return d
+
+
+def report(books: Dict[str, List[Leg]], min_legs: int = 2) -> None:
+    r, se = combined_rate(BANDS)
+    print(f"\nwindow calibration: {r*100:.2f}% per leg +/- {se*100:.2f}pp "
+          f"(n={sum(b.n for b in BANDS):,})")
+    print("break-even juice:  -110 needs 72.37%   -120 needs 73.86%   "
+          "-130 needs 75.18%")
+    print("\nLegs inside a tier are INTERCHANGEABLE -- the edge is the number,")
+    print("not the team. Pick any two from the best tier you can get.\n")
+
+    any_book = False
+    for book, legs in sorted(books.items(), key=lambda kv: (-len(kv[1]), kv[0])):
+        if len(legs) < min_legs:
+            continue
+        any_book = True
+        print(f"=== {book} — {len(legs)} qualifying legs")
+        tiers: Dict[float, List[Leg]] = {}
+        for l in legs:
+            tiers.setdefault(round(l.prob, 4), []).append(l)
+        for prob in sorted(tiers, reverse=True):
+            group = tiers[prob]
+            risk = "  (push risk)" if group[0].push_risk else ""
+            print(f"  {prob*100:.1f}% tier — {group[0].band.label}{risk}")
+            for l in group:
+                print(f"      {l.side:<24}{l.spread:>+6.1f} -> {l.teased:>+5.1f}"
+                      f"   {l.kickoff[:10]}   {l.game}")
+        top = sorted(tiers, reverse=True)[0]
+        if len(tiers[top]) < 2:
+            probs = [top, sorted(tiers, reverse=True)[1]]
+        else:
+            probs = [top, top]
+        mp = max_price(probs)
+        print(f"  --> two legs at {probs[0]*100:.1f}%/{probs[1]*100:.1f}% "
+              f"hit {probs[0]*probs[1]*100:.1f}%")
+        print(f"  --> PLAY ONLY AT {mp:+d} OR BETTER"
+              f"   (3-leg: {max_price(probs + [probs[0]]):+d})")
+        for price in (-110, -120, -130):
+            ev = teaser_ev(probs, price)
+            print(f"        {price}: EV {ev*100:+6.2f}%  {'+EV' if ev > 0 else 'no'}")
+        print()
+    if not any_book:
+        print("No book offers two qualifying legs. No teaser this week.")
+
+
+# ---------------------------------------------------------------- calibration
+
+def calibrate(path: str = "cache/nflverse_games.csv") -> List[Band]:
+    """
+    Re-derive the bands from completed games. Pushes are excluded from the
+    denominator so the rate means "given a decision", which is what
+    leg_probability() expects.
+    """
+    import pandas as pd
+    import numpy as np
+    df = pd.read_csv(path, low_memory=False)
+    d = df.dropna(subset=["result", "spread_line"]).query("game_type=='REG'")
+    rows = []
+    for _, g in d.iterrows():
+        rows.append((-g.spread_line, g.result))
+        rows.append(( g.spread_line, -g.result))
+    S = pd.DataFrame(rows, columns=["sp", "margin"])
+    S["res"] = S.margin + S.sp + TEASE_POINTS
+
+    print(f"{len(d):,} games, {d.season.min()}-{d.season.max()}  "
+          f"({len(S):,} side-observations)\n")
+    out = []
+    for b in BANDS:
+        sub = S[(S.sp > b.lo) & (S.sp <= b.hi)]
+        dec = sub[sub.res != 0]
+        w = float(dec.res.gt(0).mean())
+        se = float(np.sqrt(w * (1 - w) / len(dec)))
+        drift = (w - b.rate) * 100
+        print(f"{b.label:<16} n={len(dec):>5}  {w*100:6.2f}% +/-{se*100:.2f}  "
+              f"(stored {b.rate*100:.2f}, drift {drift:+.2f}pp)")
+        out.append(Band(b.lo, b.hi, round(w, 4), round(se, 4), len(dec), b.label))
+    r, se = combined_rate(out)
+    print(f"\npooled: {r*100:.2f}% +/- {se*100:.2f}pp")
+    print(f"break-even -110 {math.sqrt(110/210)*100:.2f}%  "
+          f"-120 {math.sqrt(120/220)*100:.2f}%  -130 {math.sqrt(130/230)*100:.2f}%")
+    return out
+
+
+def main() -> int:
+    ap = argparse.ArgumentParser(description=__doc__.split("\n")[1])
+    ap.add_argument("--league", default="NFL", choices=sorted(SPORTS))
+    ap.add_argument("--calibrate", action="store_true",
+                    help="re-derive bands from nflverse and exit")
+    ap.add_argument("--regions", default="us")
+    ap.add_argument("--days", type=int, default=8,
+                    help="only games kicking off within this many days")
+    a = ap.parse_args()
+
+    if a.calibrate:
+        calibrate()
+        return 0
+
+    payload = fetch_spreads(a.league, a.regions)
+    legs = qualifying_legs(payload, within_days=a.days)
+    if not legs:
+        print("No side on the board sits in a qualifying band.")
+        return 0
+    report(by_book(legs))
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
