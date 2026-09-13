@@ -353,11 +353,36 @@ def grade(leagues=DEFAULT_LEAGUES) -> int:
     return graded
 
 
+def one_per_opportunity(rows: List[dict]) -> List[dict]:
+    """
+    Collapse the ledger to bets you would actually place.
+
+    The scan logs a row per BOOK, so one opportunity available at three books
+    is three rows. That is right for the scan -- it is recording where a price
+    was found -- and wrong for the record, because you place the bet once, at
+    the best price. Counting it three times counts the result three times.
+
+    It is not a harmless inflation either, and it was flattering us. Both
+    winners in the 2026 ledger happened to be available at two books while most
+    losers sat at one, so the logged record read 4-16 / -26.6% when the bets
+    actually placeable were 2-13 / -50.4%. Same trap this project keeps
+    finding: a counting choice quietly making the numbers look better.
+    """
+    best: Dict[tuple, dict] = {}
+    for r in rows:
+        k = (r.get("event_id"), r.get("side"), r.get("market"))
+        prev = best.get(k)
+        if prev is None or (r.get("price") or -10**9) > (prev.get("price") or -10**9):
+            best[k] = r
+    return list(best.values())
+
+
 def report() -> None:
-    rows = read_ndjson(ledger_path())
-    if not rows:
+    logged = read_ndjson(ledger_path())
+    if not logged:
         print("Ledger is empty. Run --scan.")
         return
+    rows = one_per_opportunity(logged)
     settled = [r for r in rows if r["status"] in ("won", "lost", "push")]
     won = [r for r in settled if r["status"] == "won"]
     lost = [r for r in settled if r["status"] == "lost"]
@@ -366,7 +391,7 @@ def report() -> None:
 
     placed = [r for r in rows if r.get("stake")]
     print(f"\n  Line-shop ledger")
-    print(f"  {'logged':<22}{len(rows)}")
+    print(f"  {'logged':<22}{len(logged)} rows at {len(rows)} distinct bet(s)")
     print(f"  {'still open':<22}{len([r for r in rows if r['status'] == 'open'])}")
     print(f"  {'of those, bet':<22}{len(placed)}"
           + ("  (nothing placed yet — the figures below describe what the scan"
