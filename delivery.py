@@ -332,39 +332,88 @@ def render_html(rows: List[dict], teasers: Optional[List[dict]] = None,
 </div>"""
 
 
-def send_email(to: str, subject: str, html: str) -> bool:
+def send_email(to: str, subject: str, html: str, confirm: bool = True) -> bool:
+    """
+    Send, then ASK RESEND WHAT HAPPENED TO IT.
+
+    A 200 from Resend means accepted, not delivered, and for a whole day that
+    was the only thing this function could report. Every message was landing in
+    iCloud's junk folder while the log said HTTP 200 and looked fine. That is
+    the same failure as the CI job that ran green for a week with close()
+    throwing on its first line: a success code standing in for an outcome
+    nobody checked.
+
+    So the message id is kept and the status polled. `delivered` means Apple
+    (or whoever) accepted it; `bounced` and `complained` are named out loud
+    rather than left to be inferred from silence. It still cannot see a junk
+    folder -- nothing can -- but it can now tell the difference between "never
+    left" and "arrived somewhere you are not looking", which are the two
+    explanations that matter and were previously indistinguishable.
+    """
     key = os.environ.get("RESEND_API_KEY", "").strip()
     if not key:
         print("  RESEND_API_KEY not set — nothing sent.")
         return False
-    # Catch the placeholder before spending a request on it. Pasting the example
-    # command verbatim stores the literal words, and without this the failure
-    # arrives later as an opaque 401 from someone else's API.
     if not key.startswith("re_"):
         print(f"  RESEND_API_KEY does not look like a Resend key "
-              f"(they begin 're_', this one begins '{key[:6]}…'). "
-              f"Nothing sent — re-set the secret with the real value.")
+              f"(they begin 're_'; got {len(key)} chars). Nothing sent.")
         return False
-    # `.get(name, default)` returns "" when the variable EXISTS and is empty,
-    # which is exactly what an unset GitHub Actions `vars.X` produces — so the
+
+    # RESEND_FROM used to have a default applied AFTER this read, so the
     # default never applied and the send went out with a blank From. Resend
-    # rejects that, and `continue-on-error` on the workflow step meant the build
-    # stayed green while no mail left. Treat empty as unset.
+    # accepted it and delivered nothing.
     sender = os.environ.get("RESEND_FROM", "").strip() or "onboarding@resend.dev"
     if sender == "onboarding@resend.dev":
         print("  RESEND_FROM is not set — using Resend's test sender, which only "
               "delivers to the address the Resend account is registered under. "
               "Set it to an address on a domain verified in Resend.")
-    print(f"  sending as {sender}")
+    headers = {"Authorization": f"Bearer {key}", "Content-Type": "application/json"}
     r = requests.post(
         RESEND_URL,
-        headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
-        data=json.dumps({"from": sender, "to": [to], "subject": subject, "html": html}),
+        headers=headers,
+        json={"from": sender, "to": [to], "subject": subject, "html": html},
         timeout=30,
     )
     ok = r.status_code < 300
-    print(f"  email -> {to}: HTTP {r.status_code} {'' if ok else r.text[:160]}")
-    return ok
+    print(f"  email -> {to}: HTTP {r.status_code} {'' if ok else r.text[:200]}")
+    if not ok:
+        return False
+
+    msg_id = ""
+    try:
+        msg_id = (r.json() or {}).get("id", "")
+    except ValueError:
+        pass
+    if not (confirm and msg_id):
+        return True
+
+    # Resend records the event a moment after the send; one short wait is
+    # enough for `delivered` and costs nothing on a job that runs twice a week.
+    import time
+    for wait in (4, 6):
+        time.sleep(wait)
+        try:
+            q = requests.get(f"{RESEND_URL}/{msg_id}", headers=headers, timeout=20)
+            if q.status_code != 200:
+                break
+            event = (q.json() or {}).get("last_event", "")
+        except requests.RequestException:
+            break
+        if event in ("delivered", "bounced", "complained", "delivery_delayed"):
+            print(f"  resend says: {event}")
+            if event == "bounced":
+                print("  BOUNCED — the address rejected it. Nothing arrived.")
+                return False
+            if event == "complained":
+                print("  marked as spam by the recipient — further sends will "
+                      "be filtered harder.")
+            if event == "delivered":
+                print("  (delivered to the mail host. If it is not in the inbox "
+                      "it is in junk — add the sender to Contacts.)")
+            return True
+        if event:
+            print(f"  resend says: {event} (still in flight)")
+    return True
 
 
 def send_sms(to: str, body: str) -> bool:
