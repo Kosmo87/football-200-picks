@@ -141,7 +141,7 @@ def todays_opportunities(hours: float = SEND_WINDOW_HOURS,
 
 def render_text(rows: List[dict], teasers: Optional[List[dict]] = None,
                 conf: Optional[List[dict]] = None,
-                ladder: Optional[dict] = None) -> str:
+                ladders: Optional[Dict[str, dict]] = None) -> str:
     """
     The bets, and what to put on them. Nothing else.
 
@@ -167,22 +167,27 @@ def render_text(rows: List[dict], teasers: Optional[List[dict]] = None,
         extra = f" (also at {r['also_at']} other book{'' if r['also_at'] == 1 else 's'})" if r.get("also_at") else ""
         lines.append(f"{r['stake']:g}U  {r['side']} {price} at {r['book']}{extra}")
     lines.extend(render_teaser_lines(teasers))
+    ladders = ladders or {}
     if conf:
-        lines.append("")
-        lines.append("Highest chance of winning, and what the price asks for it:")
-        lines.extend("  " + l for l in render_confidence_lines(conf))
-        worst = min(c["gap"] for c in conf)
-        best = max(c["gap"] for c in conf)
-        lines.append(f"  (each costs {abs(best)*100:.1f}-{abs(worst)*100:.1f} points "
-                     "against its own odds)")
-    if ladder:
-        lines.append("")
-        lines.append(f"Most legs staying above 60%: {len(ladder['legs'])} legs, "
-                     f"{ladder['chance']*100:.1f}% combined, pays {ladder['american']:+d}")
-        for l in ladder["legs"]:
-            lines.append(f"    {l['chance']*100:.0f}%  {l['side']}")
-        lines.append(f"  risk 100 to win {ladder['profit_per_100']:.2f} — "
-                     f"the price needs {ladder['needs']*100:.1f}%")
+        for book, book_rows in sorted(by_book(conf).items(),
+                                      key=lambda kv: -len(kv[1])):
+            lines.append("")
+            lines.append(f"--- {book.upper()} — most likely to win")
+            lines.extend("  " + l for l in render_confidence_lines(book_rows))
+            gaps = [abs(c["gap"]) for c in book_rows[:8]]
+            lines.append(f"  (each costs {min(gaps)*100:.1f}-{max(gaps)*100:.1f} "
+                         "points against its own odds)")
+            lad = ladders.get(book)
+            if lad:
+                lines.append(f"  {len(lad['legs'])}-leg parlay at {book}: "
+                             f"{lad['chance']*100:.1f}% combined, pays "
+                             f"{lad['american']:+d}")
+                for l in lad["legs"]:
+                    lines.append(f"      {l['chance']*100:.0f}%  {l['side']}")
+                lines.append(f"    risk 100 to win {lad['profit_per_100']:.2f} — "
+                             f"price needs {lad['needs']*100:.1f}%")
+            else:
+                lines.append(f"  (fewer than 2 legs at {book} — no parlay)")
     if teasers:
         lines.append("The teaser price is the bet. Above the stated number it is "
                      "not worth placing — walk away rather than take -130.")
@@ -192,7 +197,7 @@ def render_text(rows: List[dict], teasers: Optional[List[dict]] = None,
 
 def render_html(rows: List[dict], teasers: Optional[List[dict]] = None,
                 conf: Optional[List[dict]] = None,
-                ladder: Optional[dict] = None) -> str:
+                ladders: Optional[Dict[str, dict]] = None) -> str:
     """
     The same message as the text, laid out.
 
@@ -263,45 +268,53 @@ def render_html(rows: List[dict], teasers: Optional[List[dict]] = None,
                "price at which it is still worth placing — at -130 the edge is gone, so "
                "walk away rather than take it.</p>" if teasers else "")
         )
+    ladders = ladders or {}
     if conf:
         cell = "padding:8px 12px;border-top:1px solid #e5e7eb"
-        crows = "".join(
-            f"<tr>"
-            f"<td style='{cell};text-align:right;font-family:ui-monospace,monospace;"
-            f"font-size:17px;font-weight:700;white-space:nowrap;color:#065f46'>"
-            f"{c['chance']*100:.0f}%</td>"
-            f"<td style='{cell}'><b>{c['side']}</b>"
-            f"<div style='color:#6b7280;font-size:12px'>{c['game']}</div></td>"
-            f"<td style='{cell};text-align:right;font-family:ui-monospace,monospace'>"
-            f"{'+' if c['price'] > 0 else ''}{c['price']}"
-            f"<div style='color:#9ca3af;font-size:11px'>needs "
-            f"{c['needs']*100:.0f}%</div></td>"
-            f"<td style='{cell};color:#4b5563'>{c['book']}</td></tr>"
-            for c in conf[:8])
-        body += (
-            "<h3 style='font-size:14px;margin:22px 0 6px'>Most likely to win</h3>"
-            "<p style='color:#6b7280;font-size:12.5px;margin:0 0 8px'>A price is a "
-            "required win rate. Both numbers are shown: how often it wins, and "
-            "what the price asks for.</p>"
-            "<table style='border-collapse:collapse;width:100%;font-size:14px'>"
-            "<tr style='text-align:left;color:#6b7280;font-size:11.5px'>"
-            "<th style='padding:6px 12px;text-align:right'>CHANCE</th>"
-            "<th style='padding:6px 12px'>BET</th>"
-            "<th style='padding:6px 12px;text-align:right'>PRICE</th>"
-            "<th style='padding:6px 12px'>BOOK</th></tr>"
-            f"{crows}</table>")
-    if ladder:
-        legs = "".join(f"<li style='margin:2px 0'>{l['chance']*100:.0f}% — "
-                       f"{l['side']}</li>" for l in ladder["legs"])
-        body += (
-            f"<h3 style='font-size:14px;margin:22px 0 6px'>Most legs above 60%: "
-            f"{len(ladder['legs'])}</h3>"
-            f"<ul style='margin:0 0 8px;padding-left:20px;font-size:13.5px;"
-            f"color:#374151'>{legs}</ul>"
-            f"<p style='font-size:13.5px;margin:0'><b>{ladder['chance']*100:.1f}%</b> "
-            f"combined, pays <b>{ladder['american']:+d}</b> — risk 100 to win "
-            f"{ladder['profit_per_100']:.2f}, and the price needs "
-            f"<b>{ladder['needs']*100:.1f}%</b>.</p>")
+        for book, book_rows in sorted(by_book(conf).items(),
+                                      key=lambda kv: -len(kv[1])):
+            crows = "".join(
+                f"<tr>"
+                f"<td style='{cell};text-align:right;font-family:ui-monospace,monospace;"
+                f"font-size:17px;font-weight:700;white-space:nowrap;color:#065f46'>"
+                f"{c['chance']*100:.0f}%</td>"
+                f"<td style='{cell}'><b>{c['side']}</b>"
+                f"<div style='color:#6b7280;font-size:12px'>{c['game']}</div></td>"
+                f"<td style='{cell};text-align:right;font-family:ui-monospace,monospace'>"
+                f"{'+' if c['price'] > 0 else ''}{c['price']}"
+                f"<div style='color:#9ca3af;font-size:11px'>needs "
+                f"{c['needs']*100:.0f}%</div></td></tr>"
+                for c in book_rows[:8])
+            body += (
+                f"<h3 style='font-size:15px;margin:24px 0 2px;padding:6px 10px;"
+                f"background:#111827;color:#fff;border-radius:4px'>{book.upper()}</h3>"
+                "<p style='color:#6b7280;font-size:12.5px;margin:6px 0 8px'>"
+                "Everything below is placeable at this book. A price is a required "
+                "win rate, so both numbers are shown.</p>"
+                "<table style='border-collapse:collapse;width:100%;font-size:14px'>"
+                "<tr style='text-align:left;color:#6b7280;font-size:11.5px'>"
+                "<th style='padding:6px 12px;text-align:right'>CHANCE</th>"
+                "<th style='padding:6px 12px'>BET</th>"
+                "<th style='padding:6px 12px;text-align:right'>PRICE</th></tr>"
+                f"{crows}</table>")
+            lad = ladders.get(book)
+            if lad:
+                legs = "".join(f"<li style='margin:2px 0'>{l['chance']*100:.0f}% — "
+                               f"{l['side']}</li>" for l in lad["legs"])
+                body += (
+                    f"<p style='font-size:13.5px;margin:12px 0 4px'><b>"
+                    f"{len(lad['legs'])}-leg parlay at {book}</b> — most legs "
+                    f"staying above 60%:</p>"
+                    f"<ul style='margin:0 0 6px;padding-left:20px;font-size:13px;"
+                    f"color:#374151'>{legs}</ul>"
+                    f"<p style='font-size:13.5px;margin:0'>"
+                    f"<b>{lad['chance']*100:.1f}%</b> combined, pays "
+                    f"<b>{lad['american']:+d}</b> — risk 100 to win "
+                    f"{lad['profit_per_100']:.2f}, price needs "
+                    f"<b>{lad['needs']*100:.1f}%</b>.</p>")
+            else:
+                body += ("<p style='font-size:13px;color:#6b7280;margin:10px 0 0'>"
+                         f"Fewer than two qualifying legs at {book} — no parlay.</p>")
 
     return f"""<div style="font-family:-apple-system,Segoe UI,Roboto,sans-serif;
   max-width:640px;margin:0 auto;color:#111827">
@@ -402,11 +415,11 @@ def main() -> int:
     rows = todays_opportunities(args.hours, picked)
     teasers = [] if args.no_teasers else todays_teasers(args.hours, picked)
     conf = todays_confidence(args.hours, picked)
-    ladder = parlay_ladder(conf)
+    ladders = ladders_by_book(conf)
     print(f"{len(rows)} open opportunit{'y' if len(rows) == 1 else 'ies'} "
           f"and {len(teasers)} teaser(s) kicking off within {args.hours:g}h\n")
 
-    text = render_text(rows, teasers, conf, ladder)
+    text = render_text(rows, teasers, conf, ladders)
     subject = subject_for(rows, teasers)
     if not rows and not teasers and conf:
         subject = f"Nothing to place — {len(conf)} bets by win %"
@@ -434,7 +447,7 @@ def main() -> int:
     # glance and turns silence back into a signal.
 
     if args.to:
-        send_email(args.to, subject, render_html(rows, teasers, conf, ladder))
+        send_email(args.to, subject, render_html(rows, teasers, conf, ladders))
     if args.sms:
         send_sms(args.sms, text)
     return 0
@@ -584,10 +597,41 @@ def render_confidence_lines(rows: List[dict], limit: int = 8) -> List[str]:
     return lines
 
 
+def by_book(rows: List[dict]) -> Dict[str, List[dict]]:
+    """Split the board into one list per book, best chance first."""
+    out: Dict[str, List[dict]] = {}
+    for r in rows:
+        out.setdefault(r["book"], []).append(r)
+    for b in out:
+        out[b] = sorted(out[b], key=lambda r: -r["chance"])
+    return out
+
+
+def ladders_by_book(rows: List[dict], floor: float = 0.60,
+                    max_legs: int = 8) -> Dict[str, dict]:
+    """
+    One ladder per book, because a parlay is built inside one book.
+
+    The first version of this pooled every book and produced a seven-leg
+    ticket with six FanDuel legs and one BetMGM leg, which cannot be placed
+    anywhere. teaser.py and parlays.py both enforce this; the confidence
+    ladder did not, and shipped an unplaceable recommendation.
+    """
+    out: Dict[str, dict] = {}
+    for book, book_rows in by_book(rows).items():
+        lad = parlay_ladder(book_rows, floor, max_legs)
+        if lad:
+            out[book] = lad
+    return out
+
+
 def parlay_ladder(rows: List[dict], floor: float = 0.60,
                   max_legs: int = 8) -> Optional[dict]:
     """
-    The most legs that stay above a combined win-rate floor.
+    The most legs that stay above a combined win-rate floor, WITHIN ONE BOOK.
+
+    Callers should reach this through ladders_by_book(); passing a mixed-book
+    list builds a ticket nobody can place.
 
     Greedy by chance is optimal here: the highest-chance leg costs the least
     probability, so taking them in order reaches the most legs. Every leg's
@@ -597,6 +641,10 @@ def parlay_ladder(rows: List[dict], floor: float = 0.60,
     """
     if len(rows) < 2:
         return None
+    books = {r["book"] for r in rows}
+    if len(books) > 1:
+        raise ValueError(f"parlay_ladder got {len(books)} books: {sorted(books)}. "
+                         "Use ladders_by_book().")
     ch, dec_total, keep = 1.0, 1.0, 1.0
     legs: List[dict] = []
     seen_games = set()
