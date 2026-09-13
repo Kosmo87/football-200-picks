@@ -32,6 +32,7 @@ import keys  # noqa: F401  (loads ~/.football-picks.env)
 
 from archive import read_ndjson
 from shop_ledger import ledger_path
+from staking import MIN_PLAYABLE_UNITS as MIN_STAKE, stake_units
 
 RESEND_URL = "https://api.resend.com/emails"
 TWILIO_URL = "https://api.twilio.com/2010-04-01/Accounts/{sid}/Messages.json"
@@ -53,8 +54,9 @@ def subject_for(rows: List[dict]) -> str:
     """One subject line, so the preview and the send cannot disagree."""
     if not rows:
         return "Keep your money in your pocket"
-    return (f"{len(rows)} better-than-market price"
-            f"{'' if len(rows) == 1 else 's'} this morning")
+    units = sum(r["stake"] for r in rows)
+    return (f"{len(rows)} bet{'' if len(rows) == 1 else 's'} today"
+            f" — {units:g}U total")
 
 
 def _board() -> dict:
@@ -107,78 +109,111 @@ def todays_opportunities(hours: float = SEND_WINDOW_HOURS) -> List[dict]:
             best[key] = dict(r, also_at=prev.get("also_at", 0) + 1)
         else:
             prev["also_at"] = prev.get("also_at", 0) + 1
-    return sorted(best.values(), key=lambda r: (-r["edge"], r["kickoff"]))
+    # Size every one, then keep only what is worth placing.
+    #
+    # The message used to list price gaps with a percentage beside them and no
+    # stake, which reads as "bet this" without saying how much — and the honest
+    # answer for most of them is "less than you can place". Quarter-Kelly on a
+    # 3-4% price edge at +350 is about a tenth of a unit; rounded to the half
+    # unit everything is placed in, that is nothing.
+    #
+    # So the size is computed and the bet is dropped when it rounds to zero.
+    # A list of things too small to bet is not a shorter list of good bets, it
+    # is the same list with the sizing hidden.
+    out = []
+    for r in best.values():
+        # The de-vigged consensus IS our estimate here: the line-shop claim is
+        # about price, not about who wins, so there is no separate forecast to
+        # disagree with and the damper has nothing to damp.
+        fair = r.get("fair_prob") or 0
+        r = dict(r, stake=stake_units(fair, r["price"], fair))
+        if r["stake"] >= MIN_STAKE:
+            out.append(r)
+    return sorted(out, key=lambda r: (-r["stake"], -r["edge"], r["kickoff"]))
 
 
 def render_text(rows: List[dict]) -> str:
     """
-    Short enough to arrive as one or two messages.
+    The bets, and what to put on them. Nothing else.
 
-    A text that splits into four parts gets skimmed, and this one is meant to be
-    acted on before kickoff. Mascots go, and only the top few make it.
+    No sections, no percentages to interpret, no "here is what we looked at".
+    Every line is one thing to do and how much: if it is in the message it has
+    already cleared the bar, and if nothing has, the message says so in one
+    sentence rather than offering a consolation list.
     """
     if not rows:
-        return ("Keep your money in your pocket — nothing is mispriced this morning. "
+        return ("Keep your money in your pocket — nothing today is worth a bet. "
                 f"Checked {_games_checked()} game(s); board built {_board_built()}.")
-    lines = ["Better than market today:"]
-    for r in rows[:4]:
+    total = sum(r["stake"] for r in rows)
+    lines = [f"Today — {total:g}U across {len(rows)} bet{'' if len(rows) == 1 else 's'}:"]
+    for r in rows:
         price = f"+{r['price']}" if r["price"] > 0 else str(r["price"])
-        extra = f" (+{r['also_at']} more books)" if r.get("also_at") else ""
-        # Team names are left whole. Dropping the last word to save characters
-        # turns "Middle Tennessee Blue Raiders" into "Middle Tennessee Blue",
-        # and a bet you cannot identify is worse than a second message.
-        lines.append(f"{r['side']} {price} {r['book']}"
-                     f" — {r['edge']*100:.0f}% over{extra}")
-    if len(rows) > 4:
-        lines.append(f"+{len(rows)-4} more on the site")
+        extra = f" (also at {r['also_at']} other book{'' if r['also_at'] == 1 else 's'})" if r.get("also_at") else ""
+        lines.append(f"{r['stake']:g}U  {r['side']} {price} at {r['book']}{extra}")
     lines.append("Prices move. Check before betting.")
     return "\n".join(lines)
 
 
 def render_html(rows: List[dict]) -> str:
+    """
+    The same message as the text, laid out.
+
+    STAKE FIRST, and no columns that need interpreting. The old version led
+    with the game and ended with a percentage, which asked the reader to work
+    out both whether to bet and how much — and the percentage it showed was a
+    price gap, which is not a reason to think a team will win. Somebody read it
+    as one and asked why we liked the Browns.
+
+    So every row is now an instruction: this many units, on this, at this book.
+    If it is in the table it has already cleared the bar.
+    """
     if not rows:
-        body = ("<p>No book is meaningfully out of line this morning. "
-                "Keep your money in your pocket — nothing is mispriced this morning.</p>"
-                f"<p style='color:#64748b;font-size:13px'>Checked {_games_checked()} game(s); "
-                f"board built {_board_built()}. This message is sent on quiet days too, so that "
-                f"no message means something is wrong rather than nothing was on.</p>")
+        body = (
+            "<p style='font-size:15px;margin:0 0 10px'><b>Nothing today is worth a bet.</b></p>"
+            "<p style='color:#4b5563;font-size:14px;margin:0 0 14px'>Every price was checked "
+            "and none of them justified a stake. Keep your money in your pocket.</p>"
+            f"<p style='color:#64748b;font-size:12.5px'>Checked {_games_checked()} game(s); "
+            f"board built {_board_built()}. This is sent on quiet days too, so that no message "
+            f"means something is broken rather than nothing was on.</p>")
     else:
+        cell = "padding:9px 12px;border-top:1px solid #e5e7eb"
         cells = "".join(
             f"<tr>"
-            f"<td style='padding:8px 12px;border-top:1px solid #e5e7eb'>{r['game']}</td>"
-            f"<td style='padding:8px 12px;border-top:1px solid #e5e7eb'><b>{r['side']}</b></td>"
-            f"<td style='padding:8px 12px;border-top:1px solid #e5e7eb'>{r['book']}</td>"
-            f"<td style='padding:8px 12px;border-top:1px solid #e5e7eb;text-align:right;"
-            f"font-family:ui-monospace,monospace'>"
-            f"{'+' if r['price'] > 0 else ''}{r['price']}</td>"
-            f"<td style='padding:8px 12px;border-top:1px solid #e5e7eb;text-align:right;"
-            f"color:#6b7280;font-family:ui-monospace,monospace'>"
-            f"{'+' if r['consensus_price'] > 0 else ''}{r['consensus_price']}</td>"
-            f"<td style='padding:8px 12px;border-top:1px solid #e5e7eb;text-align:right;"
-            f"color:#15803d'>{r['edge']*100:.1f}%</td>"
-            f"</tr>"
+            f"<td style='{cell};text-align:right;font-family:ui-monospace,monospace;"
+            f"font-size:16px;font-weight:700;white-space:nowrap'>{r['stake']:g}U</td>"
+            f"<td style='{cell}'><b>{r['side']}</b>"
+            f"<div style='color:#6b7280;font-size:12px'>{r['game']}</div></td>"
+            f"<td style='{cell};text-align:right;font-family:ui-monospace,monospace;"
+            f"white-space:nowrap'>{'+' if r['price'] > 0 else ''}{r['price']}</td>"
+            f"<td style='{cell};color:#4b5563'>{r['book']}"
+            + (f"<div style='color:#9ca3af;font-size:11.5px'>also at {r['also_at']} other"
+               f"{'' if r['also_at'] == 1 else 's'}</div>" if r.get('also_at') else "")
+            + "</td></tr>"
             for r in rows
         )
+        total = sum(r["stake"] for r in rows)
         body = (
             "<table style='border-collapse:collapse;width:100%;font-size:14px'>"
-            "<tr style='text-align:left;color:#6b7280;font-size:12px'>"
-            "<th style='padding:6px 12px'>GAME</th><th style='padding:6px 12px'>BET</th>"
-            "<th style='padding:6px 12px'>BOOK</th>"
+            "<tr style='text-align:left;color:#6b7280;font-size:11.5px'>"
+            "<th style='padding:6px 12px;text-align:right'>STAKE</th>"
+            "<th style='padding:6px 12px'>BET</th>"
             "<th style='padding:6px 12px;text-align:right'>PRICE</th>"
-            "<th style='padding:6px 12px;text-align:right'>MARKET</th>"
-            "<th style='padding:6px 12px;text-align:right'>BETTER BY</th></tr>"
+            "<th style='padding:6px 12px'>BOOK</th></tr>"
             f"{cells}</table>"
+            f"<p style='margin:14px 0 0;font-size:13.5px;color:#374151'>"
+            f"<b>{total:g}U</b> across {len(rows)} bet{'' if len(rows) == 1 else 's'}.</p>"
         )
     return f"""<div style="font-family:-apple-system,Segoe UI,Roboto,sans-serif;
   max-width:640px;margin:0 auto;color:#111827">
-  <h2 style="font-size:17px;margin:0 0 4px">Better-than-market prices</h2>
+  <h2 style="font-size:17px;margin:0 0 4px">Today's bets</h2>
   <p style="color:#6b7280;font-size:13px;margin:0 0 16px">
-    {datetime.now().strftime('%A %-d %B')} · sent the morning of so the numbers are current
+    {datetime.now().strftime('%A %-d %B')} · sent the morning of, so the prices are current
   </p>
   {body}
   <p style="color:#6b7280;font-size:12px;margin-top:18px;line-height:1.5">
-    These are books priced better than the rest of the market on the same bet —
-    not predictions. Prices move; confirm before placing anything.
+    Each of these is a book priced better than the rest of the market on the same
+    bet — the stake is what that price edge justifies, not a forecast that the team
+    wins. Prices move; confirm before placing anything.
     Educational only, not betting advice.
   </p>
 </div>"""
