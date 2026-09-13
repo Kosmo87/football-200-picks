@@ -23,11 +23,24 @@ gap says -- the ranking is yours, the arithmetic is just printed honestly.
 from __future__ import annotations
 
 import argparse
+import itertools
+import math
 from datetime import datetime, timedelta, timezone
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 import keys  # noqa: F401
 import line_shop as LS
+
+
+# A price this far from the market consensus is a fault, not an opportunity.
+# On 2026-09-13 BetMGM's feed had Kansas @ Arizona State transposed: ASU at
+# +170 on the moneyline while three books had -200 to -225, and +6 on the
+# spread while six books had -5.5. De-vigged, that reads as a 27-point edge,
+# and the ticket builder duly put it at the top of BetMGM's board with a keep
+# rate of 1.73. line_shop has carried this guard for the same reason; the
+# confidence board did not, because it was never meant to judge prices -- but
+# anything that FEEDS a ticket has to reject a broken row.
+MAX_TRUSTED_GAP = 0.15
 
 
 def implied(american: int) -> float:
@@ -77,6 +90,8 @@ def scan(league: str, min_chance: float, days: int = 8,
                     p = fair.get(side)
                     if p is None or p < min_chance:
                         continue
+                    if abs(p - implied(price)) > MAX_TRUSTED_GAP:
+                        continue          # transposed or stale: not a bet
                     out.append({
                         "side": side, "price": price, "book": book, "game": game,
                         "chance": p, "needs": implied(price),
@@ -113,10 +128,119 @@ def main() -> int:
                     help="lowest win probability to show (default .625 = -167)")
     ap.add_argument("--days", type=int, default=8)
     ap.add_argument("--books", default="", help="comma-separated, e.g. betmgm,fanduel")
+    ap.add_argument("--build", action="store_true",
+                    help="best ticket per book at each payout level")
     a = ap.parse_args()
     bk = [b.strip().lower() for b in a.books.split(",") if b.strip()] or None
-    report(scan(a.league, a.min_chance, a.days, bk), a.min_chance)
+    rows = scan(a.league, a.min_chance, a.days, bk)
+    if not a.build:
+        report(rows, a.min_chance)
+        return 0
+    per: Dict[str, List[dict]] = {}
+    for r in rows:
+        per.setdefault(r["book"], []).append(r)
+    for book, book_rows in sorted(per.items(), key=lambda kv: -len(kv[1])):
+        print(f"\n=== {book.upper()} — best ticket at each payout")
+        print(f"{'pays':>8}{'legs':>6}{'CHANCE':>9}{'keep':>9}   legs")
+        for f in frontier(book_rows):
+            d = f["decimal"]
+            amer = (d - 1) * 100 if d >= 2 else -100 / (d - 1)
+            names = ", ".join(l["side"].split()[-1] for l in f["legs"])
+            print(f"{amer:>+8.0f}{len(f['legs']):>6}{f['chance']*100:>8.1f}%"
+                  f"{f['keep']:>9.4f}   {names[:44]}")
     return 0
+
+
+
+
+# ------------------------------------------------------------- construction
+
+def efficiency(chance: float, price: int) -> float:
+    """
+    Payout gained per unit of probability sacrificed.
+
+        ln(decimal) / -ln(chance)
+
+    This is the number that decides which legs belong on a ticket, and it is
+    not the win rate. A leg multiplies the payout by its decimal odds and the
+    chance by its probability, so what matters is the RATIO of what it adds to
+    what it costs -- both of which compound, which is why logs.
+
+    Above 1.0 the payout outruns the risk. Below it the leg costs more than it
+    brings. Measured on the FanDuel board of 2026-09-13, the range is brutal:
+
+        Virginia   -310   74.8%   0.963
+        Alabama   -1800   89.3%   0.478
+        Notre Dame -10000 96.0%   0.244
+
+    So the most likely winner on the board is the worst possible leg. Notre
+    Dame multiplies the payout by 1.01 and the chance by 0.96 -- four points of
+    win probability surrendered to buy one point of payout. Sorting a parlay by
+    win rate stacks exactly these.
+    """
+    if not 0 < chance < 1:
+        return 0.0
+    d = 1 + (price / 100 if price > 0 else 100 / abs(price))
+    return math.log(d) / -math.log(chance)
+
+
+def best_parlay(rows: List[dict], min_decimal: float = 2.0,
+                max_legs: int = 6) -> Optional[dict]:
+    """
+    The highest-chance ticket that still pays at least `min_decimal`.
+
+    Exhaustive over combinations up to max_legs, because the greedy answer is
+    wrong and wrong by a lot. Targeting +100 on the 2026-09-13 FanDuel board:
+
+        greedy by win rate .... 16 legs, 24.9%
+        optimal ...............  2 legs, 46.4%
+
+    Nearly double the win rate for the same payout. Greedy is only optimal for
+    a FIXED leg count; the moment the target is a payout it collapses, because
+    it spends probability on favourites that add almost no odds.
+
+    One leg per game, one book -- callers must pass a single book's rows.
+    """
+    books = {r["book"] for r in rows}
+    if len(books) > 1:
+        raise ValueError(f"best_parlay got {len(books)} books: {sorted(books)}")
+    pool = sorted(rows, key=lambda r: -efficiency(r["chance"], r["price"]))[:14]
+    best = None
+    for n in range(1, min(max_legs, len(pool)) + 1):
+        for combo in itertools.combinations(pool, n):
+            if len({c["game"] for c in combo}) != n:
+                continue                       # one leg per game
+            d = 1.0
+            ch = 1.0
+            keep = 1.0
+            for c in combo:
+                d *= 1 + (c["price"] / 100 if c["price"] > 0
+                          else 100 / abs(c["price"]))
+                ch *= c["chance"]
+                keep *= c["chance"] / c["needs"]
+            if d < min_decimal:
+                continue
+            if best is None or ch > best["chance"]:
+                best = {"legs": list(combo), "chance": ch, "decimal": d,
+                        "keep": keep, "profit_per_100": (d - 1) * 100}
+    return best
+
+
+def frontier(rows: List[dict], targets=(1.5, 2.0, 3.0, 5.0, 10.0),
+             max_legs: int = 6) -> List[dict]:
+    """
+    Best achievable chance at each payout level.
+
+    The honest shape of the trade-off: you cannot pick both, so this prints
+    what each payout actually costs in win probability rather than implying
+    some combination escapes it.
+    """
+    out = []
+    for t in targets:
+        p = best_parlay(rows, t, max_legs)
+        if p:
+            out.append(dict(p, target=t))
+    return out
 
 
 if __name__ == "__main__":
