@@ -1,874 +1,10 @@
 {
-  "generated_at": "2026-09-13T20:06:39+00:00",
+  "generated_at": "2026-09-13T20:34:29+00:00",
   "season": 2026,
   "leagues": {
     "NFL": {
       "league": "NFL",
       "games": [
-        {
-          "event_id": "401872928",
-          "name": "Miami Dolphins at Las Vegas Raiders",
-          "short_name": "MIA @ LV",
-          "kickoff": "2026-09-13T20:25Z",
-          "status": "Scheduled",
-          "neutral": false,
-          "provider": "Draft Kings",
-          "spread": -3.0,
-          "spread_details": "LV -3",
-          "total": 40.5,
-          "home": {
-            "id": "13",
-            "name": "Las Vegas Raiders",
-            "abbr": "LV",
-            "elo": 1358.8,
-            "moneyline": -170
-          },
-          "away": {
-            "id": "15",
-            "name": "Miami Dolphins",
-            "abbr": "MIA",
-            "elo": 1421.5,
-            "moneyline": 142
-          },
-          "legs": [
-            {
-              "side": "away",
-              "team_id": "15",
-              "team_name": "Miami Dolphins",
-              "team_abbr": "MIA",
-              "odds": 142,
-              "model_prob": 0.5398,
-              "implied_prob": 0.39624,
-              "edge_pp": 14.356057,
-              "fair_odds": -117,
-              "sample": 7.0,
-              "team_sample": 7.0,
-              "opp_sample": 7.0,
-              "team_games": 3,
-              "opp_games": 3,
-              "prior_credit": 4.0,
-              "stale": true,
-              "stale_reason": "LV quarterback out: Aidan O'Connell (Coach's Decision); MIA quarterback out: Brady Cook (Coach's Decision)"
-            },
-            {
-              "side": "home",
-              "team_id": "13",
-              "team_name": "Las Vegas Raiders",
-              "team_abbr": "LV",
-              "odds": -170,
-              "model_prob": 0.4602,
-              "implied_prob": 0.60376,
-              "edge_pp": -14.356057,
-              "fair_odds": 117,
-              "sample": 7.0,
-              "team_sample": 7.0,
-              "opp_sample": 7.0,
-              "team_games": 3,
-              "opp_games": 3,
-              "prior_credit": 4.0,
-              "stale": true,
-              "stale_reason": "LV quarterback out: Aidan O'Connell (Coach's Decision); MIA quarterback out: Brady Cook (Coach's Decision)"
-            }
-          ],
-          "context": {
-            "injuries": {
-              "home": {
-                "count": 7,
-                "long_term": 4,
-                "qb_out": 1,
-                "qbs": [
-                  "Aidan O'Connell (Coach's Decision)"
-                ],
-                "players": [
-                  {
-                    "player": "Aidan O'Connell",
-                    "position": "QB",
-                    "status": "Out",
-                    "detail": "Coach's Decision",
-                    "since": "2026-09-13T19:06Z"
-                  },
-                  {
-                    "player": "Cody Lindenberg",
-                    "position": "LB",
-                    "status": "Out",
-                    "detail": "Coach's Decision",
-                    "since": "2026-09-13T19:00Z"
-                  },
-                  {
-                    "player": "Darrell Luter Jr.",
-                    "position": "CB",
-                    "status": "Out",
-                    "detail": "Coach's Decision",
-                    "since": "2026-09-13T19:00Z"
-                  },
-                  {
-                    "player": "JJ Pegues",
-                    "position": "DT",
-                    "status": "Out",
-                    "detail": "Coach's Decision",
-                    "since": "2026-09-13T19:00Z"
-                  },
-                  {
-                    "player": "Dalton Johnson",
-                    "position": "S",
-                    "status": "Out",
-                    "detail": "Coach's Decision",
-                    "since": "2026-09-13T19:00Z"
-                  },
-                  {
-                    "player": "Brock Bowers",
-                    "position": "TE",
-                    "status": "Out",
-                    "detail": "Knee - Meniscus",
-                    "since": "2026-09-13T19:00Z"
-                  },
-                  {
-                    "player": "Bryce Cabeldue",
-                    "position": "G",
-                    "status": "Out",
-                    "detail": "Coach's Decision",
-                    "since": "2026-09-13T19:00Z"
-                  }
-                ]
-              },
-              "away": {
-                "count": 8,
-                "long_term": 3,
-                "qb_out": 1,
-                "qbs": [
-                  "Brady Cook (Coach's Decision)"
-                ],
-                "players": [
-                  {
-                    "player": "Brady Cook",
-                    "position": "QB",
-                    "status": "Out",
-                    "detail": "Coach's Decision",
-                    "since": "2026-09-13T19:04Z"
-                  },
-                  {
-                    "player": "Justin Joly",
-                    "position": "TE",
-                    "status": "Out",
-                    "detail": "Coach's Decision",
-                    "since": "2026-09-13T19:15Z"
-                  },
-                  {
-                    "player": "Jalen Tolbert",
-                    "position": "WR",
-                    "status": "Out",
-                    "detail": "Coach's Decision",
-                    "since": "2026-09-13T19:09Z"
-                  },
-                  {
-                    "player": "Reese Taylor",
-                    "position": "CB",
-                    "status": "Out",
-                    "detail": "Coach's Decision",
-                    "since": "2026-09-13T19:01Z"
-                  },
-                  {
-                    "player": "Chukwuebuka Godrick",
-                    "position": "OT",
-                    "status": "Out",
-                    "detail": "Coach's Decision",
-                    "since": "2026-09-13T19:01Z"
-                  },
-                  {
-                    "player": "DJ Campbell",
-                    "position": "G",
-                    "status": "Out",
-                    "detail": "Coach's Decision",
-                    "since": "2026-09-13T19:01Z"
-                  },
-                  {
-                    "player": "Storm Duck",
-                    "position": "CB",
-                    "status": "Out",
-                    "detail": "Knee",
-                    "since": "2026-08-31T18:22Z"
-                  },
-                  {
-                    "player": "Darrell Baker Jr.",
-                    "position": "CB",
-                    "status": "Out",
-                    "detail": "Undisclosed",
-                    "since": "2026-08-31T18:10Z"
-                  }
-                ]
-              },
-              "source": "espn",
-              "teams_covered": 12,
-              "teams_playing": 12,
-              "error": null
-            },
-            "venue": {
-              "venue": "Allegiant Stadium",
-              "city": "Las Vegas",
-              "state": "NV",
-              "indoor": true
-            },
-            "weather": null,
-            "flags": [
-              {
-                "kind": "qb_out",
-                "severity": "high",
-                "side": "home",
-                "text": "LV quarterback out: Aidan O'Connell (Coach's Decision). The ratings are built from final scores and do not know this; the price does."
-              },
-              {
-                "kind": "injuries",
-                "severity": "low",
-                "side": "home",
-                "text": "LV ruled out 7 rotation players this week"
-              },
-              {
-                "kind": "qb_out",
-                "severity": "high",
-                "side": "away",
-                "text": "MIA quarterback out: Brady Cook (Coach's Decision). The ratings are built from final scores and do not know this; the price does."
-              },
-              {
-                "kind": "injuries",
-                "severity": "low",
-                "side": "away",
-                "text": "MIA ruled out 8 rotation players this week"
-              }
-            ]
-          }
-        },
-        {
-          "event_id": "401872927",
-          "name": "Green Bay Packers at Minnesota Vikings",
-          "short_name": "GB @ MIN",
-          "kickoff": "2026-09-13T20:25Z",
-          "status": "Scheduled",
-          "neutral": false,
-          "provider": "Draft Kings",
-          "spread": -1.5,
-          "spread_details": "MIN -1.5",
-          "total": 46.5,
-          "home": {
-            "id": "16",
-            "name": "Minnesota Vikings",
-            "abbr": "MIN",
-            "elo": 1524.0,
-            "moneyline": -125
-          },
-          "away": {
-            "id": "9",
-            "name": "Green Bay Packers",
-            "abbr": "GB",
-            "elo": 1523.3,
-            "moneyline": 105
-          },
-          "legs": [
-            {
-              "side": "away",
-              "team_id": "9",
-              "team_name": "Green Bay Packers",
-              "team_abbr": "GB",
-              "odds": 105,
-              "model_prob": 0.44888,
-              "implied_prob": 0.46753,
-              "edge_pp": -1.864991,
-              "fair_odds": 123,
-              "sample": 7.0,
-              "team_sample": 7.0,
-              "opp_sample": 7.0,
-              "team_games": 3,
-              "opp_games": 3,
-              "prior_credit": 4.0,
-              "stale": true,
-              "stale_reason": "MIN quarterback out: J"
-            },
-            {
-              "side": "home",
-              "team_id": "16",
-              "team_name": "Minnesota Vikings",
-              "team_abbr": "MIN",
-              "odds": -125,
-              "model_prob": 0.55112,
-              "implied_prob": 0.53247,
-              "edge_pp": 1.864991,
-              "fair_odds": -123,
-              "sample": 7.0,
-              "team_sample": 7.0,
-              "opp_sample": 7.0,
-              "team_games": 3,
-              "opp_games": 3,
-              "prior_credit": 4.0,
-              "stale": true,
-              "stale_reason": "MIN quarterback out: J"
-            }
-          ],
-          "context": {
-            "injuries": {
-              "home": {
-                "count": 7,
-                "long_term": 3,
-                "qb_out": 1,
-                "qbs": [
-                  "J.J. McCarthy (Coach's Decision)"
-                ],
-                "players": [
-                  {
-                    "player": "J.J. McCarthy",
-                    "position": "QB",
-                    "status": "Out",
-                    "detail": "Coach's Decision",
-                    "since": "2026-09-13T19:28Z"
-                  },
-                  {
-                    "player": "Demond Claiborne",
-                    "position": "RB",
-                    "status": "Out",
-                    "detail": "Coach's Decision",
-                    "since": "2026-09-13T19:30Z"
-                  },
-                  {
-                    "player": "Elijah Williams",
-                    "position": "DE",
-                    "status": "Out",
-                    "detail": "Coach's Decision",
-                    "since": "2026-09-13T19:10Z"
-                  },
-                  {
-                    "player": "Nick Samac",
-                    "position": "C",
-                    "status": "Out",
-                    "detail": "Coach's Decision",
-                    "since": "2026-09-13T19:10Z"
-                  },
-                  {
-                    "player": "Jakobe Thomas",
-                    "position": "S",
-                    "status": "Out",
-                    "detail": "Coach's Decision",
-                    "since": "2026-09-13T19:10Z"
-                  },
-                  {
-                    "player": "Caleb Tiernan",
-                    "position": "OT",
-                    "status": "Out",
-                    "detail": "Coach's Decision",
-                    "since": "2026-09-13T19:10Z"
-                  },
-                  {
-                    "player": "Zemaiah Vaughn",
-                    "position": "CB",
-                    "status": "Out",
-                    "detail": "Coach's Decision",
-                    "since": "2026-09-13T19:10Z"
-                  }
-                ]
-              },
-              "away": {
-                "count": 8,
-                "long_term": 1,
-                "qb_out": 0,
-                "qbs": [],
-                "players": [
-                  {
-                    "player": "Ty'Ron Hopper",
-                    "position": "LB",
-                    "status": "Out",
-                    "detail": "Achilles",
-                    "since": "2026-09-13T19:44Z"
-                  },
-                  {
-                    "player": "Aaron Banks",
-                    "position": "G",
-                    "status": "Out",
-                    "detail": "Knee",
-                    "since": "2026-09-13T19:39Z"
-                  },
-                  {
-                    "player": "J. Michael Sturdivant",
-                    "position": "WR",
-                    "status": "Out",
-                    "detail": "Coach's Decision",
-                    "since": "2026-09-13T19:34Z"
-                  },
-                  {
-                    "player": "Travis Glover",
-                    "position": "OT",
-                    "status": "Out",
-                    "detail": "Coach's Decision",
-                    "since": "2026-09-13T19:03Z"
-                  },
-                  {
-                    "player": "Warren Brinson",
-                    "position": "DT",
-                    "status": "Out",
-                    "detail": "Calf",
-                    "since": "2026-09-13T19:03Z"
-                  },
-                  {
-                    "player": "Anthony Campbell",
-                    "position": "DT",
-                    "status": "Out",
-                    "detail": "Coach's Decision",
-                    "since": "2026-09-13T19:03Z"
-                  },
-                  {
-                    "player": "Josh Jacobs",
-                    "position": "RB",
-                    "status": "Out",
-                    "detail": "Personal",
-                    "since": "2026-09-13T15:09Z"
-                  },
-                  {
-                    "player": "Jordon Riley",
-                    "position": "DT",
-                    "status": "Out",
-                    "detail": "Achilles",
-                    "since": "2026-09-08T20:42Z"
-                  }
-                ]
-              },
-              "source": "espn",
-              "teams_covered": 12,
-              "teams_playing": 12,
-              "error": null
-            },
-            "venue": {
-              "venue": "U.S. Bank Stadium",
-              "city": "Minneapolis",
-              "state": "MN",
-              "indoor": true
-            },
-            "weather": null,
-            "flags": [
-              {
-                "kind": "qb_out",
-                "severity": "high",
-                "side": "home",
-                "text": "MIN quarterback out: J.J. McCarthy (Coach's Decision). The ratings are built from final scores and do not know this; the price does."
-              },
-              {
-                "kind": "injuries",
-                "severity": "low",
-                "side": "home",
-                "text": "MIN ruled out 7 rotation players this week"
-              },
-              {
-                "kind": "injuries",
-                "severity": "low",
-                "side": "away",
-                "text": "GB ruled out 8 rotation players this week"
-              }
-            ]
-          }
-        },
-        {
-          "event_id": "401872929",
-          "name": "Washington Commanders at Philadelphia Eagles",
-          "short_name": "WSH @ PHI",
-          "kickoff": "2026-09-13T20:25Z",
-          "status": "Scheduled",
-          "neutral": false,
-          "provider": "Draft Kings",
-          "spread": -6.0,
-          "spread_details": "PHI -6",
-          "total": 43.5,
-          "home": {
-            "id": "21",
-            "name": "Philadelphia Eagles",
-            "abbr": "PHI",
-            "elo": 1500.0,
-            "moneyline": -245
-          },
-          "away": {
-            "id": "28",
-            "name": "Washington Commanders",
-            "abbr": "WSH",
-            "elo": 1452.5,
-            "moneyline": 200
-          },
-          "legs": [
-            {
-              "side": "away",
-              "team_id": "28",
-              "team_name": "Washington Commanders",
-              "team_abbr": "WSH",
-              "odds": 200,
-              "model_prob": 0.38344,
-              "implied_prob": 0.31944,
-              "edge_pp": 6.39975,
-              "fair_odds": 161,
-              "sample": 7.0,
-              "team_sample": 7.0,
-              "opp_sample": 7.0,
-              "team_games": 3,
-              "opp_games": 3,
-              "prior_credit": 4.0,
-              "stale": true,
-              "stale_reason": "PHI quarterback out: Cole Payton (Coach's Decision), Tanner McKee (Coach's Decision); WSH quarterback out: Athan Kaliakmanis (Coach's Decision)"
-            },
-            {
-              "side": "home",
-              "team_id": "21",
-              "team_name": "Philadelphia Eagles",
-              "team_abbr": "PHI",
-              "odds": -245,
-              "model_prob": 0.61656,
-              "implied_prob": 0.68056,
-              "edge_pp": -6.39975,
-              "fair_odds": -161,
-              "sample": 7.0,
-              "team_sample": 7.0,
-              "opp_sample": 7.0,
-              "team_games": 3,
-              "opp_games": 3,
-              "prior_credit": 4.0,
-              "stale": true,
-              "stale_reason": "PHI quarterback out: Cole Payton (Coach's Decision), Tanner McKee (Coach's Decision); WSH quarterback out: Athan Kaliakmanis (Coach's Decision)"
-            }
-          ],
-          "context": {
-            "injuries": {
-              "home": {
-                "count": 5,
-                "long_term": 5,
-                "qb_out": 2,
-                "qbs": [
-                  "Cole Payton (Coach's Decision)",
-                  "Tanner McKee (Coach's Decision)"
-                ],
-                "players": [
-                  {
-                    "player": "Cole Payton",
-                    "position": "QB",
-                    "status": "Out",
-                    "detail": "Coach's Decision",
-                    "since": "2026-09-13T19:29Z"
-                  },
-                  {
-                    "player": "Tanner McKee",
-                    "position": "QB",
-                    "status": "Out",
-                    "detail": "Coach's Decision",
-                    "since": "2026-09-13T19:26Z"
-                  },
-                  {
-                    "player": "Elijah Moore",
-                    "position": "WR",
-                    "status": "Out",
-                    "detail": "Coach's Decision",
-                    "since": "2026-09-13T19:34Z"
-                  },
-                  {
-                    "player": "Micah Morris",
-                    "position": "G",
-                    "status": "Out",
-                    "detail": "Coach's Decision",
-                    "since": "2026-09-13T18:58Z"
-                  },
-                  {
-                    "player": "Jonathan Greenard",
-                    "position": "LB",
-                    "status": "Out",
-                    "detail": "Pectoral",
-                    "since": "2026-09-13T18:58Z"
-                  }
-                ]
-              },
-              "away": {
-                "count": 6,
-                "long_term": 2,
-                "qb_out": 1,
-                "qbs": [
-                  "Athan Kaliakmanis (Coach's Decision)"
-                ],
-                "players": [
-                  {
-                    "player": "Athan Kaliakmanis",
-                    "position": "QB",
-                    "status": "Out",
-                    "detail": "Coach's Decision",
-                    "since": "2026-09-13T19:19Z"
-                  },
-                  {
-                    "player": "Treylon Burks",
-                    "position": "WR",
-                    "status": "Out",
-                    "detail": "Coach's Decision",
-                    "since": "2026-09-13T19:16Z"
-                  },
-                  {
-                    "player": "Luke McCaffrey",
-                    "position": "WR",
-                    "status": "Out",
-                    "detail": "Coach's Decision",
-                    "since": "2026-09-13T19:13Z"
-                  },
-                  {
-                    "player": "Tanoa Togiai",
-                    "position": "G",
-                    "status": "Out",
-                    "detail": "Coach's Decision",
-                    "since": "2026-09-13T18:59Z"
-                  },
-                  {
-                    "player": "Ricky Barber",
-                    "position": "DT",
-                    "status": "Out",
-                    "detail": "Coach's Decision",
-                    "since": "2026-09-13T18:59Z"
-                  },
-                  {
-                    "player": "Deatrich Wise Jr.",
-                    "position": "DE",
-                    "status": "Out",
-                    "detail": "Quadriceps",
-                    "since": "2026-08-31T15:19Z"
-                  }
-                ]
-              },
-              "source": "espn",
-              "teams_covered": 12,
-              "teams_playing": 12,
-              "error": null
-            },
-            "venue": {
-              "venue": "Lincoln Financial Field",
-              "city": "Philadelphia",
-              "state": "PA",
-              "indoor": false
-            },
-            "weather": {
-              "temp_f": 78.2,
-              "wind_mph": 4.5,
-              "gust_mph": 10.3,
-              "precip_pct": 1,
-              "snow_in": 0.0
-            },
-            "flags": [
-              {
-                "kind": "qb_out",
-                "severity": "high",
-                "side": "home",
-                "text": "PHI quarterback out: Cole Payton (Coach's Decision), Tanner McKee (Coach's Decision). The ratings are built from final scores and do not know this; the price does."
-              },
-              {
-                "kind": "injuries",
-                "severity": "low",
-                "side": "home",
-                "text": "PHI ruled out 5 rotation players this week"
-              },
-              {
-                "kind": "qb_out",
-                "severity": "high",
-                "side": "away",
-                "text": "WSH quarterback out: Athan Kaliakmanis (Coach's Decision). The ratings are built from final scores and do not know this; the price does."
-              },
-              {
-                "kind": "injuries",
-                "severity": "low",
-                "side": "away",
-                "text": "WSH ruled out 6 rotation players this week"
-              }
-            ]
-          }
-        },
-        {
-          "event_id": "401872926",
-          "name": "Arizona Cardinals at Los Angeles Chargers",
-          "short_name": "ARI @ LAC",
-          "kickoff": "2026-09-13T20:25Z",
-          "status": "Scheduled",
-          "neutral": false,
-          "provider": "Draft Kings",
-          "spread": -8.5,
-          "spread_details": "LAC -8.5",
-          "total": 47.5,
-          "home": {
-            "id": "24",
-            "name": "Los Angeles Chargers",
-            "abbr": "LAC",
-            "elo": 1518.0,
-            "moneyline": -455
-          },
-          "away": {
-            "id": "22",
-            "name": "Arizona Cardinals",
-            "abbr": "ARI",
-            "elo": 1391.6,
-            "moneyline": 350
-          },
-          "legs": [
-            {
-              "side": "away",
-              "team_id": "22",
-              "team_name": "Arizona Cardinals",
-              "team_abbr": "ARI",
-              "odds": 350,
-              "model_prob": 0.28309,
-              "implied_prob": 0.21326,
-              "edge_pp": 6.983662,
-              "fair_odds": 253,
-              "sample": 7.0,
-              "team_sample": 8.0,
-              "opp_sample": 7.0,
-              "team_games": 4,
-              "opp_games": 3,
-              "prior_credit": 4.0,
-              "stale": true,
-              "stale_reason": "ARI quarterback out: Carson Beck (Coach's Decision)"
-            }
-          ],
-          "context": {
-            "injuries": {
-              "home": {
-                "count": 6,
-                "long_term": 2,
-                "qb_out": 0,
-                "qbs": [],
-                "players": [
-                  {
-                    "player": "Logan Taylor",
-                    "position": "G",
-                    "status": "Out",
-                    "detail": "Coach's Decision",
-                    "since": "2026-09-13T19:07Z"
-                  },
-                  {
-                    "player": "RJ Mickens",
-                    "position": "S",
-                    "status": "Out",
-                    "detail": "Coach's Decision",
-                    "since": "2026-09-13T19:07Z"
-                  },
-                  {
-                    "player": "Trevor Penning",
-                    "position": "G",
-                    "status": "Out",
-                    "detail": "Coach's Decision",
-                    "since": "2026-09-13T19:07Z"
-                  },
-                  {
-                    "player": "Alex Harkey",
-                    "position": "G",
-                    "status": "Out",
-                    "detail": "Coach's Decision",
-                    "since": "2026-09-13T19:07Z"
-                  },
-                  {
-                    "player": "Deane Leonard",
-                    "position": "CB",
-                    "status": "Out",
-                    "detail": "Abdomen",
-                    "since": "2026-09-13T19:07Z"
-                  },
-                  {
-                    "player": "Isaiah World",
-                    "position": "OT",
-                    "status": "Out",
-                    "detail": "Knee",
-                    "since": "2026-09-08T20:42Z"
-                  }
-                ]
-              },
-              "away": {
-                "count": 7,
-                "long_term": 4,
-                "qb_out": 1,
-                "qbs": [
-                  "Carson Beck (Coach's Decision)"
-                ],
-                "players": [
-                  {
-                    "player": "Carson Beck",
-                    "position": "QB",
-                    "status": "Out",
-                    "detail": "Coach's Decision",
-                    "since": "2026-09-13T19:21Z"
-                  },
-                  {
-                    "player": "Dadrion Taylor-Demerson",
-                    "position": "S",
-                    "status": "Out",
-                    "detail": "Ribs",
-                    "since": "2026-09-13T19:05Z"
-                  },
-                  {
-                    "player": "Reggie Virgil",
-                    "position": "WR",
-                    "status": "Out",
-                    "detail": "Coach's Decision",
-                    "since": "2026-09-13T19:05Z"
-                  },
-                  {
-                    "player": "Garrett Williams",
-                    "position": "CB",
-                    "status": "Out",
-                    "detail": "Achilles",
-                    "since": "2026-09-13T19:05Z"
-                  },
-                  {
-                    "player": "Isaiah Adams",
-                    "position": "G",
-                    "status": "Out",
-                    "detail": "Knee",
-                    "since": "2026-09-13T19:05Z"
-                  },
-                  {
-                    "player": "Andrew Billings",
-                    "position": "DT",
-                    "status": "Out",
-                    "detail": "Coach's Decision",
-                    "since": "2026-09-13T19:05Z"
-                  },
-                  {
-                    "player": "Tip Reiman",
-                    "position": "TE",
-                    "status": "Out",
-                    "detail": "Ankle",
-                    "since": "2026-08-31T03:56Z"
-                  }
-                ]
-              },
-              "source": "espn",
-              "teams_covered": 12,
-              "teams_playing": 12,
-              "error": null
-            },
-            "venue": {
-              "venue": "SoFi Stadium",
-              "city": "Inglewood",
-              "state": "CA",
-              "indoor": false
-            },
-            "weather": {
-              "temp_f": 78.0,
-              "wind_mph": 8.1,
-              "gust_mph": 9.4,
-              "precip_pct": 0,
-              "snow_in": 0.0
-            },
-            "flags": [
-              {
-                "kind": "injuries",
-                "severity": "low",
-                "side": "home",
-                "text": "LAC ruled out 6 rotation players this week"
-              },
-              {
-                "kind": "qb_out",
-                "severity": "high",
-                "side": "away",
-                "text": "ARI quarterback out: Carson Beck (Coach's Decision). The ratings are built from final scores and do not know this; the price does."
-              },
-              {
-                "kind": "injuries",
-                "severity": "low",
-                "side": "away",
-                "text": "ARI ruled out 7 rotation players this week"
-              }
-            ]
-          }
-        },
         {
           "event_id": "401872930",
           "name": "Dallas Cowboys at New York Giants",
@@ -947,8 +83,8 @@
                 "players": []
               },
               "source": "espn",
-              "teams_covered": 12,
-              "teams_playing": 12,
+              "teams_covered": 4,
+              "teams_playing": 4,
               "error": null
             },
             "venue": {
@@ -958,9 +94,9 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 72.9,
-              "wind_mph": 5.1,
-              "gust_mph": 10.5,
+              "temp_f": 71.9,
+              "wind_mph": 4.3,
+              "gust_mph": 9.8,
               "precip_pct": 0,
               "snow_in": 0.0
             },
@@ -1082,8 +218,8 @@
                 ]
               },
               "source": "espn",
-              "teams_covered": 12,
-              "teams_playing": 12,
+              "teams_covered": 4,
+              "teams_playing": 4,
               "error": null
             },
             "venue": {
@@ -1093,9 +229,9 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 89.7,
-              "wind_mph": 10.7,
-              "gust_mph": 25.9,
+              "temp_f": 89.2,
+              "wind_mph": 13.7,
+              "gust_mph": 31.5,
               "precip_pct": 1,
               "snow_in": 0.0
             },
@@ -1103,7 +239,7 @@
               {
                 "kind": "wind",
                 "severity": "high",
-                "text": "Wind 11 mph, gusting 26 \u2014 kicking and the deep ball suffer"
+                "text": "Wind 14 mph, gusting 32 \u2014 kicking and the deep ball suffer"
               }
             ]
           }
@@ -1122,8 +258,8 @@
           "team_id": "2",
           "name": "Buffalo Bills",
           "abbr": "BUF",
-          "elo": 1601.5,
-          "games": 3,
+          "elo": 1622.2,
+          "games": 4,
           "prior_games": 19
         },
         {
@@ -1143,6 +279,14 @@
           "prior_games": 19
         },
         {
+          "team_id": "33",
+          "name": "Baltimore Ravens",
+          "abbr": "BAL",
+          "elo": 1590.4,
+          "games": 4,
+          "prior_games": 17
+        },
+        {
           "team_id": "30",
           "name": "Jacksonville Jaguars",
           "abbr": "JAX",
@@ -1159,28 +303,12 @@
           "prior_games": 20
         },
         {
-          "team_id": "33",
-          "name": "Baltimore Ravens",
-          "abbr": "BAL",
-          "elo": 1564.4,
-          "games": 3,
-          "prior_games": 17
-        },
-        {
           "team_id": "17",
           "name": "New England Patriots",
           "abbr": "NE",
           "elo": 1563.1,
           "games": 4,
           "prior_games": 21
-        },
-        {
-          "team_id": "34",
-          "name": "Houston Texans",
-          "abbr": "HOU",
-          "elo": 1555.0,
-          "games": 3,
-          "prior_games": 19
         },
         {
           "team_id": "8",
@@ -1191,12 +319,28 @@
           "prior_games": 17
         },
         {
+          "team_id": "34",
+          "name": "Houston Texans",
+          "abbr": "HOU",
+          "elo": 1534.3,
+          "games": 4,
+          "prior_games": 19
+        },
+        {
           "team_id": "3",
           "name": "Chicago Bears",
           "abbr": "CHI",
           "elo": 1532.5,
           "games": 3,
           "prior_games": 19
+        },
+        {
+          "team_id": "4",
+          "name": "Cincinnati Bengals",
+          "abbr": "CIN",
+          "elo": 1532.4,
+          "games": 4,
+          "prior_games": 17
         },
         {
           "team_id": "16",
@@ -1223,34 +367,18 @@
           "prior_games": 18
         },
         {
-          "team_id": "4",
-          "name": "Cincinnati Bengals",
-          "abbr": "CIN",
-          "elo": 1514.7,
-          "games": 3,
-          "prior_games": 17
+          "team_id": "23",
+          "name": "Pittsburgh Steelers",
+          "abbr": "PIT",
+          "elo": 1516.3,
+          "games": 4,
+          "prior_games": 18
         },
         {
           "team_id": "21",
           "name": "Philadelphia Eagles",
           "abbr": "PHI",
           "elo": 1500.0,
-          "games": 3,
-          "prior_games": 18
-        },
-        {
-          "team_id": "1",
-          "name": "Atlanta Falcons",
-          "abbr": "ATL",
-          "elo": 1495.1,
-          "games": 3,
-          "prior_games": 17
-        },
-        {
-          "team_id": "23",
-          "name": "Pittsburgh Steelers",
-          "abbr": "PIT",
-          "elo": 1494.1,
           "games": 3,
           "prior_games": 18
         },
@@ -1271,11 +399,11 @@
           "prior_games": 18
         },
         {
-          "team_id": "27",
-          "name": "Tampa Bay Buccaneers",
-          "abbr": "TB",
-          "elo": 1473.4,
-          "games": 3,
+          "team_id": "1",
+          "name": "Atlanta Falcons",
+          "abbr": "ATL",
+          "elo": 1472.9,
+          "games": 4,
           "prior_games": 17
         },
         {
@@ -1295,6 +423,14 @@
           "prior_games": 17
         },
         {
+          "team_id": "27",
+          "name": "Tampa Bay Buccaneers",
+          "abbr": "TB",
+          "elo": 1455.7,
+          "games": 4,
+          "prior_games": 17
+        },
+        {
           "team_id": "28",
           "name": "Washington Commanders",
           "abbr": "WSH",
@@ -1311,14 +447,6 @@
           "prior_games": 17
         },
         {
-          "team_id": "11",
-          "name": "Indianapolis Colts",
-          "abbr": "IND",
-          "elo": 1444.9,
-          "games": 3,
-          "prior_games": 17
-        },
-        {
           "team_id": "15",
           "name": "Miami Dolphins",
           "abbr": "MIA",
@@ -1331,6 +459,14 @@
           "name": "Cleveland Browns",
           "abbr": "CLE",
           "elo": 1420.5,
+          "games": 4,
+          "prior_games": 17
+        },
+        {
+          "team_id": "11",
+          "name": "Indianapolis Colts",
+          "abbr": "IND",
+          "elo": 1419.0,
           "games": 4,
           "prior_games": 17
         },
@@ -1374,8 +510,8 @@
         "prior_games_used": 1425,
         "history_seasons": "2021-2025",
         "top_division_teams": 0,
-        "completed_games": 53,
-        "upcoming_games": 6,
+        "completed_games": 57,
+        "upcoming_games": 2,
         "rated_teams": 32,
         "elo": {
           "k_factor": 24.0,
@@ -1397,22 +533,22 @@
           "status": "Scheduled",
           "neutral": false,
           "provider": "Draft Kings",
-          "spread": -10.0,
-          "spread_details": "PITT -10",
-          "total": 53.5,
+          "spread": -10.5,
+          "spread_details": "PITT -10.5",
+          "total": 51.5,
           "home": {
             "id": "221",
             "name": "Pittsburgh Panthers",
             "abbr": "PITT",
             "elo": 1602.5,
-            "moneyline": -345
+            "moneyline": -360
           },
           "away": {
             "id": "183",
             "name": "Syracuse Orange",
             "abbr": "SYR",
             "elo": 1325.1,
-            "moneyline": 275
+            "moneyline": 285
           },
           "legs": [
             {
@@ -1420,10 +556,10 @@
               "team_id": "183",
               "team_name": "Syracuse Orange",
               "team_abbr": "SYR",
-              "odds": 275,
+              "odds": 285,
               "model_prob": 0.12862,
-              "implied_prob": 0.25593,
-              "edge_pp": -12.731148,
+              "implied_prob": 0.24919,
+              "edge_pp": -12.056793,
               "fair_odds": 677,
               "sample": 6.0,
               "team_sample": 6.0,
@@ -1437,10 +573,10 @@
               "team_id": "221",
               "team_name": "Pittsburgh Panthers",
               "team_abbr": "PITT",
-              "odds": -345,
+              "odds": -360,
               "model_prob": 0.87138,
-              "implied_prob": 0.74407,
-              "edge_pp": 12.731148,
+              "implied_prob": 0.75081,
+              "edge_pp": 12.056793,
               "fair_odds": -677,
               "sample": 6.0,
               "team_sample": 6.0,
@@ -1644,7 +780,13 @@
               "state": "KS",
               "indoor": false
             },
-            "weather": null,
+            "weather": {
+              "temp_f": 77.9,
+              "wind_mph": 7.0,
+              "gust_mph": 6.7,
+              "precip_pct": 15,
+              "snow_in": 0.0
+            },
             "flags": []
           }
         },
@@ -1658,7 +800,7 @@
           "provider": "Draft Kings",
           "spread": 5.5,
           "spread_details": "ASU -5.5",
-          "total": 55.5,
+          "total": 53.5,
           "home": {
             "id": "2305",
             "name": "Kansas Jayhawks",
@@ -1736,8 +878,20 @@
               "state": "",
               "indoor": false
             },
-            "weather": null,
-            "flags": []
+            "weather": {
+              "temp_f": 70.8,
+              "wind_mph": 13.6,
+              "gust_mph": 28.2,
+              "precip_pct": 28,
+              "snow_in": 0.0
+            },
+            "flags": [
+              {
+                "kind": "wind",
+                "severity": "high",
+                "text": "Wind 14 mph, gusting 28 \u2014 kicking and the deep ball suffer"
+              }
+            ]
           }
         },
         {
@@ -2695,20 +1849,8 @@
               "state": "NC",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 93.0,
-              "wind_mph": 6.9,
-              "gust_mph": 8.5,
-              "precip_pct": 12,
-              "snow_in": 0.0
-            },
-            "flags": [
-              {
-                "kind": "heat",
-                "severity": "low",
-                "text": "93\u00b0F at kickoff"
-              }
-            ]
+            "weather": null,
+            "flags": []
           }
         },
         {
@@ -2721,20 +1863,20 @@
           "provider": "Draft Kings",
           "spread": -14.5,
           "spread_details": "LIB -14.5",
-          "total": 55.5,
+          "total": 53.5,
           "home": {
             "id": "2335",
             "name": "Liberty Flames",
             "abbr": "LIB",
             "elo": 1384.0,
-            "moneyline": -850
+            "moneyline": -900
           },
           "away": {
             "id": "2050",
             "name": "Ball State Cardinals",
             "abbr": "BALL",
             "elo": 1306.4,
-            "moneyline": 575
+            "moneyline": 600
           },
           "legs": [
             {
@@ -2742,10 +1884,10 @@
               "team_id": "2050",
               "team_name": "Ball State Cardinals",
               "team_abbr": "BALL",
-              "odds": 575,
+              "odds": 600,
               "model_prob": 0.31799,
-              "implied_prob": 0.14206,
-              "edge_pp": 17.593525,
+              "implied_prob": 0.13699,
+              "edge_pp": 18.100502,
               "fair_odds": 214,
               "sample": 6.0,
               "team_sample": 6.0,
@@ -2782,13 +1924,7 @@
               "state": "VA",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 91.2,
-              "wind_mph": 7.8,
-              "gust_mph": 10.5,
-              "precip_pct": 12,
-              "snow_in": 0.0
-            },
+            "weather": null,
             "flags": []
           }
         },
@@ -2863,20 +1999,8 @@
               "state": "TX",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 100.6,
-              "wind_mph": 12.2,
-              "gust_mph": 13.0,
-              "precip_pct": 3,
-              "snow_in": 0.0
-            },
-            "flags": [
-              {
-                "kind": "heat",
-                "severity": "low",
-                "text": "101\u00b0F at kickoff"
-              }
-            ]
+            "weather": null,
+            "flags": []
           }
         },
         {
@@ -3151,8 +2275,20 @@
               "state": "FL",
               "indoor": false
             },
-            "weather": null,
-            "flags": []
+            "weather": {
+              "temp_f": 86.0,
+              "wind_mph": 11.3,
+              "gust_mph": 10.1,
+              "precip_pct": 63,
+              "snow_in": 0.0
+            },
+            "flags": [
+              {
+                "kind": "rain",
+                "severity": "low",
+                "text": "63% chance of rain"
+              }
+            ]
           }
         },
         {
@@ -3226,7 +2362,13 @@
               "state": "NC",
               "indoor": false
             },
-            "weather": null,
+            "weather": {
+              "temp_f": 72.4,
+              "wind_mph": 2.4,
+              "gust_mph": 3.8,
+              "precip_pct": 37,
+              "snow_in": 0.0
+            },
             "flags": []
           }
         },
@@ -3238,22 +2380,22 @@
           "status": "Scheduled",
           "neutral": false,
           "provider": "Draft Kings",
-          "spread": 3.5,
-          "spread_details": "MRSH -3.5",
-          "total": 52.5,
+          "spread": 4.0,
+          "spread_details": "MRSH -4",
+          "total": 51.5,
           "home": {
             "id": "2623",
             "name": "Missouri State Bears",
             "abbr": "MOST",
             "elo": 1396.9,
-            "moneyline": 140
+            "moneyline": 136
           },
           "away": {
             "id": "276",
             "name": "Marshall Thundering Herd",
             "abbr": "MRSH",
             "elo": 1456.7,
-            "moneyline": -166
+            "moneyline": -162
           },
           "legs": [
             {
@@ -3261,10 +2403,10 @@
               "team_id": "276",
               "team_name": "Marshall Thundering Herd",
               "team_abbr": "MRSH",
-              "odds": -166,
+              "odds": -162,
               "model_prob": 0.50693,
-              "implied_prob": 0.59964,
-              "edge_pp": -9.270638,
+              "implied_prob": 0.59337,
+              "edge_pp": -8.643736,
               "fair_odds": -103,
               "sample": 6.0,
               "team_sample": 6.0,
@@ -3278,10 +2420,10 @@
               "team_id": "2623",
               "team_name": "Missouri State Bears",
               "team_abbr": "MOST",
-              "odds": 140,
+              "odds": 136,
               "model_prob": 0.49307,
-              "implied_prob": 0.40036,
-              "edge_pp": 9.270638,
+              "implied_prob": 0.40663,
+              "edge_pp": 8.643736,
               "fair_odds": 103,
               "sample": 6.0,
               "team_sample": 6.0,
@@ -3318,8 +2460,20 @@
               "state": "MO",
               "indoor": false
             },
-            "weather": null,
-            "flags": []
+            "weather": {
+              "temp_f": 97.4,
+              "wind_mph": 8.1,
+              "gust_mph": 11.6,
+              "precip_pct": 16,
+              "snow_in": 0.0
+            },
+            "flags": [
+              {
+                "kind": "heat",
+                "severity": "low",
+                "text": "97\u00b0F at kickoff"
+              }
+            ]
           }
         },
         {
@@ -4207,20 +3361,20 @@
           "provider": "Draft Kings",
           "spread": -9.5,
           "spread_details": "UVA -9.5",
-          "total": 53.5,
+          "total": 54.5,
           "home": {
             "id": "258",
             "name": "Virginia Cavaliers",
             "abbr": "UVA",
             "elo": 1647.2,
-            "moneyline": -355
+            "moneyline": -360
           },
           "away": {
             "id": "277",
             "name": "West Virginia Mountaineers",
             "abbr": "WVU",
             "elo": 1485.4,
-            "moneyline": 280
+            "moneyline": 285
           },
           "legs": [
             {
@@ -4228,10 +3382,10 @@
               "team_id": "277",
               "team_name": "West Virginia Mountaineers",
               "team_abbr": "WVU",
-              "odds": 280,
+              "odds": 285,
               "model_prob": 0.28265,
-              "implied_prob": 0.25222,
-              "edge_pp": 3.042923,
+              "implied_prob": 0.24919,
+              "edge_pp": 3.345909,
               "fair_odds": 254,
               "sample": 6.0,
               "team_sample": 6.0,
@@ -4245,10 +3399,10 @@
               "team_id": "258",
               "team_name": "Virginia Cavaliers",
               "team_abbr": "UVA",
-              "odds": -355,
+              "odds": -360,
               "model_prob": 0.71735,
-              "implied_prob": 0.74778,
-              "edge_pp": -3.042923,
+              "implied_prob": 0.75081,
+              "edge_pp": -3.345909,
               "fair_odds": -254,
               "sample": 6.0,
               "team_sample": 6.0,
@@ -4285,7 +3439,13 @@
               "state": "NC",
               "indoor": false
             },
-            "weather": null,
+            "weather": {
+              "temp_f": 86.9,
+              "wind_mph": 3.9,
+              "gust_mph": 6.9,
+              "precip_pct": 12,
+              "snow_in": 0.0
+            },
             "flags": []
           }
         },
@@ -4728,13 +3888,7 @@
               "state": "CA",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 72.7,
-              "wind_mph": 8.4,
-              "gust_mph": 5.4,
-              "precip_pct": 0,
-              "snow_in": 0.0
-            },
+            "weather": null,
             "flags": []
           }
         },
