@@ -368,20 +368,51 @@ def send_email(to: str, subject: str, html: str) -> bool:
 
 
 def send_sms(to: str, body: str) -> bool:
-    sid = os.environ.get("TWILIO_ACCOUNT_SID", "").strip()
+    """
+    Twilio, authenticating with an API key when one is present.
+
+    Two credential shapes work against the same endpoint, and the difference
+    matters. The Account SID + Auth Token pair is the whole account: leaking it
+    means rotating everything. An API key (SK..., plus a secret shown exactly
+    once at creation) is revocable on its own, which is what Twilio recommends
+    and what this prefers.
+
+    Either way the URL carries the ACCOUNT SID -- only the basic-auth pair
+    changes. Getting that backwards returns a 404 rather than a 401, because
+    Twilio looks up the account from the path before it authenticates, which
+    makes it read like a missing endpoint instead of a credential problem.
+    """
+    account = os.environ.get("TWILIO_ACCOUNT_SID", "").strip()
+    key_sid = os.environ.get("TWILIO_API_KEY_SID", "").strip()
+    key_secret = os.environ.get("TWILIO_API_KEY_SECRET", "").strip()
     token = os.environ.get("TWILIO_AUTH_TOKEN", "").strip()
     frm = os.environ.get("TWILIO_FROM", "").strip()
-    if sid and not sid.startswith("AC"):
-        print(f"  TWILIO_ACCOUNT_SID does not look like one (they begin 'AC'). "
-              f"Nothing sent.")
+
+    if account and not account.startswith("AC"):
+        print("  TWILIO_ACCOUNT_SID does not look like one (they begin 'AC'). "
+              "Nothing sent.")
         return False
-    if not (sid and token and frm):
-        print("  TWILIO_ACCOUNT_SID / TWILIO_AUTH_TOKEN / TWILIO_FROM not set — "
-              "nothing sent.")
+    if key_sid and not key_sid.startswith("SK"):
+        print("  TWILIO_API_KEY_SID does not look like one (they begin 'SK'). "
+              "Nothing sent.")
         return False
+
+    if key_sid and key_secret:
+        user, password, how = key_sid, key_secret, "API key"
+    elif token:
+        user, password, how = account, token, "auth token"
+    else:
+        print("  No Twilio credential: set TWILIO_API_KEY_SID + "
+              "TWILIO_API_KEY_SECRET (preferred) or TWILIO_AUTH_TOKEN.")
+        return False
+    if not (account and frm):
+        print("  TWILIO_ACCOUNT_SID / TWILIO_FROM not set — nothing sent.")
+        return False
+    print(f"  authenticating with {how}")
+
     r = requests.post(
-        TWILIO_URL.format(sid=sid),
-        auth=(sid, token),
+        TWILIO_URL.format(sid=account),
+        auth=(user, password),
         data={"From": frm, "To": to, "Body": body},
         timeout=30,
     )
