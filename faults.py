@@ -70,13 +70,18 @@ def _point(side_label: str) -> Optional[float]:
 
 def spread_faults(prices: Dict[str, Dict[str, int]]) -> List[dict]:
     """Books whose own number is far from what everyone else is posting."""
+    # point AND price per (team, book): the number tells you the edge, the
+    # price tells you the stake, and defaulting the price to -110 quietly
+    # mis-sizes every bet a book juices differently.
     by_team: Dict[str, Dict[str, float]] = defaultdict(dict)
+    price_of: Dict[tuple, int] = {}
     for book, sides in prices.items():
-        for label in sides:
+        for label, price in sides.items():
             team = label.rsplit(" ", 1)[0]
             pt = _point(label)
             if pt is not None:
                 by_team[team][book] = pt
+                price_of[(team, book)] = int(price)
     out = []
     for team, books in by_team.items():
         if len(books) < MIN_PEERS + 1:
@@ -89,6 +94,7 @@ def spread_faults(prices: Dict[str, Dict[str, int]]) -> List[dict]:
             if abs(pt - con) >= SPREAD_FAULT_PTS:
                 out.append({"market": "spreads", "book": book, "side": team,
                             "book_point": pt, "consensus_point": con,
+                            "price": price_of.get((team, book), -110),
                             "delta": pt - con, "peers": len(peers)})
     return out
 
@@ -233,34 +239,87 @@ def history() -> int:
 MY_BOOKS = ("betmgm", "fanduel")
 
 
-def alert_text(hits: List[dict], mine_only: bool = True) -> Optional[str]:
+def _cover_prob(book_point: float, true_point: float, sd: float = 13.0) -> float:
     """
-    A message short enough to read on a lock screen, leading with WHERE.
+    Chance the side you are backing covers the number the BOOK is offering,
+    given the market thinks the true line is `true_point`.
 
-    The first thing needed is which app to open, because the window is about
-    an hour and a line that has to be hunted for is a line that has moved.
-    TRANSPOSED hits are excluded from alerting entirely: they are voidable,
-    they vanish fastest, and waking someone for one is a false alarm with
-    extra steps.
+    Both are quoted from that side's perspective, negative meaning laying
+    points. sd 13.0 is the NFL margin spread; college runs nearer 16.5, which
+    makes this the conservative of the two.
     """
-    live = [h for h in hits if h.get("kind") == "STALE"]
-    if mine_only:
-        live = [h for h in live
-                if any(b in h["book"].lower() for b in MY_BOOKS)]
-    if not live:
+    from statistics import NormalDist
+    return 1 - NormalDist(-true_point, sd).cdf(-book_point)
+
+
+def bet_from(f: dict) -> Optional[dict]:
+    """
+    Turn a fault into the one thing to place, or nothing.
+
+    The side to back is the one where the book's number is BETTER FOR YOU than
+    the market's -- more points taken, or fewer laid. That is delta > 0, and it
+    is exactly one of the two sides. Reporting both, as the raw scan does, is
+    a fault report; a bet needs the half of it you can act on.
+
+    DraftKings at Oklahoma -23.5 against a -21.5 market reads as two rows.
+    Only one is a bet: New Mexico +23.5, because +23.5 is two points better
+    than the +21.5 available everywhere else. Backing Oklahoma at -23.5 is
+    laying two points MORE than you should.
+    """
+    if f["market"] != "spreads" or f.get("delta", 0) <= 0:
         return None
-    live.sort(key=lambda h: -abs(h.get("delta", 0)))
-    top = live[0]
-    if top["market"] == "spreads":
-        what = (f"{top['side']} {top['book_point']:+g} "
-                f"(market {top['consensus_point']:+g})")
-    else:
-        what = (f"{top['side']} {top['book_price']:+d} "
-                f"({top['consensus']*100:.0f}% true)")
-    when = top["kickoff"][5:16].replace("T", " ")
-    more = f" +{len(live)-1} more" if len(live) > 1 else ""
-    return (f"OPEN {top['book'].upper()}: {what}\n"
-            f"{top['game'][:44]} {when}Z{more}")
+    bp, cp = f["book_point"], f["consensus_point"]
+    p = _cover_prob(bp, cp)
+    price = f.get("price", -110)
+    imp = 1 / (1 + (price / 100 if price > 0 else 100 / abs(price)))
+    edge = p - imp
+    if edge <= 0:
+        return None
+    b = (price / 100 if price > 0 else 100 / abs(price))
+    kelly = (b * p - (1 - p)) / b
+    units = max(0.5, round(kelly / 4 / 0.01 * 2) / 2)   # quarter-Kelly, 1U = 1%
+    return {"side": f["side"], "point": bp, "price": price, "book": f["book"],
+            "market_point": cp, "gain": bp - cp, "chance": p, "edge": edge,
+            "units": min(units, 3.0), "game": f["game"], "kickoff": f["kickoff"]}
+
+
+def alert_text(hits: List[dict], mine_only: bool = True,
+               unit_dollars: float = 100.0) -> Optional[str]:
+    """
+    A complete instruction, short enough for a lock screen.
+
+    WHERE first, then WHAT, then HOW MUCH -- in that order because the window
+    is about an hour and anything requiring a decision has already cost you
+    the line. Nothing here needs working out.
+
+    TRANSPOSED hits never alert: voidable under a palpable-error clause, they
+    vanish fastest, and waking someone for one is a false alarm with extra
+    steps.
+    """
+    bets = []
+    for h in hits:
+        if h.get("kind") != "STALE":
+            continue
+        if mine_only and not any(b in h["book"].lower() for b in MY_BOOKS):
+            continue
+        bet = bet_from(h)
+        if bet:
+            bets.append(bet)
+    if not bets:
+        return None
+    bets.sort(key=lambda b: -b["edge"])
+    t = bets[0]
+    risk = t["units"] * unit_dollars
+    profit = risk * (t["price"] / 100 if t["price"] > 0 else 100 / abs(t["price"]))
+    when = t["kickoff"][5:16].replace("T", " ")
+    price_s = f"+{t['price']}" if t["price"] > 0 else str(t["price"])
+    more = f"\n(+{len(bets)-1} more)" if len(bets) > 1 else ""
+    return (f"BET NOW at {t['book'].upper()}\n"
+            f"{t['side']} {t['point']:+g} {price_s}\n"
+            f"market {t['market_point']:+g} — {abs(t['gain']):.1f} pts better\n"
+            f"risk ${risk:.0f} to win ${profit:.0f}  ({t['units']:g}U)\n"
+            f"{t['chance']*100:.0f}% to cover\n"
+            f"{t['game'][:40]} {when}Z{more}")
 
 
 def send_alert(hits: List[dict]) -> bool:

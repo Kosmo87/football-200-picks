@@ -28,6 +28,8 @@ on:
       - "parlays_test.py"
       - "books.py"
       - "books_test.py"
+      - "faults.py"
+      - "faults_test.py"
       - "futures.py"
       - "futures_test.py"
       - "teamnames.py"
@@ -317,6 +319,7 @@ jobs:
           python teaser_test.py
           python parlays_test.py
           python books_test.py
+          python faults_test.py
           python futures_test.py
           python test-teamnames.py
 
