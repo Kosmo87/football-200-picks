@@ -30,6 +30,8 @@ import requests
 
 import keys  # noqa: F401  (loads ~/.football-picks.env)
 
+import books as BOOKS
+
 from archive import read_ndjson
 from shop_ledger import ledger_path
 from staking import MIN_PLAYABLE_UNITS as MIN_STAKE, stake_units
@@ -84,7 +86,7 @@ def _dt(iso: str) -> Optional[datetime]:
 
 
 def todays_opportunities(hours: float = SEND_WINDOW_HOURS,
-                         book: Optional[str] = None) -> List[dict]:
+                         book: Optional[List[str]] = None) -> List[dict]:
     """
     Open price gaps on games that have not started and kick off soon.
 
@@ -103,7 +105,8 @@ def todays_opportunities(hours: float = SEND_WINDOW_HOURS,
         k = _dt(r.get("kickoff", ""))
         if not (k and now < k <= horizon):
             continue
-        if book and book.lower() not in str(r.get("book", "")).lower():
+        if book and not any(b.lower() in str(r.get("book", "")).lower()
+                            for b in book):
             continue
         key = (r["event_id"], r["side"])
         prev = best.get(key)
@@ -321,13 +324,17 @@ def main() -> int:
     ap.add_argument("--quiet-when-empty", action="store_true",
                     help="skip the send when nothing is mispriced (default: send anyway)")
     ap.add_argument("--hours", type=float, default=SEND_WINDOW_HOURS)
-    ap.add_argument("--book", help="only bets placeable at this book, e.g. betmgm")
+    ap.add_argument("--books", default=",".join(BOOKS.MINE),
+                    help="comma-separated books you hold; only bets placeable "
+                         "at one of them are sent. 'all' to drop the filter.")
     ap.add_argument("--no-teasers", action="store_true",
                     help="skip the teaser scan (it costs an odds-API credit)")
     args = ap.parse_args()
 
-    rows = todays_opportunities(args.hours, args.book)
-    teasers = [] if args.no_teasers else todays_teasers(args.hours, args.book)
+    picked = None if args.books.strip().lower() == "all" else [
+        b.strip() for b in args.books.split(",") if b.strip()]
+    rows = todays_opportunities(args.hours, picked)
+    teasers = [] if args.no_teasers else todays_teasers(args.hours, picked)
     print(f"{len(rows)} open opportunit{'y' if len(rows) == 1 else 'ies'} "
           f"and {len(teasers)} teaser(s) kicking off within {args.hours:g}h\n")
 
@@ -388,7 +395,7 @@ def _teaser_units(win_prob: float, price: int) -> float:
 
 
 def todays_teasers(hours: float = SEND_WINDOW_HOURS,
-                   book: Optional[str] = None) -> List[dict]:
+                   book: Optional[List[str]] = None) -> List[dict]:
     """
     Qualifying 6-point teasers, one per book, on games kicking off soon.
 
@@ -406,9 +413,12 @@ def todays_teasers(hours: float = SEND_WINDOW_HOURS,
         return []
     legs = T.qualifying_legs(payload, within_days=max(1, int(hours / 24) + 1))
     out = []
+    wanted = [b.lower() for b in (book or [])]
     for bk, book_legs in T.by_book(legs).items():
-        if book and book.lower() not in bk.lower():
+        if wanted and not any(w in bk.lower() for w in wanted):
             continue
+        if not BOOKS.offers_teasers(bk):
+            continue          # the book does not sell this product at all
         # Push risk is charged in prob already, but a whole-number teased line
         # is a worse bet at the same price; prefer clean legs when there are
         # enough of them to fill a ticket.
@@ -422,6 +432,9 @@ def todays_teasers(hours: float = SEND_WINDOW_HOURS,
         probs = [l.prob for l in pick]
         p = probs[0] * probs[1]
         mp = T.max_price(probs)
+        playable, reason = BOOKS.teaser_playable(bk, len(pick), mp)
+        if not playable:
+            continue          # a known price worse than break-even is not a bet
         out.append({
             "book": bk,
             "legs": pick,
@@ -429,16 +442,22 @@ def todays_teasers(hours: float = SEND_WINDOW_HOURS,
             "max_price": mp,
             "units": _teaser_units(p, -110),
             "ev_110": T.teaser_ev(probs, -110),
+            "price_note": reason,
         })
-    # One recommendation, not nine. Every book with a qualifying pair is
-    # offering the same idea; listing each makes one bet look like a card.
-    # The best ticket wins and the rest become a count, exactly as the price
-    # gaps above are collapsed.
+    # One per BOOK when the reader holds several, because those are different
+    # places to place a bet, not the same idea listed twice. Within a book the
+    # best ticket wins. When no book was named, fall back to a single overall
+    # recommendation so a general send does not list nine versions of one idea.
     out.sort(key=lambda r: (-r["units"], -r["win_prob"], r["max_price"]))
     if not out:
         return []
-    best = dict(out[0], also_at=len(out) - 1)
-    return [best]
+    if wanted:
+        seen, keep = set(), []
+        for r in out:
+            if r["book"] not in seen:
+                seen.add(r["book"]); keep.append(r)
+        return keep
+    return [dict(out[0], also_at=len(out) - 1)]
 
 
 def render_teaser_lines(teasers: List[dict]) -> List[str]:
