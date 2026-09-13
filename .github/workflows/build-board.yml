@@ -182,6 +182,31 @@ jobs:
                               || echo "Floor scan (day $DOW hour $HOUR)."
           python faults.py --scan --alert --markets spreads
 
+      - name: Log and grade board calibration
+        # The only question that decides whether the board is worth reading:
+        # do bets labelled 93% win about 93 times in a hundred? Graded on
+        # WINNING, not on price.
+        #
+        # Logged once per bet, before anything is known, so the claim cannot be
+        # revised after the fact. Graded only once the kickoff has passed AND
+        # the matched event contains both teams -- the first version matched on
+        # team name alone and settled 46 of 51 claims instantly against earlier
+        # fixtures, reporting Notre Dame as winning 52-0 in a game that had not
+        # been played. It produced a complete calibration table and every row
+        # of it was fiction.
+        continue-on-error: true
+        run: |
+          if [ -z "$ODDS_API_KEY" ]; then
+            echo "::warning::ODDS_API_KEY not set — skipping calibration."
+            exit 0
+          fi
+          python calibration.py --grade
+          HOUR=$(date -u +%H); DOW=$(date -u +%u)
+          if { [ "$DOW" = "6" ] || [ "$DOW" = "7" ]; } && [ "$HOUR" = "12" ]; then
+            python calibration.py --log
+          fi
+          python calibration.py --report || true
+
       - name: Capture Super Bowl futures
         # Once a day, in the 12:00 UTC hour only. 30 credits a month for a
         # daily strength reading on all 32 teams.
