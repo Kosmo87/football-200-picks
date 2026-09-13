@@ -50,13 +50,14 @@ BOARD_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                           "public", "data", "board.json")
 
 
-def subject_for(rows: List[dict]) -> str:
+def subject_for(rows: List[dict], teasers: Optional[List[dict]] = None) -> str:
     """One subject line, so the preview and the send cannot disagree."""
-    if not rows:
+    teasers = teasers or []
+    n = len(rows) + len(teasers)
+    if not n:
         return "Keep your money in your pocket"
-    units = sum(r["stake"] for r in rows)
-    return (f"{len(rows)} bet{'' if len(rows) == 1 else 's'} today"
-            f" — {units:g}U total")
+    units = sum(r["stake"] for r in rows) + sum(t["units"] for t in teasers)
+    return f"{n} bet{'' if n == 1 else 's'} today — {units:g}U total"
 
 
 def _board() -> dict:
@@ -132,7 +133,7 @@ def todays_opportunities(hours: float = SEND_WINDOW_HOURS) -> List[dict]:
     return sorted(out, key=lambda r: (-r["stake"], -r["edge"], r["kickoff"]))
 
 
-def render_text(rows: List[dict]) -> str:
+def render_text(rows: List[dict], teasers: Optional[List[dict]] = None) -> str:
     """
     The bets, and what to put on them. Nothing else.
 
@@ -141,20 +142,26 @@ def render_text(rows: List[dict]) -> str:
     already cleared the bar, and if nothing has, the message says so in one
     sentence rather than offering a consolation list.
     """
-    if not rows:
+    teasers = teasers or []
+    if not rows and not teasers:
         return ("Keep your money in your pocket — nothing today is worth a bet. "
                 f"Checked {_games_checked()} game(s); board built {_board_built()}.")
-    total = sum(r["stake"] for r in rows)
-    lines = [f"Today — {total:g}U across {len(rows)} bet{'' if len(rows) == 1 else 's'}:"]
+    total = sum(r["stake"] for r in rows) + sum(t["units"] for t in teasers)
+    n = len(rows) + len(teasers)
+    lines = [f"Today — {total:g}U across {n} bet{'' if n == 1 else 's'}:"]
     for r in rows:
         price = f"+{r['price']}" if r["price"] > 0 else str(r["price"])
         extra = f" (also at {r['also_at']} other book{'' if r['also_at'] == 1 else 's'})" if r.get("also_at") else ""
         lines.append(f"{r['stake']:g}U  {r['side']} {price} at {r['book']}{extra}")
+    lines.extend(render_teaser_lines(teasers))
+    if teasers:
+        lines.append("The teaser price is the bet. Above the stated number it is "
+                     "not worth placing — walk away rather than take -130.")
     lines.append("Prices move. Check before betting.")
     return "\n".join(lines)
 
 
-def render_html(rows: List[dict]) -> str:
+def render_html(rows: List[dict], teasers: Optional[List[dict]] = None) -> str:
     """
     The same message as the text, laid out.
 
@@ -167,7 +174,8 @@ def render_html(rows: List[dict]) -> str:
     So every row is now an instruction: this many units, on this, at this book.
     If it is in the table it has already cleared the bar.
     """
-    if not rows:
+    teasers = teasers or []
+    if not rows and not teasers:
         body = (
             "<p style='font-size:15px;margin:0 0 10px'><b>Nothing today is worth a bet.</b></p>"
             "<p style='color:#4b5563;font-size:14px;margin:0 0 14px'>Every price was checked "
@@ -191,7 +199,22 @@ def render_html(rows: List[dict]) -> str:
             + "</td></tr>"
             for r in rows
         )
-        total = sum(r["stake"] for r in rows)
+        for t in teasers:
+            legs = " + ".join(f"{l.side} {l.teased:+g}" for l in t["legs"])
+            cells += (
+                f"<tr>"
+                f"<td style='{cell};text-align:right;font-family:ui-monospace,monospace;"
+                f"font-size:16px;font-weight:700;white-space:nowrap'>{t['units']:g}U</td>"
+                f"<td style='{cell}'><b>6-pt teaser</b>"
+                f"<div style='color:#6b7280;font-size:12px'>{legs}</div></td>"
+                f"<td style='{cell};text-align:right;font-family:ui-monospace,monospace;"
+                f"white-space:nowrap;color:#b45309'><b>{t['max_price']:+d}</b>"
+                f"<div style='color:#9ca3af;font-size:11px'>or better</div></td>"
+                f"<td style='{cell};color:#4b5563'>{t['book']}"
+                + (f"<div style='color:#9ca3af;font-size:11.5px'>also at {t['also_at']} other"
+                   f"{'' if t['also_at'] == 1 else 's'}</div>" if t.get('also_at') else "")
+                + "</td></tr>")
+        total = sum(r["stake"] for r in rows) + sum(t["units"] for t in teasers)
         body = (
             "<table style='border-collapse:collapse;width:100%;font-size:14px'>"
             "<tr style='text-align:left;color:#6b7280;font-size:11.5px'>"
@@ -201,7 +224,12 @@ def render_html(rows: List[dict]) -> str:
             "<th style='padding:6px 12px'>BOOK</th></tr>"
             f"{cells}</table>"
             f"<p style='margin:14px 0 0;font-size:13.5px;color:#374151'>"
-            f"<b>{total:g}U</b> across {len(rows)} bet{'' if len(rows) == 1 else 's'}.</p>"
+            f"<b>{total:g}U</b> across {len(rows) + len(teasers)} "
+            f"bet{'' if len(rows) + len(teasers) == 1 else 's'}.</p>"
+            + ("<p style='margin:10px 0 0;font-size:13px;color:#b45309'>"
+               "On the teaser the <b>price is the bet</b>. The number shown is the worst "
+               "price at which it is still worth placing — at -130 the edge is gone, so "
+               "walk away rather than take it.</p>" if teasers else "")
         )
     return f"""<div style="font-family:-apple-system,Segoe UI,Roboto,sans-serif;
   max-width:640px;margin:0 auto;color:#111827">
@@ -290,14 +318,17 @@ def main() -> int:
     ap.add_argument("--quiet-when-empty", action="store_true",
                     help="skip the send when nothing is mispriced (default: send anyway)")
     ap.add_argument("--hours", type=float, default=SEND_WINDOW_HOURS)
+    ap.add_argument("--no-teasers", action="store_true",
+                    help="skip the teaser scan (it costs an odds-API credit)")
     args = ap.parse_args()
 
     rows = todays_opportunities(args.hours)
+    teasers = [] if args.no_teasers else todays_teasers(args.hours)
     print(f"{len(rows)} open opportunit{'y' if len(rows) == 1 else 'ies'} "
-          f"kicking off within {args.hours:g}h\n")
+          f"and {len(teasers)} teaser(s) kicking off within {args.hours:g}h\n")
 
-    text = render_text(rows)
-    subject = subject_for(rows)
+    text = render_text(rows, teasers)
+    subject = subject_for(rows, teasers)
     if args.dry_run or not (args.to or args.sms):
         print("--- text message ---")
         print(text)
@@ -308,7 +339,7 @@ def main() -> int:
         print("\n(dry run: nothing sent)")
         return 0
 
-    if not rows and args.quiet_when_empty:
+    if not rows and not teasers and args.quiet_when_empty:
         print("Nothing mispriced — staying quiet, because --quiet-when-empty was passed.")
         return 0
 
@@ -322,10 +353,97 @@ def main() -> int:
     # glance and turns silence back into a signal.
 
     if args.to:
-        send_email(args.to, subject, render_html(rows))
+        send_email(args.to, subject, render_html(rows, teasers))
     if args.sms:
         send_sms(args.sms, text)
     return 0
+
+
+
+
+# ------------------------------------------------------------------- teasers
+
+# Quarter-Kelly on the teaser expressed as a percentage of bankroll, because
+# staking.stake_units() returns 0.0U for every teaser price -- including -110,
+# where the edge is +4.40% and the largest this project has measured. That is
+# the unit scale, not the bet: kelly_units multiplies by 20, so 1U is 5% of
+# bankroll and a correct 1.2%-of-bankroll stake rounds to nothing. Rather than
+# silently drop the best edge on the board, the teaser is sized here against a
+# conventional 1U = 1% of bankroll and the scale is stated in the message.
+TEASER_UNIT_PCT = 0.01
+TEASER_MIN_UNITS = 0.5
+
+
+def _teaser_units(win_prob: float, price: int) -> float:
+    from staking import to_half_units
+    b = price / 100.0 if price > 0 else 100.0 / abs(price)
+    f = (b * win_prob - (1.0 - win_prob)) / b
+    if f <= 0:
+        return 0.0
+    return to_half_units((f / 4.0) / TEASER_UNIT_PCT)
+
+
+def todays_teasers(hours: float = SEND_WINDOW_HOURS) -> List[dict]:
+    """
+    Qualifying 6-point teasers, one per book, on games kicking off soon.
+
+    The teaser price is not in the odds feed -- no public API carries it -- so
+    the message cannot say "bet this at X". It says the threshold instead:
+    the worst price at which the bet still exists. That is the number that
+    decides it, since the window clears -110 and is dead at -130.
+    """
+    import teaser as T
+    now = datetime.now(timezone.utc)
+    horizon = now + timedelta(hours=hours)
+    try:
+        payload = T.fetch_spreads("NFL")
+    except SystemExit:
+        return []
+    legs = T.qualifying_legs(payload, within_days=max(1, int(hours / 24) + 1))
+    out = []
+    for book, book_legs in T.by_book(legs).items():
+        # Push risk is charged in prob already, but a whole-number teased line
+        # is a worse bet at the same price; prefer clean legs when there are
+        # enough of them to fill a ticket.
+        clean = [l for l in book_legs if not l.push_risk]
+        pool = clean if len(clean) >= 2 else book_legs
+        pool = [l for l in pool
+                if (k := _dt(l.kickoff)) and now < k <= horizon]
+        if len(pool) < 2:
+            continue
+        pick = pool[:2]
+        probs = [l.prob for l in pick]
+        p = probs[0] * probs[1]
+        mp = T.max_price(probs)
+        out.append({
+            "book": book,
+            "legs": pick,
+            "win_prob": p,
+            "max_price": mp,
+            "units": _teaser_units(p, -110),
+            "ev_110": T.teaser_ev(probs, -110),
+        })
+    # One recommendation, not nine. Every book with a qualifying pair is
+    # offering the same idea; listing each makes one bet look like a card.
+    # The best ticket wins and the rest become a count, exactly as the price
+    # gaps above are collapsed.
+    out.sort(key=lambda r: (-r["units"], -r["win_prob"], r["max_price"]))
+    if not out:
+        return []
+    best = dict(out[0], also_at=len(out) - 1)
+    return [best]
+
+
+def render_teaser_lines(teasers: List[dict]) -> List[str]:
+    """One line per teaser, same shape as every other line in the message."""
+    lines = []
+    for t in teasers:
+        legs = " + ".join(f"{l.side} {l.teased:+g}" for l in t["legs"])
+        extra = (f" (also at {t['also_at']} other book"
+                 f"{'' if t['also_at'] == 1 else 's'})") if t.get("also_at") else ""
+        lines.append(f"{t['units']:g}U  6-pt teaser at {t['book']}: {legs}"
+                     f"  — only at {t['max_price']:+d} or better{extra}")
+    return lines
 
 
 if __name__ == "__main__":
