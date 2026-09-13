@@ -30,6 +30,7 @@ on:
       - "books_test.py"
       - "faults.py"
       - "faults_test.py"
+      - "tripwire.py"
       - "futures.py"
       - "futures_test.py"
       - "teamnames.py"
@@ -147,17 +148,38 @@ jobs:
             echo "::warning::ODDS_API_KEY not set — skipping fault scan."
             exit 0
           fi
+          # TRIGGERED, not timed.
+          #
+          # tripwire.py polls ESPN for DraftKings' number on every upcoming
+          # game -- free, no key, no quota, 79 games on a September weekend --
+          # and compares it against the last snapshot. It exits 10 when a line
+          # has moved a point or more, which is the only thing that creates a
+          # stale line: the market moves and a slow book does not follow.
+          #
+          # So a credit is spent at the moment it is worth something instead of
+          # on a timer. A fixed schedule could afford three looks a day against
+          # windows that last about an hour, which misses seven in eight. This
+          # watches every hour for nothing and pays only on movement.
+          #
+          # A floor still runs on slate mornings even without movement, because
+          # a book can hang a bad number with no market move at all -- BetMGM's
+          # transposed Arizona State record produced nothing to trip on.
+          set +e
+          python tripwire.py --check
+          MOVED=$?
+          set -e
           HOUR=$(date -u +%H); DOW=$(date -u +%u)
-          RUN=no
+          FLOOR=no
           case "$DOW" in
-            6|7) case "$HOUR" in 12|14|16|18|20|22) RUN=yes;; esac ;;
-            4|5) case "$HOUR" in 13|17|21|01) RUN=yes;; esac ;;
-            *)   case "$HOUR" in 17) RUN=yes;; esac ;;
+            6|7) case "$HOUR" in 12|18) FLOOR=yes;; esac ;;
+            4|5) case "$HOUR" in 17) FLOOR=yes;; esac ;;
           esac
-          if [ "$RUN" != "yes" ]; then
-            echo "Not a fault-scan slot (day $DOW hour $HOUR) — skipping."
+          if [ "$MOVED" != "10" ] && [ "$FLOOR" != "yes" ]; then
+            echo "No movement and not a floor slot — no credits spent."
             exit 0
           fi
+          [ "$MOVED" = "10" ] && echo "Lines moved — scanning." \
+                              || echo "Floor scan (day $DOW hour $HOUR)."
           python faults.py --scan --alert --markets spreads
 
       - name: Capture Super Bowl futures
