@@ -83,7 +83,8 @@ def _dt(iso: str) -> Optional[datetime]:
         return None
 
 
-def todays_opportunities(hours: float = SEND_WINDOW_HOURS) -> List[dict]:
+def todays_opportunities(hours: float = SEND_WINDOW_HOURS,
+                         book: Optional[str] = None) -> List[dict]:
     """
     Open price gaps on games that have not started and kick off soon.
 
@@ -101,6 +102,8 @@ def todays_opportunities(hours: float = SEND_WINDOW_HOURS) -> List[dict]:
             continue
         k = _dt(r.get("kickoff", ""))
         if not (k and now < k <= horizon):
+            continue
+        if book and book.lower() not in str(r.get("book", "")).lower():
             continue
         key = (r["event_id"], r["side"])
         prev = best.get(key)
@@ -318,12 +321,13 @@ def main() -> int:
     ap.add_argument("--quiet-when-empty", action="store_true",
                     help="skip the send when nothing is mispriced (default: send anyway)")
     ap.add_argument("--hours", type=float, default=SEND_WINDOW_HOURS)
+    ap.add_argument("--book", help="only bets placeable at this book, e.g. betmgm")
     ap.add_argument("--no-teasers", action="store_true",
                     help="skip the teaser scan (it costs an odds-API credit)")
     args = ap.parse_args()
 
-    rows = todays_opportunities(args.hours)
-    teasers = [] if args.no_teasers else todays_teasers(args.hours)
+    rows = todays_opportunities(args.hours, args.book)
+    teasers = [] if args.no_teasers else todays_teasers(args.hours, args.book)
     print(f"{len(rows)} open opportunit{'y' if len(rows) == 1 else 'ies'} "
           f"and {len(teasers)} teaser(s) kicking off within {args.hours:g}h\n")
 
@@ -383,7 +387,8 @@ def _teaser_units(win_prob: float, price: int) -> float:
     return to_half_units((f / 4.0) / TEASER_UNIT_PCT)
 
 
-def todays_teasers(hours: float = SEND_WINDOW_HOURS) -> List[dict]:
+def todays_teasers(hours: float = SEND_WINDOW_HOURS,
+                   book: Optional[str] = None) -> List[dict]:
     """
     Qualifying 6-point teasers, one per book, on games kicking off soon.
 
@@ -401,7 +406,9 @@ def todays_teasers(hours: float = SEND_WINDOW_HOURS) -> List[dict]:
         return []
     legs = T.qualifying_legs(payload, within_days=max(1, int(hours / 24) + 1))
     out = []
-    for book, book_legs in T.by_book(legs).items():
+    for bk, book_legs in T.by_book(legs).items():
+        if book and book.lower() not in bk.lower():
+            continue
         # Push risk is charged in prob already, but a whole-number teased line
         # is a worse bet at the same price; prefer clean legs when there are
         # enough of them to fill a ticket.
@@ -416,7 +423,7 @@ def todays_teasers(hours: float = SEND_WINDOW_HOURS) -> List[dict]:
         p = probs[0] * probs[1]
         mp = T.max_price(probs)
         out.append({
-            "book": book,
+            "book": bk,
             "legs": pick,
             "win_prob": p,
             "max_price": mp,
