@@ -119,6 +119,45 @@ jobs:
           python shop_ledger.py --close --scan --grade
           python shop_ledger.py --report
 
+      - name: Scan for stale lines
+        # CONCENTRATED, because the budget will not stretch to hourly.
+        #
+        # A fault stands about an hour -- MGM's Arizona State inversion on
+        # 13 Sep appeared and corrected inside one. So catch probability is
+        # simply the scan gap: hourly 100%, every 2h 50%, every 4h 25%, three
+        # times a day 12%. Hourly all week is 1,456 credits a month against a
+        # 500 free tier, so it cannot be bought with this key.
+        #
+        # What fits, at 2 credits a scan (spreads only, two leagues):
+        #   every 2h Sat/Sun, 4x Thu/Fri, 1x Mon-Wed = ~303 a month
+        # against ~220 already committed to the board, closing lines, futures
+        # and the weekend message.
+        #
+        # Weighted to game days on purpose: that is when lines move, when
+        # books are updating fastest, and when the ones that are not stand out.
+        #
+        # h2h is skipped. It doubles the cost and a transposed or stale
+        # moneyline almost always shows on the spread too, which is where the
+        # 2-point threshold reads more cleanly.
+        continue-on-error: true
+        run: |
+          if [ -z "$ODDS_API_KEY" ]; then
+            echo "::warning::ODDS_API_KEY not set — skipping fault scan."
+            exit 0
+          fi
+          HOUR=$(date -u +%H); DOW=$(date -u +%u)
+          RUN=no
+          case "$DOW" in
+            6|7) case "$HOUR" in 12|14|16|18|20|22) RUN=yes;; esac ;;
+            4|5) case "$HOUR" in 13|17|21|01) RUN=yes;; esac ;;
+            *)   case "$HOUR" in 17) RUN=yes;; esac ;;
+          esac
+          if [ "$RUN" != "yes" ]; then
+            echo "Not a fault-scan slot (day $DOW hour $HOUR) — skipping."
+            exit 0
+          fi
+          python faults.py --scan --alert --markets spreads
+
       - name: Capture Super Bowl futures
         # Once a day, in the 12:00 UTC hour only. 30 credits a month for a
         # daily strength reading on all 32 teams.

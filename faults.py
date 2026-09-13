@@ -50,9 +50,13 @@ ARCHIVE = os.path.join(ROOT, "data", "archive", "faults.ndjson")
 # A book disagreeing with its peers by more than this is broken, not brave.
 # Four points is larger than any legitimate disagreement seen on a spread;
 # real differences between books run half a point to a point and a half.
-SPREAD_FAULT_PTS = 4.0
+# 4.0 only catches breakage. Genuine stale lines -- a book that agrees who is
+# favoured and has not caught up on by how much -- run 1.5 to 3 points off, do
+# not trip anyone's alarm, and are not voidable. That is the bet worth having,
+# so the floor comes down to catch them and TRANSPOSED is separated out.
+SPREAD_FAULT_PTS = 2.0
 # On a moneyline, in de-vigged probability points.
-ML_FAULT_PP = 0.15
+ML_FAULT_PP = 0.06
 MIN_PEERS = 3          # need a real consensus before calling anyone wrong
 
 
@@ -133,7 +137,8 @@ def classify(f: dict) -> str:
     return "STALE"
 
 
-def scan(leagues=("NFL", "NCAAF"), min_lead_min: int = 10) -> List[dict]:
+def scan(leagues=("NFL", "NCAAF"), min_lead_min: int = 10,
+         markets=("spreads", "h2h")) -> List[dict]:
     """
     Faults on games that have NOT started.
 
@@ -148,6 +153,8 @@ def scan(leagues=("NFL", "NCAAF"), min_lead_min: int = 10) -> List[dict]:
     hits: List[dict] = []
     for league in leagues:
         for market, finder in (("spreads", spread_faults), ("h2h", ml_faults)):
+            if market not in markets:
+                continue
             payload = LS.fetch_live(league, market, "us")
             for game, kick, prices in LS.games_from_live(payload, market, MIN_PEERS + 1):
                 try:
@@ -221,15 +228,82 @@ def history() -> int:
     return 0
 
 
+# ------------------------------------------------------------------- alerting
+
+MY_BOOKS = ("betmgm", "fanduel")
+
+
+def alert_text(hits: List[dict], mine_only: bool = True) -> Optional[str]:
+    """
+    A message short enough to read on a lock screen, leading with WHERE.
+
+    The first thing needed is which app to open, because the window is about
+    an hour and a line that has to be hunted for is a line that has moved.
+    TRANSPOSED hits are excluded from alerting entirely: they are voidable,
+    they vanish fastest, and waking someone for one is a false alarm with
+    extra steps.
+    """
+    live = [h for h in hits if h.get("kind") == "STALE"]
+    if mine_only:
+        live = [h for h in live
+                if any(b in h["book"].lower() for b in MY_BOOKS)]
+    if not live:
+        return None
+    live.sort(key=lambda h: -abs(h.get("delta", 0)))
+    top = live[0]
+    if top["market"] == "spreads":
+        what = (f"{top['side']} {top['book_point']:+g} "
+                f"(market {top['consensus_point']:+g})")
+    else:
+        what = (f"{top['side']} {top['book_price']:+d} "
+                f"({top['consensus']*100:.0f}% true)")
+    when = top["kickoff"][5:16].replace("T", " ")
+    more = f" +{len(live)-1} more" if len(live) > 1 else ""
+    return (f"OPEN {top['book'].upper()}: {what}\n"
+            f"{top['game'][:44]} {when}Z{more}")
+
+
+def send_alert(hits: List[dict]) -> bool:
+    """SMS when Twilio is configured, email otherwise. Never both."""
+    body = alert_text(hits)
+    if not body:
+        return False
+    print("\n--- ALERT ---\n" + body)
+    import delivery
+    sms_to = os.environ.get("SMS_TO", "").strip()
+    if sms_to and os.environ.get("TWILIO_ACCOUNT_SID", "").strip():
+        return delivery.send_sms(sms_to, body)
+    to = os.environ.get("DELIVER_TO", "").strip()
+    if not to:
+        print("  no SMS_TO or DELIVER_TO — alert not sent")
+        return False
+    first = body.splitlines()[0]
+    html = ("<div style='font-family:-apple-system,sans-serif'>"
+            f"<h2 style='margin:0 0 8px'>{first}</h2>"
+            f"<pre style='font-size:14px'>{body}</pre>"
+            "<p style='color:#6b7280;font-size:12px'>Stale line — the book has "
+            "not caught up to the market. Verify on the site; the feed lags, "
+            "and these last about an hour.</p></div>")
+    return delivery.send_email(to, first[:60], html)
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[1])
     ap.add_argument("--scan", action="store_true")
     ap.add_argument("--history", action="store_true")
+    ap.add_argument("--alert", action="store_true",
+                    help="text/email when a STALE line appears at your books")
+    ap.add_argument("--markets", default="spreads,h2h",
+                    help="comma-separated; fewer markets costs fewer credits")
     a = ap.parse_args()
     if a.history:
         return history()
     if a.scan:
-        report(scan())
+        mk = tuple(m.strip() for m in a.markets.split(",") if m.strip())
+        hits = scan(markets=mk)
+        report(hits)
+        if a.alert:
+            send_alert(hits)
         return 0
     ap.print_help()
     return 0
