@@ -22,6 +22,14 @@ on:
       - "selection_test.py"
       - "shop_ledger.py"
       - "shop_close_test.py"
+      - "teaser.py"
+      - "teaser_test.py"
+      - "parlays.py"
+      - "parlays_test.py"
+      - "books.py"
+      - "books_test.py"
+      - "futures.py"
+      - "futures_test.py"
       - "teamnames.py"
       - "test-teamnames.py"
       - "staking.py"
@@ -110,6 +118,38 @@ jobs:
           fi
           python shop_ledger.py --close --scan --grade
           python shop_ledger.py --report
+
+      - name: Capture Super Bowl futures
+        # Once a day, in the 12:00 UTC hour only. 30 credits a month for a
+        # daily strength reading on all 32 teams.
+        #
+        # This is a MEASUREMENT, not a signal. Futures explain 88.5% of the
+        # variance in the week's spreads (r = 0.941), which sounds like an edge
+        # and is the opposite: they are priced by the same books off the same
+        # opinion, and the 11.5% they do not share is game-specific news the
+        # game line has and a season-long price cannot. The largest residual on
+        # 13 Sep was ATL @ PIT, because Atlanta's top two quarterbacks were
+        # out. Trading that residual means backing teams whose starters just
+        # got hurt.
+        #
+        # It is captured anyway for two reasons: futures are a better early
+        # season strength prior than our EPA ratings while nflverse has 234
+        # plays of 2026 populated, and futures.py --encompass cannot run at all
+        # without a history. That test decides whether the residual is worth
+        # anything, and it needs ~40 completed games before it says so.
+        continue-on-error: true
+        run: |
+          if [ -z "$ODDS_API_KEY" ]; then
+            echo "::warning::ODDS_API_KEY not set — skipping futures capture."
+            exit 0
+          fi
+          HOUR=$(date -u +%H)
+          if [ "$HOUR" = "12" ]; then
+            python futures.py --capture
+            python futures.py --trend 7 || true
+          else
+            echo "Not the 12:00 UTC hour ($HOUR) — futures capture skipped."
+          fi
 
       - name: Send the morning message
         # Only in the 12:00-13:59 UTC hour, which is early morning US time: the
@@ -203,6 +243,10 @@ jobs:
         # whether or not a key is present, and they are NOT continue-on-error.
         run: |
           python shop_close_test.py
+          python teaser_test.py
+          python parlays_test.py
+          python books_test.py
+          python futures_test.py
           python test-teamnames.py
 
       - name: Test pick selection
