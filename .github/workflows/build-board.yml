@@ -152,22 +152,54 @@ jobs:
           fi
 
       - name: Send the morning message
-        # Only in the 12:00-13:59 UTC hour, which is early morning US time: the
-        # message is worth sending once, on the day, while the prices it names
-        # are still live. Any other hour is a no-op.
+        # SLATE MORNINGS ONLY, in the 12:00-13:59 UTC hour (early morning US).
+        #
+        # Two rules, and the second is the one that was wrong.
+        #
+        # The hour: send once, on the day, while the prices named are still
+        # live. Any other hour is a no-op.
+        #
+        # The DAY: Saturday for the college slate and Sunday for the NFL one.
+        # It used to send every morning, which meant five messages a week
+        # priced off numbers nobody had bet into yet. That is not a harmless
+        # extra email -- a line hung on a Saturday game the previous Tuesday
+        # is a placeholder, it moves, and the teaser bands this board feeds
+        # are calibrated on CLOSING lines, so an early number is a different
+        # bet wearing the same label. Measured on week 1: lines moved 0.38
+        # points on average over five days and ATL @ PIT moved three.
+        #
+        # Thursday night games are deliberately not covered. Adding a Thursday
+        # send would mean a third message for one or two games, and the same
+        # board is available Saturday morning for whatever is left.
         continue-on-error: true
         run: |
           HOUR=$(date -u +%H)
+          DOW=$(date -u +%u)   # 1=Mon .. 6=Sat, 7=Sun
           if [ "$HOUR" != "12" ] && [ "$HOUR" != "13" ]; then
             echo "Not the sending hour (UTC $HOUR) — skipping."
             exit 0
           fi
-          if [ -z "$RESEND_API_KEY" ] || [ -z "$DELIVER_TO" ]; then
-            echo "::warning::RESEND_API_KEY or DELIVER_TO missing — rendering only."
-            python delivery.py --dry-run
+          if [ "$DOW" != "6" ] && [ "$DOW" != "7" ]; then
+            echo "Not a slate morning (UTC day $DOW) — skipping."
+            echo "Saturday is the college slate, Sunday the NFL one."
             exit 0
           fi
-          python delivery.py --to "$DELIVER_TO"
+          # Window per slate, not one number for both.
+          #
+          # Saturday's college slate finishes inside 18 hours. Sunday's NFL
+          # one does not: Monday Night Football kicks off about 36 hours after
+          # a Sunday-morning send, so an 18-hour window silently drops it. That
+          # already cost a real recommendation -- the best BetMGM teaser leg
+          # on 13 Sep was Denver at Monday night, and the message fell back to
+          # a worse leg that teased onto a whole number.
+          if [ "$DOW" = "7" ]; then HOURS=42; else HOURS=20; fi
+          echo "Slate window: ${HOURS}h"
+          if [ -z "$RESEND_API_KEY" ] || [ -z "$DELIVER_TO" ]; then
+            echo "::warning::RESEND_API_KEY or DELIVER_TO missing — rendering only."
+            python delivery.py --dry-run --hours "$HOURS"
+            exit 0
+          fi
+          python delivery.py --to "$DELIVER_TO" --hours "$HOURS"
 
       - name: Freeze closing prop lines
         # Costs one scan (about 14 entities against 2,500 a month) and only in
