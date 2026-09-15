@@ -144,6 +144,9 @@ def ml_faults(prices: Dict[str, Dict[str, int]]) -> List[dict]:
 TRANSPOSED_MIN_PTS = 4.0
 TRANSPOSED_MIN_PP = 0.15
 
+# Deliberately small — see bet_from. Size on an obvious error buys a void.
+TRANSPOSED_MAX_UNITS = 1.0
+
 
 def classify(f: dict) -> str:
     """
@@ -507,7 +510,18 @@ def bet_from(f: dict) -> Optional[dict]:
     b = (price / 100 if price > 0 else 100 / abs(price))
     kelly = (b * p - (1 - p)) / b
     units = max(0.5, round(kelly / 4 / 0.01 * 2) / 2)   # quarter-Kelly, 1U = 1%
-    return {"side": f["side"], "point": bp, "price": price, "book": f["book"],
+
+    # A transposition gets the SMALLER stake, despite the bigger edge, which is
+    # the opposite of what Kelly says and is deliberate. Kelly prices the game;
+    # it does not price the counterparty. A book reviewing an obvious error
+    # voids the ticket that made it worth reviewing, and quietly pays the one
+    # that did not — so size here buys a void, and the account along with it.
+    kind = f.get("kind") or classify(f)
+    if kind == "TRANSPOSED":
+        units = min(units, TRANSPOSED_MAX_UNITS)
+
+    return {"kind": kind,
+            "side": f["side"], "point": bp, "price": price, "book": f["book"],
             "market_point": cp, "gain": bp - cp, "chance": p, "edge": edge,
             "units": min(units, 3.0), "game": f["game"], "kickoff": f["kickoff"]}
 
@@ -521,13 +535,21 @@ def alert_text(hits: List[dict], mine_only: bool = True,
     is about an hour and anything requiring a decision has already cost you
     the line. Nothing here needs working out.
 
-    TRANSPOSED hits never alert: voidable under a palpable-error clause, they
-    vanish fastest, and waking someone for one is a false alarm with extra
-    steps.
+    TRANSPOSED hits alert too, and lead when present. They used to be silenced
+    as "voidable", which had the arithmetic backwards: a voided bet RETURNS THE
+    STAKE. It is a bet that never happened, not a loss, so the break-even
+    honour rate is zero and any rate above it is profitable. The ten-and-a-half
+    points on the one real example were worth +41% at -110 in college and +51%
+    in the NFL; at a 10% honour rate that is still +4% an attempt.
+
+    They also vanish fastest, which makes an alert more useful for them, not
+    less. What they cost is not money but the account -- books limit people who
+    pick off errors -- so the text says which kind it is and leaves the decision
+    to whoever is holding the phone.
     """
     bets = []
     for h in hits:
-        if h.get("kind") != "STALE":
+        if h.get("kind") not in ("STALE", "TRANSPOSED"):
             continue
         if mine_only and not any(b in h["book"].lower() for b in MY_BOOKS):
             continue
@@ -536,19 +558,24 @@ def alert_text(hits: List[dict], mine_only: bool = True,
             bets.append(bet)
     if not bets:
         return None
-    bets.sort(key=lambda b: -b["edge"])
+    # A transposition is worth an order of magnitude more than a stale point or
+    # two, so it leads whenever one is present.
+    bets.sort(key=lambda b: (b.get("kind") != "TRANSPOSED", -b["edge"]))
     t = bets[0]
     risk = t["units"] * unit_dollars
     profit = risk * (t["price"] / 100 if t["price"] > 0 else 100 / abs(t["price"]))
     when = t["kickoff"][5:16].replace("T", " ")
     price_s = f"+{t['price']}" if t["price"] > 0 else str(t["price"])
     more = f"\n(+{len(bets)-1} more)" if len(bets) > 1 else ""
-    return (f"BET NOW at {t['book'].upper()}\n"
+    head = "WRONG TEAM FAVOURED" if t.get("kind") == "TRANSPOSED" else "BET NOW"
+    tail = ("\nmay be voided as an obvious error — a void returns the stake"
+            if t.get("kind") == "TRANSPOSED" else "")
+    return (f"{head} at {t['book'].upper()}\n"
             f"{t['side']} {t['point']:+g} {price_s}\n"
             f"market {t['market_point']:+g} — {abs(t['gain']):.1f} pts better\n"
             f"risk ${risk:.0f} to win ${profit:.0f}  ({t['units']:g}U)\n"
             f"{t['chance']*100:.0f}% to cover\n"
-            f"{t['game'][:40]} {when}Z{more}")
+            f"{t['game'][:40]} {when}Z{tail}{more}")
 
 
 def send_alert(hits: List[dict]) -> bool:

@@ -76,11 +76,41 @@ def test_stake_is_capped():
     assert huge["units"] <= 3.0, "no single stale line justifies the bankroll"
 
 
-def test_transposed_never_alerts():
-    hits = [{"kind": "TRANSPOSED", "book": "betmgm", "market": "spreads",
-             "side": "X", "book_point": 6, "consensus_point": -5.5,
-             "delta": 11.5, "price": -110, "game": "A @ B", "kickoff": "x"}]
-    assert F.alert_text(hits) is None
+def test_transposed_alerts_and_leads():
+    """
+    These used to be silenced as "voidable", which had the arithmetic backwards:
+    a void RETURNS THE STAKE, so the break-even honour rate is zero. They also
+    vanish fastest, which makes the alert more useful, not less.
+    """
+    hits = [
+        {"market": "spreads", "book": "betmgm", "side": "Arizona State",
+         "book_point": 5.0, "consensus_point": -5.5, "price": -110, "delta": 10.5,
+         "game": "Kansas @ Arizona State", "kickoff": "2026-09-19T16:00:00Z",
+         "kind": "TRANSPOSED"},
+        {"market": "spreads", "book": "betmgm", "side": "New Mexico",
+         "book_point": 23.5, "consensus_point": 21.5, "price": -110, "delta": 2.0,
+         "game": "New Mexico @ Oklahoma", "kickoff": "2026-09-19T23:30:00Z",
+         "kind": "STALE"},
+    ]
+    msg = F.alert_text(hits)
+    assert msg is not None
+    assert "WRONG TEAM FAVOURED" in msg, msg          # it leads
+    assert "Arizona State" in msg, msg
+    assert "void returns the stake" in msg, msg       # and says what it is
+
+
+def test_transposed_is_staked_smaller_than_kelly_wants():
+    """
+    Kelly prices the game, not the counterparty. A book reviewing an obvious
+    error voids the ticket that made it worth reviewing.
+    """
+    t = {"market": "spreads", "book": "betmgm", "side": "Arizona State",
+         "book_point": 5.0, "consensus_point": -5.5, "price": -110, "delta": 10.5,
+         "game": "g", "kickoff": "k", "kind": "TRANSPOSED"}
+    stale = dict(t, kind="STALE", book_point=23.5, consensus_point=21.5, delta=2.0)
+    assert F.bet_from(t)["units"] <= F.TRANSPOSED_MAX_UNITS
+    # The stale one is free to size on its merits.
+    assert F.bet_from(stale)["units"] > 0
 
 
 def test_other_books_never_alert():
