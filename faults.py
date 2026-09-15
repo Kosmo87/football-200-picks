@@ -100,24 +100,49 @@ def spread_faults(prices: Dict[str, Dict[str, int]]) -> List[dict]:
 
 
 def ml_faults(prices: Dict[str, Dict[str, int]]) -> List[dict]:
+    """
+    Both sides, whenever either one trips.
+
+    The threshold is in absolute probability points, and on a moneyline that is
+    structurally lopsided: a -3335 favourite sits 6.7pp off a 90.4% consensus
+    while its own mirror is barely 3pp off, because the same vig is a much
+    smaller share of a small number. So the side that trips is almost always the
+    one the book has made MORE expensive -- which is the one side you would
+    never back.
+
+    Emitting only that side logged the fault and threw away the bet. Both sides
+    go in, the way spreads already do, and `delta > 0` picks the half that can
+    be acted on.
+    """
     out = []
-    fair_all = LS.fair_probs(prices)
     for book, sides in prices.items():
         if len(prices) < MIN_PEERS + 1:
             continue
         fair = LS.fair_probs(prices, exclude=book)
+        rows, tripped = [], False
         for side, price in sides.items():
             p = fair.get(side)
             if p is None:
                 continue
             imp = 1 / (1 + (price / 100 if price > 0 else 100 / abs(price)))
             if abs(p - imp) >= ML_FAULT_PP:
-                out.append({"market": "h2h", "book": book, "side": side,
-                            "book_price": price, "book_implied": round(imp, 4),
-                            "consensus": round(p, 4),
-                            "delta": round(p - imp, 4),
-                            "peers": len(prices) - 1})
+                tripped = True
+            rows.append({"market": "h2h", "book": book, "side": side,
+                         "book_price": price, "book_implied": round(imp, 4),
+                         "consensus": round(p, 4),
+                         "delta": round(p - imp, 4),
+                         "peers": len(prices) - 1})
+        if tripped:
+            out.extend(rows)
     return out
+
+
+# Below these, a sign flip is more likely an ordinary line difference than an
+# inverted one, because a small line is close to its own negative. Four points
+# is wider than any spread move seen in this archive and narrower than the one
+# genuine transposition in it (10.5).
+TRANSPOSED_MIN_PTS = 4.0
+TRANSPOSED_MIN_PP = 0.15
 
 
 def classify(f: dict) -> str:
@@ -134,11 +159,19 @@ def classify(f: dict) -> str:
     """
     if f["market"] == "spreads":
         a, b = f["book_point"], f["consensus_point"]
-        if a * b < 0:
+        # A sign flip alone is not enough. Near a pick'em, ANY ordinary
+        # difference crosses zero: Atlanta +1.5 against a -1.0 consensus is a
+        # 2.5-point move, not an inverted line, and calling it an error
+        # suppressed the alert on a bettable NFL number. A real transposition
+        # has to be too big to be a move -- the Kansas/Arizona State one was
+        # 10.5 points.
+        if a * b < 0 and abs(a - b) >= TRANSPOSED_MIN_PTS:
             return "TRANSPOSED"
         return "STALE"
     imp, con = f["book_implied"], f["consensus"]
-    if (imp - 0.5) * (con - 0.5) < 0:
+    # Same reasoning in probability: a coin-flip game straddles 50% on any
+    # disagreement at all.
+    if (imp - 0.5) * (con - 0.5) < 0 and abs(imp - con) >= TRANSPOSED_MIN_PP:
         return "TRANSPOSED"
     return "STALE"
 
@@ -231,6 +264,202 @@ def history() -> int:
                   f"median span {median(spans):.1f}h")
         else:
             print("\nevery fault appeared in exactly one scan — they do not last")
+    return 0
+
+
+
+# ------------------------------------------------------------------- grading
+
+def _bet_key(f: dict) -> tuple:
+    """What makes two rows the same bet. A fault seen in three consecutive
+    scans is one opportunity, not three."""
+    return (f.get("game"), f.get("book"), f.get("side"), f.get("market"),
+            f.get("book_point"), f.get("book_price"))
+
+
+def grade(leagues=("NFL", "NCAAF")) -> int:
+    """
+    Settle every logged fault against the finished game. Costs no credits.
+
+    Two questions are kept apart on purpose, because they have different
+    answers and only one of them is ours to measure:
+
+      did the NUMBER win    — arithmetic, settled here from the final score
+      did the BOOK pay      — a decision someone at the book makes, knowable
+                              only if the bet was actually placed
+
+    Conflating them is how a palpable-error clause hides: a transposed line
+    that wins the number and pays nothing looks identical to one that lost,
+    and the difference is the entire question about whether these are usable.
+    So `status` records the number and `honoured` records the book, and
+    `honoured` stays null until a human says otherwise.
+    """
+    from espn import fetch_completed_games
+    from teamnames import same_team
+
+    rows = [json.loads(l) for l in open(ARCHIVE)] if os.path.exists(ARCHIVE) else []
+    rows = [r for r in rows if r]
+    if not rows:
+        print("[faults] nothing logged yet")
+        return 0
+
+    # One row per opportunity: the earliest sighting, which is the price that
+    # was actually available first.
+    best: Dict[tuple, dict] = {}
+    for r in rows:
+        k = _bet_key(r)
+        if k not in best or r["captured_at"] < best[k]["captured_at"]:
+            best[k] = r
+    opps = [r for r in best.values() if not r.get("graded_at")]
+    if not opps:
+        print("[faults] nothing open to grade")
+        return 0
+
+    finals = []
+    for lg in leagues:
+        try:
+            finals.extend(fetch_completed_games(lg))
+        except Exception as e:
+            print(f"[faults] {lg} results unavailable: {e}")
+
+    graded = 0
+    for r in opps:
+        side = r.get("side") or ""
+        match = None
+        for g in finals:
+            if same_team(side, g.home_name) or same_team(side, g.away_name):
+                # Both teams must be in the matched event. Matching on one name
+                # settled a calibration table against the wrong fixtures once.
+                other = r.get("game", "").replace(side, "").replace("@", "").strip()
+                if not other or same_team(other, g.home_name) or same_team(other, g.away_name):
+                    match = g
+                    break
+        if not match:
+            continue
+
+        backing_home = same_team(side, match.home_name)
+        mine = match.home_score if backing_home else match.away_score
+        theirs = match.away_score if backing_home else match.home_score
+        margin = mine - theirs
+
+        if r["market"] == "spreads":
+            # The book's number, from the side being backed. Covering means the
+            # margin beats laying that many points.
+            adj = margin + (r.get("book_point") or 0)
+            status = "won" if adj > 0 else "lost" if adj < 0 else "push"
+            price = r.get("price", -110)
+        else:
+            status = "won" if margin > 0 else "lost" if margin < 0 else "push"
+            price = r.get("book_price", -110)
+
+        b = (price / 100) if price > 0 else (100 / abs(price))
+        r["final"] = f"{match.away_abbr} {match.away_score}-{match.home_score} {match.home_abbr}"
+        r["margin"] = margin
+        r["status"] = status
+        r["units"] = 0.0 if status == "push" else (round(b, 4) if status == "won" else -1.0)
+        r["graded_at"] = datetime.now(timezone.utc).isoformat(timespec="seconds")
+        r.setdefault("honoured", None)      # only a person can answer this
+        graded += 1
+
+    if graded:
+        # Rewrite in place: the archive is the record, and a grade belongs on
+        # the row it grades rather than in a second file that can drift from it.
+        by_key = {_bet_key(r): r for r in best.values()}
+        out = []
+        for line in open(ARCHIVE):
+            if not line.strip():
+                continue
+            row = json.loads(line)
+            g = by_key.get(_bet_key(row))
+            if g and g.get("graded_at") and not row.get("graded_at"):
+                row.update({k: g[k] for k in
+                            ("final", "margin", "status", "units", "graded_at", "honoured")})
+            out.append(json.dumps(row))
+        with open(ARCHIVE, "w") as fh:
+            fh.write("\n".join(out) + "\n")
+    print(f"[faults] graded {graded}; {len(opps) - graded} still unplayed or unmatched")
+    return 0
+
+
+def ledger() -> int:
+    """What the faults have actually done, with void kept apart from loss."""
+    if not os.path.exists(ARCHIVE):
+        print("No faults logged yet.")
+        return 0
+    rows = [json.loads(l) for l in open(ARCHIVE) if l.strip()]
+    best: Dict[tuple, dict] = {}
+    for r in rows:
+        k = _bet_key(r)
+        if k not in best or r["captured_at"] < best[k]["captured_at"]:
+            best[k] = r
+    opps = list(best.values())
+
+    # Only the half you can act on. The mirrored row is the same fault seen
+    # from the side that is worse for you, and betting it would be the error.
+    actionable = [r for r in opps if r.get("delta", 0) > 0]
+
+    print(f"\n  Fault ledger")
+    print(f"  logged              {len(rows)} rows -> {len(opps)} opportunities -> "
+          f"{len(actionable)} actionable")
+    scans = sorted({r["captured_at"] for r in rows})
+    print(f"  scans               {len(scans)}"
+          + (f"  ({scans[0][:10]} to {scans[-1][:10]})" if scans else ""))
+
+    for kind in ("STALE", "TRANSPOSED"):
+        k = [r for r in actionable if r.get("kind") == kind]
+        if not k:
+            continue
+        g = [r for r in k if r.get("status") in ("won", "lost", "push")]
+        w = sum(1 for r in g if r["status"] == "won")
+        u = sum(r.get("units", 0) for r in g)
+        print(f"\n  {kind}")
+        print(f"    found             {len(k)}")
+        print(f"    settled           {len(g)}" + (f"  ({w}-{len(g)-w})" if g else ""))
+        if g:
+            print(f"    units             {u:+.2f} on {len(g)} at 1u")
+        placed = [r for r in k if r.get("honoured") is not None]
+        if placed:
+            paid = sum(1 for r in placed if r["honoured"])
+            print(f"    actually placed   {len(placed)}, honoured {paid}, "
+                  f"voided {len(placed) - paid}")
+        else:
+            print(f"    actually placed   0 — so nothing here says whether a book would pay")
+
+    ungraded = [r for r in actionable if not r.get("graded_at")]
+    if ungraded:
+        print(f"\n  awaiting kickoff    {len(ungraded)}")
+        for r in sorted(ungraded, key=lambda x: x.get("kickoff", ""))[:8]:
+            print(f"    {r.get('kickoff','')[:16]}  {r.get('kind'):11} {r.get('book'):11} "
+                  f"{str(r.get('side'))[:26]:26} {r.get('book_point') or r.get('book_price')}")
+    print()
+    return 0
+
+
+def settle(spec: str) -> int:
+    """
+    Record whether a book actually paid: --settle "<book>:<side>:honoured|voided".
+
+    Manual because it cannot be anything else. No feed reports that a ticket was
+    graded away under a palpable-error clause, and this is the only number that
+    decides whether TRANSPOSED finds are worth chasing.
+    """
+    try:
+        book, side, verdict = spec.split(":", 2)
+    except ValueError:
+        print('Use --settle "book:side:honoured" or "...:voided"')
+        return 1
+    if verdict not in ("honoured", "voided"):
+        print("The verdict must be honoured or voided.")
+        return 1
+    rows = [json.loads(l) for l in open(ARCHIVE) if l.strip()]
+    n = 0
+    for r in rows:
+        if r.get("book") == book and side.lower() in str(r.get("side", "")).lower():
+            r["honoured"] = (verdict == "honoured")
+            n += 1
+    with open(ARCHIVE, "w") as fh:
+        fh.write("\n".join(json.dumps(r) for r in rows) + "\n")
+    print(f"marked {n} row(s) {verdict}")
     return 0
 
 
@@ -350,11 +579,23 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[1])
     ap.add_argument("--scan", action="store_true")
     ap.add_argument("--history", action="store_true")
+    ap.add_argument("--grade", action="store_true",
+                    help="settle logged faults against finished games")
+    ap.add_argument("--ledger", action="store_true",
+                    help="what the faults have done, void kept apart from loss")
+    ap.add_argument("--settle", metavar="BOOK:SIDE:VERDICT",
+                    help="record that a book honoured or voided a placed bet")
     ap.add_argument("--alert", action="store_true",
                     help="text/email when a STALE line appears at your books")
     ap.add_argument("--markets", default="spreads,h2h",
                     help="comma-separated; fewer markets costs fewer credits")
     a = ap.parse_args()
+    if a.settle:
+        return settle(a.settle)
+    if a.grade:
+        return grade()
+    if a.ledger:
+        return ledger()
     if a.history:
         return history()
     if a.scan:
@@ -363,6 +604,7 @@ def main() -> int:
         report(hits)
         if a.alert:
             send_alert(hits)
+        grade()          # costs no credits, and keeps the ledger current
         return 0
     ap.print_help()
     return 0

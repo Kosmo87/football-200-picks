@@ -170,9 +170,16 @@ jobs:
           set -e
           HOUR=$(date -u +%H); DOW=$(date -u +%u)
           FLOOR=no
+          # Floor slots sit an hour BEFORE kickoff windows, which is when books
+          # move fastest and hang broken numbers. The old set missed the one that
+          # matters most: Sunday 12:00 UTC is 8am ET, before NFL lines firm up,
+          # and 18:00 UTC is 2pm ET, after the 1pm games have already started.
           case "$DOW" in
-            6|7) case "$HOUR" in 12|18) FLOOR=yes;; esac ;;
-            4|5) case "$HOUR" in 17) FLOOR=yes;; esac ;;
+            7) case "$HOUR" in 12|16|19|23) FLOOR=yes;; esac ;;   # Sun: pre-1pm, pre-4pm, pre-SNF
+            6) case "$HOUR" in 12|15|18|23) FLOOR=yes;; esac ;;   # Sat: college all day
+            1) case "$HOUR" in 22) FLOOR=yes;; esac ;;            # Mon night
+            4) case "$HOUR" in 22) FLOOR=yes;; esac ;;            # Thu night
+            5) case "$HOUR" in 17) FLOOR=yes;; esac ;;
           esac
           if [ "$MOVED" != "10" ] && [ "$FLOOR" != "yes" ]; then
             echo "No movement and not a floor slot — no credits spent."
@@ -180,7 +187,7 @@ jobs:
           fi
           [ "$MOVED" = "10" ] && echo "Lines moved — scanning." \
                               || echo "Floor scan (day $DOW hour $HOUR)."
-          python faults.py --scan --alert --markets spreads
+          python faults.py --scan --alert --markets spreads,h2h
 
       - name: Log and grade board calibration
         # The only question that decides whether the board is worth reading:

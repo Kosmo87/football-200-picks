@@ -102,6 +102,67 @@ def test_alert_fits_one_sms_segment():
     assert len(body) <= 320, f"{len(body)} chars is more than two segments"
 
 
+# ---------------------------------------------------------------- ml mirroring
+
+def test_ml_logs_both_sides_not_just_the_dear_one():
+    """
+    A book with a big favourite trips the threshold on the favourite and not on
+    the dog, because the same vig is a smaller share of a small number. Logging
+    only the side that tripped records the fault and discards the bet.
+    """
+    prices = {
+        "betrivers": {"Miami": -3335, "Wake Forest": 1400},
+        "bookA":     {"Miami": -1000, "Wake Forest": 650},
+        "bookB":     {"Miami": -1050, "Wake Forest": 660},
+        "bookC":     {"Miami": -980,  "Wake Forest": 640},
+    }
+    rows = F.ml_faults(prices)
+    br = [r for r in rows if r["book"] == "betrivers"]
+    sides = {r["side"] for r in br}
+    assert sides == {"Miami", "Wake Forest"}, f"only logged {sides}"
+    # And exactly one of them is the half worth acting on.
+    actionable = [r for r in br if r["delta"] > 0]
+    assert len(actionable) == 1, f"{len(actionable)} actionable sides"
+
+
+def test_ml_silent_when_nothing_trips():
+    prices = {
+        "betrivers": {"Miami": -1000, "Wake Forest": 650},
+        "bookA":     {"Miami": -1000, "Wake Forest": 650},
+        "bookB":     {"Miami": -1010, "Wake Forest": 655},
+        "bookC":     {"Miami": -990,  "Wake Forest": 645},
+    }
+    assert F.ml_faults(prices) == []
+
+
+def test_pickem_sign_flip_is_stale_not_transposed():
+    """
+    Atlanta +1.5 against a -1.0 consensus crosses zero, but it is a 2.5-point
+    move on a near-pick'em, not an inverted line. Calling it TRANSPOSED
+    suppressed the alert on a bettable NFL number, because transposed hits
+    never alert.
+    """
+    f = {"market": "spreads", "book_point": 1.5, "consensus_point": -1.0}
+    assert F.classify(f) == "STALE"
+
+
+def test_big_sign_flip_is_still_transposed():
+    """Kansas +5.0 against a -5.5 consensus: 10.5 points, too big to be a move."""
+    f = {"market": "spreads", "book_point": 5.0, "consensus_point": -5.5}
+    assert F.classify(f) == "TRANSPOSED"
+
+
+def test_moneyline_coinflip_straddle_is_stale():
+    f = {"market": "h2h", "book_implied": 0.52, "consensus": 0.46}
+    assert F.classify(f) == "STALE"
+
+
+def test_moneyline_real_inversion_is_transposed():
+    """BetMGM had Kansas at 64.9% where the market said 35.7%."""
+    f = {"market": "h2h", "book_implied": 0.6491, "consensus": 0.357}
+    assert F.classify(f) == "TRANSPOSED"
+
+
 if __name__ == "__main__":
     f = 0
     for n, fn in sorted(globals().items()):
