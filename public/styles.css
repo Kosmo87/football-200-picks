@@ -150,7 +150,11 @@ body {
   gap: 12px; padding: 13px 16px; background: var(--panel-2); flex-wrap: wrap;
 }
 .tip-title { font-size: 14.5px; font-weight: 600; }
-.tip-rank { color: var(--ink-faint); font: 600 12px var(--mono); margin-right: 8px; }
+.tip-day {
+  font: 600 11.5px var(--mono); text-transform: uppercase; letter-spacing: 0.06em;
+  color: var(--ink-dim); margin: 6px 0 -4px;
+}
+.tip-rank {color: var(--ink-faint); font: 600 12px var(--mono); margin-right: 8px; }
 .tip-odds { font: 700 20px var(--mono); letter-spacing: -0.02em; }
 .tip-meta { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
 .tip-legs { border-collapse: collapse; width: 100%; }

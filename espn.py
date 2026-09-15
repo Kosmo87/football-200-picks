@@ -298,11 +298,44 @@ def _dedupe_events(events: list) -> list:
     return unique
 
 
+def _next_nfl_week_url(data: dict) -> Optional[str]:
+    """The scoreboard for the week after the one ESPN is showing."""
+    week = (data.get("week") or {}).get("number")
+    season = data.get("season") or {}
+    season_type, year = season.get("type"), season.get("year")
+    if not (week and season_type and year):
+        return None
+    return f"{ESPN_NFL}?dates={year}&seasontype={season_type}&week={int(week) + 1}"
+
+
+def _nfl_upcoming_events() -> list:
+    """
+    The NFL week still to be played.
+
+    ESPN's undated scoreboard keeps showing the week just finished until it rolls
+    over mid-week, so from Monday night to about Wednesday it is all finals and
+    the board went empty while next week's lines were already posted. When no
+    game on it is still to be played, step to the following week. A week past
+    the end of a season type returns no events, so that falls back cleanly.
+    """
+    data = fetch_scoreboard(ESPN_NFL)
+    events = data.get("events") or []
+    if any(is_upcoming(((e.get("competitions") or [{}])[0].get("status") or {}).get("type") or {})
+           for e in events):
+        return events
+    url = _next_nfl_week_url(data)
+    if not url:
+        return events
+    try:
+        return events + (fetch_scoreboard(url).get("events") or [])
+    except Exception:
+        return events
+
+
 def get_upcoming_games(league: str) -> List[Game]:
     events = []
     if league.upper() == "NFL":
-        data = fetch_scoreboard(ESPN_NFL)
-        events = data.get("events") or []
+        events = _dedupe_events(_nfl_upcoming_events())
     else:
         today = datetime.now(timezone.utc).date()
         fetch_errors = []

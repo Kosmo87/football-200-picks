@@ -688,6 +688,26 @@ const el = (tag, cls, html) => {
   return n;
 };
 
+const kickoffMs = (iso) => {
+  const t = new Date(iso || "").getTime();
+  return Number.isNaN(t) ? Infinity : t;
+};
+
+/** Picks by first kickoff, each parlay's legs in kickoff order too. */
+function byKickoff(picks) {
+  return picks
+    .map((p) => ({ ...p, legs: [...p.legs].sort((a, b) => kickoffMs(a.kickoff) - kickoffMs(b.kickoff)) }))
+    .sort((a, b) => kickoffMs(a.legs[0].kickoff) - kickoffMs(b.legs[0].kickoff));
+}
+
+function dayLabel(iso) {
+  const t = kickoffMs(iso);
+  if (t === Infinity) return "Date TBD";
+  return new Date(t).toLocaleDateString(undefined, {
+    weekday: "long", month: "short", day: "numeric",
+  });
+}
+
 function kickoffLabel(iso) {
   if (!iso) return "TBD";
   const d = new Date(iso);
@@ -920,7 +940,7 @@ function renderTips() {
   const totalUnits = all.reduce((t, p) => t + p.stakeUnits, 0);
   $("#tips-note").textContent = all.length
     ? `${all.length} bet${all.length > 1 ? "s" : ""} · ${+totalUnits.toFixed(1)}U total`
-    : "nothing today";
+    : "nothing this week";
 }
 
 /** The leg shape betId() expects, from a built pick. */
@@ -945,7 +965,7 @@ function legCountNote(picks, cfg) {
   const parlays = picks.filter((p) => p.legs.length > 1).length;
   if (parlays === picks.length) {
     return `Every one of these is a parlay: no single side pays `
-         + `${fmtOdds(cfg.minCombined)} on its own tonight, so legs are stacked to `
+         + `${fmtOdds(cfg.minCombined)} on its own this week, so legs are stacked to `
          + `reach it. Stacking costs — a parlay's expectation is the product of its `
          + `legs', so two legs roughly double the house's cut on the same opinion.`;
   }
@@ -953,7 +973,7 @@ function legCountNote(picks, cfg) {
     // Say what actually happened: singles filled the list. Naming the payout
     // floor here was wrong on the safe list, where the floor is -400 and every
     // single clears it trivially — the reason was never the floor.
-    let why = `All singles tonight — ${picks.length} cleared on their own, and `
+    let why = `All singles this week —${picks.length} cleared on their own, and `
             + `singles are taken first. Parlays only appear when singles cannot fill `
             + `the list, because a parlay is a way to reach a payout, not a source of `
             + `edge: its expectation is the product of its legs', so stacking two `
@@ -1001,7 +1021,7 @@ function renderPickList(box, picks, cfg, legs, gamesById) {
           + `usually pay too little to be worth backing.`;
     } else {
       why = `No side clears ${cfg.minEdgePP.toFixed(1)}pp of edge on `
-          + `${cfg.minSample}+ games of sample. Nothing here is worth a bet today `
+          + `${cfg.minSample}+ games of sample. Nothing here is worth a bet this week `
           + `— keep your money in your pocket.`;
     }
     if (staleCut && cfg.excludeStale) {
@@ -1010,11 +1030,21 @@ function renderPickList(box, picks, cfg, legs, gamesById) {
            + `built, so the model has no informed opinion on either side of `
            + `${staleCut > 2 ? "those games" : "that game"}.</div>`;
     }
-    box.appendChild(el("div", "empty", `<strong>No bets today</strong>${why}`));
+    box.appendChild(el("div", "empty", `<strong>No bets this week</strong>${why}`));
     return;
   }
 
+  // Selection ranks by likelihood; the page lists by when you have to place
+  // them. Sorting here and not in buildPicks keeps the parity harness's order.
+  picks = byKickoff(picks);
+  let day = null;
+
   picks.forEach((pick, i) => {
+    const pickDay = dayLabel(pick.legs[0].kickoff);
+    if (pickDay !== day) {
+      box.appendChild(el("div", "tip-day", pickDay));
+      day = pickDay;
+    }
     const card = el("div", "tip");
     const head = el("div", "tip-head");
     // No trust badge: the gate now refuses anything past ten points from the
