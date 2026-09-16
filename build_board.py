@@ -21,6 +21,7 @@ from datetime import datetime, timezone
 from typing import Dict, List, Optional
 
 import context
+import teaser
 from elo import (
     CompletedGame,
     EloSystem,
@@ -235,6 +236,16 @@ def build_league(league: str, season: int, refresh_prior: bool):
         # ESPN's injury feed 500s.
         print(f"[board] {league} context unavailable: {e}")
 
+    # The teaser shortlist, NFL only. The bands were measured on NFL margins —
+    # college margins do not spike at 3 and 7 the same way, so the same 6 points
+    # buy something else there and the numbers here would not apply.
+    teasers = None
+    if league == "NFL":
+        try:
+            teasers = teaser.candidates_from_board(games_out)
+        except Exception as e:
+            print(f"[board] {league} teaser shortlist unavailable: {e}")
+
     cfg = config_for_league(league)
     ratings = [
         {
@@ -251,6 +262,7 @@ def build_league(league: str, season: int, refresh_prior: bool):
     return {
         "league": league,
         "games": games_out,
+        "teasers": teasers,
         "ratings": ratings,
         "meta": {
             "season": season,

@@ -26,6 +26,8 @@ function combineOdds(oddsList) {
 const fmtOdds = (o) => (o > 0 ? `+${o}` : `${o}`);
 const fmtPct = (p) => `${(p * 100).toFixed(1)}%`;
 const fmtPP = (pp) => `${pp >= 0 ? "+" : ""}${pp.toFixed(1)}pp`;
+/** A spread, signed, with no trailing zero: -6.5, +8.5, -1. */
+const fmtLine = (n) => `${n > 0 ? "+" : ""}${+Number(n).toFixed(1)}`;
 
 // --------------------------------------------------------------------------
 // staking.py port — units
@@ -905,7 +907,26 @@ function renderGateSummary() {
  * board ("which gates should the model use"), where whatever it recommended was
  * whatever you had just asked it to recommend.
  */
+/**
+ * Does the model board still get to call itself a set of bets?
+ *
+ * Only where nothing better exists. Where a teaser shortlist is present the
+ * model's own graded record — 10-24 at 5-10pp of claimed edge, 5-21 at 10+ —
+ * is a worse bet than the teaser's measured 73.6% per leg, so the picks stay
+ * on the page as an evaluation record and lose their stakes. Reference mode is
+ * therefore decided by what else is on the board, not by league.
+ */
+const referenceMode = () => {
+  const t = (state.board.leagues[state.league] || {}).teasers;
+  return Boolean(t && (t.legs || []).length >= 2);
+};
+
 function renderTips() {
+  const ref = referenceMode();
+  $("#tips-heading").firstChild.textContent =
+    ref ? "Model board " : "Bets this week ";
+  $("#tips-legend").hidden = ref;
+  $("#tips-reference-note").hidden = !ref;
   const lg = state.board.leagues[state.league];
   const gamesById = new Map(lg.games.map((g) => [g.event_id, g]));
   const legs = flattenLegs(lg);
@@ -933,14 +954,16 @@ function renderTips() {
   const free = legs.filter((l) => !usedTeams.has(l.team_id) && !usedGames.has(l.eventId));
   const value = buildPicks(free, state.cfg);
 
-  renderPickList($("#tips-safe"), safe, safeCfg, legs, gamesById);
-  renderPickList($("#tips-value"), value, state.cfg, legs, gamesById);
+  renderPickList($("#tips-safe"), safe, safeCfg, legs, gamesById, ref);
+  renderPickList($("#tips-value"), value, state.cfg, legs, gamesById, ref);
 
   const all = [...safe, ...value];
   const totalUnits = all.reduce((t, p) => t + p.stakeUnits, 0);
-  $("#tips-note").textContent = all.length
-    ? `${all.length} bet${all.length > 1 ? "s" : ""} · ${+totalUnits.toFixed(1)}U total`
-    : "nothing this week";
+  $("#tips-note").textContent = ref
+    ? "what the model would have bet · not recommended · graded below"
+    : all.length
+      ? `${all.length} bet${all.length > 1 ? "s" : ""} · ${+totalUnits.toFixed(1)}U total`
+      : "nothing this week";
 }
 
 /** The leg shape betId() expects, from a built pick. */
@@ -990,7 +1013,7 @@ function legCountNote(picks, cfg) {
        + `the house's cut along with the payout.`;
 }
 
-function renderPickList(box, picks, cfg, legs, gamesById) {
+function renderPickList(box, picks, cfg, legs, gamesById, reference = false) {
   box.innerHTML = "";
 
   const gated = legs.filter((l) => passesGates(l, cfg)).length;
@@ -1045,14 +1068,17 @@ function renderPickList(box, picks, cfg, legs, gamesById) {
       box.appendChild(el("div", "tip-day", pickDay));
       day = pickDay;
     }
-    const card = el("div", "tip");
+    const card = el("div", reference ? "tip reference" : "tip");
     const head = el("div", "tip-head");
     // No trust badge: the gate now refuses anything past ten points from the
     // price, so every pick that reaches this page is in the same band and the
     // badge was the same word every time. The gap itself is still shown, as the
     // two probabilities and their difference.
     head.innerHTML = `
-      <div class="tip-title"><span class="tip-rank">#${i + 1}</span>${pick.label}</div>
+      <div class="tip-title"><span class="tip-rank">#${i + 1}</span>${
+        // The stake comes off the label in reference mode rather than being
+        // greyed out: a number in units is an instruction however it is styled.
+        reference ? pick.label.replace(/^[\d.]+U · /, "") : pick.label}</div>
       <div class="tip-meta">
         <span class="dim">we say ${fmtPct(pick.winProb)} · market says ${fmtPct(pick.marketProb)}</span>
         <span class="tip-odds ${pick.combined > 0 ? "pos" : ""}">${fmtOdds(pick.combined)}</span>
@@ -1086,10 +1112,13 @@ function renderPickList(box, picks, cfg, legs, gamesById) {
     if (strip) card.appendChild(strip);
 
     const foot = el("div", "tip-foot");
+    // The checkbox stays in reference mode — tagging one is how it gets graded,
+    // and the record is the point of keeping the list — but it is offered with
+    // no suggested stake attached.
     foot.appendChild(placementControls(
       betFromLegs(state.league, pick.legs, pick.combined, pick.winProb,
                   pick.marketProb, pick.combinedEdgePP),
-      pick.stakeUnits
+      reference ? 0 : pick.stakeUnits
     ));
     foot.appendChild(el("span", "dim",
       (pick.legs.length > 1
@@ -1102,6 +1131,87 @@ function renderPickList(box, picks, cfg, legs, gamesById) {
 
   const note = legCountNote(picks, cfg);
   if (note) box.appendChild(el("p", "list-note", note));
+}
+
+/**
+ * The teaser shortlist, which leads the page wherever it exists.
+ *
+ * It is a list of NUMBERS, deliberately. Every leg in a band won at the same
+ * rate whether it was a favourite or a dog, home or away (73.2-74.3%, all
+ * inside one standard error), so ranking them by team would be inventing a
+ * signal the measurement says is not there. They are printed in probability
+ * order only because a whole-number teased line can push.
+ *
+ * The price does the deciding. Two legs at -110 is +3.4%; the same two at -130
+ * is -4.2%. So the list is useless without the threshold under it, and the
+ * threshold is given for both the best pair and the worst so any two legs on
+ * it can be priced without recomputing anything.
+ */
+function renderTeasers() {
+  const t = (state.board.leagues[state.league] || {}).teasers;
+  const section = $("#teaser-section");
+  const legs = (t && t.legs) || [];
+  // Two legs or it is not a teaser. One qualifying number is not a bet.
+  if (legs.length < 2) {
+    section.hidden = true;
+    return;
+  }
+  section.hidden = false;
+
+  const box = $("#teaser-legs");
+  box.innerHTML = "";
+  $("#teaser-note").textContent =
+    `${legs.length} qualifying legs · pick any two · ${t.points}-point teaser`;
+
+  const table = el("table", "data teaser-table");
+  table.innerHTML = `
+    <thead><tr>
+      <th>Game</th><th>Kickoff</th><th>Leg</th>
+      <th class="num">Teased to</th><th class="num">Leg win%</th><th>Range</th>
+    </tr></thead>`;
+  const body = el("tbody");
+  let day = null;
+  for (const l of legs) {
+    const d = dayLabel(l.kickoff);
+    if (d !== day) {
+      const head = el("tr", "teaser-day");
+      head.innerHTML = `<td colspan="6">${d}</td>`;
+      body.appendChild(head);
+      day = d;
+    }
+    const tr = el("tr");
+    tr.innerHTML = `
+      <td>${l.matchup}</td>
+      <td class="dim">${kickoffLabel(l.kickoff)}</td>
+      <td class="team-cell">${l.team_abbr} ${fmtLine(l.spread)}</td>
+      <td class="num"><strong>${fmtLine(l.teased)}</strong>${
+        l.push_risk ? ' <span class="flag-dot low" title="Teased onto a whole'
+          + ' number: 2.5% of these push, and most books grade a push inside a'
+          + ' two-team teaser as a loss.">!</span>' : ""}</td>
+      <td class="num">${fmtPct(l.prob)}</td>
+      <td class="dim">${l.band}</td>`;
+    body.appendChild(tr);
+  }
+  table.appendChild(body);
+  const scroll = el("div", "table-scroll");
+  scroll.appendChild(table);
+  box.appendChild(scroll);
+
+  // The number to carry to the book, which is the actual output of all this.
+  const best = t.max_price_best, worst = t.max_price_worst, se = t.max_price_best_se;
+  box.appendChild(el("p", "teaser-price",
+    `<strong>Play only at ${fmtOdds(se)} or better.</strong> The two best legs `
+    + `here break even at ${fmtOdds(best)} on the measured rate, but that rate `
+    + `is an estimate off 1,804 games — one standard error down and the same `
+    + `pair needs ${fmtOdds(se)}, so that is the number to hold out for. The two `
+    + `weakest legs need ${fmtOdds(worst)}. Anything longer is a losing bet `
+    + `however good the teams look.`));
+  box.appendChild(el("p", "list-note",
+    `Legs are read off ${t.provider || "one book"}'s number, so this is a `
+    + `shortlist rather than a quote — a band is decided by a half point and `
+    + `books disagree by that often. Confirm the number and the teaser price at `
+    + `your own book before placing anything. Pushes: a leg teased onto a whole `
+    + `number is marked, and is charged for that risk in its win% already.`));
 }
 
 function renderBoard() {
@@ -1194,6 +1304,7 @@ function render() {
   renderTabs();
   renderYourBets();
   renderGateSummary();
+  renderTeasers();
   renderTips();
   renderBoard();
   renderRatings();

@@ -107,6 +107,78 @@ def test_books_are_kept_separate():
     assert all(len(v) == 1 for v in out.values())
 
 
+def _soon():
+    """Inside the scanner's window, whenever the suite happens to run."""
+    from datetime import datetime, timedelta, timezone
+    return (datetime.now(timezone.utc) + timedelta(days=2)).strftime("%Y-%m-%dT%H:%MZ")
+
+
+def _game(event_id, spread, kickoff=None, home="HOME", away="AWAY"):
+    kickoff = kickoff or _soon()
+    return {"event_id": event_id, "short_name": f"{away} @ {home}",
+            "kickoff": kickoff, "spread": spread, "provider": "DraftKings",
+            "home": {"abbr": home, "name": home}, "away": {"abbr": away, "name": away}}
+
+
+def test_board_shortlist_reads_the_home_spread():
+    """The board stores the HOME spread; the away side is its mirror."""
+    out = T.candidates_from_board([_game("1", 2.5, home="ATL", away="CAR")])
+    assert len(out["legs"]) == 1
+    leg = out["legs"][0]
+    assert leg["team_abbr"] == "ATL", "home team is +2.5 when the spread is +2.5"
+    assert leg["teased"] == 8.5
+
+    # +7 on the home team means the AWAY team is the -7 favourite, and only
+    # that side of the game sits in a band.
+    out = T.candidates_from_board([_game("1", 7.0, home="TEN", away="PHI")])
+    assert len(out["legs"]) == 1
+    assert out["legs"][0]["team_abbr"] == "PHI", "away side mirrors to -7"
+    assert out["legs"][0]["teased"] == -1.0
+
+
+def test_board_shortlist_skips_games_with_no_qualifying_number():
+    out = T.candidates_from_board([_game("1", -3.5), _game("2", -10.0)])
+    assert out["legs"] == []
+    assert "max_price_best" not in out, "one leg is not a teaser, so no price"
+
+
+def test_board_shortlist_prices_both_ends_of_the_list():
+    """
+    Any two legs are playable, so the worst pair needs a price too.
+
+    A single threshold taken from the best pair would recommend the whole list
+    at a number that only the top of it supports -- the same failure mode as
+    quoting one edge for a whole board.
+    """
+    out = T.candidates_from_board([
+        _game("1", 2.5, home="A", away="B"),      # 0.7409, the best band
+        _game("2", 2.5, home="C", away="D"),
+        _game("3", -7.0, home="E", away="F"),     # teased to a whole number
+        _game("4", -7.0, home="G", away="H"),
+    ])
+    assert len(out["legs"]) == 4
+    assert out["max_price_best"] == T.max_price([0.7409, 0.7409])
+    # Compared as payouts, not as American numbers: -107 is a STRICTER
+    # threshold than -121 while being the larger number, and asserting on the
+    # raw integers would encode that backwards.
+    assert T.payout(out["max_price_worst"]) > T.payout(out["max_price_best"]), \
+        "the weakest pair must demand a shorter price than the strongest"
+
+
+def test_board_shortlist_charges_whole_numbers_for_pushes():
+    out = T.candidates_from_board([_game("1", -7.0)])
+    leg = out["legs"][0]
+    assert leg["push_risk"] is True
+    assert leg["prob"] < 0.7379, "a -1 teased line is charged for push risk"
+
+
+def test_board_shortlist_windows_by_kickoff():
+    """A number hung on a January game is a placeholder, not a bet."""
+    out = T.candidates_from_board([_game("1", 2.5, kickoff="2099-01-01T00:00Z")],
+                                  within_days=8)
+    assert out["legs"] == []
+
+
 if __name__ == "__main__":
     fails = 0
     for name, fn in sorted(globals().items()):

@@ -150,6 +150,26 @@ body {
   gap: 12px; padding: 13px 16px; background: var(--panel-2); flex-wrap: wrap;
 }
 .tip-title { font-size: 14.5px; font-weight: 600; }
+/* The teaser list: a table of numbers, because that is what the bet is. */
+.teaser-table td, .teaser-table th { font-size: 13.5px; }
+.teaser-table tr.teaser-day td {
+  font: 600 11px var(--mono); text-transform: uppercase; letter-spacing: 0.06em;
+  color: var(--ink-dim); background: var(--panel-2); padding: 7px 12px;
+}
+.teaser-price {
+  margin: 12px 0 0; padding: 11px 13px; font-size: 13px; line-height: 1.55;
+  color: var(--ink-dim); background: var(--panel-2);
+  border: 1px solid var(--line); border-left: 3px solid var(--accent);
+  border-radius: var(--radius);
+}
+.teaser-price strong { color: var(--ink); }
+
+/* Reference mode: the model's picks, kept for grading, not to be placed. The
+   accent stripe comes off so nothing on the page looks like an instruction
+   except the section that has earned it. */
+.tip.reference { border-left-color: var(--line); opacity: 0.92; }
+.tip.reference .tip-odds { font-weight: 600; color: var(--ink-dim); }
+
 .tip-day {
   font: 600 11.5px var(--mono); text-transform: uppercase; letter-spacing: 0.06em;
   color: var(--ink-dim); margin: 6px 0 -4px;

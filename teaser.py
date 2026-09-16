@@ -244,6 +244,87 @@ def qualifying_legs(payload: List[dict], within_days: int = 8) -> List[Leg]:
     return out
 
 
+def candidates_from_board(games: List[dict], within_days: int = 8) -> dict:
+    """
+    Qualifying legs read off the board's own spread, for the static site.
+
+    WHY A SECOND PATH INTO THE SAME BANDS. `qualifying_legs` is the real
+    scanner: per book, so a leg that exists only at DraftKings is not offered
+    as a FanDuel teaser, and it costs an API credit per scan. The site rebuilds
+    hourly and cannot spend a credit each time, so this reads the number the
+    board already has -- one book's spread, whoever ESPN is quoting.
+
+    That makes this a SHORTLIST, not a quote. The band is decided by a half
+    point, and books disagree by a half point often enough that a leg here can
+    fail to qualify at the book in hand. The Sunday email keeps the per-book
+    scan; this says which games to look at and what price to refuse.
+
+    Returned as plain dicts because it is written straight into board.json.
+    """
+    from datetime import datetime, timedelta, timezone
+    cutoff = datetime.now(timezone.utc) + timedelta(days=within_days)
+    legs: List[dict] = []
+    for g in games:
+        try:
+            ko = datetime.fromisoformat(str(g.get("kickoff", "")).replace("Z", "+00:00"))
+        except ValueError:
+            continue
+        if ko > cutoff:
+            continue
+        # The board stores the HOME team's spread; the away side is its mirror.
+        home_spread = g.get("spread")
+        if home_spread is None:
+            continue
+        for side in ("home", "away"):
+            spread = float(home_spread) if side == "home" else -float(home_spread)
+            band = band_for(spread)
+            if not band:
+                continue
+            teased = spread + TEASE_POINTS
+            legs.append({
+                "event_id": str(g.get("event_id", "")),
+                "matchup": g.get("short_name") or g.get("name") or "",
+                "kickoff": g.get("kickoff", ""),
+                "team_abbr": (g.get(side) or {}).get("abbr", ""),
+                "team_name": (g.get(side) or {}).get("name", ""),
+                "spread": spread,
+                "teased": teased,
+                "band": band.label,
+                "prob": round(leg_probability(band, teased), 4),
+                "push_risk": float(teased).is_integer(),
+            })
+    # One leg per game: both sides of the same game cannot share a teaser, and
+    # only one of them can be in a band anyway unless the spread is tiny.
+    best: Dict[str, dict] = {}
+    for l in legs:
+        k = l["event_id"]
+        if k not in best or l["prob"] > best[k]["prob"]:
+            best[k] = l
+    legs = sorted(best.values(), key=lambda l: (-l["prob"], l["kickoff"]))
+
+    rate, se = combined_rate(BANDS)
+    out = {
+        "points": TEASE_POINTS,
+        "legs": legs,
+        "per_leg_rate": round(rate, 4),
+        "per_leg_stderr": round(se, 4),
+        "provider": (games[0].get("provider") if games else None),
+    }
+    if len(legs) >= 2:
+        probs = [l["prob"] for l in legs]
+        # Both ends of the range, because any two legs are playable and the
+        # price that makes the best pair a bet can leave the worst pair a loss.
+        out["max_price_best"] = max_price(probs[:2])
+        out["max_price_worst"] = max_price(probs[-2:])
+        # And the same pair priced one standard error down. The band rate is an
+        # estimate off 1,804 games, so a threshold quoted off the point estimate
+        # alone says -121 is a bet when the measurement cannot separate -121
+        # from a loss. This is the number that survives the error bar, and it is
+        # why the section quotes -110 as the rule.
+        out["max_price_best_se"] = max_price([p - se for p in probs[:2]])
+    return out
+
+
 def by_book(legs: Iterable[Leg]) -> Dict[str, List[Leg]]:
     d: Dict[str, List[Leg]] = {}
     for l in legs:
