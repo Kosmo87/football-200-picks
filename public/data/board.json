@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-16T10:32:22+00:00",
+  "generated_at": "2026-09-16T10:49:09+00:00",
   "season": 2026,
   "leagues": {
     "NFL": {
@@ -1708,13 +1708,7 @@
               "state": "CA",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 74.8,
-              "wind_mph": 7.9,
-              "gust_mph": 4.9,
-              "precip_pct": 0,
-              "snow_in": 0.0
-            },
+            "weather": null,
             "flags": []
           }
         }
@@ -1729,6 +1723,7 @@
             "team_abbr": "ATL",
             "team_name": "Atlanta Falcons",
             "spread": 2.5,
+            "source": "Draft Kings",
             "teased": 8.5,
             "band": "dog +1.5..+2.5",
             "prob": 0.7409,
@@ -1741,6 +1736,7 @@
             "team_abbr": "JAX",
             "team_name": "Jacksonville Jaguars",
             "spread": 2.5,
+            "source": "Draft Kings",
             "teased": 8.5,
             "band": "dog +1.5..+2.5",
             "prob": 0.7409,
@@ -1753,6 +1749,7 @@
             "team_abbr": "LAC",
             "team_name": "Los Angeles Chargers",
             "spread": -6.5,
+            "source": "Draft Kings",
             "teased": -0.5,
             "band": "fav -7.5..-6.5",
             "prob": 0.7379,
@@ -1765,6 +1762,7 @@
             "team_abbr": "KC",
             "team_name": "Kansas City Chiefs",
             "spread": -6.5,
+            "source": "Draft Kings",
             "teased": -0.5,
             "band": "fav -7.5..-6.5",
             "prob": 0.7379,
@@ -1777,6 +1775,7 @@
             "team_abbr": "BAL",
             "team_name": "Baltimore Ravens",
             "spread": -7.5,
+            "source": "Draft Kings",
             "teased": -1.5,
             "band": "fav -8.5..-7.5",
             "prob": 0.7238,
@@ -1789,6 +1788,7 @@
             "team_abbr": "PHI",
             "team_name": "Philadelphia Eagles",
             "spread": -7.0,
+            "source": "Draft Kings",
             "teased": -1.0,
             "band": "fav -7.5..-6.5",
             "prob": 0.7194,
@@ -1801,6 +1801,7 @@
             "team_abbr": "LAR",
             "team_name": "Los Angeles Rams",
             "spread": -7.0,
+            "source": "Draft Kings",
             "teased": -1.0,
             "band": "fav -7.5..-6.5",
             "prob": 0.7194,
@@ -1810,9 +1811,26 @@
         "per_leg_rate": 0.7362,
         "per_leg_stderr": 0.0104,
         "provider": "Draft Kings",
+        "provider_is_mine": false,
+        "captured_at": null,
         "max_price_best": -121,
         "max_price_worst": -107,
-        "max_price_best_se": -114
+        "max_price_best_se": -114,
+        "at_my_books": [
+          {
+            "book": "BetMGM",
+            "playable": false,
+            "reason": "BetMGM does not offer teasers (2026-09-13)",
+            "quoted": null
+          },
+          {
+            "book": "FanDuel",
+            "playable": false,
+            "reason": "FanDuel quotes -134 on 2 legs, needs -114 \u2014 refused",
+            "quoted": -134
+          }
+        ],
+        "playable": false
       },
       "ratings": [
         {
@@ -2516,8 +2534,20 @@
               "state": "",
               "indoor": false
             },
-            "weather": null,
-            "flags": []
+            "weather": {
+              "temp_f": 67.8,
+              "wind_mph": 12.3,
+              "gust_mph": 25.1,
+              "precip_pct": 37,
+              "snow_in": 0.0
+            },
+            "flags": [
+              {
+                "kind": "wind",
+                "severity": "high",
+                "text": "Wind 12 mph, gusting 25 \u2014 kicking and the deep ball suffer"
+              }
+            ]
           }
         },
         {
@@ -3636,20 +3666,8 @@
               "state": "TX",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 98.5,
-              "wind_mph": 10.7,
-              "gust_mph": 11.9,
-              "precip_pct": 0,
-              "snow_in": 0.0
-            },
-            "flags": [
-              {
-                "kind": "heat",
-                "severity": "low",
-                "text": "98\u00b0F at kickoff"
-              }
-            ]
+            "weather": null,
+            "flags": []
           }
         },
         {
@@ -3740,20 +3758,8 @@
               "state": "SC",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 83.9,
-              "wind_mph": 6.6,
-              "gust_mph": 7.6,
-              "precip_pct": 50,
-              "snow_in": 0.0
-            },
-            "flags": [
-              {
-                "kind": "rain",
-                "severity": "low",
-                "text": "50% chance of rain"
-              }
-            ]
+            "weather": null,
+            "flags": []
           }
         },
         {
@@ -3844,13 +3850,7 @@
               "state": "VA",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 78.2,
-              "wind_mph": 9.7,
-              "gust_mph": 9.8,
-              "precip_pct": 7,
-              "snow_in": 0.0
-            },
+            "weather": null,
             "flags": []
           }
         },
@@ -4109,8 +4109,20 @@
               "state": "MO",
               "indoor": false
             },
-            "weather": null,
-            "flags": []
+            "weather": {
+              "temp_f": 97.0,
+              "wind_mph": 12.0,
+              "gust_mph": 12.3,
+              "precip_pct": 1,
+              "snow_in": 0.0
+            },
+            "flags": [
+              {
+                "kind": "heat",
+                "severity": "low",
+                "text": "97\u00b0F at kickoff"
+              }
+            ]
           }
         },
         {
@@ -4209,8 +4221,20 @@
               "state": "AL",
               "indoor": false
             },
-            "weather": null,
-            "flags": []
+            "weather": {
+              "temp_f": 50.8,
+              "wind_mph": 11.5,
+              "gust_mph": 25.3,
+              "precip_pct": 12,
+              "snow_in": 0.0
+            },
+            "flags": [
+              {
+                "kind": "wind",
+                "severity": "high",
+                "text": "Wind 12 mph, gusting 25 \u2014 kicking and the deep ball suffer"
+              }
+            ]
           }
         },
         {
@@ -4284,8 +4308,20 @@
               "state": "FL",
               "indoor": false
             },
-            "weather": null,
-            "flags": []
+            "weather": {
+              "temp_f": 82.9,
+              "wind_mph": 9.2,
+              "gust_mph": 8.5,
+              "precip_pct": 72,
+              "snow_in": 0.0
+            },
+            "flags": [
+              {
+                "kind": "rain",
+                "severity": "low",
+                "text": "72% chance of rain"
+              }
+            ]
           }
         },
         {
@@ -5259,20 +5295,8 @@
               "state": "MD",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 74.8,
-              "wind_mph": 8.3,
-              "gust_mph": 16.3,
-              "precip_pct": 1,
-              "snow_in": 0.0
-            },
-            "flags": [
-              {
-                "kind": "wind",
-                "severity": "low",
-                "text": "Breezy: 8 mph, gusting 16"
-              }
-            ]
+            "weather": null,
+            "flags": []
           }
         },
         {
@@ -5346,20 +5370,8 @@
               "state": "TX",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 96.9,
-              "wind_mph": 9.3,
-              "gust_mph": 11.4,
-              "precip_pct": 0,
-              "snow_in": 0.0
-            },
-            "flags": [
-              {
-                "kind": "heat",
-                "severity": "low",
-                "text": "97\u00b0F at kickoff"
-              }
-            ]
+            "weather": null,
+            "flags": []
           }
         },
         {
@@ -5450,13 +5462,7 @@
               "state": "LA",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 84.8,
-              "wind_mph": 8.3,
-              "gust_mph": 9.4,
-              "precip_pct": 2,
-              "snow_in": 0.0
-            },
+            "weather": null,
             "flags": []
           }
         },
@@ -5715,7 +5721,13 @@
               "state": "CA",
               "indoor": false
             },
-            "weather": null,
+            "weather": {
+              "temp_f": 70.4,
+              "wind_mph": 6.8,
+              "gust_mph": 4.5,
+              "precip_pct": 0,
+              "snow_in": 0.0
+            },
             "flags": []
           }
         }
