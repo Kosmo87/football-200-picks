@@ -111,11 +111,32 @@ def load() -> List[dict]:
 
 # ── grading ───────────────────────────────────────────────────────────────
 
-def _leg_outcome(leg: dict, finals: Dict[str, object]) -> Optional[str]:
+def _margin(g, side: str) -> int:
+    """Final margin from this side's point of view."""
+    return (g.home_score - g.away_score) if side == "home" else (g.away_score - g.home_score)
+
+
+def _leg_outcome(leg: dict, finals: Dict[str, object],
+                 kind: str = "single") -> Optional[str]:
     """'won' | 'lost' | 'push', or None while the game is unfinished."""
     g = finals.get(str(leg.get("event_id")))
     if g is None or leg.get("side") not in ("home", "away"):
         return None
+
+    if kind == "teaser":
+        # A teased leg is graded against the line it was teased TO, which is
+        # stored on the placement: ESPN's completed-game record carries no
+        # spread, so a line not written down at tag time cannot be recovered
+        # afterwards. `teased` is signed from this side's point of view, so a
+        # leg lands whenever its own margin plus its line is positive.
+        teased = leg.get("teased")
+        if teased is None:
+            return None
+        result = _margin(g, leg["side"]) + float(teased)
+        if result == 0:
+            return "push"
+        return "won" if result > 0 else "lost"
+
     if g.home_score == g.away_score:
         return "push"
     home_won = g.home_score > g.away_score
@@ -137,11 +158,19 @@ def settle(bet: dict, finals: Dict[str, object]) -> Optional[dict]:
     The price used is the one recorded when the bet was tagged, because that is
     what the ticket says. Only a push forces a recompute, and then only from the
     surviving legs.
+
+    A TEASER settles by neither rule. Its legs have no individual price -- the
+    ticket is priced once, as a unit -- so there is nothing to re-price from,
+    and a push inside a two-team teaser is graded as a loss at most books,
+    which is also the assumption teaser.py's win rates are measured under. Both
+    differences are handled below rather than by pretending a teaser is a
+    parlay of moneylines.
     """
     legs = bet.get("legs") or []
     if not legs:
         return None
-    outcomes = [_leg_outcome(l, finals) for l in legs]
+    kind = bet.get("kind") or ("parlay" if len(legs) > 1 else "single")
+    outcomes = [_leg_outcome(l, finals, kind) for l in legs]
     stake = float(bet.get("stake") or 0)
 
     bet["leg_results"] = [
@@ -157,7 +186,19 @@ def settle(bet: dict, finals: Dict[str, object]) -> Optional[dict]:
         for l, o in zip(legs, outcomes)
     ]
 
-    if "lost" in outcomes:
+    if kind == "teaser":
+        if "lost" in outcomes or "push" in outcomes:
+            # Push is a loss here, not a void. Books grade it that way inside a
+            # two-team teaser and the measured 73.6% per leg already charges
+            # for it, so voiding would credit an edge the number does not have.
+            bet["status"], bet["units"] = "lost", round(-stake, 4)
+        elif any(o is None for o in outcomes):
+            return None
+        else:
+            dec = american_to_decimal(int(bet.get("odds") or 0))
+            bet["status"] = "won"
+            bet["units"] = round((dec - 1) * stake, 4)
+    elif "lost" in outcomes:
         bet["status"], bet["units"] = "lost", round(-stake, 4)
     elif any(o is None for o in outcomes):
         return None  # still running
@@ -218,6 +259,13 @@ def bet_label(bet: dict) -> str:
     legs = bet.get("legs") or []
     if not legs:
         return "(no legs)"
+    if (bet.get("kind") or "") == "teaser":
+        pts = bet.get("points") or 6
+        # The teased line, not the original number: that is what was bet, and
+        # a teaser row that prints -7 next to a win at -1 reads as a lie.
+        return (f"{pts:g}-pt teaser: "
+                + " + ".join(f"{l.get('team_abbr') or '?'} "
+                             f"{float(l.get('teased') or 0):+g}" for l in legs))
     if len(legs) == 1:
         return f"{legs[0].get('team_abbr') or '?'} ML  ({legs[0].get('matchup') or ''})"
     return f"{len(legs)}-leg: " + " + ".join(l.get("team_abbr") or "?" for l in legs)

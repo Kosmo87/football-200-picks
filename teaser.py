@@ -46,6 +46,7 @@ anything priced above break-even, and `max_price()` is the number to act on.
 from __future__ import annotations
 
 import argparse
+import json
 import math
 import os
 import sys
@@ -183,15 +184,29 @@ class Leg:
         return float(self.teased).is_integer()
 
 
-def fetch_spreads(league: str, regions: str = "us") -> List[dict]:
+def fetch_spreads(league: str, regions: str = "us",
+                  books: Optional[Iterable[str]] = None) -> List[dict]:
+    """
+    Spreads for a league, from the books that can actually take the bet.
+
+    `books` asks the API for named bookmakers instead of a whole region. It
+    bills the same -- one credit, since a bookmaker list counts as one region
+    -- and the point is not the credit: a teaser has to be built inside ONE
+    book, so a leg that only qualifies somewhere without an account is not a
+    leg. Pass None to see the whole field.
+    """
     import requests
     key = os.environ.get("ODDS_API_KEY", "").strip()
     if not key:
         sys.exit("ODDS_API_KEY is not set. export ODDS_API_KEY=...")
+    params = {"apiKey": key, "markets": "spreads", "oddsFormat": "american"}
+    if books:
+        params["bookmakers"] = ",".join(books)
+    else:
+        params["regions"] = regions
     r = requests.get(
         f"{BASE}/sports/{SPORTS[league]}/odds",
-        params={"apiKey": key, "regions": regions, "markets": "spreads",
-                "oddsFormat": "american"},
+        params=params,
         timeout=40,
     )
     if r.status_code != 200:
@@ -244,15 +259,77 @@ def qualifying_legs(payload: List[dict], within_days: int = 8) -> List[Leg]:
     return out
 
 
-def candidates_from_board(games: List[dict], within_days: int = 8) -> dict:
+SNAPSHOT_MAX_AGE_H = 12.0
+
+
+def _book_spreads(league: str):
     """
-    Qualifying legs read off the board's own spread, for the static site.
+    The freshest spreads from a book the user holds, if any are recent enough.
+
+    Written by faults.py out of a scan it was paying for anyway. That scan only
+    runs when a line moved or a floor slot came round, so this can be hours old
+    -- hence the age check and the age travelling to the page. An old number
+    quoted as the current one is how a band gets claimed that no longer exists.
+    """
+    from datetime import datetime, timezone
+    try:
+        with open(os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                               "cache", "book_spreads.json")) as fh:
+            store = json.load(fh)
+        block = store.get(league) or {}
+        captured = block.get("captured_at") or ""
+        age_h = (datetime.now(timezone.utc)
+                 - datetime.fromisoformat(captured)).total_seconds() / 3600.0
+        if age_h > SNAPSHOT_MAX_AGE_H:
+            return {}, None, None
+    except Exception:
+        return {}, None, None
+
+    # One book, not a blend: a teaser is built inside a single book, so mixing
+    # FanDuel's number on one leg with BetMGM's on another describes a ticket
+    # nobody can place. Preference goes to a book that actually sells teasers.
+    import books as BOOKS
+    order = sorted(block.get("books") or [],
+                   key=lambda k: (not BOOKS.offers_teasers(k), k))
+    for key in order:
+        lines = [(g, g["points"][key]) for g in block.get("games") or []
+                 if key in (g.get("points") or {})]
+        if lines:
+            book = BOOKS.get(key)
+            return lines, (book.name if book else key), captured
+    return {}, None, None
+
+
+def _home_spread(game: dict, book_lines, book_name):
+    """
+    (home spread, where it came from) for one board game.
+
+    The two feeds do not name teams alike -- "App State Mountaineers" against
+    "Appalachian State Mountaineers" -- so the match runs through the same
+    comparison the grader uses rather than an equality test that would silently
+    fall back to ESPN for half the board.
+    """
+    if book_lines:
+        from teamnames import same_team
+        home = (game.get("home") or {}).get("name") or ""
+        away = (game.get("away") or {}).get("name") or ""
+        for row, point in book_lines:
+            if same_team(home, row["home"]) and same_team(away, row["away"]):
+                return point, book_name
+    esp = game.get("spread")
+    return (None, None) if esp is None else (float(esp), game.get("provider"))
+
+
+def candidates_from_board(games: List[dict], within_days: int = 8,
+                          league: str = "NFL") -> dict:
+    """
+    Qualifying legs read off one book's spread, for the static site.
 
     WHY A SECOND PATH INTO THE SAME BANDS. `qualifying_legs` is the real
-    scanner: per book, so a leg that exists only at DraftKings is not offered
-    as a FanDuel teaser, and it costs an API credit per scan. The site rebuilds
-    hourly and cannot spend a credit each time, so this reads the number the
-    board already has -- one book's spread, whoever ESPN is quoting.
+    scanner: per book, straight from the odds API, and it costs a credit per
+    scan. The site rebuilds hourly and cannot spend a credit each time, so this
+    reads a number already paid for -- the snapshot faults.py keeps of the
+    books the user holds, and ESPN's quote only when that is missing or stale.
 
     That makes this a SHORTLIST, not a quote. The band is decided by a half
     point, and books disagree by a half point often enough that a leg here can
@@ -263,6 +340,7 @@ def candidates_from_board(games: List[dict], within_days: int = 8) -> dict:
     """
     from datetime import datetime, timedelta, timezone
     cutoff = datetime.now(timezone.utc) + timedelta(days=within_days)
+    book_lines, book_name, captured = _book_spreads(league)
     legs: List[dict] = []
     for g in games:
         try:
@@ -272,7 +350,7 @@ def candidates_from_board(games: List[dict], within_days: int = 8) -> dict:
         if ko > cutoff:
             continue
         # The board stores the HOME team's spread; the away side is its mirror.
-        home_spread = g.get("spread")
+        home_spread, source = _home_spread(g, book_lines, book_name)
         if home_spread is None:
             continue
         for side in ("home", "away"):
@@ -288,6 +366,7 @@ def candidates_from_board(games: List[dict], within_days: int = 8) -> dict:
                 "team_abbr": (g.get(side) or {}).get("abbr", ""),
                 "team_name": (g.get(side) or {}).get("name", ""),
                 "spread": spread,
+                "source": source,
                 "teased": teased,
                 "band": band.label,
                 "prob": round(leg_probability(band, teased), 4),
@@ -308,7 +387,9 @@ def candidates_from_board(games: List[dict], within_days: int = 8) -> dict:
         "legs": legs,
         "per_leg_rate": round(rate, 4),
         "per_leg_stderr": round(se, 4),
-        "provider": (games[0].get("provider") if games else None),
+        "provider": book_name or (games[0].get("provider") if games else None),
+        "provider_is_mine": bool(book_name),
+        "captured_at": captured,
     }
     if len(legs) >= 2:
         probs = [l["prob"] for l in legs]
@@ -322,6 +403,25 @@ def candidates_from_board(games: List[dict], within_days: int = 8) -> dict:
         # from a loss. This is the number that survives the error bar, and it is
         # why the section quotes -110 as the rule.
         out["max_price_best_se"] = max_price([p - se for p in probs[:2]])
+        # And whether the bet can actually be placed where the user holds an
+        # account. A shortlist of qualifying numbers is not a bet if no book in
+        # hand sells the product or prices it inside the threshold, and that is
+        # a fact about the accounts, not the games -- so it travels with the
+        # board rather than being left for the reader to remember.
+        import books as BOOKS
+        out["at_my_books"] = [
+            {
+                "book": b.name,
+                "playable": playable,
+                "reason": reason,
+                "quoted": b.teaser_price(2),
+            }
+            for b in BOOKS.mine()
+            for playable, reason in [
+                BOOKS.teaser_playable(b.key, 2, out["max_price_best_se"])
+            ]
+        ]
+        out["playable"] = any(x["playable"] for x in out["at_my_books"])
     return out
 
 
@@ -426,6 +526,9 @@ def main() -> int:
     ap.add_argument("--calibrate", action="store_true",
                     help="re-derive bands from nflverse and exit")
     ap.add_argument("--regions", default="us")
+    ap.add_argument("--books", default=",".join(__import__("books").MINE),
+                    help="comma-separated bookmaker keys, or 'all' for the "
+                         "whole US field (default: %(default)s)")
     ap.add_argument("--days", type=int, default=8,
                     help="only games kicking off within this many days")
     a = ap.parse_args()
@@ -434,7 +537,9 @@ def main() -> int:
         calibrate()
         return 0
 
-    payload = fetch_spreads(a.league, a.regions)
+    books = None if a.books.strip().lower() == "all" else [
+        b.strip() for b in a.books.split(",") if b.strip()]
+    payload = fetch_spreads(a.league, a.regions, books)
     legs = qualifying_legs(payload, within_days=a.days)
     if not legs:
         print("No side on the board sits in a qualifying band.")

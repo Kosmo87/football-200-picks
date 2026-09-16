@@ -419,11 +419,53 @@ const saveKey = (k) => {
 /** Must match betId() in the function exactly, or the page and the store
  *  disagree about whether a bet is already tagged. */
 const cleanIdPart = (v) => String(v ?? "").replace(/[^A-Za-z0-9_.-]/g, "");
-function betId(league, legs) {
+function betId(league, legs, kind, points) {
   const parts = legs
     .map((l) => `${cleanIdPart(l.event_id)}.${cleanIdPart(l.side)}`)
     .sort();
-  return `${cleanIdPart(league)}-${parts.join("+")}`;
+  const tag = kind === "teaser" ? `T${cleanIdPart(points ?? 6)}-` : "";
+  return `${cleanIdPart(league)}-${tag}${parts.join("+")}`;
+}
+
+/**
+ * A teaser ticket, in the shape the store keeps.
+ *
+ * Separate from betFromLegs because the two are not the same bet written
+ * differently. A teased leg has no price of its own -- the ticket is priced
+ * once, by the book, at whatever it offers for six points -- so there is no
+ * per-leg `odds` here, and `teased` is carried because the grader has nothing
+ * else to settle against once the game is over.
+ */
+function teaserBet(league, legs, price, points) {
+  return {
+    league,
+    kind: "teaser",
+    points,
+    odds: price,
+    legs: legs.map((l) => ({
+      event_id: l.event_id, side: l.side, team_abbr: l.team_abbr,
+      team_name: l.team_name, matchup: l.matchup, kickoff: l.kickoff,
+      spread: l.spread, teased: l.teased, band: l.band,
+      prob: l.prob, push_risk: l.push_risk,
+    })),
+  };
+}
+
+/**
+ * What a stored bet is called. Mirrors placements.bet_label.
+ *
+ * A teaser prints the line it was teased TO, not the number it came from: -7
+ * is the qualifying condition, -1 is the bet, and a row that shows -7 next to
+ * a win at -1 misreports what was placed.
+ */
+function betLabel(league, legs, kind, points) {
+  if (!legs || !legs.length) return "(no legs)";
+  if (kind === "teaser") {
+    return `${+(points || 6)}-pt teaser: `
+      + legs.map((l) => `${l.team_abbr} ${fmtLine(l.teased)}`).join(" + ");
+  }
+  if (legs.length === 1) return `${legs[0].team_abbr} ML`;
+  return `${legs.length}-leg: ${legs.map((l) => l.team_abbr).join(" + ")}`;
 }
 
 /** A tip or a board row, in the shape the store keeps. */
@@ -484,7 +526,7 @@ async function savePlacement(bet, stake) {
   }
   if (!r.ok) return j.error || `HTTP ${r.status}`;
 
-  const id = betId(bet.league, bet.legs);
+  const id = betId(bet.league, bet.legs, bet.kind, bet.points);
   if (j.removed) state.placements.delete(id);
   else if (j.placement) state.placements.set(j.placement.id, j.placement);
   return null;
@@ -512,7 +554,7 @@ function promptForKey() {
  * logging a second bet — the id is derived from the legs, not the amount.
  */
 function placementControls(bet, suggestedStake) {
-  const id = betId(bet.league, bet.legs);
+  const id = betId(bet.league, bet.legs, bet.kind, bet.points);
   const existing = state.placements.get(id);
   const wrap = el("div", "place");
 
@@ -527,9 +569,7 @@ function placementControls(bet, suggestedStake) {
   // The board hides the label to save a column, so the box carries the whole
   // description itself for anyone reading it without one.
   box.title = `${existing ? "Placed" : "Tag as placed"}: `
-    + (bet.legs.length === 1
-        ? `${bet.legs[0].team_abbr} ML ${fmtOdds(bet.odds)}`
-        : `${bet.legs.length}-leg ${fmtOdds(bet.odds)}`);
+    + `${betLabel(bet.league, bet.legs, bet.kind, bet.points)} ${fmtOdds(bet.odds)}`;
   box.setAttribute("aria-label", box.title);
 
   const stake = el("input", "place-stake");
@@ -638,9 +678,7 @@ function renderYourBets() {
   rows.sort((a, b) => String(b.kickoff || "").localeCompare(String(a.kickoff || "")));
   for (const r of rows) {
     const legs = r.legs || [];
-    const label = legs.length === 1
-      ? `${legs[0].team_abbr} ML`
-      : `${legs.length}-leg: ${legs.map((l) => l.team_abbr).join(" + ")}`;
+    const label = betLabel(r.league, legs, r.kind, r.points);
     const u = r.units == null ? null : Number(r.units);
     const tr = el("tr");
     tr.innerHTML = `
@@ -680,6 +718,11 @@ const state = {
   placementKey: loadKey(),
   placementsConfigured: true,
   placementsError: null,
+  // Teaser ticket being assembled: event ids, in the order they were picked,
+  // and the price the book is actually offering. A teaser is built by hand at
+  // the book, so the page mirrors that rather than pre-forming tickets.
+  teaserPicks: [],
+  teaserPrice: -110,
 };
 
 const $ = (sel) => document.querySelector(sel);
@@ -1134,6 +1177,75 @@ function renderPickList(box, picks, cfg, legs, gamesById, reference = false) {
 }
 
 /**
+ * The two-leg ticket, priced at what the book is actually offering.
+ *
+ * The price is typed in rather than assumed, because it is the only number
+ * that decides whether this bet exists and the page cannot see it — the
+ * shortlist comes from a spread feed, not from a teaser menu. It is also what
+ * gets stored, so the ledger grades the ticket that was really placed.
+ *
+ * The verdict under the price is the whole point of typing it: these two legs
+ * at -110 and the same two at -130 are a +3% bet and a -4% bet.
+ */
+function teaserTicket(chosen, t) {
+  const wrap = el("div", "teaser-ticket");
+  const price = Number(state.teaserPrice) || -110;
+  const p = chosen.reduce((a, l) => a * l.prob, 1);
+  const dec = americanToDecimal(price);
+  const ev = p * (dec - 1) - (1 - p);
+  const need = teaserMaxPrice(chosen.map((l) => l.prob - (t.per_leg_stderr || 0)));
+
+  wrap.appendChild(el("div", "tt-head",
+    `<strong>${t.points}-point teaser</strong> · `
+    + chosen.map((l) => `${l.team_abbr} ${fmtLine(l.teased)}`).join(" + ")
+    + ` · ticket wins ${fmtPct(p)}`));
+
+  const row = el("div", "tt-row");
+  const priceLabel = el("label", "tt-price");
+  priceLabel.innerHTML = "<span>Price at your book</span>";
+  const input = el("input");
+  input.type = "number";
+  input.step = "5";
+  input.value = String(price);
+  input.setAttribute("aria-label", "Teaser price in American odds");
+  input.addEventListener("change", () => {
+    state.teaserPrice = Math.round(Number(input.value) || -110);
+    renderTeasers();
+  });
+  priceLabel.appendChild(input);
+  row.appendChild(priceLabel);
+
+  const ok = ev > 0 && dec > 1;
+  row.appendChild(el("div", `tt-verdict ${ok ? "pos" : "neg"}`,
+    ok
+      ? `A bet: ${(ev * 100).toFixed(1)}% expected return at ${fmtOdds(price)}. `
+        + `Break-even is ${fmtOdds(need)} allowing for the error on the band rates.`
+      : `Not a bet at ${fmtOdds(price)}: ${(ev * 100).toFixed(1)}% expected `
+        + `return. These two need ${fmtOdds(need)} or better.`));
+  wrap.appendChild(row);
+
+  // Tagged even when the price says no. The ledger's job is to record what was
+  // placed, not to agree with it, and a bet the page argued against is the
+  // most useful row in it.
+  const bet = teaserBet(state.league, chosen, price, t.points);
+  const foot = el("div", "tt-foot");
+  foot.appendChild(placementControls(bet, 1));
+  foot.appendChild(el("span", "dim",
+    `1u returns ${(dec - 1).toFixed(2)}u · a pushed leg is graded a loss, `
+    + `which is how most books settle it inside a two-teamer`));
+  wrap.appendChild(foot);
+  return wrap;
+}
+
+/** teaser.max_price, for the pair on screen. Mirrors the Python. */
+function teaserMaxPrice(probs) {
+  const p = probs.reduce((a, b) => a * b, 1);
+  if (p <= 0 || p >= 1) return 0;
+  const profit = (1 - p) / p;
+  return profit < 1 ? -Math.floor(100 / profit) : Math.ceil(profit * 100);
+}
+
+/**
  * The teaser shortlist, which leads the page wherever it exists.
  *
  * It is a list of NUMBERS, deliberately. Every leg in a band won at the same
@@ -1160,12 +1272,34 @@ function renderTeasers() {
 
   const box = $("#teaser-legs");
   box.innerHTML = "";
-  $("#teaser-note").textContent =
-    `${legs.length} qualifying legs · pick any two · ${t.points}-point teaser`;
+
+  // Whether this is a bet or a watchlist is decided by the accounts, not the
+  // games. A section headed "bets" above a product neither book sells is the
+  // same failure as staking the model's longshots: presenting something as
+  // placeable because the arithmetic liked it.
+  const mine = t.at_my_books || [];
+  const playable = t.playable !== false;
+  $("#teaser-heading").firstChild.textContent =
+    playable ? "Bets this week " : "Teaser watchlist ";
+  $("#teaser-note").textContent = playable
+    ? `${legs.length} qualifying legs · pick any two · ${t.points}-point teaser`
+    : `${legs.length} qualifying legs · nothing placeable at your books`;
+
+  if (mine.length && !playable) {
+    box.appendChild(el("div", "empty",
+      `<strong>Not placeable at your books</strong>`
+      + mine.map((m) => `${m.reason}.`).join(" ")
+      + `<div class="empty-extra">The legs below still qualify — this is a `
+      + `price-and-product problem, not a change in the measurement. A book `
+      + `that sells 2-team 6-pointers at ${fmtOdds(t.max_price_best_se)} or `
+      + `better turns them back into bets; until then the honest answer for `
+      + `the NFL this week is no bet.</div>`));
+  }
 
   const table = el("table", "data teaser-table");
   table.innerHTML = `
     <thead><tr>
+      <th class="bet-col">Use</th>
       <th>Game</th><th>Kickoff</th><th>Leg</th>
       <th class="num">Teased to</th><th class="num">Leg win%</th><th>Range</th>
     </tr></thead>`;
@@ -1175,12 +1309,15 @@ function renderTeasers() {
     const d = dayLabel(l.kickoff);
     if (d !== day) {
       const head = el("tr", "teaser-day");
-      head.innerHTML = `<td colspan="6">${d}</td>`;
+      head.innerHTML = `<td colspan="7">${d}</td>`;
       body.appendChild(head);
       day = d;
     }
-    const tr = el("tr");
+    const picked = state.teaserPicks.includes(l.event_id);
+    const tr = el("tr", picked ? "picked" : "");
     tr.innerHTML = `
+      <td class="bet-cell"><input type="checkbox" ${picked ? "checked" : ""}
+        aria-label="Use ${l.team_abbr} ${fmtLine(l.teased)} in a teaser"></td>
       <td>${l.matchup}</td>
       <td class="dim">${kickoffLabel(l.kickoff)}</td>
       <td class="team-cell">${l.team_abbr} ${fmtLine(l.spread)}</td>
@@ -1190,12 +1327,26 @@ function renderTeasers() {
           + ' two-team teaser as a loss.">!</span>' : ""}</td>
       <td class="num">${fmtPct(l.prob)}</td>
       <td class="dim">${l.band}</td>`;
+    tr.querySelector("input").addEventListener("change", () => {
+      const picks = state.teaserPicks.filter((id) => id !== l.event_id);
+      // Two legs, oldest out first. A third click is a change of mind, not a
+      // three-team teaser: those need 10 points to buy the same numbers and
+      // the bands here are measured at six.
+      if (!state.teaserPicks.includes(l.event_id)) picks.push(l.event_id);
+      state.teaserPicks = picks.slice(-2);
+      renderTeasers();
+    });
     body.appendChild(tr);
   }
   table.appendChild(body);
   const scroll = el("div", "table-scroll");
   scroll.appendChild(table);
   box.appendChild(scroll);
+
+  const chosen = state.teaserPicks
+    .map((id) => legs.find((l) => l.event_id === id))
+    .filter(Boolean);
+  if (chosen.length === 2) box.appendChild(teaserTicket(chosen, t));
 
   // The number to carry to the book, which is the actual output of all this.
   const best = t.max_price_best, worst = t.max_price_worst, se = t.max_price_best_se;
@@ -1206,12 +1357,19 @@ function renderTeasers() {
     + `pair needs ${fmtOdds(se)}, so that is the number to hold out for. The two `
     + `weakest legs need ${fmtOdds(worst)}. Anything longer is a losing bet `
     + `however good the teams look.`));
+  const age = t.captured_at
+    ? `, as of ${kickoffLabel(t.captured_at)}` : "";
   box.appendChild(el("p", "list-note",
-    `Legs are read off ${t.provider || "one book"}'s number, so this is a `
-    + `shortlist rather than a quote — a band is decided by a half point and `
-    + `books disagree by that often. Confirm the number and the teaser price at `
-    + `your own book before placing anything. Pushes: a leg teased onto a whole `
-    + `number is marked, and is charged for that risk in its win% already.`));
+    (t.provider_is_mine
+      ? `Legs are read off ${t.provider}'s own number${age} — a book you hold. `
+      : `Legs are read off ${t.provider || "one book"}'s number, which is not a `
+        + `book you hold: no snapshot from BetMGM or FanDuel was recent enough, `
+        + `so this is ESPN's quote. `)
+    + `Either way it is a shortlist rather than a quote — a band is decided by `
+    + `a half point and books disagree by that often. Confirm the number and `
+    + `the teaser price at your own book before placing anything. Pushes: a leg `
+    + `teased onto a whole number is marked, and is charged for that risk in `
+    + `its win% already.`));
 }
 
 function renderBoard() {

@@ -41,6 +41,7 @@ from datetime import datetime, timezone
 from statistics import median
 from typing import Dict, List, Optional
 
+import books as BOOKS
 import keys  # noqa: F401
 import line_shop as LS
 
@@ -179,6 +180,56 @@ def classify(f: dict) -> str:
     return "STALE"
 
 
+BOOK_SPREADS = os.path.join(ROOT, "cache", "book_spreads.json")
+
+
+def snapshot_book_spreads(payload: List[dict], league: str, stamp: str) -> int:
+    """
+    Persist MY_BOOKS' spreads, keyed the way a reader of board.json can use.
+
+    Stored per league as rows of {home, away, commence_time, points: {book:
+    home_point}} -- the HOME team's number, matching board.json's convention,
+    so a consumer does not have to know which side the API happened to name
+    first. `captured_at` travels with it because a spread has a shelf life and
+    a stale number quoted as live is the kind of thing this project keeps
+    finding in other people's data.
+    """
+    rows = []
+    for ev in payload:
+        home, away = ev.get("home_team"), ev.get("away_team")
+        if not home or not away:
+            continue
+        points = {}
+        for bk in ev.get("bookmakers") or []:
+            key = (bk.get("key") or "").lower()
+            if key not in MY_BOOKS:
+                continue
+            for mk in bk.get("markets") or []:
+                if mk.get("key") != "spreads":
+                    continue
+                for oc in mk.get("outcomes") or []:
+                    if oc.get("name") == home and oc.get("point") is not None:
+                        points[key] = float(oc["point"])
+        if points:
+            rows.append({"home": home, "away": away,
+                         "commence_time": ev.get("commence_time", ""),
+                         "points": points})
+
+    try:
+        with open(BOOK_SPREADS) as fh:
+            store = json.load(fh)
+    except Exception:
+        store = {}
+    if not isinstance(store, dict):
+        store = {}
+    store[league] = {"captured_at": stamp, "books": list(MY_BOOKS), "games": rows}
+    os.makedirs(os.path.dirname(BOOK_SPREADS), exist_ok=True)
+    with open(BOOK_SPREADS, "w") as fh:
+        json.dump(store, fh, indent=1, sort_keys=True)
+    print(f"[faults] snapshot {len(rows)} {league} game(s) at {', '.join(MY_BOOKS)}")
+    return len(rows)
+
+
 def scan(leagues=("NFL", "NCAAF"), min_lead_min: int = 10,
          markets=("spreads", "h2h")) -> List[dict]:
     """
@@ -198,6 +249,17 @@ def scan(leagues=("NFL", "NCAAF"), min_lead_min: int = 10,
             if market not in markets:
                 continue
             payload = LS.fetch_live(league, market, "us")
+            if market == "spreads":
+                # Keep the spreads at the books with an account before the
+                # payload is thrown away. This scan is the only call that
+                # already pays for them, and the hourly board rebuild cannot
+                # afford a credit of its own -- without this the teaser
+                # shortlist is stuck reading whoever ESPN quotes, which is a
+                # book the user does not hold and a different half point.
+                try:
+                    snapshot_book_spreads(payload, league, stamp)
+                except Exception as e:
+                    print(f"[faults] could not snapshot {league} spreads: {e}")
             for game, kick, prices in LS.games_from_live(payload, market, MIN_PEERS + 1):
                 try:
                     k = datetime.fromisoformat(kick.replace("Z", "+00:00"))
@@ -468,7 +530,10 @@ def settle(spec: str) -> int:
 
 # ------------------------------------------------------------------- alerting
 
-MY_BOOKS = ("betmgm", "fanduel")
+# The books the user actually holds, from the one registry that knows their
+# products and prices. Re-declaring the pair here is how it drifted last time:
+# books.py knew FanDuel prices a 2-team teaser at -134 and this file did not.
+MY_BOOKS = BOOKS.MINE
 
 
 def _cover_prob(book_point: float, true_point: float, sd: float = 13.0) -> float:

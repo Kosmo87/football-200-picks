@@ -30,6 +30,18 @@ def bet(*legs, odds, stake=1.0):
             "status": "open"}
 
 
+def tleg(event_id, side, abbr, teased):
+    """A teased leg: no price of its own, and the line it was moved TO."""
+    return {"event_id": event_id, "side": side, "team_abbr": abbr,
+            "teased": teased, "matchup": f"{abbr} game",
+            "kickoff": "2026-09-20T17:00Z"}
+
+
+def teaser(*legs, odds, stake=1.0):
+    return {"league": "NFL", "kind": "teaser", "points": 6,
+            "legs": list(legs), "odds": odds, "stake": stake, "status": "open"}
+
+
 def check(name, got, want):
     ok = abs(got - want) < 1e-6 if isinstance(want, float) else got == want
     print(f"  {'PASS' if ok else 'FAIL'}  {name}: {got!r}" + ("" if ok else f" (want {want!r})"))
@@ -101,6 +113,57 @@ def main():
                          bet_label(bet(leg("1", "home", "CIN", -198),
                                        leg("2", "home", "KC", -150), odds=118)),
                          "2-leg: CIN + KC"))
+
+    # ── teasers ────────────────────────────────────────────────────────────
+    #
+    # A teased leg is graded against the line it was moved to, and the line is
+    # only on the record because it was stored at tag time -- a finished game
+    # carries no spread.
+
+    # ATL +8.5 loses by 3: covered. PHI -1 wins by 7: covered. Pays the ticket
+    # price once, not the product of anything.
+    b = teaser(tleg("1", "away", "ATL", 8.5), tleg("2", "home", "PHI", -1.0),
+               odds=-110, stake=1.0)
+    settle(b, finals(Final("CAR", "ATL", 24, 21), Final("PHI", "TEN", 28, 21)))
+    results.append(check("teaser won status", b["status"], "won"))
+    results.append(check("teaser won units", b["units"], round(100 / 110, 4)))
+
+    # The teased number is what decides it: ATL +8.5 covers a 6-point loss
+    # although the moneyline lost outright. Grading this as a moneyline would
+    # call the same ticket a loser.
+    b = teaser(tleg("1", "away", "ATL", 8.5), odds=-110)
+    settle(b, finals(Final("CAR", "ATL", 27, 21)))
+    results.append(check("teased dog covers a loss", b["status"], "won"))
+
+    # One leg short is a lost ticket, whatever the other did.
+    b = teaser(tleg("1", "away", "ATL", 8.5), tleg("2", "home", "PHI", -1.0),
+               odds=-110, stake=2.0)
+    settle(b, finals(Final("CAR", "ATL", 24, 21), Final("PHI", "TEN", 21, 28)))
+    results.append(check("teaser one leg short", b["status"], "lost"))
+    results.append(check("teaser loss costs the stake", b["units"], -2.0))
+
+    # A PUSH IS A LOSS, not a void and not a re-price. Most books grade it that
+    # way inside a two-teamer, and the 73.6% per-leg rate is measured under the
+    # same assumption -- voiding here would credit an edge the number does not
+    # have. PHI -1 winning by exactly 1 is the case.
+    b = teaser(tleg("1", "away", "ATL", 8.5), tleg("2", "home", "PHI", -1.0),
+               odds=-110, stake=1.0)
+    settle(b, finals(Final("CAR", "ATL", 24, 21), Final("PHI", "TEN", 22, 21)))
+    results.append(check("teaser push is a loss", b["status"], "lost"))
+    results.append(check("teaser push units", b["units"], -1.0))
+
+    # A teased leg has no price of its own, so nothing may try to price one:
+    # this is the ZeroDivisionError the moneyline re-pricing branch would hit.
+    b = teaser(tleg("1", "away", "ATL", 8.5), tleg("2", "home", "PHI", -1.0),
+               odds=-110, stake=1.0)
+    graded = settle(b, finals(Final("CAR", "ATL", 24, 21)))
+    results.append(check("teaser waits for the second game", graded, None))
+
+    results.append(check("teaser label",
+                         bet_label(teaser(tleg("1", "away", "ATL", 8.5),
+                                          tleg("2", "home", "PHI", -1.0),
+                                          odds=-110)),
+                         "6-pt teaser: ATL +8.5 + PHI -1"))
 
     print(f"\n  {sum(results)} passed, {len(results) - sum(results)} failed")
     return 0 if all(results) else 1

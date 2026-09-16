@@ -571,7 +571,9 @@ def todays_teasers(hours: float = SEND_WINDOW_HOURS,
     now = datetime.now(timezone.utc)
     horizon = now + timedelta(hours=hours)
     try:
-        payload = T.fetch_spreads("NFL")
+        # Only the books with an account: a teaser is built inside one book,
+        # so a leg at a book the reader cannot use is not a leg.
+        payload = T.fetch_spreads("NFL", books=(book or BOOKS.MINE))
     except SystemExit:
         return []
     legs = T.qualifying_legs(payload, within_days=max(1, int(hours / 24) + 1))

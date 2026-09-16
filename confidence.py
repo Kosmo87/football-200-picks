@@ -29,6 +29,7 @@ from datetime import datetime, timedelta, timezone
 from typing import Dict, List, Optional
 
 import keys  # noqa: F401
+import books as BOOKS
 import line_shop as LS
 
 
@@ -127,11 +128,16 @@ def main() -> int:
     ap.add_argument("--min-chance", type=float, default=0.625,
                     help="lowest win probability to show (default .625 = -167)")
     ap.add_argument("--days", type=int, default=8)
-    ap.add_argument("--books", default="", help="comma-separated, e.g. betmgm,fanduel")
+    # Defaults to the books the user holds: a price at a book with no account
+    # is not a bet, and this scanner exists to answer "what can I place".
+    # --books all restores the whole field for comparing prices.
+    ap.add_argument("--books", default=",".join(BOOKS.MINE),
+                    help="comma-separated, or 'all' (default: %(default)s)")
     ap.add_argument("--build", action="store_true",
                     help="best ticket per book at each payout level")
     a = ap.parse_args()
-    bk = [b.strip().lower() for b in a.books.split(",") if b.strip()] or None
+    bk = None if a.books.strip().lower() == "all" else (
+        [b.strip().lower() for b in a.books.split(",") if b.strip()] or None)
     rows = scan(a.league, a.min_chance, a.days, bk)
     if not a.build:
         report(rows, a.min_chance)

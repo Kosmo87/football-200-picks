@@ -50,11 +50,18 @@ const json = (body, status = 200) =>
 const LEG_FIELDS = [
   "event_id", "side", "team_id", "team_abbr", "team_name", "opp_abbr",
   "matchup", "kickoff", "odds", "model_prob", "implied_prob", "edge_pp",
+  // Teaser legs. `teased` is the line the leg was moved TO and is the only
+  // thing the grader can settle against -- a finished game carries no spread,
+  // so a line that is not stored here is gone. Dropping it silently is exactly
+  // what this whitelist would otherwise do.
+  "spread", "teased", "band", "prob", "push_risk",
 ];
 const BET_FIELDS = [
   "league", "kind", "odds", "stake", "model_prob", "implied_prob", "edge_pp",
-  "note",
+  "note", "points", "book",
 ];
+/** Bet kinds a client may declare. Anything else is derived from leg count. */
+const CLIENT_KINDS = ["teaser"];
 /** Only the grader sets these, and it proves itself with the same key. */
 const GRADED_FIELDS = ["status", "units", "graded_at", "result", "leg_results"];
 
@@ -73,13 +80,18 @@ const clean = (v) => String(v ?? "").replace(/[^A-Za-z0-9_.-]/g, "");
  * logging a second wager. Legs are sorted, because "A + B" and "B + A" are the
  * same ticket and must not become two rows.
  */
-function betId(league, legs) {
+function betId(league, legs, kind, points) {
   const parts = legs
     .map((l) => `${clean(l.event_id)}.${clean(l.side)}`)
     .filter((p) => p.length > 1)
     .sort();
   if (!parts.length || parts.length !== legs.length) return null;
-  return `${clean(league)}-${parts.join("+")}`;
+  // A teaser on the same two sides is a DIFFERENT bet from the parlay on them,
+  // at a different price and a different line, so it needs its own id. Without
+  // the tag the second one tagged overwrites the first and the ledger loses a
+  // wager it was told about.
+  const tag = kind === "teaser" ? `T${clean(points ?? 6)}-` : "";
+  return `${clean(league)}-${tag}${parts.join("+")}`;
 }
 
 function normalise(body) {
@@ -94,7 +106,18 @@ function normalise(body) {
 
   const rec = { legs };
   for (const f of BET_FIELDS) if (body[f] !== undefined) rec[f] = body[f];
-  rec.kind = legs.length > 1 ? "parlay" : "single";
+  // Kind is still derived unless the client declares one this server knows:
+  // the grader branches on it, so an arbitrary string would be a way to talk
+  // the ledger into settling a bet by rules nobody wrote.
+  rec.kind = CLIENT_KINDS.includes(body.kind)
+    ? body.kind
+    : legs.length > 1 ? "parlay" : "single";
+  if (rec.kind === "teaser") {
+    // A teased line that never arrived cannot be graded later, and an ungraded
+    // row in a ledger is worse than a refused one.
+    if (legs.some((l) => typeof l.teased !== "number")) return null;
+    rec.points = Number(rec.points) || 6;
+  }
   // Earliest kickoff: a parlay is live from its first leg and is not gradeable
   // until its last, so both ends matter and the early one sorts the list.
   const kicks = legs.map((l) => l.kickoff).filter(Boolean).sort();
@@ -157,7 +180,7 @@ export default async (req) => {
   if (!incoming) {
     return json({ error: "need 1-8 legs, each with an event_id and side home|away" }, 400);
   }
-  const id = betId(incoming.league, incoming.legs);
+  const id = betId(incoming.league, incoming.legs, incoming.kind, incoming.points);
   if (!id) return json({ error: "league and every leg's event_id are required" }, 400);
 
   const key = seasonPrefix() + id;

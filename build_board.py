@@ -242,7 +242,7 @@ def build_league(league: str, season: int, refresh_prior: bool):
     teasers = None
     if league == "NFL":
         try:
-            teasers = teaser.candidates_from_board(games_out)
+            teasers = teaser.candidates_from_board(games_out, league=league)
         except Exception as e:
             print(f"[board] {league} teaser shortlist unavailable: {e}")
 
