@@ -959,10 +959,102 @@ function renderGateSummary() {
  * on the page as an evaluation record and lose their stakes. Reference mode is
  * therefore decided by what else is on the board, not by league.
  */
-const referenceMode = () => {
-  const t = (state.board.leagues[state.league] || {}).teasers;
-  return Boolean(t && (t.legs || []).length >= 2);
-};
+// Always, now, in both leagues. It was briefly conditional on a teaser
+// shortlist existing, which made college the exception by accident -- and
+// college is the worse half: its longshots have gone 4-20. The Elo picks are
+// an evaluation record everywhere, and if that ever changes it will be because
+// a backtest said so, not because a section had nothing else to show.
+const referenceMode = () => true;
+
+/** A bucket of settled picks: record, realised units, what was claimed. */
+function gradedBucket(rows) {
+  const won = rows.filter((r) => r.status === "won").length;
+  const units = rows.reduce((u, r) => {
+    const d = r.open_odds > 0 ? r.open_odds / 100 : 100 / -r.open_odds;
+    return u + (r.status === "won" ? d : -1);
+  }, 0);
+  const model = rows.reduce((a, r) => a + (r.model_prob || 0), 0) / (rows.length || 1);
+  const market = rows.reduce((a, r) => a + (r.open_implied || 0), 0) / (rows.length || 1);
+  return { won, n: rows.length, units, roi: rows.length ? units / rows.length : 0, model, market };
+}
+
+/**
+ * Why the model board carries no stake, in this league's own numbers.
+ *
+ * Read off the ledger at render time rather than written into the page. The
+ * first version quoted the September buckets as prose, which would have had
+ * the page defending the decision with numbers months out of date — and a
+ * stale number arguing for a decision is worse than no number, because it
+ * cannot be checked against the table two sections below it.
+ */
+function renderReferenceNote() {
+  const el_ = $("#tips-reference-note");
+  const rows = (state.history?.picks || []).filter(
+    (p) => p.league === state.league && (p.status === "won" || p.status === "lost"));
+  if (rows.length < 8) {
+    el_.innerHTML = `Kept for evaluation, not to bet. The model's picks are `
+      + `graded in public here and carry no stake: every version of this engine `
+      + `tested against closing lines has lost, and ${rows.length} settled `
+      + `${state.league} pick${rows.length === 1 ? "" : "s"} is too few to `
+      + `argue otherwise either way.`;
+    return;
+  }
+  const mid = gradedBucket(rows.filter((r) => (r.edge_pp || 0) >= 5 && (r.edge_pp || 0) < 10));
+  const wide = gradedBucket(rows.filter((r) => (r.edge_pp || 0) >= 10));
+  const long = gradedBucket(rows.filter((r) => r.open_odds >= 150));
+  const pct = (b) => `${b.roi >= 0 ? "+" : ""}${(b.roi * 100).toFixed(0)}%`;
+  const part = (label, b) => b.n
+    ? `${label} <strong>${b.won}-${b.n - b.won} (${pct(b)})</strong>` : null;
+  const bits = [
+    part("sides where it claimed 5-10 points of edge have gone", mid),
+    part("sides where it claimed 10 or more have gone", wide),
+    part("and every pick priced at +150 or longer has gone", long),
+  ].filter(Boolean);
+  el_.innerHTML = `Kept for evaluation, not to bet. The model's picks are graded `
+    + `in public here, and this league's own record is why they carry no stake: `
+    + `${bits.join(", ")}`
+    + (long.n
+        ? ` — the long ones while the model forecast ${fmtPct(long.model)} and the `
+          + `market said ${fmtPct(long.market)}. <em>The price was closer.</em>`
+        : ".")
+    + ` A big gap between our number and the price is evidence the model is `
+    + `wrong, not evidence of a bet.`;
+}
+
+/**
+ * What to say in a league where no structural bet exists at all.
+ *
+ * The NFL has a teaser shortlist, so its own section carries the verdict. In
+ * college there is nothing to list, and the honest version of that is a
+ * heading that says so with the measurements under it -- not an empty space
+ * above a board of longshots, which would read as the picks being the answer.
+ */
+function renderNoStructure() {
+  const section = $("#nostructure");
+  const lg = state.board.leagues[state.league] || {};
+  const hasTeasers = ((lg.teasers || {}).legs || []).length >= 2;
+  if (hasTeasers) {
+    section.hidden = true;
+    return;
+  }
+  section.hidden = false;
+  $("#nostructure-note").textContent =
+    `${state.league} · nothing here has beaten its own backtest`;
+  const body = $("#nostructure-body");
+  body.innerHTML = "";
+  body.appendChild(el("div", "empty",
+    `<strong>Keep your money in your pocket</strong>`
+    + `The one structure that beat its test is an NFL bet, and it does not `
+    + `transfer here: college margins land on 3 or 7 only <strong>17.8%</strong> `
+    + `of the time against the NFL's 24.1%, so six teased points buy less. The `
+    + `NFL's own qualifying windows, measured on 2,646 college games, win `
+    + `<strong>70.9% ± 2.0</strong> per leg where -110 needs 72.4% — below the `
+    + `bar, not above it.`
+    + `<div class="empty-extra">Line shopping, the other candidate, is `
+    + `<strong>3-17</strong> across its live ledger against the +5.8% it `
+    + `claimed, on one logged closing price. Too early to call, and nothing to `
+    + `bet on. The board below is kept as a record.</div>`));
+}
 
 function renderTips() {
   const ref = referenceMode();
@@ -970,6 +1062,7 @@ function renderTips() {
     ref ? "Model board " : "Bets this week ";
   $("#tips-legend").hidden = ref;
   $("#tips-reference-note").hidden = !ref;
+  if (ref) renderReferenceNote();
   const lg = state.board.leagues[state.league];
   const gamesById = new Map(lg.games.map((g) => [g.event_id, g]));
   const legs = flattenLegs(lg);
@@ -1469,6 +1562,7 @@ function render() {
   renderTabs();
   renderYourBets();
   renderGateSummary();
+  renderNoStructure();
   renderTeasers();
   renderTips();
   renderBoard();

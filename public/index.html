@@ -29,6 +29,12 @@
 
   <nav class="tabs" role="tablist" id="league-tabs"></nav>
 
+  <section id="nostructure" hidden>
+    <h2 class="section-title">No recommended bets
+      <span class="note" id="nostructure-note"></span></h2>
+    <div id="nostructure-body"></div>
+  </section>
+
   <section id="teaser-section" hidden>
     <h2 class="section-title" id="teaser-heading">Bets this week
       <span class="note" id="teaser-note"></span></h2>
@@ -49,15 +55,11 @@
   <section>
     <h2 class="section-title" id="tips-heading">Bets this week
       <span class="note" id="tips-note"></span></h2>
-    <p class="legend" id="tips-reference-note" hidden>Kept for evaluation, not
-    to bet. The Elo model's picks are graded in public here, and the record is
-    the reason they carry no stake: sides where it claimed 5-10 points of edge
-    have gone <strong>10-24 (-8%)</strong>, sides where it claimed 10+ have gone
-    <strong>5-21 (-41%)</strong>, and every pick priced at +150 or longer has
-    gone <strong>6-21 (-33%)</strong> while the model forecast 43% and the
-    market said 26%. <em>The market was closer in every bucket.</em> A big gap
-    between our number and the price is evidence the model is wrong, which is
-    what the teaser section above exists to avoid.</p>
+    <!-- Filled from the ledger at render time, per league. Hardcoding the
+         buckets meant the page would keep quoting September's record in
+         December, and a stale number defending a decision is worse than no
+         number. See renderReferenceNote(). -->
+    <p class="legend" id="tips-reference-note" hidden></p>
     <p class="legend" id="tips-legend">These are the bets, already decided. Stakes are in
     <strong>half-unit steps</strong> and nothing finer — the gap between 0.2 and
     0.3 of a unit is well inside the error on a win probability estimated from
