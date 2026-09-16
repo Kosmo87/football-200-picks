@@ -1196,7 +1196,7 @@ function teaserTicket(chosen, t) {
   const need = teaserMaxPrice(chosen.map((l) => l.prob - (t.per_leg_stderr || 0)));
 
   wrap.appendChild(el("div", "tt-head",
-    `<strong>${t.points}-point teaser</strong> · `
+    `<strong>${t.points}-point teaser, ${chosen.length} legs</strong> · `
     + chosen.map((l) => `${l.team_abbr} ${fmtLine(l.teased)}`).join(" + ")
     + ` · ticket wins ${fmtPct(p)}`));
 
@@ -1216,12 +1216,13 @@ function teaserTicket(chosen, t) {
   row.appendChild(priceLabel);
 
   const ok = ev > 0 && dec > 1;
+  const these = chosen.length === 2 ? "These two" : `These ${chosen.length}`;
   row.appendChild(el("div", `tt-verdict ${ok ? "pos" : "neg"}`,
     ok
       ? `A bet: ${(ev * 100).toFixed(1)}% expected return at ${fmtOdds(price)}. `
         + `Break-even is ${fmtOdds(need)} allowing for the error on the band rates.`
       : `Not a bet at ${fmtOdds(price)}: ${(ev * 100).toFixed(1)}% expected `
-        + `return. These two need ${fmtOdds(need)} or better.`));
+        + `return. ${these} need ${fmtOdds(need)} or better.`));
   wrap.appendChild(row);
 
   // Tagged even when the price says no. The ledger's job is to record what was
@@ -1232,7 +1233,7 @@ function teaserTicket(chosen, t) {
   foot.appendChild(placementControls(bet, 1));
   foot.appendChild(el("span", "dim",
     `1u returns ${(dec - 1).toFixed(2)}u · a pushed leg is graded a loss, `
-    + `which is how most books settle it inside a two-teamer`));
+    + `which is how most books settle one inside a ${chosen.length}-team teaser`));
   wrap.appendChild(foot);
   return wrap;
 }
@@ -1282,7 +1283,7 @@ function renderTeasers() {
   $("#teaser-heading").firstChild.textContent =
     playable ? "Bets this week " : "Teaser watchlist ";
   $("#teaser-note").textContent = playable
-    ? `${legs.length} qualifying legs · pick any two · ${t.points}-point teaser`
+    ? `${legs.length} qualifying legs · pick two or three · ${t.points}-point teaser`
     : `${legs.length} qualifying legs · nothing placeable at your books`;
 
   if (mine.length && !playable) {
@@ -1329,11 +1330,11 @@ function renderTeasers() {
       <td class="dim">${l.band}</td>`;
     tr.querySelector("input").addEventListener("change", () => {
       const picks = state.teaserPicks.filter((id) => id !== l.event_id);
-      // Two legs, oldest out first. A third click is a change of mind, not a
-      // three-team teaser: those need 10 points to buy the same numbers and
-      // the bands here are measured at six.
+      // Up to three, oldest out first. Three legs is a real bet at six points
+      // — the same bands, multiplied once more — and it needs a much longer
+      // price, which the ticket works out from whatever is selected.
       if (!state.teaserPicks.includes(l.event_id)) picks.push(l.event_id);
-      state.teaserPicks = picks.slice(-2);
+      state.teaserPicks = picks.slice(-3);
       renderTeasers();
     });
     body.appendChild(tr);
@@ -1346,7 +1347,7 @@ function renderTeasers() {
   const chosen = state.teaserPicks
     .map((id) => legs.find((l) => l.event_id === id))
     .filter(Boolean);
-  if (chosen.length === 2) box.appendChild(teaserTicket(chosen, t));
+  if (chosen.length >= 2) box.appendChild(teaserTicket(chosen, t));
 
   // The number to carry to the book, which is the actual output of all this.
   const best = t.max_price_best, worst = t.max_price_worst, se = t.max_price_best_se;
@@ -1356,7 +1357,13 @@ function renderTeasers() {
     + `is an estimate off 1,804 games — one standard error down and the same `
     + `pair needs ${fmtOdds(se)}, so that is the number to hold out for. The two `
     + `weakest legs need ${fmtOdds(worst)}. Anything longer is a losing bet `
-    + `however good the teams look.`));
+    + `however good the teams look.`
+    + (t.max_price_3_se
+        ? `<br><strong>Three legs: ${fmtOdds(t.max_price_3_se)} or better</strong> `
+          + `(${fmtOdds(t.max_price_3)} on the measured rate). A book can price a `
+          + `longer teaser relatively better, so a refused 2-leg price says `
+          + `nothing about this one — it is worth asking for at the slip.`
+        : "")));
   const age = t.captured_at
     ? `, as of ${kickoffLabel(t.captured_at)}` : "";
   box.appendChild(el("p", "list-note",

@@ -422,6 +422,27 @@ def candidates_from_board(games: List[dict], within_days: int = 8,
             ]
         ]
         out["playable"] = any(x["playable"] for x in out["at_my_books"])
+    if len(legs) >= 3:
+        # Three legs, priced the same way. Worth stating because a book can
+        # price a longer teaser relatively better, and the 2-leg price being
+        # refused says nothing about the 3-leg one -- FanDuel's is simply not
+        # checked yet, so this is the number to ask for at the slip.
+        probs = [l["prob"] for l in legs][:3]
+        se = out["per_leg_stderr"]
+        out["max_price_3"] = max_price(probs)
+        out["max_price_3_se"] = max_price([p - se for p in probs])
+        out["at_my_books_3"] = [
+            {
+                "book": b.name,
+                "playable": playable,
+                "reason": reason,
+                "quoted": b.teaser_price(3),
+            }
+            for b in BOOKS.mine()
+            for playable, reason in [
+                BOOKS.teaser_playable(b.key, 3, out["max_price_3_se"])
+            ]
+        ]
     return out
 
 

@@ -131,17 +131,22 @@ jobs:
         # times a day 12%. Hourly all week is 1,456 credits a month against a
         # 500 free tier, so it cannot be bought with this key.
         #
-        # What fits, at 2 credits a scan (spreads only, two leagues):
-        #   every 2h Sat/Sun, 4x Thu/Fri, 1x Mon-Wed = ~303 a month
-        # against ~220 already committed to the board, closing lines, futures
-        # and the weekend message.
-        #
         # Weighted to game days on purpose: that is when lines move, when
         # books are updating fastest, and when the ones that are not stand out.
         #
-        # h2h is skipped. It doubles the cost and a transposed or stale
-        # moneyline almost always shows on the spread too, which is where the
-        # 2-point threshold reads more cleanly.
+        # COST, corrected. This step runs `--markets spreads,h2h` over two
+        # leagues, so a scan is 4 credits, not the 2 an earlier version of this
+        # comment budgeted for (it also said h2h was skipped; h2h was added
+        # with the moneyline transposition alert and is deliberate -- an
+        # inverted moneyline is the most valuable fault this finds).
+        #
+        # So the floor schedule below is 11 scans a week = 44 credits, ~190 a
+        # month, BEFORE the movement-triggered scans that fire whenever the
+        # tripwire sees a line move. Measured: 297 of 500 credits spent by
+        # 15 September, with the board, closing lines, futures and the weekend
+        # message also drawing on the same key. Watch the remaining count in
+        # this step's log; if it runs short, drop h2h here before touching the
+        # floor slots, since spreads carry most of the signal.
         continue-on-error: true
         run: |
           if [ -z "$ODDS_API_KEY" ]; then
