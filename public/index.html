@@ -100,12 +100,20 @@
 
   <section class="record" id="yourbets" hidden>
     <h2 class="section-title">Your bets
-      <span class="note">only what you ticked &middot; settled from final scores</span></h2>
+      <span class="note">only what you ticked &middot; graded against the close, not just the result</span></h2>
+    <p class="legend">Win rate cannot measure a bettor in a lifetime — the
+    heaviest NFL favourites come along four times a season, and telling +2% from
+    -2% at that price would take 193 of them. <strong>CLV</strong> can. It is
+    what happened to your price after you took it: back a side at +200 that
+    closes at +150 and the market moved toward you, which is information the
+    price did not hold when you bet. It reads in weeks rather than decades, and
+    it is the only number here that can judge a person rather than a model.
+    Positive means you got the better of the closing price.</p>
     <div class="stat-row" id="yourbets-stats"></div>
     <div class="table-scroll">
       <table class="data compact" id="yourbets-table">
         <thead><tr><th>Bet</th><th class="num">Odds</th><th class="num">Stake</th>
-          <th class="num">Units</th><th>Status</th></tr></thead>
+          <th class="num">Units</th><th class="num">CLV</th><th>Status</th></tr></thead>
         <tbody id="yourbets-body"></tbody>
       </table>
     </div>

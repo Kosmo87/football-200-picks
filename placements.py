@@ -223,6 +223,103 @@ def settle(bet: dict, finals: Dict[str, object]) -> Optional[dict]:
     return bet
 
 
+def _side_implied(odds: int) -> float:
+    """Raw implied probability of one American price. Vig included."""
+    o = int(odds)
+    return (-o) / ((-o) + 100.0) if o < 0 else 100.0 / (o + 100.0)
+
+
+def track_clv(board: dict) -> int:
+    """
+    Refresh the latest pre-kickoff price on every bet the user tagged.
+
+    WHY THIS EXISTS AT ALL. Win rate cannot measure a bettor inside a lifetime:
+    the heaviest NFL favourites come along four times a season, and telling
+    +2% from -2% at that price would take 193 of them. Closing-line value can.
+    If a side is taken at +200 and closes at +150, the market moved toward it
+    after the bet was made, and that is information the price did not contain
+    when the bet was placed -- readable in weeks instead of decades, and the
+    only measurement in this project that runs fast enough to judge a person.
+
+    The model's own picks have been graded this way all along (see
+    build_board.log_tracked_legs). This gives a hand-picked bet the same
+    treatment, so "am I any good at this" becomes a question with an answer.
+
+    Two units, because a teaser is not priced like a moneyline: moneyline legs
+    move in probability points, a teased leg moves in points of spread.
+    """
+    rows = load()
+    prices, spreads = {}, {}
+    for league, lg in (board.get("leagues") or {}).items():
+        for g in lg.get("games") or []:
+            for leg in g.get("legs") or []:
+                prices[(league, str(g.get("event_id")), leg.get("side"))] = (
+                    leg.get("odds"), leg.get("implied_prob"))
+            if g.get("spread") is not None:
+                spreads[(league, str(g.get("event_id")))] = float(g["spread"])
+
+    touched: List[dict] = []
+    for bet in rows:
+        if (bet.get("status") or "open") != "open":
+            continue
+        league, kind = bet.get("league"), (bet.get("kind") or "")
+        changed = False
+        for leg in bet.get("legs") or []:
+            eid, side = str(leg.get("event_id")), leg.get("side")
+            if kind == "teaser":
+                cur = spreads.get((league, eid))
+                if cur is None or leg.get("spread") is None:
+                    continue
+                # The board stores the home spread; this side's number mirrors it.
+                cur_side = cur if side == "home" else -cur
+                leg["close_spread"] = cur_side
+                # Positive means the number taken was the better one: a side
+                # taken at +2.5 that is now +3.5 got a point less than it could.
+                leg["clv_pts"] = round(float(leg["spread"]) - cur_side, 2)
+                changed = True
+                continue
+            quote = prices.get((league, eid, side))
+            if not quote or quote[0] is None:
+                continue
+            odds, imp = quote
+            leg.setdefault("open_odds", leg.get("odds"))
+            leg.setdefault("open_implied", _side_implied(leg.get("open_odds") or odds))
+            leg["close_odds"], leg["close_implied"] = odds, imp
+            leg["clv_pp"] = round((imp - leg["open_implied"]) * 100.0, 2)
+            changed = True
+
+        if not changed:
+            continue
+        legs = bet.get("legs") or []
+        if kind == "teaser":
+            pts = [l.get("clv_pts") for l in legs if l.get("clv_pts") is not None]
+            bet["clv_pts"] = round(sum(pts), 2) if pts else None
+        else:
+            # A ticket's CLV, not the sum of its legs': for a parlay the two
+            # differ, because what moved is the chance of the whole thing.
+            opens = [l.get("open_implied") for l in legs if l.get("open_implied") is not None]
+            closes = [l.get("close_implied") for l in legs if l.get("close_implied") is not None]
+            if opens and len(opens) == len(closes):
+                po = pc = 1.0
+                for o in opens:
+                    po *= o
+                for c in closes:
+                    pc *= c
+                bet["clv_pp"] = round((pc - po) * 100.0, 2)
+        bet["priced_at"] = utcnow()
+        touched.append(bet)
+
+    if touched and store_available():
+        try:
+            push_placements(touched)
+        except Exception as e:
+            print(f"[placed] could not write closing prices back: {e}")
+    if touched:
+        save_mirror(rows)
+    print(f"[placed] refreshed the live price on {len(touched)} open bet(s)")
+    return len(touched)
+
+
 def grade() -> int:
     rows = load()
     openers = [r for r in rows if (r.get("status") or "open") == "open"]

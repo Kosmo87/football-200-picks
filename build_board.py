@@ -21,6 +21,7 @@ from datetime import datetime, timezone
 from typing import Dict, List, Optional
 
 import context
+import placements
 import teaser
 from elo import (
     CompletedGame,
@@ -45,7 +46,14 @@ CACHE_DIR = os.path.join(ROOT, "cache")
 
 # The board ships a wide net; the browser tightens it with the sliders.
 BOARD_MAX_LEG_ODDS = 1000
-BOARD_MIN_LEG_ODDS = -450
+# Heavy favourites are carried even though nothing will ever recommend one.
+# At -450 the board could not SEE the bet most people actually want to make:
+# six college favourites at -800 to -3200 were invisible, so they could not be
+# tagged, and a bet that cannot be tagged cannot be graded against the close.
+# Selection still refuses them (minLegOdds -350 in both engines) — this is the
+# difference between "not recommended" and "not shown", and only the first of
+# those is a finding.
+BOARD_MIN_LEG_ODDS = -5000
 
 # Ledger picks are logged under fixed baseline gates so the track record stays
 # comparable run to run, regardless of what any visitor sets their sliders to.
@@ -511,6 +519,15 @@ def main() -> int:
 
         added = log_tracked_legs(history, league, league_board)
         print(f"[{league}] logged {added} new tracked picks", flush=True)
+
+    # The user's own tagged bets get the same closing-price treatment the
+    # model's picks get. Here rather than in the grading step because this is
+    # where the fresh prices are: a placement is graded after kickoff, but its
+    # price has to be caught before.
+    try:
+        placements.track_clv(board)
+    except Exception as e:
+        print(f"[placed] closing-price refresh unavailable: {e}", flush=True)
 
     graded = grade_history(history, finals_by_event)
     history["summary"] = summarize_history(history)

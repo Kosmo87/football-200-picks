@@ -452,6 +452,26 @@ function teaserBet(league, legs, price, points) {
 }
 
 /**
+ * Closing-line value on a tagged bet, in the unit the bet actually moves in.
+ *
+ * Moneylines move in probability points; a teased leg moves in points of
+ * spread, and printing one as the other would be a units error dressed up as a
+ * number. Blank until a build has seen a live price for the side, because "no
+ * reading yet" and "no value" are different answers.
+ */
+const clvLabel = (r) => {
+  if (r.kind === "teaser") {
+    return r.clv_pts == null ? "—"
+      : `${r.clv_pts >= 0 ? "+" : ""}${Number(r.clv_pts).toFixed(1)}pt`;
+  }
+  return r.clv_pp == null ? "—" : fmtPP(Number(r.clv_pp));
+};
+const clvTone = (r) => {
+  const v = r.kind === "teaser" ? r.clv_pts : r.clv_pp;
+  return v == null ? "dim" : v > 0 ? "pos" : v < 0 ? "neg" : "dim";
+};
+
+/**
  * What a stored bet is called. Mirrors placements.bet_label.
  *
  * A teaser prints the line it was teased TO, not the number it came from: -7
@@ -688,6 +708,7 @@ function renderYourBets() {
       <td class="num">${Number(r.stake || 0).toFixed(2)}u</td>
       <td class="num ${u > 0 ? "pos" : u < 0 ? "neg" : "dim"}">${
         u == null ? "—" : `${u >= 0 ? "+" : ""}${u.toFixed(2)}u`}</td>
+      <td class="num ${clvTone(r)}">${clvLabel(r)}</td>
       <td class="${r.status === "won" ? "pos" : r.status === "lost" ? "neg" : "dim"}">
         ${(r.status || "open").toUpperCase()}
         <div class="lg-game">${(r.leg_results || [])
