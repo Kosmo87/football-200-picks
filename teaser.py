@@ -505,6 +505,76 @@ def report(books: Dict[str, List[Leg]], min_legs: int = 2) -> None:
 
 # ---------------------------------------------------------------- calibration
 
+# Measured probability that EVERY leg of an n-leg ticket lands, from every
+# in-week combination of qualifying legs, 1999-2025. Re-derive with
+# --calibrate-joint.
+#
+# WHY THESE ARE MEASURED AND NOT MULTIPLIED. Multiplying the per-leg rate
+# assumes the legs are independent, and the first check of that looked like it
+# failed badly: one ticket per week, 91 of them, came in at 12.1% against the
+# 15.9% the product predicted, which reads as legs fighting each other -- a
+# blowout week feeds teased favourites and kills teased dogs. Testing every
+# in-week combination instead put it at 15.6%, so the 91-ticket sample was
+# noise, and at two legs (3,497 pairs) measured and multiplied agree to half a
+# point. Independence survives; the point is that it was checked, and the
+# numbers below are the ones to price with.
+#
+# The leg counts matter more than the bands do. The standard payout ladder asks
+# for LESS per leg as legs are added -- 72.4% at two legs and -110, 70.0% at
+# six and +750 -- while the legs keep winning about 73%. That is why the long
+# end of the ladder is where this bet lives, and why evaluating only the
+# two-leg version for months made it look barely worth making.
+JOINT_6PT = {2: 0.5370, 3: 0.4008, 4: 0.3032, 5: 0.2247, 6: 0.1556}
+JOINT_10PT = {2: 0.6301, 3: 0.5050, 4: 0.4092, 5: 0.3378, 6: 0.2868}
+# Windows for a 10-point tease, which are NOT the 6-point ones: ten points from
+# -12.5..-8.5 lands on -2.5..+1.5 and from +1.5..+3.5 lands on +11.5..+13.5.
+# Swept over ten ranges, so treat the choice as fitted rather than found.
+BANDS_10PT = ((-12.5, -8.5), (1.5, 3.5))
+JOINT_SAMPLE = "in-week combinations, NFL regular season 1999-2025"
+
+
+def calibrate_joint(points: float = TEASE_POINTS, max_legs: int = 6,
+                    path: str = "cache/nflverse_games.csv") -> Dict[int, float]:
+    """
+    Re-derive JOINT_6PT / JOINT_10PT: the chance an n-leg ticket lands.
+
+    Every in-week combination rather than one ticket a week, because the weekly
+    sample is 91 tickets and cannot separate a real edge from nothing. The
+    combinations overlap, so this is a better point estimate and NOT a bigger
+    sample -- the uncertainty still comes from the ~450 weeks underneath.
+    """
+    import csv as _csv
+    import itertools as _it
+    from collections import defaultdict
+    bands = BANDS_10PT if points >= 10 else tuple((b.lo, b.hi) for b in BANDS)
+    weeks = defaultdict(list)
+    with open(path) as fh:
+        for r in _csv.DictReader(fh):
+            if r.get("game_type") != "REG":
+                continue
+            try:
+                sl, res = float(r["spread_line"]), float(r["result"])
+                wk = f"{r['season']}-{int(float(r['week'])):02d}"
+            except (TypeError, ValueError, KeyError):
+                continue
+            for s, d in ((-sl, res), (sl, -res)):
+                if any(lo < s <= hi for lo, hi in bands):
+                    weeks[wk].append((d + s + points) > 0)
+    out = {}
+    for n in range(2, max_legs + 1):
+        tot = hit = 0
+        for outs in weeks.values():
+            if len(outs) < n:
+                continue
+            for combo in _it.combinations(outs, n):
+                tot += 1
+                hit += all(combo)
+        if tot:
+            out[n] = round(hit / tot, 4)
+            print(f"  {n} legs: {out[n]*100:5.2f}%  ({tot:,} combinations)")
+    return out
+
+
 def calibrate(path: str = "cache/nflverse_games.csv") -> List[Band]:
     """
     Re-derive the bands from completed games. Pushes are excluded from the
