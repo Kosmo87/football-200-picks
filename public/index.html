@@ -42,24 +42,21 @@
   </section>
 
   <section id="solver">
-    <h2 class="section-title">How likely do you want it
+    <h2 class="section-title">Pay me this much
       <span class="note" id="solver-note"></span></h2>
-    <p class="legend">Ask for a <strong>chance of winning</strong> and this
-    shows what it pays. That is the right way round: certainty is the thing you
-    actually choose, and the payout is what the market charges for it. Asking
-    the other way — "pay me +300" — forces a bet that loses three times out of
-    four, which is arithmetic, not a pick. Probabilities are the market's own
-    de-vigged numbers, never our model's: the model has been graded against
-    closing lines and loses. <em>Nothing here escapes the trade-off</em> — every
-    market route costs about 4% however you arrange it, and the only ones that
-    beat fair are the teaser tickets, which is why they are marked.</p>
+    <p class="legend">Name a payout and this builds the <strong>highest-chance
+    ticket that pays it</strong> — singles, parlays and teasers all compared on
+    the same target, because the only question that matters is which route wins
+    most often for the money you want back. A -900 favourite is no use here: it
+    wins 86% and pays nothing. A +300 single is no use either: it pays and
+    loses three times in four. Teaser constructions are the only ones whose
+    chance <em>does not come from the price</em>, so they are the only ones that
+    can beat the book rather than just reach it — in the NFL, where the windows
+    were measured, they usually top this list; in college the same windows win
+    70.6% a leg instead of 73.6% and fall short of the ladder. Probabilities
+    are measured or market-de-vigged, never our model's.</p>
     <div class="solver-bar">
-      <label>I want at least
-        <input type="number" id="solver-certainty" value="70" step="5" min="20" max="97"
-               aria-label="Minimum chance of winning, percent">
-        <span>% chance of winning</span>
-      </label>
-      <label class="solver-alt">or paid at least
+      <label>Pay me at least
         <input type="number" id="solver-target" value="300" step="50"
                aria-label="Target payout in American odds">
       </label>

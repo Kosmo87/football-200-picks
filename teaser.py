@@ -359,6 +359,13 @@ def candidates_from_board(games: List[dict], within_days: int = 8,
             if not band:
                 continue
             teased = spread + TEASE_POINTS
+            # College legs are priced off the college rate, not the NFL band's:
+            # the windows are the same numbers but they do not pay the same.
+            if league.upper() == "NCAAF":
+                push = PUSH_RATE_INTEGER if float(teased).is_integer() else PUSH_RATE_HALF
+                prob = (1.0 - push) * NCAAF_LEG_RATE[0]
+            else:
+                prob = leg_probability(band, teased)
             legs.append({
                 "event_id": str(g.get("event_id", "")),
                 "matchup": g.get("short_name") or g.get("name") or "",
@@ -369,7 +376,7 @@ def candidates_from_board(games: List[dict], within_days: int = 8,
                 "source": source,
                 "teased": teased,
                 "band": band.label,
-                "prob": round(leg_probability(band, teased), 4),
+                "prob": round(prob, 4),
                 "push_risk": float(teased).is_integer(),
             })
     # One leg per game: both sides of the same game cannot share a teaser, and
@@ -381,7 +388,7 @@ def candidates_from_board(games: List[dict], within_days: int = 8,
             best[k] = l
     legs = sorted(best.values(), key=lambda l: (-l["prob"], l["kickoff"]))
 
-    rate, se = combined_rate(BANDS)
+    rate, se = leg_rate(league)
     out = {
         "points": TEASE_POINTS,
         "legs": legs,
@@ -531,6 +538,40 @@ JOINT_10PT = {2: 0.6301, 3: 0.5050, 4: 0.4092, 5: 0.3378, 6: 0.2868}
 # Swept over ten ranges, so treat the choice as fitted rather than found.
 BANDS_10PT = ((-12.5, -8.5), (1.5, 3.5))
 JOINT_SAMPLE = "in-week combinations, NFL regular season 1999-2025"
+
+# The same windows measured on COLLEGE games, 2023-2025 (the seasons with box
+# scores cached). They are weaker at every leg count, which is the whole point
+# of keeping them separate: 70.6% per leg against the 72.4% a -110 two-teamer
+# needs, so a college teaser is a way to REACH a payout, not an edge. Quoting
+# the NFL numbers on a college ticket would lend it a result it does not have.
+#
+# Bucketed by month rather than by week -- the college line file carries no
+# usable week column -- so these combinations mix games a fortnight apart and
+# sit closer to independent draws than a single Saturday's slate would. Read
+# them as the best available estimate, not as a slate-level measurement.
+JOINT_6PT_NCAAF = {2: 0.5051, 3: 0.3534, 4: 0.2422, 5: 0.1630, 6: 0.1079}
+JOINT_10PT_NCAAF = {2: 0.5929, 3: 0.4550, 4: 0.3498, 5: 0.2697, 6: 0.2088}
+
+
+# Pooled per-leg rate for the same windows measured on college games, with its
+# standard error. One number rather than per-band: the college sample is 538
+# qualifying legs against the NFL's 1,804, and splitting it three ways would be
+# reporting noise as structure.
+NCAAF_LEG_RATE = (0.7063, 0.0196)
+
+
+def leg_rate(league: str) -> Tuple[float, float]:
+    """(rate, standard error) per qualifying leg, for this league."""
+    if league.upper() == "NCAAF":
+        return NCAAF_LEG_RATE
+    return combined_rate(BANDS)
+
+
+def joint_rates(league: str, points: float) -> Dict[int, float]:
+    """The measured ticket rates for a league and a tease size."""
+    if league.upper() == "NCAAF":
+        return JOINT_10PT_NCAAF if points >= 10 else JOINT_6PT_NCAAF
+    return JOINT_10PT if points >= 10 else JOINT_6PT
 
 
 def calibrate_joint(points: float = TEASE_POINTS, max_legs: int = 6,

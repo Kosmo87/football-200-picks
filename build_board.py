@@ -249,16 +249,22 @@ def build_league(league: str, season: int, refresh_prior: bool):
     # college margins do not spike at 3 and 7 the same way, so the same 6 points
     # buy something else there and the numbers here would not apply.
     teasers = None
-    if league == "NFL":
+    if league in ("NFL", "NCAAF"):
         try:
             teasers = teaser.candidates_from_board(games_out, league=league)
             # The ladder travels with the board so the page can solve a payout
             # target without a second source of truth. These are measured
             # joint rates, not the per-leg rate multiplied -- see JOINT_6PT.
             teasers["ladder"] = {
-                "6": {"joint": teaser.JOINT_6PT, "prices": target.LADDER_6PT},
-                "10": {"joint": teaser.JOINT_10PT, "prices": target.LADDER_10PT},
+                "6": {"joint": teaser.joint_rates(league, 6),
+                      "prices": target.LADDER_6PT},
+                "10": {"joint": teaser.joint_rates(league, 10),
+                       "prices": target.LADDER_10PT},
             }
+            # College bands are measurably weaker (70.6% a leg against the
+            # NFL's 73.6%), so a college teaser reaches a payout rather than
+            # beating a price. The page says which it is.
+            teasers["bands_measured_on"] = league
             teasers["verified_prices"] = [
                 f"{pts}:{legs}" for (pts, legs) in target.VERIFIED
             ]
