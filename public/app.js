@@ -1579,7 +1579,186 @@ function renderHistory() {
   }
 }
 
+/**
+ * Say so when the board has stopped being refreshed.
+ *
+ * The only failure in this pipeline that looks like success. On 2026-09-17 a
+ * dead deploy token left the site serving a 25-hour-old board: the page
+ * rendered, the prices looked plausible, and three of the games had already
+ * been played. Nothing on the page said a word, because nothing on the page
+ * was wrong -- it was just old.
+ *
+ * Thresholds follow the rebuild, not the clock: the board rebuilds hourly, so
+ * three hours means two or three runs have not landed, and twelve means the
+ * numbers cannot be trusted at all.
+ */
+function renderStaleness() {
+  const box = $("#staleness");
+  const built = new Date(state.board?.generated_at || "");
+  if (Number.isNaN(built.getTime())) {
+    box.hidden = true;
+    return;
+  }
+  const hours = (Date.now() - built.getTime()) / 3.6e6;
+  if (hours < 3) {
+    box.hidden = true;
+    return;
+  }
+  const severe = hours >= 12;
+  box.className = severe ? "stale severe" : "stale";
+  box.hidden = false;
+  box.innerHTML =
+    `<strong>This board is ${hours < 24
+      ? `${Math.round(hours)} hours old`
+      : `${Math.floor(hours / 24)} day(s) old`}.</strong>`
+    + `It rebuilds every hour, so ${severe
+      ? "something has been failing for a while — prices have moved, and games on it may already have been played"
+      : "a run or two has not landed and prices may have moved"}. `
+    + `<span class="dim">Built ${built.toLocaleString(undefined, {
+        weekday: "short", month: "short", day: "numeric",
+        hour: "numeric", minute: "2-digit" })}. `
+    + `Placing anything off a stale board is betting into a price that no `
+    + `longer exists.</span>`;
+}
+
+/**
+ * The payout-target solver, in the browser. Mirrors target.py.
+ *
+ * Probabilities come from `implied_prob`, which the build already de-vigged,
+ * so this is the market's own opinion rather than the model's. That is the
+ * whole design: the model has been graded against closing lines and loses, and
+ * a solver that priced its routes off the model would hand back the same
+ * inflated numbers that made the old board recommend longshots.
+ *
+ * The routes are deliberately compared on the SAME target, because the useful
+ * answer is not "here is a bet" but "here is what wanting +300 costs you".
+ */
+function solveRoutes(target) {
+  const lg = state.board.leagues[state.league] || {};
+  const want = americanToDecimal(target);
+  const legs = [];
+  for (const g of lg.games || []) {
+    for (const l of g.legs || []) {
+      legs.push({
+        eventId: g.event_id, abbr: l.team_abbr, odds: l.odds,
+        prob: l.implied_prob, matchup: g.short_name || g.name,
+        dec: americanToDecimal(l.odds),
+      });
+    }
+  }
+  const routes = [];
+
+  // A single is always the least given away: the cut is paid once.
+  const singles = legs.filter((l) => l.dec >= want);
+  if (singles.length) {
+    const best = singles.reduce((a, b) => (b.prob > a.prob ? b : a));
+    routes.push({
+      what: `Single: ${best.abbr} ${fmtOdds(best.odds)}`,
+      dec: best.dec, prob: best.prob,
+      why: `${best.matchup}. One leg, so the book's cut is paid once — this is `
+         + `the cleanest route to ${fmtOdds(target)} on the board.`,
+    });
+  }
+
+  // The fewest legs that reach the target, giving away as little as possible.
+  //
+  // The pool is NOT just the lowest-hold legs. Ranking by hold alone fills it
+  // with heavy favourites — a -5000 side keeps almost nothing back — and then
+  // no pair of them reaches a big payout, so the search returns some absurd
+  // 9.6% ticket while a 24% one sits on the board. A route needs a long leg to
+  // carry the payout AND a cheap leg to keep the probability, so both ends are
+  // kept: every leg for two- and three-leg tickets (a few hundred thousand
+  // combinations, which the browser does instantly), and both extremes when
+  // the search has to go deeper.
+  const byHold = [...legs].sort((a, b) => (b.prob * b.dec) - (a.prob * a.dec));
+  const byPayout = [...legs].sort((a, b) => b.dec - a.dec);
+  const deepPool = [...new Set([...byHold.slice(0, 16), ...byPayout.slice(0, 16)])];
+  outer:
+  for (let n = 2; n <= 4; n++) {
+    let best = null;
+    const pool = n <= 3 ? legs : deepPool;
+    const walk = (start, chosen, dec, prob, games) => {
+      if (chosen.length === n) {
+        if (dec >= want && (!best || prob > best.prob)) best = { legs: [...chosen], dec, prob };
+        return;
+      }
+      for (let i = start; i < pool.length; i++) {
+        const l = pool[i];
+        if (games.has(l.eventId)) continue;
+        games.add(l.eventId);
+        chosen.push(l);
+        walk(i + 1, chosen, dec * l.dec, prob * l.prob, games);
+        chosen.pop();
+        games.delete(l.eventId);
+      }
+    };
+    walk(0, [], 1, 1, new Set());
+    if (best) {
+      routes.push({
+        what: `${n}-leg parlay: ${best.legs.map((l) => `${l.abbr} ${fmtOdds(l.odds)}`).join(" + ")}`,
+        dec: best.dec, prob: best.prob,
+        why: `The fewest legs that reach it. Each leg pays the book's cut `
+           + `again, which is why this sits below the single.`,
+      });
+      break outer;
+    }
+  }
+
+  // The teaser ladder — the one route whose probability does not come from the
+  // price, and so the only one that can be better than fair.
+  const ladder = (lg.teasers || {}).ladder;
+  if (ladder) {
+    for (const [pts, block] of Object.entries(ladder)) {
+      for (const [n, price] of Object.entries(block.prices || {})) {
+        const joint = (block.joint || {})[n];
+        const dec = americanToDecimal(Number(price));
+        if (!joint || dec < want) continue;
+        const verified = (lg.teasers.verified_prices || []).includes(`${pts}pt:${n}`);
+        routes.push({
+          what: `${pts}-pt teaser, ${n} legs (${fmtOdds(Number(price))})`,
+          dec, prob: joint,
+          why: (verified ? "Ladder price confirmed. " : "Ladder price ASSUMED — check your slip. ")
+             + `Measured from every in-week combination of qualifying legs, `
+             + `1999-2025 — not the per-leg rate multiplied.`,
+        });
+      }
+    }
+  }
+  return routes.sort((a, b) => b.prob - a.prob);
+}
+
+function renderSolver() {
+  const box = $("#solver-routes");
+  const target = Math.round(Number($("#solver-target").value) || 300);
+  box.innerHTML = "";
+  const routes = solveRoutes(target);
+  const fair = 1 / americanToDecimal(target);
+  $("#solver-note").textContent = `${state.league} · best route to a payout you name`;
+  $("#solver-summary").innerHTML =
+    `at ${fmtOdds(target)} the price needs <strong>${fmtPct(fair)}</strong> to break even`;
+
+  if (!routes.length) {
+    box.appendChild(el("div", "empty",
+      `<strong>Nothing on this board reaches ${fmtOdds(target)}</strong>`
+      + `Try a smaller payout, or the other league.`));
+    return;
+  }
+  routes.forEach((r, i) => {
+    const ev = r.prob * (r.dec - 1) - (1 - r.prob);
+    const cls = ev > 0 ? "route beats-fair" : i === 0 ? "route best" : "route";
+    const node = el("div", cls);
+    node.innerHTML = `
+      <div class="route-what">${r.what}</div>
+      <div class="route-nums">wins <strong>${fmtPct(r.prob)}</strong> · needs ${fmtPct(1 / r.dec)}
+        · <span class="${ev > 0 ? "pos" : "neg"}">${ev >= 0 ? "+" : ""}${(ev * 100).toFixed(1)}%</span></div>
+      <div class="route-why">${r.why}</div>`;
+    box.appendChild(node);
+  });
+}
+
 function render() {
+  renderStaleness();
+  renderSolver();
   renderTabs();
   renderYourBets();
   renderGateSummary();
@@ -1636,6 +1815,9 @@ async function boot() {
   $("#updated").textContent = `updated ${gen.toLocaleString(undefined, {
     month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}`;
   $("#season").textContent = `${board.season} season`;
+
+  $("#solver-target").addEventListener("change", renderSolver);
+  $("#solver-target").addEventListener("input", renderSolver);
 
   $("#only-ev").addEventListener("change", (e) => {
     state.onlyEV = e.target.checked;

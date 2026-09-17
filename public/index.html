@@ -27,12 +27,39 @@
 
 <div class="wrap">
 
+  <!-- Shown only when the board has stopped being refreshed. A stale board is
+       the one failure mode that looks exactly like a working one: the page
+       renders, the numbers are plausible, and the games may already have
+       kicked off. See renderStaleness(). -->
+  <div id="staleness" class="stale" hidden></div>
+
   <nav class="tabs" role="tablist" id="league-tabs"></nav>
 
   <section id="nostructure" hidden>
     <h2 class="section-title">No recommended bets
       <span class="note" id="nostructure-note"></span></h2>
     <div id="nostructure-body"></div>
+  </section>
+
+  <section id="solver">
+    <h2 class="section-title">Name your payout
+      <span class="note" id="solver-note"></span></h2>
+    <p class="legend">Probability and payout are <strong>one knob, not two</strong>.
+    A price of +300 pays 4x, so 25% is what it takes to break even and roughly
+    what any route to +300 really wins — there is no 80%-at-+300 ticket to find,
+    at any book. What this does is name the <em>best available</em> chance for
+    the payout you want, and how far short of fair it lands. Probabilities are
+    the market's own de-vigged numbers, not our model's: the model has been
+    graded against closing lines and loses, the market has not. Fewer legs is
+    almost always better, because the book's cut compounds with every leg.</p>
+    <div class="solver-bar">
+      <label>I want to win
+        <input type="number" id="solver-target" value="300" step="50" min="100"
+               aria-label="Target payout in American odds">
+      </label>
+      <span class="dim" id="solver-summary"></span>
+    </div>
+    <div id="solver-routes"></div>
   </section>
 
   <section id="teaser-section" hidden>

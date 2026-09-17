@@ -149,8 +149,15 @@ def best_parlay(legs: List[Leg], target: int, max_legs: int = 5,
     probabilities -- which is the same as minimising total hold.
     """
     want = american_to_decimal(target)
-    pool = sorted((l for l in legs if l.event_id not in exclude),
-                  key=lambda l: -(l.prob * l.decimal))[:CANDIDATE_LEGS]
+    avail = [l for l in legs if l.event_id not in exclude]
+    # Both ends of the board, not just the cheapest legs. Ranking by hold alone
+    # fills the pool with heavy favourites -- a -5000 side keeps almost nothing
+    # back -- and no pair of those reaches a big payout, so the search returned
+    # a 9.6% ticket on a board that had a 24% one. A route needs a long leg to
+    # carry the payout and a cheap leg to keep the probability.
+    by_hold = sorted(avail, key=lambda l: -(l.prob * l.decimal))[:CANDIDATE_LEGS]
+    by_payout = sorted(avail, key=lambda l: -l.decimal)[:CANDIDATE_LEGS]
+    pool = list({id(l): l for l in by_hold + by_payout}.values())
     best: Optional[Ticket] = None
     for n in range(2, max_legs + 1):
         for combo in itertools.combinations(pool, n):

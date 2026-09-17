@@ -22,6 +22,7 @@ from typing import Dict, List, Optional
 
 import context
 import placements
+import target
 import teaser
 from elo import (
     CompletedGame,
@@ -251,6 +252,16 @@ def build_league(league: str, season: int, refresh_prior: bool):
     if league == "NFL":
         try:
             teasers = teaser.candidates_from_board(games_out, league=league)
+            # The ladder travels with the board so the page can solve a payout
+            # target without a second source of truth. These are measured
+            # joint rates, not the per-leg rate multiplied -- see JOINT_6PT.
+            teasers["ladder"] = {
+                "6": {"joint": teaser.JOINT_6PT, "prices": target.LADDER_6PT},
+                "10": {"joint": teaser.JOINT_10PT, "prices": target.LADDER_10PT},
+            }
+            teasers["verified_prices"] = [
+                f"{pts}:{legs}" for (pts, legs) in target.VERIFIED
+            ]
         except Exception as e:
             print(f"[board] {league} teaser shortlist unavailable: {e}")
 

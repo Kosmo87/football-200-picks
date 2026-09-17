@@ -48,6 +48,7 @@ on:
       - "netlify.toml"
       - "netlify/**"
       - "placements.py"
+      - "deploy_alert.py"
       - "placements_test.py"
       - "package.json"
       - "package-lock.json"
@@ -463,9 +464,31 @@ jobs:
           # already overrides the configured publish directory, and a silently
           # un-deployed function would take the board's checkboxes down without
           # failing this step.
-          npx --yes netlify-cli@27 deploy \
+          # Output is captured so a rejected token can be NAMED. The CLI says
+          # "Unauthorized: could not retrieve project", which reads like the
+          # site was deleted; it actually means the token is dead. That
+          # ambiguity cost a day of stale board: the build stayed green, the
+          # commits kept landing, and the only signal was a generic "all jobs
+          # have failed" email.
+          set +e
+          OUT=$(npx --yes netlify-cli@27 deploy \
             --prod \
             --dir=public \
             --functions=netlify/functions \
             --site="$NETLIFY_SITE_ID" \
-            --message="Board $(date -u +'%Y-%m-%d %H:%M UTC')"
+            --message="Board $(date -u +'%Y-%m-%d %H:%M UTC')" 2>&1)
+          CODE=$?
+          set -e
+          echo "$OUT"
+          if [ "$CODE" -eq 0 ]; then
+            exit 0
+          fi
+          if echo "$OUT" | grep -qiE "unauthorized|401|invalid token|not authorized"; then
+            echo "::error::Netlify REJECTED THE TOKEN (${#NETLIFY_AUTH_TOKEN} chars). The site is fine and the board built — only publishing failed, so the live site is now stale."
+            echo "::error::Fix: create a new personal access token at app.netlify.com (User settings -> Applications), save it to a file, then: gh secret set NETLIFY_AUTH_TOKEN --repo Kosmo87/football-200-picks < /path/to/file"
+            python deploy_alert.py --reason token || true
+          else
+            echo "::error::Netlify deploy failed for a reason other than the token — see the output above."
+            python deploy_alert.py --reason other || true
+          fi
+          exit "$CODE"

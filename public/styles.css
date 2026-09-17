@@ -380,3 +380,37 @@ table.compact td, table.compact th { padding: 7px 11px; }
   margin: 10px 2px 0; max-width: 78ch;
   font-size: 12px; line-height: 1.55; color: var(--ink-faint);
 }
+
+/* ---- staleness ----
+   Loud on purpose. This is the banner that was missing when a dead deploy
+   token left the site serving a 25-hour-old board while looking healthy. */
+.stale {
+  margin: 0 0 16px; padding: 12px 15px; border-radius: var(--radius);
+  font-size: 13.5px; line-height: 1.55;
+  border: 1px solid var(--med); background: #241f12; color: var(--ink);
+}
+.stale.severe { border-color: var(--low); background: #2a1a1a; }
+.stale strong { display: block; margin-bottom: 3px; }
+.stale .dim { color: var(--ink-dim); }
+
+/* ---- payout solver ---- */
+.solver-bar {
+  display: flex; gap: 14px; align-items: center; flex-wrap: wrap;
+  margin: 0 0 12px;
+}
+.solver-bar label { display: flex; gap: 8px; align-items: center; font-size: 13px; color: var(--ink-dim); }
+.solver-bar input {
+  width: 96px; padding: 7px 9px; font: 600 14px var(--mono); color: var(--ink);
+  background: var(--panel-2); border: 1px solid var(--line); border-radius: 7px;
+}
+.route {
+  display: grid; grid-template-columns: 1fr auto; gap: 4px 16px;
+  padding: 11px 14px; margin-bottom: 8px; background: var(--panel);
+  border: 1px solid var(--line); border-left: 3px solid var(--line);
+  border-radius: var(--radius); font-size: 13.5px;
+}
+.route.best { border-left-color: var(--accent); }
+.route.beats-fair { border-left-color: var(--high); }
+.route-what { font-weight: 600; }
+.route-nums { font: 13px var(--mono); text-align: right; white-space: nowrap; }
+.route-why { grid-column: 1 / -1; font-size: 12px; color: var(--ink-faint); line-height: 1.5; }
