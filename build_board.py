@@ -255,6 +255,13 @@ def build_league(league: str, season: int, refresh_prior: bool):
             # The ladder travels with the board so the page can solve a payout
             # target without a second source of truth. These are measured
             # joint rates, not the per-leg rate multiplied -- see JOINT_6PT.
+            # The 10-point windows are DIFFERENT numbers from the 6-point
+            # ones (-12.5..-8.5 and +1.5..+3.5), so a page that lists only the
+            # 6-point legs cannot show what a 10-point ticket is made of. It
+            # was recommending a 6-leg 10-pointer as the best route and naming
+            # none of its legs.
+            teasers["ten"] = teaser.candidates_from_board(
+                games_out, league=league, points=10.0)
             teasers["ladder"] = {
                 "6": {"joint": teaser.joint_rates(league, 6),
                       "prices": target.LADDER_6PT},

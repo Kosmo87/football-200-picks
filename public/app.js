@@ -745,6 +745,10 @@ const state = {
   teaserPicks: [],
   teaserPrice: -110,
   teaserLegCount: 0,
+  // Which tease the watchlist is showing. The two sizes qualify DIFFERENT
+  // numbers, so switching clears the selection rather than carrying legs from
+  // one window into a ticket priced for the other.
+  teaserPoints: 6,
 };
 
 const $ = (sel) => document.querySelector(sel);
@@ -1326,7 +1330,16 @@ function teaserTicket(chosen, t) {
     : chosen.reduce((a, l) => a * l.prob, 1);
   const dec = americanToDecimal(price);
   const ev = p * (dec - 1) - (1 - p);
-  const need = teaserMaxPrice(chosen.map((l) => l.prob - (t.per_leg_stderr || 0)));
+  // The conservative threshold has to come from the SAME number the verdict
+  // uses. Deriving it by re-multiplying the legs while EV came from the
+  // measured joint rate made the card contradict itself: it called a +310
+  // ticket a bet and printed a break-even of +329. So the joint rate's own
+  // uncertainty is propagated instead -- one standard error on a leg, carried
+  // through n legs, which is d(p^n) = n * p^(n-1) * se.
+  const legSe = t.per_leg_stderr || 0;
+  const legRate = t.per_leg_rate || Math.pow(p, 1 / chosen.length);
+  const jointSe = chosen.length * Math.pow(legRate, chosen.length - 1) * legSe;
+  const need = priceForProb(Math.max(0.0001, p - jointSe));
 
   wrap.appendChild(el("div", "tt-head",
     `<strong>${t.points}-point teaser, ${chosen.length} legs</strong> · `
@@ -1373,9 +1386,8 @@ function teaserTicket(chosen, t) {
   return wrap;
 }
 
-/** teaser.max_price, for the pair on screen. Mirrors the Python. */
-function teaserMaxPrice(probs) {
-  const p = probs.reduce((a, b) => a * b, 1);
+/** The worst price at which a chance is still break-even. Mirrors max_price. */
+function priceForProb(p) {
   if (p <= 0 || p >= 1) return 0;
   const profit = (1 - p) / p;
   return profit < 1 ? -Math.floor(100 / profit) : Math.ceil(profit * 100);
@@ -1396,12 +1408,40 @@ function teaserMaxPrice(probs) {
  * it can be priced without recomputing anything.
  */
 function renderTeasers() {
-  const t = (state.board.leagues[state.league] || {}).teasers;
+  const all = (state.board.leagues[state.league] || {}).teasers;
+  // The block for the chosen tease, with the ladder carried across: the ladder
+  // is stored once on the 6-point block because it prices both.
+  const t = all && (state.teaserPoints === 10
+    ? (all.ten ? { ...all.ten, ladder: all.ladder, at_my_books: all.at_my_books,
+                   playable: all.playable, verified_prices: all.verified_prices } : null)
+    : all);
+  const toggle = $("#teaser-points");
+  if (toggle) {
+    for (const b of toggle.querySelectorAll("button")) {
+      const pts = Number(b.dataset.pts);
+      b.setAttribute("aria-pressed", String(pts === state.teaserPoints));
+      b.onclick = () => {
+        if (state.teaserPoints === pts) return;
+        state.teaserPoints = pts;
+        state.teaserPicks = [];
+        state.teaserLegCount = 0;
+        renderTeasers();
+      };
+    }
+  }
   const section = $("#teaser-section");
   const legs = (t && t.legs) || [];
   // Two legs or it is not a teaser. One qualifying number is not a bet.
   if (legs.length < 2) {
-    section.hidden = true;
+    // Hide the list but keep the toggle reachable: the other tease size may
+    // have legs even when this one does not.
+    section.hidden = !(all && ((all.legs || []).length >= 2
+                               || (((all.ten || {}).legs) || []).length >= 2));
+    $("#teaser-legs").innerHTML = "";
+    if (!section.hidden) {
+      $("#teaser-note").textContent =
+        `no qualifying legs at ${state.teaserPoints} points — try the other size`;
+    }
     return;
   }
   section.hidden = false;
@@ -1418,7 +1458,7 @@ function renderTeasers() {
   $("#teaser-heading").firstChild.textContent =
     playable ? "Bets this week " : "Teaser watchlist ";
   $("#teaser-note").textContent = playable
-    ? `${legs.length} qualifying legs · pick two or three · ${t.points}-point teaser`
+    ? `${legs.length} qualifying legs · pick two to six · ${t.points}-point teaser`
     : `${legs.length} qualifying legs · nothing placeable at your books`;
 
   if (mine.length && !playable) {
@@ -1733,7 +1773,6 @@ function solveRoutes(target) {
   // The teaser ladder — the one route whose probability does not come from the
   // price, and so the only one that can be better than fair.
   const ladder = (lg.teasers || {}).ladder;
-  const qualifying = ((lg.teasers || {}).legs || []).length;
   if (ladder) {
     for (const [pts, block] of Object.entries(ladder)) {
       for (const [n, price] of Object.entries(block.prices || {})) {
@@ -1741,13 +1780,20 @@ function solveRoutes(target) {
         const dec = americanToDecimal(Number(price));
         if (!joint || dec < want) continue;
         const verified = (lg.teasers.verified_prices || []).includes(`${pts}pt:${n}`);
-        const fillable = qualifying >= Number(n);
+        // The legs for THIS tease size. The 10-point windows are different
+        // numbers from the 6-point ones, so a route has to name its own.
+        const pool = pts === "10"
+          ? (((lg.teasers || {}).ten || {}).legs || [])
+          : ((lg.teasers || {}).legs || []);
+        const fill = pool.slice(0, Number(n));
+        const fillable = pool.length >= Number(n);
         routes.push({
           what: `${pts}-pt teaser, ${n} legs (${fmtOdds(Number(price))})`,
           dec, prob: joint, teaser: true, legsNeeded: Number(n), fillable,
+          fill,
           why: (fillable
-                 ? `${qualifying} qualifying legs on the board, so this is fillable today. `
-                 : `Only ${qualifying} qualifying legs on the board — needs ${n}. `)
+                 ? `${pool.length} qualifying legs at ${pts} points, so this is fillable today. `
+                 : `Only ${pool.length} qualifying legs at ${pts} points — needs ${n}. `)
              + (verified ? "Ladder price confirmed. " : "Ladder price ASSUMED — check your slip. ")
              + (joint * (dec - 1) - (1 - joint) > 0
                  ? `The chance is measured from completed games rather than read `
@@ -1803,7 +1849,11 @@ function renderSolver() {
         r.teaser && !r.fillable ? ' <span class="dim">(not fillable today)</span>' : ""}</div>
       <div class="route-nums">wins <strong>${fmtPct(r.prob)}</strong> · pays ${fmtOdds(pays)}
         · <span class="${ev > 0 ? "pos" : "neg"}">${ev >= 0 ? "+" : ""}${(ev * 100).toFixed(1)}%</span></div>
-      <div class="route-why">${r.why}</div>`;
+      <div class="route-why">${r.why}</div>
+      ${r.fill && r.fill.length ? `<div class="route-legs">${
+        r.fill.map((l) => `<span class="rl"><strong>${l.team_abbr} ${fmtLine(l.teased)}</strong>`
+          + `<span class="dim"> from ${fmtLine(l.spread)} · ${l.matchup}</span></span>`).join("")
+      }</div>` : ""}`;
     box.appendChild(node);
   });
 

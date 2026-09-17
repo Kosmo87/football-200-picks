@@ -321,7 +321,8 @@ def _home_spread(game: dict, book_lines, book_name):
 
 
 def candidates_from_board(games: List[dict], within_days: int = 8,
-                          league: str = "NFL") -> dict:
+                          league: str = "NFL",
+                          points: float = TEASE_POINTS) -> dict:
     """
     Qualifying legs read off one book's spread, for the static site.
 
@@ -355,17 +356,18 @@ def candidates_from_board(games: List[dict], within_days: int = 8,
             continue
         for side in ("home", "away"):
             spread = float(home_spread) if side == "home" else -float(home_spread)
-            band = band_for(spread)
-            if not band:
+            if not qualifies(spread, points):
                 continue
-            teased = spread + TEASE_POINTS
-            # College legs are priced off the college rate, not the NFL band's:
-            # the windows are the same numbers but they do not pay the same.
-            if league.upper() == "NCAAF":
-                push = PUSH_RATE_INTEGER if float(teased).is_integer() else PUSH_RATE_HALF
-                prob = (1.0 - push) * NCAAF_LEG_RATE[0]
-            else:
+            teased = spread + points
+            push = PUSH_RATE_INTEGER if float(teased).is_integer() else PUSH_RATE_HALF
+            band = band_for(spread) if points < 10 else None
+            if band is not None and league.upper() != "NCAAF":
+                # The 6-point NFL bands are measured individually and differ by
+                # a point and a half, so the per-band rate is used where it
+                # exists. Everything else is priced off its pooled window rate.
                 prob = leg_probability(band, teased)
+            else:
+                prob = (1.0 - push) * leg_rate(league, points)[0]
             legs.append({
                 "event_id": str(g.get("event_id", "")),
                 "matchup": g.get("short_name") or g.get("name") or "",
@@ -375,7 +377,7 @@ def candidates_from_board(games: List[dict], within_days: int = 8,
                 "spread": spread,
                 "source": source,
                 "teased": teased,
-                "band": band.label,
+                "band": window_label(spread, points),
                 "prob": round(prob, 4),
                 "push_risk": float(teased).is_integer(),
             })
@@ -388,9 +390,9 @@ def candidates_from_board(games: List[dict], within_days: int = 8,
             best[k] = l
     legs = sorted(best.values(), key=lambda l: (-l["prob"], l["kickoff"]))
 
-    rate, se = leg_rate(league)
+    rate, se = leg_rate(league, points)
     out = {
-        "points": TEASE_POINTS,
+        "points": points,
         "legs": legs,
         "per_leg_rate": round(rate, 4),
         "per_leg_stderr": round(se, 4),
@@ -559,12 +561,36 @@ JOINT_10PT_NCAAF = {2: 0.5929, 3: 0.4550, 4: 0.3498, 5: 0.2697, 6: 0.2088}
 # reporting noise as structure.
 NCAAF_LEG_RATE = (0.7063, 0.0196)
 
+# Ten-point windows pay better per leg because ten points cross more: a -7
+# favourite teased to +3 crosses 3, 0 and 7. Pooled over BANDS_10PT, pushes
+# charged as losses, same samples as the joint rates above.
+NFL_LEG_RATE_10PT = (0.7918, 0.0071)      # n = 3,310 legs, 1999-2025
+NCAAF_LEG_RATE_10PT = (0.7723, 0.0147)    # n =   817 legs, 2023-2025
 
-def leg_rate(league: str) -> Tuple[float, float]:
-    """(rate, standard error) per qualifying leg, for this league."""
-    if league.upper() == "NCAAF":
-        return NCAAF_LEG_RATE
-    return combined_rate(BANDS)
+
+def leg_rate(league: str, points: float = TEASE_POINTS) -> Tuple[float, float]:
+    """(rate, standard error) per qualifying leg, for this league and tease."""
+    college = league.upper() == "NCAAF"
+    if points >= 10:
+        return NCAAF_LEG_RATE_10PT if college else NFL_LEG_RATE_10PT
+    return NCAAF_LEG_RATE if college else combined_rate(BANDS)
+
+
+def qualifies(spread: float, points: float = TEASE_POINTS) -> bool:
+    """Is this side's number in a window worth teasing at that many points?"""
+    if points >= 10:
+        return any(lo < spread <= hi for lo, hi in BANDS_10PT)
+    return band_for(spread) is not None
+
+
+def window_label(spread: float, points: float = TEASE_POINTS) -> str:
+    if points >= 10:
+        for lo, hi in BANDS_10PT:
+            if lo < spread <= hi:
+                return f"{'fav' if hi <= 0 else 'dog'} {lo:+g}..{hi:+g}"
+        return ""
+    b = band_for(spread)
+    return b.label if b else ""
 
 
 def joint_rates(league: str, points: float) -> Dict[int, float]:

@@ -415,3 +415,21 @@ table.compact td, table.compact th { padding: 7px 11px; }
 .route-what { font-weight: 600; }
 .route-nums { font: 13px var(--mono); text-align: right; white-space: nowrap; }
 .route-why { grid-column: 1 / -1; font-size: 12px; color: var(--ink-faint); line-height: 1.5; }
+
+/* The legs a teaser route is actually made of. Without these the page named a
+   6-leg ticket as the best bet and showed none of its six lines. */
+.route-legs {
+  grid-column: 1 / -1; display: grid; gap: 3px; margin-top: 8px;
+  padding-top: 9px; border-top: 1px solid var(--line);
+}
+.route-legs .rl { font-size: 12.5px; }
+.route-legs .rl strong { font-family: var(--mono); font-size: 12.5px; }
+
+.pts-toggle { display: flex; gap: 6px; margin: 0 0 10px; }
+.pts-toggle button {
+  background: var(--panel); border: 1px solid var(--line); color: var(--ink-dim);
+  padding: 6px 13px; border-radius: 999px; cursor: pointer; font-size: 12.5px;
+}
+.pts-toggle button[aria-pressed="true"] {
+  background: var(--accent); border-color: var(--accent); color: #07101f; font-weight: 600;
+}
