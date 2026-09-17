@@ -1588,9 +1588,13 @@ function renderHistory() {
  * been played. Nothing on the page said a word, because nothing on the page
  * was wrong -- it was just old.
  *
- * Thresholds follow the rebuild, not the clock: the board rebuilds hourly, so
- * three hours means two or three runs have not landed, and twelve means the
- * numbers cannot be trusted at all.
+ * Thresholds follow the MEASURED rebuild rate, not the cron line. The schedule
+ * asks for hourly; GitHub actually delivers a scheduled run every 2.5 to 6.3
+ * hours on this repo, because cron there is best-effort and drops runs under
+ * load. Warning at three hours would therefore fire on a perfectly healthy
+ * board most of the day, and a banner that cries wolf is worse than none --
+ * it teaches you to ignore the one that matters. Eight hours means the
+ * schedule has genuinely stopped; a day means the deploy is broken.
  */
 function renderStaleness() {
   const box = $("#staleness");
@@ -1600,20 +1604,20 @@ function renderStaleness() {
     return;
   }
   const hours = (Date.now() - built.getTime()) / 3.6e6;
-  if (hours < 3) {
+  if (hours < 8) {
     box.hidden = true;
     return;
   }
-  const severe = hours >= 12;
+  const severe = hours >= 24;
   box.className = severe ? "stale severe" : "stale";
   box.hidden = false;
   box.innerHTML =
     `<strong>This board is ${hours < 24
       ? `${Math.round(hours)} hours old`
       : `${Math.floor(hours / 24)} day(s) old`}.</strong>`
-    + `It rebuilds every hour, so ${severe
+    + `It rebuilds every few hours, so ${severe
       ? "something has been failing for a while — prices have moved, and games on it may already have been played"
-      : "a run or two has not landed and prices may have moved"}. `
+      : "the schedule has stopped and prices have moved since"}. `
     + `<span class="dim">Built ${built.toLocaleString(undefined, {
         weekday: "short", month: "short", day: "numeric",
         hour: "numeric", minute: "2-digit" })}. `
@@ -1727,33 +1731,136 @@ function solveRoutes(target) {
   return routes.sort((a, b) => b.prob - a.prob);
 }
 
+/**
+ * Routes that win at least `floor` of the time, best-paying first.
+ *
+ * The question asked in the direction a bettor actually thinks in. The payout
+ * version of this reads as advice to take a 24% shot because it pays +300;
+ * this version says what 70% is worth, which is the honest shape of the
+ * trade-off -- and a fair price for 70% is -233, so anything shorter than that
+ * is the book's cut, visible in the EV column.
+ */
+function solveCertainty(floor) {
+  const lg = state.board.leagues[state.league] || {};
+  const legs = [];
+  for (const g of lg.games || []) {
+    for (const l of g.legs || []) {
+      legs.push({
+        eventId: g.event_id, abbr: l.team_abbr, odds: l.odds,
+        prob: l.implied_prob, matchup: g.short_name || g.name,
+        dec: americanToDecimal(l.odds),
+      });
+    }
+  }
+  const routes = [];
+  for (const l of legs.filter((x) => x.prob >= floor).sort((a, b) => b.dec - a.dec).slice(0, 4)) {
+    routes.push({
+      what: `Single: ${l.abbr} ${fmtOdds(l.odds)}`, dec: l.dec, prob: l.prob,
+      why: `${l.matchup}. The market's own number on this side is `
+         + `${fmtPct(l.prob)}, and a fair price for that is `
+         + `${fmtOdds(fairOdds(l.prob))}.`,
+    });
+  }
+  // Parlays only clear a high floor when every leg is short, so this is worth
+  // showing mostly to demonstrate what stacking costs: two 85% legs is 72%.
+  const shortest = legs.filter((x) => x.prob >= Math.sqrt(floor))
+    .sort((a, b) => b.prob - a.prob).slice(0, 12);
+  let bestPair = null;
+  for (let i = 0; i < shortest.length; i++) {
+    for (let j = i + 1; j < shortest.length; j++) {
+      const a = shortest[i], b = shortest[j];
+      if (a.eventId === b.eventId) continue;
+      const p = a.prob * b.prob;
+      if (p < floor) continue;
+      const dec = a.dec * b.dec;
+      if (!bestPair || dec > bestPair.dec) bestPair = { legs: [a, b], dec, prob: p };
+    }
+  }
+  if (bestPair) {
+    routes.push({
+      what: `2-leg parlay: ${bestPair.legs.map((l) => `${l.abbr} ${fmtOdds(l.odds)}`).join(" + ")}`,
+      dec: bestPair.dec, prob: bestPair.prob,
+      why: `Both have to land, so the chance multiplies down while the book's `
+         + `cut is charged twice — that is why it pays less than it looks like `
+         + `it should.`,
+    });
+  }
+  const ladder = (lg.teasers || {}).ladder;
+  if (ladder) {
+    for (const [pts, block] of Object.entries(ladder)) {
+      for (const [n, price] of Object.entries(block.prices || {})) {
+        const joint = (block.joint || {})[n];
+        if (!joint || joint < floor) continue;
+        const verified = (lg.teasers.verified_prices || []).includes(`${pts}pt:${n}`);
+        routes.push({
+          what: `${pts}-pt teaser, ${n} legs (${fmtOdds(Number(price))})`,
+          dec: americanToDecimal(Number(price)), prob: joint,
+          why: (verified ? "Ladder price confirmed. " : "Ladder price ASSUMED — check your slip. ")
+             + `Measured across 1999-2025, and the only route here whose chance `
+             + `does not come from the price.`,
+        });
+      }
+    }
+  }
+  return routes.sort((a, b) => b.dec - a.dec);
+}
+
+/** The price a probability deserves, before anyone takes a cut. */
+function fairOdds(p) {
+  if (p <= 0 || p >= 1) return 0;
+  const dec = 1 / p;
+  return dec >= 2 ? Math.round((dec - 1) * 100) : -Math.round(100 / (dec - 1));
+}
+
 function renderSolver() {
   const box = $("#solver-routes");
-  const target = Math.round(Number($("#solver-target").value) || 300);
   box.innerHTML = "";
-  const routes = solveRoutes(target);
-  const fair = 1 / americanToDecimal(target);
-  $("#solver-note").textContent = `${state.league} · best route to a payout you name`;
-  $("#solver-summary").innerHTML =
-    `at ${fmtOdds(target)} the price needs <strong>${fmtPct(fair)}</strong> to break even`;
+  const floor = Math.min(0.97, Math.max(0.2, (Number($("#solver-certainty").value) || 70) / 100));
+  const target = Math.round(Number($("#solver-target").value) || 300);
+  $("#solver-note").textContent = `${state.league} · certainty first, payout second`;
 
-  if (!routes.length) {
+  // Both questions, with the certainty one leading: a payout ask that lands
+  // below the certainty ask is shown underneath rather than hidden, because
+  // "the +300 you asked about is a 24% shot" is the answer to a real question.
+  const certain = solveCertainty(floor);
+  const paid = solveRoutes(target).filter((r) => r.prob < floor);
+
+  $("#solver-summary").innerHTML =
+    `a ${fmtPct(floor)} ticket is worth <strong>${fmtOdds(fairOdds(floor))}</strong> `
+    + `if nobody takes a cut`;
+
+  if (!certain.length) {
+    const lg = state.board.leagues[state.league] || {};
+    const best = (lg.games || []).flatMap((g) => g.legs || [])
+      .reduce((a, l) => (!a || l.implied_prob > a.implied_prob ? l : a), null);
     box.appendChild(el("div", "empty",
-      `<strong>Nothing on this board reaches ${fmtOdds(target)}</strong>`
-      + `Try a smaller payout, or the other league.`));
-    return;
+      `<strong>Nothing on this board wins ${fmtPct(floor)} of the time</strong>`
+      + (best ? `The most likely side is ${best.team_abbr} at ${fmtOdds(best.odds)}, `
+              + `${fmtPct(best.implied_prob)}. ` : "")
+      + `Lower the ask, or accept that certainty this high is not for sale here.`));
+  } else {
+    certain.forEach((r, i) => {
+      const ev = r.prob * (r.dec - 1) - (1 - r.prob);
+      const cls = ev > 0 ? "route beats-fair" : i === 0 ? "route best" : "route";
+      const node = el("div", cls);
+      node.innerHTML = `
+        <div class="route-what">${r.what}</div>
+        <div class="route-nums">wins <strong>${fmtPct(r.prob)}</strong> · pays
+          ${fmtOdds(r.dec >= 2 ? Math.round((r.dec - 1) * 100) : -Math.round(100 / (r.dec - 1)))}
+          · <span class="${ev > 0 ? "pos" : "neg"}">${ev >= 0 ? "+" : ""}${(ev * 100).toFixed(1)}%</span></div>
+        <div class="route-why">${r.why}</div>`;
+      box.appendChild(node);
+    });
   }
-  routes.forEach((r, i) => {
-    const ev = r.prob * (r.dec - 1) - (1 - r.prob);
-    const cls = ev > 0 ? "route beats-fair" : i === 0 ? "route best" : "route";
-    const node = el("div", cls);
-    node.innerHTML = `
-      <div class="route-what">${r.what}</div>
-      <div class="route-nums">wins <strong>${fmtPct(r.prob)}</strong> · needs ${fmtPct(1 / r.dec)}
-        · <span class="${ev > 0 ? "pos" : "neg"}">${ev >= 0 ? "+" : ""}${(ev * 100).toFixed(1)}%</span></div>
-      <div class="route-why">${r.why}</div>`;
-    box.appendChild(node);
-  });
+
+  if (paid.length) {
+    box.appendChild(el("p", "list-note",
+      `Asking for ${fmtOdds(target)} instead would mean taking `
+      + `${fmtPct(paid[0].prob)} — ${paid[0].what.toLowerCase()} — because `
+      + `${fmtOdds(target)} pays ${(americanToDecimal(target)).toFixed(2)}x and `
+      + `so needs ${fmtPct(1 / americanToDecimal(target))} just to break even. `
+      + `That is the trade, and no selection of teams changes it.`));
+  }
 }
 
 function render() {
@@ -1816,8 +1923,10 @@ async function boot() {
     month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}`;
   $("#season").textContent = `${board.season} season`;
 
-  $("#solver-target").addEventListener("change", renderSolver);
-  $("#solver-target").addEventListener("input", renderSolver);
+  for (const id of ["#solver-target", "#solver-certainty"]) {
+    $(id).addEventListener("change", renderSolver);
+    $(id).addEventListener("input", renderSolver);
+  }
 
   $("#only-ev").addEventListener("change", (e) => {
     state.onlyEV = e.target.checked;
