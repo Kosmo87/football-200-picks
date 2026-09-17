@@ -744,6 +744,7 @@ const state = {
   // the book, so the page mirrors that rather than pre-forming tickets.
   teaserPicks: [],
   teaserPrice: -110,
+  teaserLegCount: 0,
 };
 
 const $ = (sel) => document.querySelector(sel);
@@ -1303,8 +1304,26 @@ function renderPickList(box, picks, cfg, legs, gamesById, reference = false) {
  */
 function teaserTicket(chosen, t) {
   const wrap = el("div", "teaser-ticket");
-  const price = Number(state.teaserPrice) || -110;
-  const p = chosen.reduce((a, l) => a * l.prob, 1);
+  // Default to this leg count's ladder price rather than a fixed -110: a
+  // 5-leg ticket priced at -110 would read as a catastrophic bet, and the
+  // number people will actually be quoted is the ladder's.
+  const ladderPrice = (((t.ladder || {})[String(t.points)] || {}).prices
+                        || {})[String(chosen.length)];
+  if (state.teaserLegCount !== chosen.length) {
+    state.teaserLegCount = chosen.length;
+    if (ladderPrice != null) state.teaserPrice = Number(ladderPrice);
+  }
+  const price = Number(state.teaserPrice) || ladderPrice || -110;
+  // The measured rate for this leg count where one exists, and only the
+  // product of the legs as a fallback. They are close at two legs (53.70%
+  // measured against 53.13% multiplied) but the measured one is the number the
+  // solver prices with, and two parts of the same page must not disagree about
+  // what a ticket wins.
+  const measured = (((t.ladder || {})[String(t.points)] || {}).joint
+                     || {})[String(chosen.length)];
+  const p = measured != null
+    ? Number(measured)
+    : chosen.reduce((a, l) => a * l.prob, 1);
   const dec = americanToDecimal(price);
   const ev = p * (dec - 1) - (1 - p);
   const need = teaserMaxPrice(chosen.map((l) => l.prob - (t.per_leg_stderr || 0)));
@@ -1312,7 +1331,9 @@ function teaserTicket(chosen, t) {
   wrap.appendChild(el("div", "tt-head",
     `<strong>${t.points}-point teaser, ${chosen.length} legs</strong> · `
     + chosen.map((l) => `${l.team_abbr} ${fmtLine(l.teased)}`).join(" + ")
-    + ` · ticket wins ${fmtPct(p)}`));
+    + ` · ticket wins ${fmtPct(p)}`
+    + (measured != null ? "" : " <span class=\"dim\">(legs multiplied — no "
+        + "measured rate for this leg count)</span>")));
 
   const row = el("div", "tt-row");
   const priceLabel = el("label", "tt-price");
@@ -1444,11 +1465,12 @@ function renderTeasers() {
       <td class="dim">${l.band}</td>`;
     tr.querySelector("input").addEventListener("change", () => {
       const picks = state.teaserPicks.filter((id) => id !== l.event_id);
-      // Up to three, oldest out first. Three legs is a real bet at six points
-      // — the same bands, multiplied once more — and it needs a much longer
-      // price, which the ticket works out from whatever is selected.
+      // Up to six, oldest out first. The cap used to be three, which quietly
+      // made the best tickets untaggable: the solver recommends 4, 5 and 6-leg
+      // teasers because the ladder asks for less per leg as legs are added, and
+      // a bet that cannot be tagged cannot be graded.
       if (!state.teaserPicks.includes(l.event_id)) picks.push(l.event_id);
-      state.teaserPicks = picks.slice(-3);
+      state.teaserPicks = picks.slice(-6);
       renderTeasers();
     });
     body.appendChild(tr);
