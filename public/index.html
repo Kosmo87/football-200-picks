@@ -54,11 +54,29 @@
     can beat the book rather than just reach it — in the NFL, where the windows
     were measured, they usually top this list; in college the same windows win
     70.6% a leg instead of 73.6% and fall short of the ladder. Probabilities
-    are measured or market-de-vigged, never our model's.</p>
+    are measured or market-de-vigged, never our model's.
+    <strong>Fewer legs is worth something the percentages do not show</strong> —
+    each one is another line to get down at the same book, another chance of a
+    push, another game a late scratch can spoil — so routes within a point of
+    each other are ordered with the shorter ticket first, and you can cap the
+    legs outright. For a <em>teaser</em>, though, fewer legs is not
+    automatically the better bet: the ladder asks 73.9% a leg at two and 70.0%
+    at six while the legs deliver 73.6% either way, which is why the long
+    tickets are the ones that clear.</p>
     <div class="solver-bar">
       <label>Pay me at least
         <input type="number" id="solver-target" value="300" step="50"
                aria-label="Target payout in American odds">
+      </label>
+      <label>with no more than
+        <select id="solver-maxlegs" aria-label="Maximum number of legs">
+          <option value="1">1 leg</option>
+          <option value="2">2 legs</option>
+          <option value="3">3 legs</option>
+          <option value="4">4 legs</option>
+          <option value="5">5 legs</option>
+          <option value="6" selected>6 legs</option>
+        </select>
       </label>
       <span class="dim" id="solver-summary"></span>
     </div>

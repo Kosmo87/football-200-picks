@@ -1699,9 +1699,15 @@ function renderStaleness() {
  * The routes are deliberately compared on the SAME target, because the useful
  * answer is not "here is a bet" but "here is what wanting +300 costs you".
  */
-function solveRoutes(target) {
+function solveRoutes(target, maxLegs = 6, tolerance = 0.12) {
   const lg = state.board.leagues[state.league] || {};
   const want = americanToDecimal(target);
+  // A route paying a little under the ask is still worth seeing when it costs
+  // fewer legs: at a +300 ask the 4-leg 6-pointer pays +265 and wins 30.3%
+  // against the 6-leg's 28.7%, and hiding it because it missed the number by
+  // 35 cents on the dollar is answering the letter of the question instead of
+  // the point of it. Flagged, never silently substituted.
+  const floor = want * (1 - tolerance);
   const legs = [];
   for (const g of lg.games || []) {
     for (const l of g.legs || []) {
@@ -1715,12 +1721,12 @@ function solveRoutes(target) {
   const routes = [];
 
   // A single is always the least given away: the cut is paid once.
-  const singles = legs.filter((l) => l.dec >= want);
+  const singles = legs.filter((l) => l.dec >= floor);
   if (singles.length) {
     const best = singles.reduce((a, b) => (b.prob > a.prob ? b : a));
     routes.push({
       what: `Single: ${best.abbr} ${fmtOdds(best.odds)}`,
-      dec: best.dec, prob: best.prob,
+      dec: best.dec, prob: best.prob, legs: 1,
       why: `${best.matchup}. One leg, so the book's cut is paid once — this is `
          + `the cleanest route to ${fmtOdds(target)} on the board.`,
     });
@@ -1740,12 +1746,12 @@ function solveRoutes(target) {
   const byPayout = [...legs].sort((a, b) => b.dec - a.dec);
   const deepPool = [...new Set([...byHold.slice(0, 16), ...byPayout.slice(0, 16)])];
   outer:
-  for (let n = 2; n <= 4; n++) {
+  for (let n = 2; n <= Math.min(4, maxLegs); n++) {
     let best = null;
     const pool = n <= 3 ? legs : deepPool;
     const walk = (start, chosen, dec, prob, games) => {
       if (chosen.length === n) {
-        if (dec >= want && (!best || prob > best.prob)) best = { legs: [...chosen], dec, prob };
+        if (dec >= floor && (!best || prob > best.prob)) best = { legs: [...chosen], dec, prob };
         return;
       }
       for (let i = start; i < pool.length; i++) {
@@ -1762,7 +1768,7 @@ function solveRoutes(target) {
     if (best) {
       routes.push({
         what: `${n}-leg parlay: ${best.legs.map((l) => `${l.abbr} ${fmtOdds(l.odds)}`).join(" + ")}`,
-        dec: best.dec, prob: best.prob,
+        dec: best.dec, prob: best.prob, legs: n,
         why: `The fewest legs that reach it. Each leg pays the book's cut `
            + `again, which is why this sits below the single.`,
       });
@@ -1778,7 +1784,7 @@ function solveRoutes(target) {
       for (const [n, price] of Object.entries(block.prices || {})) {
         const joint = (block.joint || {})[n];
         const dec = americanToDecimal(Number(price));
-        if (!joint || dec < want) continue;
+        if (!joint || dec < floor || Number(n) > maxLegs) continue;
         const verified = (lg.teasers.verified_prices || []).includes(`${pts}pt:${n}`);
         // The legs for THIS tease size. The 10-point windows are different
         // numbers from the 6-point ones, so a route has to name its own.
@@ -1789,7 +1795,7 @@ function solveRoutes(target) {
         const fillable = pool.length >= Number(n);
         routes.push({
           what: `${pts}-pt teaser, ${n} legs (${fmtOdds(Number(price))})`,
-          dec, prob: joint, teaser: true, legsNeeded: Number(n), fillable,
+          dec, prob: joint, teaser: true, legs: Number(n), fillable,
           fill,
           why: (fillable
                  ? `${pool.length} qualifying legs at ${pts} points, so this is fillable today. `
@@ -1806,10 +1812,13 @@ function solveRoutes(target) {
       }
     }
   }
-  // Ranked by chance of winning. That is the question: the payout is already
-  // fixed by the ask, so the only thing left to compare is how often each way
-  // of reaching it actually lands.
-  return routes.sort((a, b) => b.prob - a.prob);
+  // Ranked by chance of winning, then by FEWER LEGS when two routes are within
+  // a point of each other. Legs are a cost the percentages do not show: every
+  // one is another line to get down at the same book, another chance of a
+  // push, and another game that can be spoiled by a late scratch.
+  for (const r of routes) r.short = r.dec < want;
+  return routes.sort((a, b) =>
+    (Math.abs(b.prob - a.prob) > 0.01 ? b.prob - a.prob : (a.legs || 1) - (b.legs || 1)));
 }
 
 /** The price a probability deserves, before anyone takes a cut. */
@@ -1823,9 +1832,10 @@ function renderSolver() {
   const box = $("#solver-routes");
   box.innerHTML = "";
   const target = Math.round(Number($("#solver-target").value) || 300);
+  const maxLegs = Number($("#solver-maxlegs").value) || 6;
   const want = americanToDecimal(target);
   const fair = 1 / want;
-  const routes = solveRoutes(target);
+  const routes = solveRoutes(target, maxLegs);
   $("#solver-note").textContent = `${state.league} · best chance at the payout you name`;
   $("#solver-summary").innerHTML =
     `${fmtOdds(target)} pays ${want.toFixed(2)}x, so <strong>${fmtPct(fair)}</strong> `
@@ -1847,7 +1857,8 @@ function renderSolver() {
     node.innerHTML = `
       <div class="route-what">${r === best ? "<strong>Best chance:</strong> " : ""}${r.what}${
         r.teaser && !r.fillable ? ' <span class="dim">(not fillable today)</span>' : ""}</div>
-      <div class="route-nums">wins <strong>${fmtPct(r.prob)}</strong> · pays ${fmtOdds(pays)}
+      <div class="route-nums">wins <strong>${fmtPct(r.prob)}</strong> · ${r.legs || 1} leg${(r.legs || 1) > 1 ? "s" : ""} · pays ${fmtOdds(pays)}${
+        r.short ? ' <span class="route-short">(under your ask)</span>' : ""}
         · <span class="${ev > 0 ? "pos" : "neg"}">${ev >= 0 ? "+" : ""}${(ev * 100).toFixed(1)}%</span></div>
       <div class="route-why">${r.why}</div>
       ${r.fill && r.fill.length ? `<div class="route-legs">${
@@ -1866,9 +1877,13 @@ function renderSolver() {
     `The most likely way to be paid ${fmtOdds(target)} on this board wins `
     + `<strong>${fmtPct(best.prob)}</strong>. `
     + (beats.length
-        ? `${beats.length} route${beats.length > 1 ? "s" : ""} here beat${beats.length > 1 ? "" : "s"} `
-          + `the price, all of them teasers — a measured chance against a fixed `
-          + `ladder is the only way that happens.`
+        ? (beats.length === 1
+            ? `One route beats the price — the ${beats[0].what.split(" (")[0]} — `
+              + `because its chance is measured against a fixed ladder rather `
+              + `than read off the price.`
+            : `${beats.length} routes beat the price, all of them teasers: a `
+              + `measured chance against a fixed ladder is the only way that `
+              + `happens.`)
         : `None of them beat the price: every route is a rearrangement of the `
           + `same market numbers, so they all sit about 4% short. A teaser leg `
           + `count that clears ${fmtOdds(target)} would be the exception, and `
@@ -1935,8 +1950,10 @@ async function boot() {
     month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}`;
   $("#season").textContent = `${board.season} season`;
 
-  $("#solver-target").addEventListener("change", renderSolver);
-  $("#solver-target").addEventListener("input", renderSolver);
+  for (const id of ["#solver-target", "#solver-maxlegs"]) {
+    $(id).addEventListener("change", renderSolver);
+    $(id).addEventListener("input", renderSolver);
+  }
 
   $("#only-ev").addEventListener("change", (e) => {
     state.onlyEV = e.target.checked;
