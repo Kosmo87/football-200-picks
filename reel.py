@@ -476,7 +476,105 @@ def shoot(html_text: str, png: str) -> None:
     os.remove(tmp)
 
 
-VOICE = "Samantha"          # the only intelligible en_US voice on this machine
+# Best installed voice wins, in this order. Apple's Premium voices are neural
+# and download through System Settings -- there is no command for it -- so the
+# generator looks rather than hardcoding: the day one arrives, clips use it
+# without anybody editing this file. Samantha is the floor, being the only
+# intelligible en_US voice a Mac ships with by default.
+# Both spellings: the picker in System Settings calls them "Ava (Premium)",
+# but once downloaded `say -v ?` lists them under the bare name, which is what
+# actually has to match.
+VOICE_ORDER = ("Ava (Premium)", "Ava", "Evan (Premium)", "Evan",
+               "Zoe (Premium)", "Zoe", "Nathan (Premium)", "Nathan",
+               "Joelle (Premium)", "Joelle", "Samantha")
+
+
+def installed_voices(english_only: bool = False) -> List[str]:
+    """
+    Voice names as `say` will accept them.
+
+    The locale is parsed rather than ignored because a full voice download is
+    184 entries and most of them are other languages -- auditioning Amelie
+    reading "plus 265" in French Canadian is not a decision anybody needs.
+    """
+    try:
+        out = subprocess.run(["say", "-v", "?"], capture_output=True,
+                             text=True, timeout=30).stdout
+    except Exception:
+        return []
+    names = []
+    for line in out.splitlines():
+        # "Ava (Premium)          en_US    # Hello!…" -- the name is everything
+        # before the locale, which is the first token shaped like xx_YY.
+        parts = line.split()
+        for i, tok in enumerate(parts):
+            if len(tok) == 5 and tok[2] == "_":
+                if not english_only or tok.startswith("en"):
+                    names.append(" ".join(parts[:i]))
+                break
+    return names
+
+
+# Voices macOS ships for fun. Excluded from the audition so a list of forty
+# candidates is not mostly robots and singing bells.
+NOVELTY = {
+    "Albert", "Bad News", "Bahh", "Bells", "Boing", "Bubbles", "Cellos",
+    "Deranged", "Fred", "Good News", "Hysterical", "Jester", "Junior",
+    "Kathy", "Organ", "Princess", "Ralph", "Superstar", "Trinoids",
+    "Whisper", "Wobble", "Zarvox", "Grandma", "Grandpa", "Rocko", "Sandy",
+    "Shelley", "Eddy", "Flo", "Reed",
+}
+
+# Where a chosen voice is remembered. A text file rather than an edit to this
+# module: picking a voice is a preference, not a code change, and it survives
+# `git pull`.
+VOICE_PICK = os.path.join(ROOT, "video", "voice", "VOICE.txt")
+
+
+def best_voice() -> str:
+    have = installed_voices()
+    try:
+        with open(VOICE_PICK) as fh:
+            picked = fh.read().strip()
+        if picked and picked in have:
+            return picked
+        if picked:
+            print(f"  {VOICE_PICK} asks for '{picked}', which is not installed")
+    except OSError:
+        pass
+    for want in VOICE_ORDER:
+        if want in have:
+            return want
+    return "Samantha"
+
+
+def audition(line: str, out_dir: str) -> List[str]:
+    """
+    The same sentence in every serious voice on the machine.
+
+    Reading a list of voice names tells you nothing; forty files you can
+    arrow-key through tells you everything in two minutes. Uses a real line
+    from the script rather than "Hello, my name is Ava", because a voice that
+    handles a greeting can still mangle "plus 265" and "30 percent".
+    """
+    os.makedirs(out_dir, exist_ok=True)
+    made = []
+    for name in sorted(set(installed_voices(english_only=True))):
+        if name in NOVELTY or not name:
+            continue
+        safe = name.replace(" ", "-").replace("(", "").replace(")", "")
+        path = os.path.join(out_dir, f"{safe}.aiff")
+        try:
+            subprocess.run(["say", "-v", name, "-r", "195", "-o", path, line],
+                           check=True, capture_output=True, timeout=120)
+        except Exception:
+            continue
+        if os.path.exists(path) and os.path.getsize(path) > 1024:
+            made.append(path)
+    return made
+
+
+VOICE = best_voice()
 
 
 def audio_seconds(path: str) -> float:
@@ -541,7 +639,7 @@ def to_wav(path: str, out: str) -> str:
     return out
 
 
-def narrate_scenes(lines: List[str], out_dir: str, rate: int = 180):
+def narrate_scenes(lines: List[str], out_dir: str, rate: int = 195):
     """
     One audio file per scene, so a scene can be held for exactly as long as
     its own line takes to read.
@@ -554,6 +652,7 @@ def narrate_scenes(lines: List[str], out_dir: str, rate: int = 180):
     """
     if not shutil.which("say") or not shutil.which("ffprobe"):
         return []
+    print(f"  voice: {VOICE}")
     made = []
     for i, line in enumerate(lines, start=1):
         path = os.path.join(out_dir, f"voice-{i:02d}.aiff")
@@ -583,7 +682,7 @@ def join_audio(parts: List[tuple], out: str) -> Optional[str]:
     return out
 
 
-def narrate(lines: List[str], path: str, rate: int = 180) -> Optional[str]:
+def narrate(lines: List[str], path: str, rate: int = 195) -> Optional[str]:
     """
     macOS `say` to an AIFF. Free, local, and sounds like a Mac.
 
@@ -647,22 +746,20 @@ def render(route: Dict, league: str, board: Dict, history: Dict, out_dir: str,
     scenes = [
         ("01-intro", intro_scene(), 3.0, f"{INTRO_LINE}. {INTRO_SUB}"),
         ("02-record", record_scene(history, placed_record()), 4.5,
-         "The record for this system starts at nothing, because this is the "
-         "first ticket from it. The old number you will see quoted is an Elo "
-         "model's paper picks, and losing with those is exactly why it got "
-         "retired."),
+         "The record starts at nothing. This is the first ticket. That losing "
+         "number beside it is an old model's paper picks, which is exactly why "
+         "it got retired."),
         ("03-ticket", ticket_scene(route, league, history, board), 6.0,
-         f"This week: a {route['legs']} leg {route['points']} point teaser at "
-         f"{route['price']}, which wins {route['prob']*100:.0f} percent of the "
-         f"time. The price only needs {route['needs']*100:.0f}. "
+         f"A {route['legs']} leg {route['points']} point teaser at "
+         f"{route['price']}. It wins {route['prob']*100:.0f} percent of the "
+         f"time and the price only needs {route['needs']*100:.0f}. "
          f"{spoken_source(route, board, league)}"),
         ("04-why", why_scene(route, board, league), 5.5,
-         "Six points moved across three and seven is worth more than six points "
-         "anywhere else. That gap is the entire bet."),
+         "Six points across three and seven is worth more than six points "
+         "anywhere else. That gap is the whole bet."),
         ("05-cta", cta_scene(league, board), 4.5,
-         "Go and look at it now, while it is still free. Every qualifying leg, "
-         "every leg count, and the price each one needs. It is open to anyone "
-         "while the record is being built, and that is not the plan forever."),
+         "Go and look while it is still free. Every qualifying leg and the "
+         "price each one needs. That is not the plan forever."),
         ("06-outro", outro_scene(), 3.0, f"{OUTRO_LINE}. {OUTRO_SUB}"),
     ]
 
@@ -724,9 +821,23 @@ def main() -> int:
     ap.add_argument("--narrate", action="store_true")
     ap.add_argument("--force", action="store_true",
                     help="re-render a ticket already in ready/ or uploaded/")
+    ap.add_argument("--audition", action="store_true",
+                    help="say one line of the script in every serious voice "
+                         "installed, for picking one, then exit")
     ap.add_argument("--min-ev", type=float, default=0.0,
                     help="skip tickets whose edge is below this (default: %(default)s)")
     a = ap.parse_args()
+
+    if a.audition:
+        out = os.path.join(VOICE_IN, "audition")
+        line = ("This week: a four leg six point teaser at plus 265, which wins "
+                "30 percent of the time. The price only needs 27.")
+        made = audition(line, out)
+        print(f"{len(made)} voice(s) in {out}")
+        print(f"Listen, then write the one you want into {VOICE_PICK}:")
+        print(f"  echo 'Ava' > {VOICE_PICK}")
+        print(f"Currently using: {VOICE}")
+        return 0
 
     board, history = _read("board.json", {}), _read("history.json", {})
     if not board:
