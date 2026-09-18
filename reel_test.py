@@ -88,12 +88,14 @@ def main():
     # that retired the model in the first place.
     zero = R.record_scene(history(), {"settled": 0})
     r.append(check("zero state leads with 0-0", "0-0" in zero, True))
-    # Asserted from the fixture, not from whatever the live ledger says today:
-    # hardcoding 16-30 here made this test fail the moment a pick graded.
-    r.append(check("zero state keeps the paper record visible", "15-30" in zero, True))
-    r.append(check("zero state calls the paper record retired", "retired" in zero, True))
-    r.append(check("zero state disowns it as a betting record",
-                   "not a betting record" in zero, True))
+    # The clip is marketing, not a methodology note: the retired model's paper
+    # ledger belongs on the website, where it can be read, and not in a
+    # 40-second card. What matters here is that the number shown is the real
+    # placed one, so the paper record must NOT appear at all -- neither
+    # claimed nor explained.
+    r.append(check("zero state omits the paper ledger entirely", "15-30" in zero, False))
+    r.append(check("zero state says it is the first ticket",
+                   "ticket number one" in zero, True))
 
     # Once tickets settle, the placed record leads and colours by units.
     placed_win = {"settled": 2, "won": 2, "lost": 0, "units": 3.4,

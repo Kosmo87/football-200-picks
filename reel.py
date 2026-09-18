@@ -187,34 +187,24 @@ def placed_record(season: Optional[int] = None) -> Dict:
 
 def record_scene(history: Dict, placed: Optional[Dict] = None) -> str:
     """
-    Two records, never blended: what has been placed, and what the model did
-    on paper. The second is context for why the first exists.
+    The placed record, and nothing else.
+
+    It used to carry a paragraph explaining that the old Elo ledger was paper,
+    retired and not mine to claim. All true, and all wrong for a 40-second
+    clip: a viewer does not need the methodology, they need the number. The
+    honesty requirement is that the number shown is the real one -- placed
+    tickets, graded -- not that the clip litigates which ledger is which. The
+    retired model's record stays on the website, where someone can read it.
     """
     placed = placed or {"settled": 0}
-    m = history.get("summary") or {}
-    mw, ml = int(m.get("won") or 0), int(m.get("lost") or 0)
-    mroi = float(m.get("roi_pct") or 0.0)
 
     if not placed.get("settled"):
-        # The honest version of starting over: the count is zero and it says
-        # so, which is a better hook than a reset anyway -- nobody believes a
-        # fresh 0-0 from an account that was selling picks last week.
         return scene_html(
-            "<div class='kicker'>The record, from zero</div>"
+            "<div class='kicker'>The record</div>"
             "<div class='big accent'>0-0</div>"
-            "<div class='sub'>No ticket from this system has settled yet. "
-            "This is the first one.</div>"
-            "<div class='row'>"
-            f"<div class='card'><div class='lab'>Placed</div>"
-            f"<div class='val'>0</div><div class='note'>bets settled</div></div>"
-            f"<div class='card'><div class='lab'>Paper model</div>"
-            f"<div class='val neg'>{mw}-{ml}</div>"
-            f"<div class='note'>{mroi:+.0f}% &middot; retired</div></div>"
-            "</div>"
-            "<div class='foot'>The old number on the right is the Elo model's, "
-            "on paper, and it is why that model no longer picks anything. It is "
-            "not a betting record and it is not mine to claim. Everything from "
-            "here is a placed ticket, graded win or lose.</div>"
+            "<div class='sub'>This is ticket number one. Every one after it "
+            "gets graded here, win or lose.</div>"
+            "<div class='spacer'></div>"
         )
 
     won, lost = placed["won"], placed["lost"]
@@ -223,22 +213,17 @@ def record_scene(history: Dict, placed: Optional[Dict] = None) -> str:
     tone = "pos" if units > 0 else "neg"
     tease = placed["by_kind"].get("teaser") or {"won": 0, "lost": 0, "units": 0.0}
     return scene_html(
-        "<div class='kicker'>Placed and settled</div>"
+        "<div class='kicker'>The record</div>"
         f"<div class='big {tone}'>{roi:+.0f}%</div>"
-        f"<div class='sub'>across {won + lost} ticket(s) actually placed</div>"
+        f"<div class='sub'>{won}-{lost} on tickets actually placed</div>"
         "<div class='row'>"
-        f"<div class='card'><div class='lab'>Record</div>"
-        f"<div class='val'>{won}-{lost}</div><div class='note'>every placed bet</div></div>"
+        f"<div class='card'><div class='lab'>Units</div>"
+        f"<div class='val {tone}'>{units:+.1f}</div><div class='note'>flat stakes</div></div>"
         f"<div class='card'><div class='lab'>Teasers</div>"
         f"<div class='val'>{tease['won']}-{tease['lost']}</div>"
         f"<div class='note'>{tease['units']:+.1f}u</div></div>"
-        f"<div class='card'><div class='lab'>Paper model</div>"
-        f"<div class='val neg'>{mw}-{ml}</div>"
-        f"<div class='note'>{mroi:+.0f}% &middot; retired</div></div>"
         "</div>"
-        "<div class='foot'>Placed tickets on the left, the retired Elo model's "
-        "paper picks on the right. They are different strategies and they are "
-        "never added together.</div>"
+        "<div class='spacer'></div>"
     )
 
 
@@ -746,9 +731,8 @@ def render(route: Dict, league: str, board: Dict, history: Dict, out_dir: str,
     scenes = [
         ("01-intro", intro_scene(), 3.0, f"{INTRO_LINE}. {INTRO_SUB}"),
         ("02-record", record_scene(history, placed_record()), 4.5,
-         "The record starts at nothing. This is the first ticket. That losing "
-         "number beside it is an old model's paper picks, which is exactly why "
-         "it got retired."),
+         "The record starts at nothing, because this is ticket number one. "
+         "Every one after it gets graded here, win or lose."),
         ("03-ticket", ticket_scene(route, league, history, board), 6.0,
          f"A {route['legs']} leg {route['points']} point teaser at "
          f"{route['price']}. It wins {route['prob']*100:.0f} percent of the "
@@ -821,6 +805,9 @@ def main() -> int:
     ap.add_argument("--narrate", action="store_true")
     ap.add_argument("--force", action="store_true",
                     help="re-render a ticket already in ready/ or uploaded/")
+    ap.add_argument("--any-book", action="store_true",
+                    help="render even when the legs are not from a book you "
+                         "hold (the clip will name whose numbers they are)")
     ap.add_argument("--audition", action="store_true",
                     help="say one line of the script in every serious voice "
                          "installed, for picking one, then exit")
@@ -850,14 +837,18 @@ def main() -> int:
     # doubly so for teasers, which BetMGM does not sell at all, leaving
     # FanDuel as the only one of the two where any of this is placeable.
     t = ((board.get("leagues") or {}).get(a.league) or {}).get("teasers") or {}
-    if not t.get("provider_is_mine") and not a.force:
+    # Separate from --force on purpose. --force means "overwrite a clip I
+    # already made"; it must not also wave through a clip built on a book with
+    # no account, which is what happened -- a DraftKings ticket rendered
+    # because the flag for one was reused for the other.
+    if not t.get("provider_is_mine") and not a.any_book:
         raise SystemExit(
             f"the {a.league} legs are off {t.get('provider') or 'an unknown book'}, "
             f"which is not one of your books.\n"
             f"  Refresh and rebuild, then try again:\n"
             f"    python teaser.py --snapshot --league {a.league}   # one API credit\n"
             f"    python build_board.py --leagues {a.league}\n"
-            f"  (--force renders anyway, and the clip will say whose numbers they are.)"
+            f"  (--any-book renders anyway, and the clip will say whose numbers they are.)"
         )
     os.makedirs(a.out, exist_ok=True)
     os.makedirs(UPLOADED, exist_ok=True)
