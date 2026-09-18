@@ -103,7 +103,11 @@ def main():
     # The call to action points at the site and says what is free about it.
     cta = R.cta_scene("NFL", board())
     r.append(check("cta carries the url", R.SITE_URL in cta, True))
-    r.append(check("cta says no sign-up", "No sign-up" in cta, True))
+    r.append(check("cta says it will not stay free", "not the plan forever" in cta, True))
+    # No dated promise, ever: an invented deadline is the one claim that would
+    # cost this channel the honesty it trades on.
+    for word in ("Friday", "tonight", "24 hours", "midnight", "last chance"):
+        r.append(check(f"cta invents no deadline ({word})", word in cta, False))
 
     print(f"\n  {sum(r)} passed, {len(r) - sum(r)} failed")
     return 0 if all(r) else 1

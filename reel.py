@@ -67,9 +67,13 @@ OUTRO_SUB = "Nobody posts their losses. That is the point."
 # "no sign-up" rather than on the address, because that part is true today and
 # the address is not memorable.
 SITE_URL = "statuesque-brioche-a8fa92.netlify.app"
-CTA_LINE = "Build your own"
+CTA_LINE = "Free while it is unproven"
 CTA_SUB = ("Every qualifying leg, every leg count, and the price each one "
-           "needs. No sign-up, no email, nothing to buy.")
+           "needs. Open to anyone while the record is being built \u2014 that is "
+           "not the plan forever.")
+# No invented deadline. "Prices go up Friday" when they do not is the one kind
+# of claim that would cost this channel the only thing it has, and "it will not
+# stay free" does the same work while being true today.
 
 
 def _read(name: str, default):
@@ -529,7 +533,9 @@ def render(route: Dict, league: str, board: Dict, history: Dict, out_dir: str,
          "Six points moved across three and seven is worth more than six points "
          "anywhere else. That gap is the entire bet."),
         ("05-cta", cta_scene(league, board), 4.5,
-         f"{CTA_LINE}. {CTA_SUB}"),
+         "Go and look at it now, while it is still free. Every qualifying leg, "
+         "every leg count, and the price each one needs. It is open to anyone "
+         "while the record is being built, and that is not the plan forever."),
         ("06-outro", outro_scene(), 3.0, f"{OUTRO_LINE}. {OUTRO_SUB}"),
     ]
 
