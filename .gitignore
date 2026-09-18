@@ -65,3 +65,8 @@ deno.lock
 
 # Reduced play-by-play, derived from the cached season files above.
 /cache/pbp_slim_*.parquet
+
+# Rendered video frames and clips. Regenerated from the board by reel.py, so
+# the repo keeps the generator rather than its output — a 30MB mp4 in a diff
+# tells nobody anything.
+video/out/

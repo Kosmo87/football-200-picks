@@ -26,6 +26,8 @@ on:
       - "teaser_test.py"
       - "target.py"
       - "target_test.py"
+      - "reel.py"
+      - "reel_test.py"
       - "parlays.py"
       - "parlays_test.py"
       - "books.py"
@@ -380,6 +382,7 @@ jobs:
           python shop_close_test.py
           python teaser_test.py
           python target_test.py
+          python reel_test.py
           python parlays_test.py
           python books_test.py
           python faults_test.py
