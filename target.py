@@ -52,10 +52,45 @@ BOARD = os.path.join(ROOT, "public", "data", "board.json")
 #
 #   2 legs at -134  FanDuel, checked on the slip 2026-09-13 (books.py)
 #   6 legs at +750  quoted by the user 2026-09-16
-LADDER_6PT = {2: -120, 3: 160, 4: 265, 5: 450, 6: 750}
+# -134 at two legs, not the -120 the common ladder shows: that is FanDuel's
+# real price, checked on the slip. It was carried as -120 with the true number
+# only mentioned in a note, which priced the ticket better than it is.
+LADDER_6PT = {2: -134, 3: 160, 4: 265, 5: 450, 6: 750}
 LADDER_10PT = {4: 160, 5: 220, 6: 310}
-VERIFIED = {("6pt", 2): "FanDuel slip, -134 not -120", ("6pt", 6): "user quote",
-            ("10pt", 6): "user quote"}
+
+# WHICH BOOK, AND HOW WE KNOW. A teaser price without a book attached is not a
+# price: ladders differ, and the same 4-leg 6-pointer is +265 at one shop and
+# +240 at the next. Anything that reaches a public video has to be able to say
+# where its number came from, so the provenance travels with the price rather
+# than living in a commit message.
+#
+# `book: None` means the price is real but the book was never written down --
+# an honest gap, printed as such, not quietly upgraded to verified.
+LADDER_SOURCE = {
+    ("6pt", 2): {"book": "FanDuel", "how": "checked on the slip", "on": "2026-09-13"},
+    ("6pt", 6): {"book": None, "how": "quoted from your book", "on": "2026-09-16"},
+    ("10pt", 6): {"book": None, "how": "quoted from your book", "on": "2026-09-16"},
+}
+ASSUMED = {"book": None, "how": "common ladder, not checked anywhere", "on": None}
+
+
+def price_source(points: int, legs: int) -> dict:
+    """Where a ladder price came from, and whether a book was recorded."""
+    return LADDER_SOURCE.get((f"{points}pt", legs), ASSUMED)
+
+
+def source_line(points: int, legs: int) -> str:
+    """One readable clause for a page, a report or a video."""
+    src = price_source(points, legs)
+    if src["book"]:
+        on = f", {src['on']}" if src.get("on") else ""
+        return f"{src['book']} \u2014 {src['how']}{on}"
+    if src is ASSUMED:
+        return src["how"]
+    return f"{src['how']} \u2014 book not recorded"
+
+
+VERIFIED = {k: source_line(int(k[0][:-2]), k[1]) for k in LADDER_SOURCE}
 
 # How many candidate legs the parlay search considers, best-priced first. The
 # board carries 60-90 sides; every 5-subset of all of them is millions, and the

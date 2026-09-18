@@ -272,9 +272,18 @@ def build_league(league: str, season: int, refresh_prior: bool):
             # NFL's 73.6%), so a college teaser reaches a payout rather than
             # beating a price. The page says which it is.
             teasers["bands_measured_on"] = league
+            # Provenance per ladder entry, so the page and the video can both
+            # say which book a price came from. A price with no book attached
+            # is not a price -- ladders differ by shop, and anything that
+            # reaches a public post has to be able to name its source.
             teasers["verified_prices"] = [
                 f"{pts}:{legs}" for (pts, legs) in target.VERIFIED
             ]
+            teasers["price_sources"] = {
+                f"{pts}:{n}": target.source_line(pts, n)
+                for pts, prices in ((6, target.LADDER_6PT), (10, target.LADDER_10PT))
+                for n in prices
+            }
         except Exception as e:
             print(f"[board] {league} teaser shortlist unavailable: {e}")
 

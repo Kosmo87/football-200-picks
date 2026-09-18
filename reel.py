@@ -112,6 +112,8 @@ h2{font-size:70px;line-height:1.12;letter-spacing:-.02em;font-weight:750}
 .leg .from{font-size:28px;color:#6b7889;margin-top:10px}
 .leg .game{font-size:28px;color:#9aa7b5;text-align:right}
 .foot{font-size:32px;color:#6b7889;margin-top:44px;line-height:1.4}
+.src{font-size:28px;color:#9aa7b5;margin-top:26px;line-height:1.4}
+.src strong{color:#e6edf3}
 .tag{margin-top:auto;font:700 28px/1.3 ui-monospace,Menlo,monospace;color:#6b7889;
  letter-spacing:.06em;border-top:2px solid #262f3b;padding-top:26px}
 .banner{background:#12251a;border:2px solid #235c31;border-radius:22px;
@@ -240,7 +242,37 @@ def best_route(board: Dict, league: str, target: int) -> Optional[Dict]:
     return best
 
 
-def ticket_scene(route: Dict, league: str, history: Dict) -> str:
+def source_note(route: Dict, board: Dict, league: str) -> str:
+    """
+    Where the numbers came from, said on screen.
+
+    Both halves of a teaser have a source and they are usually different
+    books: the LEGS are read off whichever spread the board has, and the PRICE
+    comes off a ladder that may never have been checked anywhere. A clip that
+    shows +265 without saying whose +265 it is invites the viewer to assume
+    their own book pays it.
+    """
+    t = ((board.get("leagues") or {}).get(league) or {}).get("teasers") or {}
+    legs_from = t.get("provider") or "one book"
+    key = f"{route['points']}:{route['legs']}"
+    price_from = (t.get("price_sources") or {}).get(key) or "not checked"
+    return (f"Lines off <strong>{html.escape(legs_from)}</strong> &middot; "
+            f"ladder price: {html.escape(price_from)}")
+
+
+def spoken_source(route: Dict, board: Dict, league: str) -> str:
+    """The same provenance, phrased for a voiceover rather than a card."""
+    t = ((board.get("leagues") or {}).get(league) or {}).get("teasers") or {}
+    legs_from = t.get("provider") or "one book"
+    src = (t.get("price_sources") or {}).get(f"{route['points']}:{route['legs']}") or ""
+    if "not checked" in src or "not recorded" in src:
+        return (f"Lines are off {legs_from}, and check that ladder price at your "
+                f"own book before you take it, because ladders differ.")
+    return f"Lines are off {legs_from}, and the price is {src.split(' —')[0]}."
+
+
+def ticket_scene(route: Dict, league: str, history: Dict,
+                 board: Optional[Dict] = None) -> str:
     legs = "".join(
         f"<div class='leg'><div><div class='team'>{html.escape(l['team_abbr'])} "
         f"{l['teased']:+g}</div><div class='from'>from {l['spread']:+g}</div></div>"
@@ -254,7 +286,8 @@ def ticket_scene(route: Dict, league: str, history: Dict) -> str:
         f"<div class='sub'>Wins <span class='accent'>{route['prob']*100:.1f}%</span> "
         f"of the time. The price needs {route['needs']*100:.1f}%.</div>"
         f"{legs}"
-        f"<div class='tag'>{html.escape(record_line(history))}</div>"
+        + (f"<div class='src'>{source_note(route, board, league)}</div>" if board else "")
+        + f"<div class='tag'>{html.escape(record_line(history))}</div>"
     )
 
 
@@ -449,10 +482,11 @@ def render(route: Dict, league: str, board: Dict, history: Dict, out_dir: str,
         ("02-record", record_scene(history), 4.5,
          "Here is where the record stands. The model's own picks lost money, "
          "which is why the board stopped recommending them."),
-        ("03-ticket", ticket_scene(route, league, history), 6.0,
+        ("03-ticket", ticket_scene(route, league, history, board), 6.0,
          f"This week: a {route['legs']} leg {route['points']} point teaser at "
          f"{route['price']}, which wins {route['prob']*100:.0f} percent of the "
-         f"time. The price only needs {route['needs']*100:.0f}."),
+         f"time. The price only needs {route['needs']*100:.0f}. "
+         f"{spoken_source(route, board, league)}"),
         ("04-why", why_scene(route, board, league), 5.5,
          "Six points moved across three and seven is worth more than six points "
          "anywhere else. That gap is the entire bet."),

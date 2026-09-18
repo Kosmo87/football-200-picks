@@ -1800,7 +1800,12 @@ function solveRoutes(target, maxLegs = 6, tolerance = 0.12) {
           why: (fillable
                  ? `${pool.length} qualifying legs at ${pts} points, so this is fillable today. `
                  : `Only ${pool.length} qualifying legs at ${pts} points — needs ${n}. `)
-             + (verified ? "Ladder price confirmed. " : "Ladder price ASSUMED — check your slip. ")
+             // Name the book, or say plainly that none was recorded. Ladders
+             // differ by shop, so a price with no source attached invites the
+             // reader to assume their own book pays it.
+             + `Legs off ${(lg.teasers || {}).provider || "one book"}; `
+             + `price: ${((lg.teasers || {}).price_sources || {})[`${pts}:${n}`]
+                          || "not checked"}. `
              + (joint * (dec - 1) - (1 - joint) > 0
                  ? `The chance is measured from completed games rather than read `
                    + `off the price, and here it comes in above what the ladder `
