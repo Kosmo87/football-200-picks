@@ -142,30 +142,103 @@ def intro_scene() -> str:
     )
 
 
-def record_scene(history: Dict) -> str:
-    s = history.get("summary") or {}
-    won, lost = int(s.get("won") or 0), int(s.get("lost") or 0)
-    roi = float(s.get("roi_pct") or 0.0)
-    units = float(s.get("units") or 0.0)
-    clv = float(s.get("avg_clv_pp") or 0.0)
-    settled = won + lost
-    tone = "pos" if roi > 0 else "neg"
+def placed_record(season: Optional[int] = None) -> Dict:
+    """
+    What was actually PLACED and settled, by strategy.
+
+    Kept apart from the model's ledger on purpose. history.json is every pick
+    the Elo model logged on paper -- 16-30 at -22%, which is the evidence that
+    retired it -- and none of those were bets anyone made. Reporting them as
+    "our record" in a video would be claiming losses we never took, which is
+    an odd kind of dishonesty but dishonesty all the same.
+    
+    A new strategy deserves its own count, which is the legitimate half of
+    "reset the record". Deleting the old one is the other half, and that is
+    what a tout does the week before he starts selling: the losing model
+    ledger is the most credible thing this project owns, so it stays, labelled
+    as paper and as somebody else's idea.
+    """
+    from datetime import datetime, timezone
+    year = season or (datetime.now(timezone.utc).year
+                      if datetime.now(timezone.utc).month >= 8
+                      else datetime.now(timezone.utc).year - 1)
+    path = os.path.join(ROOT, "data", "archive", f"placed_{year}.ndjson")
+    out = {"settled": 0, "won": 0, "lost": 0, "units": 0.0, "by_kind": {}}
+    try:
+        with open(path) as fh:
+            rows = [json.loads(l) for l in fh if l.strip()]
+    except OSError:
+        return out
+    for r in rows:
+        status = r.get("status")
+        if status not in ("won", "lost", "push"):
+            continue
+        kind = r.get("kind") or "single"
+        bucket = out["by_kind"].setdefault(kind, {"won": 0, "lost": 0, "units": 0.0})
+        if status != "push":
+            out["settled"] += 1
+            out[status] += 1
+            bucket["won" if status == "won" else "lost"] += 1
+        units = float(r.get("units") or 0.0)
+        out["units"] += units
+        bucket["units"] += units
+    return out
+
+
+def record_scene(history: Dict, placed: Optional[Dict] = None) -> str:
+    """
+    Two records, never blended: what has been placed, and what the model did
+    on paper. The second is context for why the first exists.
+    """
+    placed = placed or {"settled": 0}
+    m = history.get("summary") or {}
+    mw, ml = int(m.get("won") or 0), int(m.get("lost") or 0)
+    mroi = float(m.get("roi_pct") or 0.0)
+
+    if not placed.get("settled"):
+        # The honest version of starting over: the count is zero and it says
+        # so, which is a better hook than a reset anyway -- nobody believes a
+        # fresh 0-0 from an account that was selling picks last week.
+        return scene_html(
+            "<div class='kicker'>The record, from zero</div>"
+            "<div class='big accent'>0-0</div>"
+            "<div class='sub'>No ticket from this system has settled yet. "
+            "This is the first one.</div>"
+            "<div class='row'>"
+            f"<div class='card'><div class='lab'>Placed</div>"
+            f"<div class='val'>0</div><div class='note'>bets settled</div></div>"
+            f"<div class='card'><div class='lab'>Paper model</div>"
+            f"<div class='val neg'>{mw}-{ml}</div>"
+            f"<div class='note'>{mroi:+.0f}% &middot; retired</div></div>"
+            "</div>"
+            "<div class='foot'>The old number on the right is the Elo model's, "
+            "on paper, and it is why that model no longer picks anything. It is "
+            "not a betting record and it is not mine to claim. Everything from "
+            "here is a placed ticket, graded win or lose.</div>"
+        )
+
+    won, lost = placed["won"], placed["lost"]
+    units = placed["units"]
+    roi = units / max(1, won + lost) * 100
+    tone = "pos" if units > 0 else "neg"
+    tease = placed["by_kind"].get("teaser") or {"won": 0, "lost": 0, "units": 0.0}
     return scene_html(
-        "<div class='kicker'>Where the record stands</div>"
+        "<div class='kicker'>Placed and settled</div>"
         f"<div class='big {tone}'>{roi:+.0f}%</div>"
-        f"<div class='sub'>return over {settled} settled picks</div>"
+        f"<div class='sub'>across {won + lost} ticket(s) actually placed</div>"
         "<div class='row'>"
         f"<div class='card'><div class='lab'>Record</div>"
-        f"<div class='val'>{won}-{lost}</div><div class='note'>flat 1u a pick</div></div>"
-        f"<div class='card'><div class='lab'>Units</div>"
-        f"<div class='val {tone}'>{units:+.1f}</div><div class='note'>since day one</div></div>"
-        f"<div class='card'><div class='lab'>CLV</div>"
-        f"<div class='val'>{clv:+.1f}</div><div class='note'>points vs close</div></div>"
+        f"<div class='val'>{won}-{lost}</div><div class='note'>every placed bet</div></div>"
+        f"<div class='card'><div class='lab'>Teasers</div>"
+        f"<div class='val'>{tease['won']}-{tease['lost']}</div>"
+        f"<div class='note'>{tease['units']:+.1f}u</div></div>"
+        f"<div class='card'><div class='lab'>Paper model</div>"
+        f"<div class='val neg'>{mw}-{ml}</div>"
+        f"<div class='note'>{mroi:+.0f}% &middot; retired</div></div>"
         "</div>"
-        f"<div class='spacer'></div>"
-        f"<div class='foot'>The model's own picks lost money. That is why the "
-        f"board stopped recommending them &mdash; and why what comes next is "
-        f"not a prediction.</div>"
+        "<div class='foot'>Placed tickets on the left, the retired Elo model's "
+        "paper picks on the right. They are different strategies and they are "
+        "never added together.</div>"
     )
 
 
@@ -177,12 +250,12 @@ def record_line(history: Dict) -> str:
     and the one thing this channel has that a tout does not is the losing half
     of the ledger printed next to the pick.
     """
-    s = history.get("summary") or {}
-    won, lost = int(s.get("won") or 0), int(s.get("lost") or 0)
-    roi = float(s.get("roi_pct") or 0.0)
-    if not (won + lost):
-        return "NO SETTLED RECORD YET"
-    return f"RECORD SO FAR  {won}-{lost}  ({roi:+.0f}% RETURN)"
+    placed = placed_record()
+    if not placed.get("settled"):
+        return "PLACED RECORD  0-0  \u2014 THIS SYSTEM STARTS HERE"
+    won, lost = placed["won"], placed["lost"]
+    roi = placed["units"] / max(1, won + lost) * 100
+    return f"PLACED RECORD  {won}-{lost}  ({roi:+.0f}% RETURN)"
 
 
 def all_routes(board: Dict, league: str) -> List[Dict]:
@@ -521,9 +594,11 @@ def render(route: Dict, league: str, board: Dict, history: Dict, out_dir: str,
 
     scenes = [
         ("01-intro", intro_scene(), 3.0, f"{INTRO_LINE}. {INTRO_SUB}"),
-        ("02-record", record_scene(history), 4.5,
-         "Here is where the record stands. The model's own picks lost money, "
-         "which is why the board stopped recommending them."),
+        ("02-record", record_scene(history, placed_record()), 4.5,
+         "The record for this system starts at nothing, because this is the "
+         "first ticket from it. The old number you will see quoted is an Elo "
+         "model's paper picks, and losing with those is exactly why it got "
+         "retired."),
         ("03-ticket", ticket_scene(route, league, history, board), 6.0,
          f"This week: a {route['legs']} leg {route['points']} point teaser at "
          f"{route['price']}, which wins {route['prob']*100:.0f} percent of the "

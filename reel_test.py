@@ -55,13 +55,17 @@ def main():
 
     # The record travels with the ticket. Without this a clip is a tout.
     t = R.ticket_scene(R.best_route(board(), "NFL", 265), "NFL", history())
-    r.append(check("ticket shows the standing record", "RECORD SO FAR  15-30" in t, True))
-    r.append(check("ticket shows the losing return", "(-23% RETURN)" in t, True))
     r.append(check("ticket names its legs", t.count("class='leg'"), 4))
 
-    # An empty ledger says so rather than printing 0-0 at 0%.
-    r.append(check("no record yet is said out loud",
-                   R.record_line({}), "NO SETTLED RECORD YET"))
+    # And it is the PLACED record, never the model's paper picks. The ledger
+    # of placed bets is empty today, so the strip has to say zero rather than
+    # borrowing the model's 16-30 and calling it a betting record.
+    r.append(check("ticket strip reports the placed count",
+                   "PLACED RECORD  0-0" in t, True))
+    r.append(check("ticket strip does not claim the model's losses",
+                   "15-30" in t, False))
+    r.append(check("zero state says the system starts here",
+                   "STARTS HERE" in R.record_line({}), True))
 
     # A route the board cannot fill must not reach a scene: the video would be
     # naming legs that do not exist.
@@ -78,10 +82,30 @@ def main():
     route = R.best_route(board(), "NFL", 265)
     r.append(check("chance is the measured joint rate", route["prob"], 0.3032))
 
-    # A winning record should not be printed in the losing colour.
-    good = R.record_scene(history(won=30, lost=15, roi=12.5))
-    r.append(check("a winning record reads positive", "big pos" in good, True))
-    r.append(check("a losing record reads negative", "big neg" in R.record_scene(history()), True))
+    # The two ledgers are never blended. With nothing placed, the headline is
+    # a literal zero and the model's paper record is labelled as retired --
+    # the legitimate half of "reset the count", without deleting the evidence
+    # that retired the model in the first place.
+    zero = R.record_scene(history(), {"settled": 0})
+    r.append(check("zero state leads with 0-0", "0-0" in zero, True))
+    # Asserted from the fixture, not from whatever the live ledger says today:
+    # hardcoding 16-30 here made this test fail the moment a pick graded.
+    r.append(check("zero state keeps the paper record visible", "15-30" in zero, True))
+    r.append(check("zero state calls the paper record retired", "retired" in zero, True))
+    r.append(check("zero state disowns it as a betting record",
+                   "not a betting record" in zero, True))
+
+    # Once tickets settle, the placed record leads and colours by units.
+    placed_win = {"settled": 2, "won": 2, "lost": 0, "units": 3.4,
+                  "by_kind": {"teaser": {"won": 2, "lost": 0, "units": 3.4}}}
+    placed_lose = {"settled": 2, "won": 0, "lost": 2, "units": -2.0,
+                   "by_kind": {"teaser": {"won": 0, "lost": 2, "units": -2.0}}}
+    r.append(check("a winning placed record reads positive",
+                   "big pos" in R.record_scene(history(), placed_win), True))
+    r.append(check("a losing placed record reads negative",
+                   "big neg" in R.record_scene(history(), placed_lose), True))
+    r.append(check("teasers get their own line",
+                   "Teasers" in R.record_scene(history(), placed_win), True))
 
     # Escaping: team names come from a feed, and a feed is not trusted markup.
     bad = board()
