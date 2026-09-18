@@ -775,23 +775,35 @@ def render(route: Dict, league: str, board: Dict, history: Dict, out_dir: str,
     work = os.path.join(out_dir, "frames", name)
     os.makedirs(work, exist_ok=True)
 
+    # Spoken register is casual on purpose -- this is a channel, not a
+    # prospectus -- while every number in it still comes off the board. The
+    # cards stay terse; the voice is what carries the tone.
+    slate = slate_label(route["fill"], spoken=True)
     scenes = [
-        ("01-intro", intro_scene(), 3.0, f"{INTRO_LINE}. {INTRO_SUB}"),
+        ("01-intro", intro_scene(), 3.0,
+         "Hey guys, welcome to another round of Parlay Finder, where we train "
+         "AI to help us build our parlay bets. Today we found one for you to "
+         "follow along with."),
         ("02-record", record_scene(history, placed_record()), 4.5,
-         "The record starts at nothing, because this is ticket number one. "
-         "Every one after it gets graded here, win or lose."),
+         "Quick word on the record. We are starting from zero, this is ticket "
+         "number one, and every one after it goes up here win or lose."),
         ("03-ticket", ticket_scene(route, league, history, board), 6.0,
-         f"For {slate_label(route['fill'], spoken=True)}: a {route['legs']} leg "
-         f"{route['points']} point teaser at {route['price']}. It wins "
+         f"So here is the play for {slate}. A {route['legs']} leg, "
+         f"{route['points']} point teaser at {route['price']}. It hits about "
          f"{route['prob']*100:.0f} percent of the time and the price only needs "
-         f"{route['needs']*100:.0f}. {spoken_source(route, board, league)}"),
+         f"{route['needs']*100:.0f}, so there is a little edge in it. "
+         f"{spoken_source(route, board, league)}"),
         ("04-why", why_scene(route, board, league), 5.5,
-         "Six points across three and seven is worth more than six points "
-         "anywhere else. That gap is the whole bet."),
+         "Why teasers? Almost a quarter of NFL games land on exactly three or "
+         "seven points. Moving a line across both of those is worth way more "
+         "than six points anywhere else, and that gap is the whole bet."),
         ("05-cta", cta_scene(league, board), 4.5,
-         "Go and look while it is still free. Every qualifying leg and the "
-         "price each one needs. That is not the plan forever."),
-        ("06-outro", outro_scene(), 3.0, f"{OUTRO_LINE}. {OUTRO_SUB}"),
+         "Come build your own on the site. Every qualifying leg and the price "
+         "each one needs. It is free while we are still proving this out, and "
+         "that will not last forever."),
+        ("06-outro", outro_scene(), 3.0,
+         "That is it for today. Win or lose, you will see this one on the "
+         "record next time. Let us see how it goes."),
     ]
 
     frames = []
