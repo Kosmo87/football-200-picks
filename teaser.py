@@ -374,6 +374,7 @@ def candidates_from_board(games: List[dict], within_days: int = 8,
                 "kickoff": g.get("kickoff", ""),
                 "team_abbr": (g.get(side) or {}).get("abbr", ""),
                 "team_name": (g.get(side) or {}).get("name", ""),
+                "logo": (g.get(side) or {}).get("logo", ""),
                 "spread": spread,
                 "source": source,
                 "teased": teased,
@@ -683,6 +684,9 @@ def main() -> int:
     ap.add_argument("--league", default="NFL", choices=sorted(SPORTS))
     ap.add_argument("--calibrate", action="store_true",
                     help="re-derive bands from nflverse and exit")
+    ap.add_argument("--snapshot", action="store_true",
+                    help="refresh the spread snapshot for your own books "
+                         "(one API credit per league) and exit")
     ap.add_argument("--regions", default="us")
     ap.add_argument("--books", default=",".join(__import__("books").MINE),
                     help="comma-separated bookmaker keys, or 'all' for the "
@@ -693,6 +697,26 @@ def main() -> int:
 
     if a.calibrate:
         calibrate()
+        return 0
+
+    if a.snapshot:
+        # One credit, on demand. The board prefers a snapshot of the user's own
+        # books over ESPN's quote, but that snapshot is written by the fault
+        # scanner, which only runs on line movement or a floor slot -- so on a
+        # quiet Thursday the board falls back to DraftKings, a book the user
+        # does not hold. This is the manual refresh for the moment it matters:
+        # before anything is placed or posted.
+        import books as BOOKS
+        import faults
+        from datetime import datetime, timezone
+        stamp = datetime.now(timezone.utc).isoformat(timespec="seconds")
+        books = None if a.books.strip().lower() == "all" else [
+            b.strip() for b in a.books.split(",") if b.strip()]
+        payload = fetch_spreads(a.league, a.books, books)
+        n = faults.snapshot_book_spreads(payload, a.league, stamp)
+        print(f"snapshot: {n} {a.league} game(s) from "
+              f"{', '.join(books or ['the whole field'])}")
+        print("Rebuild the board to pick it up: python build_board.py")
         return 0
 
     books = None if a.books.strip().lower() == "all" else [

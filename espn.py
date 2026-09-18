@@ -45,6 +45,7 @@ class TeamInfo:
     name: str
     abbreviation: str
     home_away: str
+    logo: str = ""
 
 
 @dataclass
@@ -172,6 +173,10 @@ def _team_info(c: dict, home_away: str) -> TeamInfo:
         name=team.get("displayName", home_away.title()),
         abbreviation=team.get("abbreviation", home_away.upper()),
         home_away=home_away,
+        # ESPN's own CDN copy. Carried for the video generator; nothing on the
+        # site uses it, and it is a URL rather than a file so the board stays
+        # JSON and the download happens once, at render time.
+        logo=team.get("logo") or "",
     )
 
 

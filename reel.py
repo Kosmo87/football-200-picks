@@ -105,12 +105,14 @@ h2{font-size:70px;line-height:1.12;letter-spacing:-.02em;font-weight:750}
 .card .val{font:800 62px/1.05 ui-monospace,Menlo,monospace;margin-top:16px;
  letter-spacing:-.04em;white-space:nowrap}
 .card .note{font-size:26px;color:#6b7889;margin-top:12px}
-.leg{display:flex;justify-content:space-between;align-items:baseline;
+.leg{display:flex;justify-content:space-between;align-items:center;gap:26px;
  background:#151b23;border:2px solid #262f3b;border-left:8px solid #4c8dff;
  border-radius:18px;padding:26px 30px;margin-top:20px}
+.crest{width:96px;height:96px;object-fit:contain;flex:0 0 96px}
+.legtext{flex:1}
 .leg .team{font:800 52px/1 ui-monospace,Menlo,monospace;letter-spacing:-.02em}
 .leg .from{font-size:28px;color:#6b7889;margin-top:10px}
-.leg .game{font-size:28px;color:#9aa7b5;text-align:right}
+.leg .game{font-size:28px;color:#9aa7b5;text-align:right;flex:0 0 auto}
 .foot{font-size:32px;color:#6b7889;margin-top:44px;line-height:1.4}
 .src{font-size:28px;color:#9aa7b5;margin-top:26px;line-height:1.4}
 .src strong{color:#e6edf3}
@@ -273,12 +275,17 @@ def spoken_source(route: Dict, board: Dict, league: str) -> str:
 
 def ticket_scene(route: Dict, league: str, history: Dict,
                  board: Optional[Dict] = None) -> str:
-    legs = "".join(
-        f"<div class='leg'><div><div class='team'>{html.escape(l['team_abbr'])} "
-        f"{l['teased']:+g}</div><div class='from'>from {l['spread']:+g}</div></div>"
-        f"<div class='game'>{html.escape(l.get('matchup') or '')}</div></div>"
-        for l in route["fill"]
-    )
+    rows = []
+    for l in route["fill"]:
+        badge = logo_file(l)
+        img = (f"<img class='crest' src='file://{badge}' alt=''>" if badge else "")
+        rows.append(
+            f"<div class='leg'>{img}<div class='legtext'>"
+            f"<div class='team'>{html.escape(l['team_abbr'])} {l['teased']:+g}</div>"
+            f"<div class='from'>from {l['spread']:+g}</div></div>"
+            f"<div class='game'>{html.escape(l.get('matchup') or '')}</div></div>"
+        )
+    legs = "".join(rows)
     price = f"{route['price']:+d}"
     return scene_html(
         f"<div class='kicker'>This week &middot; {html.escape(league)}</div>"
@@ -344,6 +351,37 @@ def cta_scene(league: str, board: Dict) -> str:
         f"builds the ticket.</div>"
         f"<div class='spacer'></div>"
     )
+
+
+LOGOS = os.path.join(ROOT, "video", "logos")
+
+
+def logo_file(leg: Dict) -> Optional[str]:
+    """
+    A local copy of the team badge, downloaded once.
+
+    Cached rather than hot-linked: Chrome renders these headless, and a scene
+    that waits on a CDN is a scene that sometimes renders with a hole in it.
+    Once on disk it is a file:// reference and the render is deterministic.
+    """
+    url = (leg.get("logo") or "").strip()
+    if not url:
+        return None
+    os.makedirs(LOGOS, exist_ok=True)
+    name = f"{leg.get('team_abbr', 'x')}-{abs(hash(url)) % 10**8}.png"
+    path = os.path.join(LOGOS, name)
+    if os.path.exists(path) and os.path.getsize(path) > 512:
+        return path
+    try:
+        import requests
+        r = requests.get(url, timeout=20)
+        if r.status_code != 200 or len(r.content) < 512:
+            return None
+        with open(path, "wb") as fh:
+            fh.write(r.content)
+        return path
+    except Exception:
+        return None
 
 
 def shoot(html_text: str, png: str) -> None:
@@ -548,6 +586,23 @@ def main() -> int:
     board, history = _read("board.json", {}), _read("history.json", {})
     if not board:
         raise SystemExit("no board.json — run build_board.py first")
+
+    # A clip cannot be built off a book the user does not hold. The board falls
+    # back to ESPN's DraftKings quote whenever the snapshot of BetMGM/FanDuel
+    # spreads has gone stale, and a public post promising +265 on numbers from
+    # a book with no account is advertising a bet that cannot be placed --
+    # doubly so for teasers, which BetMGM does not sell at all, leaving
+    # FanDuel as the only one of the two where any of this is placeable.
+    t = ((board.get("leagues") or {}).get(a.league) or {}).get("teasers") or {}
+    if not t.get("provider_is_mine") and not a.force:
+        raise SystemExit(
+            f"the {a.league} legs are off {t.get('provider') or 'an unknown book'}, "
+            f"which is not one of your books.\n"
+            f"  Refresh and rebuild, then try again:\n"
+            f"    python teaser.py --snapshot --league {a.league}   # one API credit\n"
+            f"    python build_board.py --leagues {a.league}\n"
+            f"  (--force renders anyway, and the clip will say whose numbers they are.)"
+        )
     os.makedirs(a.out, exist_ok=True)
     os.makedirs(UPLOADED, exist_ok=True)
 
