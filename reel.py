@@ -492,6 +492,55 @@ def audio_seconds(path: str) -> float:
         return 0.0
 
 
+VOICE_IN = os.path.join(ROOT, "video", "voice")
+TAKE_FORMATS = (".m4a", ".wav", ".aiff", ".aif", ".mp3", ".caf")
+
+
+def own_takes(clip: str, scenes: int) -> List[tuple]:
+    """
+    Your own recordings, if you made them.
+
+    Looked for in video/voice/<clip>/ as 01, 02, 03… in any format a phone
+    produces. All or nothing: a clip half in your voice and half in a system
+    voice sounds like a fault rather than a style, so a missing take falls the
+    whole thing back to TTS and says which one was missing.
+
+    This is the option worth taking. A channel whose pitch is "I post the
+    losses too" is better served by the person who took them than by any
+    synthesiser, and it costs nothing but the two minutes of reading that
+    script.txt exists to make easy.
+    """
+    folder = os.path.join(VOICE_IN, clip)
+    if not os.path.isdir(folder):
+        return []
+    found, missing = [], []
+    for i in range(1, scenes + 1):
+        hit = None
+        for ext in TAKE_FORMATS:
+            path = os.path.join(folder, f"{i:02d}{ext}")
+            if os.path.exists(path) and os.path.getsize(path) > 1024:
+                hit = path
+                break
+        if hit:
+            found.append(hit)
+        else:
+            missing.append(f"{i:02d}")
+    if missing:
+        print(f"  your voice: takes {', '.join(missing)} missing from {folder} "
+              f"— falling back to {VOICE}")
+        return []
+    print(f"  your voice: {len(found)} takes from {folder}")
+    return [(p, audio_seconds(p)) for p in found]
+
+
+def to_wav(path: str, out: str) -> str:
+    """One format before concatenating: phone takes are m4a, `say` gives aiff."""
+    subprocess.run(["ffmpeg", "-y", "-i", path, "-ac", "1", "-ar", "22050",
+                    "-c:a", "pcm_s16le", out],
+                   check=True, capture_output=True, timeout=180)
+    return out
+
+
 def narrate_scenes(lines: List[str], out_dir: str, rate: int = 180):
     """
     One audio file per scene, so a scene can be held for exactly as long as
@@ -522,8 +571,11 @@ def join_audio(parts: List[tuple], out: str) -> Optional[str]:
         return None
     listing = out + ".txt"
     with open(listing, "w") as fh:
-        for path, _ in parts:
-            fh.write(f"file '{path}'\n")
+        for i, (path, _) in enumerate(parts, start=1):
+            # Re-encoded first: concat demuxer needs one format, and a phone
+            # take is m4a at 48k while `say` writes aiff at 22k.
+            wav = os.path.join(os.path.dirname(out), f"part-{i:02d}.wav")
+            fh.write(f"file '{to_wav(path, wav)}'\n")
     subprocess.run(["ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", listing,
                     "-c:a", "pcm_s16le", out],
                    check=True, capture_output=True, timeout=300)
@@ -620,9 +672,21 @@ def render(route: Dict, league: str, board: Dict, history: Dict, out_dir: str,
         shoot(markup, png)
         frames.append((png, secs))
 
+    # The script, always, whether or not this run narrates: it is what you read
+    # from when recording, and it is the only place the spoken wording can be
+    # reviewed without watching the clip.
+    script = os.path.join(VOICE_IN, name, "script.txt")
+    os.makedirs(os.path.dirname(script), exist_ok=True)
+    with open(script, "w") as fh:
+        fh.write(f"# {name}\n# Record each line as 01, 02, 03… in this folder.\n")
+        fh.write(f"# Any phone format works. All {len(scenes)} or it falls back.\n\n")
+        for i, sc in enumerate(scenes, start=1):
+            fh.write(f"{i:02d}  ({sc[0]})\n{sc[3]}\n\n")
+
     audio = None
     if narrate_it:
-        parts = narrate_scenes([sc[3] for sc in scenes], work)
+        parts = own_takes(name, len(scenes)) or narrate_scenes(
+            [sc[3] for sc in scenes], work)
         if parts:
             frames = [(png, max(base, secs + 0.6))
                       for (png, base), (_, secs) in zip(frames, parts)]
