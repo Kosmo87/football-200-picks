@@ -261,6 +261,14 @@ def qualifying_legs(payload: List[dict], within_days: int = 8) -> List[Leg]:
 
 SNAPSHOT_MAX_AGE_H = 12.0
 
+# Where faults.py leaves the snapshot of the user's own books. A module
+# constant rather than a path built inside the reader, so a test can point it
+# somewhere empty: the first version read the real file, and the day a real
+# snapshot got committed a test that assumed "no snapshot exists" started
+# failing on data rather than on logic.
+BOOK_SPREADS_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                 "cache", "book_spreads.json")
+
 
 def _book_spreads(league: str):
     """
@@ -273,8 +281,7 @@ def _book_spreads(league: str):
     """
     from datetime import datetime, timezone
     try:
-        with open(os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                               "cache", "book_spreads.json")) as fh:
+        with open(BOOK_SPREADS_PATH) as fh:
             store = json.load(fh)
         block = store.get(league) or {}
         captured = block.get("captured_at") or ""

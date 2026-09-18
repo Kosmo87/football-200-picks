@@ -7,6 +7,8 @@ not support, which is exactly the failure this project keeps finding.
 """
 
 import math
+import os
+
 import teaser as T
 
 
@@ -172,17 +174,40 @@ def test_board_shortlist_charges_whole_numbers_for_pushes():
     assert leg["prob"] < 0.7379, "a -1 teased line is charged for push risk"
 
 
+def _with_snapshot(snap, fn):
+    """
+    Run fn with the snapshot reader pointed at a temp file.
+
+    Isolated from cache/book_spreads.json on purpose. These tests used to
+    write the real file and restore it afterwards, which meant the "no
+    snapshot" case silently depended on that file being absent -- and the day
+    a real snapshot was committed, the test failed on data instead of logic
+    and took CI red with it.
+    """
+    import json, os, tempfile
+    original = T.BOOK_SPREADS_PATH
+    with tempfile.TemporaryDirectory() as d:
+        path = os.path.join(d, "book_spreads.json")
+        if snap is not None:
+            with open(path, "w") as fh:
+                json.dump(snap, fh)
+        T.BOOK_SPREADS_PATH = path
+        try:
+            return fn()
+        finally:
+            T.BOOK_SPREADS_PATH = original
+
+
 def test_board_shortlist_prefers_a_book_the_user_holds():
     """
     A snapshot from BetMGM/FanDuel beats ESPN's quote, and the half point is
     the whole reason: the same game at -6.5 qualifies and at -6 does not.
     """
-    import json, os, tempfile
     game = _game("1", -6.0, home="Kansas City Chiefs", away="Indianapolis Colts")
     game["home"]["name"], game["away"]["name"] = "Kansas City Chiefs", "Indianapolis Colts"
 
-    # No snapshot: ESPN's -6 buys neither key number, so there is no leg.
-    assert T.candidates_from_board([game])["legs"] == []
+    # No snapshot at all: ESPN's -6 buys neither key number, so there is no leg.
+    assert _with_snapshot(None, lambda: T.candidates_from_board([game])["legs"]) == []
 
     snap = {"NFL": {
         "captured_at": __import__("datetime").datetime.now(
@@ -191,32 +216,15 @@ def test_board_shortlist_prefers_a_book_the_user_holds():
         "games": [{"home": "Kansas City Chiefs", "away": "Indianapolis Colts",
                    "commence_time": "", "points": {"fanduel": -6.5}}],
     }}
-    root = os.path.dirname(os.path.abspath(T.__file__))
-    path = os.path.join(root, "cache", "book_spreads.json")
-    backup = None
-    if os.path.exists(path):
-        with open(path) as fh:
-            backup = fh.read()
-    try:
-        os.makedirs(os.path.dirname(path), exist_ok=True)
-        with open(path, "w") as fh:
-            json.dump(snap, fh)
-        out = T.candidates_from_board([game], league="NFL")
-        assert len(out["legs"]) == 1, "FanDuel's -6.5 qualifies where ESPN's -6 did not"
-        assert out["legs"][0]["spread"] == -6.5
-        assert out["legs"][0]["source"] == "FanDuel"
-        assert out["provider"] == "FanDuel" and out["provider_is_mine"] is True
-    finally:
-        if backup is None:
-            os.path.exists(path) and os.remove(path)
-        else:
-            with open(path, "w") as fh:
-                fh.write(backup)
+    out = _with_snapshot(snap, lambda: T.candidates_from_board([game], league="NFL"))
+    assert len(out["legs"]) == 1, "FanDuel's -6.5 qualifies where ESPN's -6 did not"
+    assert out["legs"][0]["spread"] == -6.5
+    assert out["legs"][0]["source"] == "FanDuel"
+    assert out["provider"] == "FanDuel" and out["provider_is_mine"] is True
 
 
 def test_board_shortlist_ignores_a_stale_snapshot():
     """An old number quoted as the live one is a band that may not exist."""
-    import json, os
     game = _game("1", -6.0, home="Kansas City Chiefs", away="Indianapolis Colts")
     game["home"]["name"], game["away"]["name"] = "Kansas City Chiefs", "Indianapolis Colts"
     old = (__import__("datetime").datetime.now(__import__("datetime").timezone.utc)
@@ -226,20 +234,8 @@ def test_board_shortlist_ignores_a_stale_snapshot():
                     "games": [{"home": "Kansas City Chiefs",
                                "away": "Indianapolis Colts", "commence_time": "",
                                "points": {"fanduel": -6.5}}]}}
-    root = os.path.dirname(os.path.abspath(T.__file__))
-    path = os.path.join(root, "cache", "book_spreads.json")
-    backup = open(path).read() if os.path.exists(path) else None
-    try:
-        with open(path, "w") as fh:
-            json.dump(snap, fh)
-        out = T.candidates_from_board([game], league="NFL")
-        assert out["legs"] == [], "a stale snapshot must not create a leg"
-    finally:
-        if backup is None:
-            os.path.exists(path) and os.remove(path)
-        else:
-            with open(path, "w") as fh:
-                fh.write(backup)
+    out = _with_snapshot(snap, lambda: T.candidates_from_board([game], league="NFL"))
+    assert out["legs"] == [], "a stale snapshot must not create a leg"
 
 
 def test_board_shortlist_windows_by_kickoff():
@@ -250,6 +246,13 @@ def test_board_shortlist_windows_by_kickoff():
 
 
 if __name__ == "__main__":
+    # No test reads the real snapshot unless it asks. cache/book_spreads.json
+    # is live data that changes hourly and gets committed by CI; a suite that
+    # reads it is a suite that fails on a Tuesday for reasons no diff explains.
+    import tempfile as _tf
+    _iso = _tf.mkdtemp()
+    T.BOOK_SPREADS_PATH = os.path.join(_iso, "absent.json")
+
     fails = 0
     for name, fn in sorted(globals().items()):
         if name.startswith("test_") and callable(fn):
