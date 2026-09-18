@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-18T16:27:52+00:00",
+  "generated_at": "2026-09-18T19:40:06+00:00",
   "season": 2026,
   "leagues": {
     "NFL": {
@@ -22,7 +22,7 @@
             "abbr": "ATL",
             "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/atl.png",
             "elo": 1472.9,
-            "moneyline": 136
+            "moneyline": 124
           },
           "away": {
             "id": "29",
@@ -30,7 +30,7 @@
             "abbr": "CAR",
             "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/car.png",
             "elo": 1439.0,
-            "moneyline": -162
+            "moneyline": -148
           },
           "legs": [
             {
@@ -38,54 +38,91 @@
               "team_id": "29",
               "team_name": "Carolina Panthers",
               "team_abbr": "CAR",
-              "odds": -162,
+              "odds": -148,
               "model_prob": 0.40219,
-              "implied_prob": 0.59337,
-              "edge_pp": -19.117705,
+              "implied_prob": 0.57206,
+              "edge_pp": -16.986693,
               "fair_odds": 149,
               "sample": 8.0,
               "team_sample": 9.0,
               "opp_sample": 8.0,
               "team_games": 5,
               "opp_games": 4,
-              "prior_credit": 4.0
+              "prior_credit": 4.0,
+              "stale": true,
+              "stale_reason": "ATL quarterback out: Michael Penix Jr"
             },
             {
               "side": "home",
               "team_id": "1",
               "team_name": "Atlanta Falcons",
               "team_abbr": "ATL",
-              "odds": 136,
+              "odds": 124,
               "model_prob": 0.59781,
-              "implied_prob": 0.40663,
-              "edge_pp": 19.117705,
+              "implied_prob": 0.42794,
+              "edge_pp": 16.986693,
               "fair_odds": -149,
               "sample": 8.0,
               "team_sample": 8.0,
               "opp_sample": 9.0,
               "team_games": 4,
               "opp_games": 5,
-              "prior_credit": 4.0
+              "prior_credit": 4.0,
+              "stale": true,
+              "stale_reason": "ATL quarterback out: Michael Penix Jr"
             }
           ],
           "context": {
             "injuries": {
               "home": {
-                "count": 0,
+                "count": 3,
                 "long_term": 2,
-                "qb_out": 0,
-                "qbs": [],
-                "players": []
+                "qb_out": 2,
+                "qbs": [
+                  "Michael Penix Jr. (Knee - ACL)",
+                  "Tua Tagovailoa (Oblique)"
+                ],
+                "players": [
+                  {
+                    "player": "Michael Penix Jr.",
+                    "position": "QB",
+                    "status": "Out",
+                    "detail": "Knee - ACL",
+                    "since": "2026-09-18T17:36Z"
+                  },
+                  {
+                    "player": "Tua Tagovailoa",
+                    "position": "QB",
+                    "status": "Doubtful",
+                    "detail": "Oblique",
+                    "since": "2026-09-18T17:41Z"
+                  },
+                  {
+                    "player": "Billy Bowman Jr.",
+                    "position": "CB",
+                    "status": "Out",
+                    "detail": "Achilles",
+                    "since": "2026-09-17T23:25Z"
+                  }
+                ]
               },
               "away": {
-                "count": 0,
+                "count": 1,
                 "long_term": 0,
                 "qb_out": 0,
                 "qbs": [],
-                "players": []
+                "players": [
+                  {
+                    "player": "Bobby Brown III",
+                    "position": "DT",
+                    "status": "Out",
+                    "detail": "Back",
+                    "since": "2026-09-17T23:28Z"
+                  }
+                ]
               },
               "source": "espn",
-              "teams_covered": 25,
+              "teams_covered": 27,
               "teams_playing": 30,
               "error": null
             },
@@ -96,7 +133,14 @@
               "indoor": true
             },
             "weather": null,
-            "flags": []
+            "flags": [
+              {
+                "kind": "qb_out",
+                "severity": "high",
+                "side": "home",
+                "text": "ATL quarterback out: Michael Penix Jr. (Knee - ACL), Tua Tagovailoa (Oblique). The ratings are built from final scores and do not know this; the price does."
+              }
+            ]
           }
         },
         {
@@ -142,7 +186,9 @@
               "opp_sample": 8.0,
               "team_games": 4,
               "opp_games": 4,
-              "prior_credit": 4.0
+              "prior_credit": 4.0,
+              "stale": true,
+              "stale_reason": "MIN quarterback out: Kyler Murray (Concussion)"
             },
             {
               "side": "home",
@@ -159,7 +205,9 @@
               "opp_sample": 8.0,
               "team_games": 4,
               "opp_games": 4,
-              "prior_credit": 4.0
+              "prior_credit": 4.0,
+              "stale": true,
+              "stale_reason": "MIN quarterback out: Kyler Murray (Concussion)"
             }
           ],
           "context": {
@@ -172,14 +220,31 @@
                 "players": []
               },
               "away": {
-                "count": 0,
+                "count": 2,
                 "long_term": 1,
-                "qb_out": 0,
-                "qbs": [],
-                "players": []
+                "qb_out": 1,
+                "qbs": [
+                  "Kyler Murray (Concussion)"
+                ],
+                "players": [
+                  {
+                    "player": "Kyler Murray",
+                    "position": "QB",
+                    "status": "Out",
+                    "detail": "Concussion",
+                    "since": "2026-09-18T18:49Z"
+                  },
+                  {
+                    "player": "Jauan Jennings",
+                    "position": "WR",
+                    "status": "Out",
+                    "detail": "Personal",
+                    "since": "2026-09-18T18:55Z"
+                  }
+                ]
               },
               "source": "espn",
-              "teams_covered": 25,
+              "teams_covered": 27,
               "teams_playing": 30,
               "error": null
             },
@@ -190,13 +255,24 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 65.4,
-              "wind_mph": 9.1,
-              "gust_mph": 9.2,
+              "temp_f": 66.3,
+              "wind_mph": 12.3,
+              "gust_mph": 16.1,
               "precip_pct": 57,
               "snow_in": 0.0
             },
             "flags": [
+              {
+                "kind": "qb_out",
+                "severity": "high",
+                "side": "away",
+                "text": "MIN quarterback out: Kyler Murray (Concussion). The ratings are built from final scores and do not know this; the price does."
+              },
+              {
+                "kind": "wind",
+                "severity": "low",
+                "text": "Breezy: 12 mph, gusting 16"
+              },
               {
                 "kind": "rain",
                 "severity": "low",
@@ -285,7 +361,7 @@
                 "players": []
               },
               "source": "espn",
-              "teams_covered": 25,
+              "teams_covered": 27,
               "teams_playing": 30,
               "error": null
             },
@@ -296,9 +372,9 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 90.1,
-              "wind_mph": 6.1,
-              "gust_mph": 7.2,
+              "temp_f": 82.8,
+              "wind_mph": 6.0,
+              "gust_mph": 8.9,
               "precip_pct": 0,
               "snow_in": 0.0
             },
@@ -385,7 +461,7 @@
                 "players": []
               },
               "source": "espn",
-              "teams_covered": 25,
+              "teams_covered": 27,
               "teams_playing": 30,
               "error": null
             },
@@ -396,9 +472,9 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 62.5,
-              "wind_mph": 6.7,
-              "gust_mph": 8.7,
+              "temp_f": 57.2,
+              "wind_mph": 4.1,
+              "gust_mph": 11.9,
               "precip_pct": 20,
               "snow_in": 0.0
             },
@@ -514,7 +590,7 @@
                 "players": []
               },
               "source": "espn",
-              "teams_covered": 25,
+              "teams_covered": 27,
               "teams_playing": 30,
               "error": null
             },
@@ -525,9 +601,9 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 63.6,
-              "wind_mph": 6.8,
-              "gust_mph": 17.2,
+              "temp_f": 65.2,
+              "wind_mph": 9.3,
+              "gust_mph": 18.8,
               "precip_pct": 63,
               "snow_in": 0.0
             },
@@ -535,7 +611,7 @@
               {
                 "kind": "wind",
                 "severity": "low",
-                "text": "Breezy: 7 mph, gusting 17"
+                "text": "Breezy: 9 mph, gusting 19"
               },
               {
                 "kind": "rain",
@@ -618,11 +694,18 @@
                 "players": []
               },
               "away": {
-                "count": 1,
+                "count": 2,
                 "long_term": 3,
                 "qb_out": 0,
                 "qbs": [],
                 "players": [
+                  {
+                    "player": "Teven Jenkins",
+                    "position": "G",
+                    "status": "Out",
+                    "detail": "Back",
+                    "since": "2026-09-18T17:55Z"
+                  },
                   {
                     "player": "Jeremiah Owusu-Koramoah",
                     "position": "LB",
@@ -633,7 +716,7 @@
                 ]
               },
               "source": "espn",
-              "teams_covered": 25,
+              "teams_covered": 27,
               "teams_playing": 30,
               "error": null
             },
@@ -644,9 +727,9 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 89.9,
-              "wind_mph": 3.5,
-              "gust_mph": 4.0,
+              "temp_f": 90.3,
+              "wind_mph": 4.8,
+              "gust_mph": 5.1,
               "precip_pct": 8,
               "snow_in": 0.0
             },
@@ -670,7 +753,7 @@
             "abbr": "BAL",
             "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/bal.png",
             "elo": 1590.4,
-            "moneyline": -410
+            "moneyline": -395
           },
           "away": {
             "id": "18",
@@ -678,7 +761,7 @@
             "abbr": "NO",
             "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/no.png",
             "elo": 1442.8,
-            "moneyline": 320
+            "moneyline": 310
           },
           "legs": [
             {
@@ -686,10 +769,10 @@
               "team_id": "18",
               "team_name": "New Orleans Saints",
               "team_abbr": "NO",
-              "odds": 320,
+              "odds": 310,
               "model_prob": 0.25903,
-              "implied_prob": 0.22849,
-              "edge_pp": 3.053709,
+              "implied_prob": 0.2341,
+              "edge_pp": 2.493382,
               "fair_odds": 286,
               "sample": 8.0,
               "team_sample": 8.0,
@@ -703,10 +786,10 @@
               "team_id": "33",
               "team_name": "Baltimore Ravens",
               "team_abbr": "BAL",
-              "odds": -410,
+              "odds": -395,
               "model_prob": 0.74097,
-              "implied_prob": 0.77151,
-              "edge_pp": -3.053709,
+              "implied_prob": 0.7659,
+              "edge_pp": -2.493382,
               "fair_odds": -286,
               "sample": 8.0,
               "team_sample": 8.0,
@@ -719,21 +802,58 @@
           "context": {
             "injuries": {
               "home": {
-                "count": 0,
+                "count": 4,
                 "long_term": 1,
                 "qb_out": 0,
                 "qbs": [],
-                "players": []
+                "players": [
+                  {
+                    "player": "Nnamdi Madubuike",
+                    "position": "DT",
+                    "status": "Out",
+                    "detail": "Neck",
+                    "since": "2026-09-18T19:29Z"
+                  },
+                  {
+                    "player": "Teddye Buchanan",
+                    "position": "LB",
+                    "status": "Out",
+                    "detail": "Knee - ACL",
+                    "since": "2026-09-18T19:29Z"
+                  },
+                  {
+                    "player": "T.J. Tampa",
+                    "position": "CB",
+                    "status": "Out",
+                    "detail": "Knee",
+                    "since": "2026-09-18T17:32Z"
+                  },
+                  {
+                    "player": "Zay Flowers",
+                    "position": "WR",
+                    "status": "Doubtful",
+                    "detail": "Hamstring",
+                    "since": "2026-09-18T19:25Z"
+                  }
+                ]
               },
               "away": {
-                "count": 0,
+                "count": 1,
                 "long_term": 1,
                 "qb_out": 0,
                 "qbs": [],
-                "players": []
+                "players": [
+                  {
+                    "player": "Isaiah Stalbird",
+                    "position": "LB",
+                    "status": "Doubtful",
+                    "detail": "Shoulder",
+                    "since": "2026-09-18T18:22Z"
+                  }
+                ]
               },
               "source": "espn",
-              "teams_covered": 25,
+              "teams_covered": 27,
               "teams_playing": 30,
               "error": null
             },
@@ -744,9 +864,9 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 76.3,
-              "wind_mph": 9.0,
-              "gust_mph": 17.4,
+              "temp_f": 77.6,
+              "wind_mph": 8.1,
+              "gust_mph": 17.9,
               "precip_pct": 14,
               "snow_in": 0.0
             },
@@ -754,7 +874,7 @@
               {
                 "kind": "wind",
                 "severity": "low",
-                "text": "Breezy: 9 mph, gusting 17"
+                "text": "Breezy: 8 mph, gusting 18"
               }
             ]
           }
@@ -847,7 +967,7 @@
                 "players": []
               },
               "source": "espn",
-              "teams_covered": 25,
+              "teams_covered": 27,
               "teams_playing": 30,
               "error": null
             },
@@ -956,7 +1076,7 @@
                 "players": []
               },
               "source": "espn",
-              "teams_covered": 25,
+              "teams_covered": 27,
               "teams_playing": 30,
               "error": null
             },
@@ -967,9 +1087,9 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 73.2,
-              "wind_mph": 7.9,
-              "gust_mph": 4.9,
+              "temp_f": 72.7,
+              "wind_mph": 8.5,
+              "gust_mph": 7.6,
               "precip_pct": 36,
               "snow_in": 0.0
             },
@@ -993,7 +1113,7 @@
             "abbr": "LAC",
             "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/lac.png",
             "elo": 1470.4,
-            "moneyline": -305
+            "moneyline": -310
           },
           "away": {
             "id": "13",
@@ -1001,7 +1121,7 @@
             "abbr": "LV",
             "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/lv.png",
             "elo": 1394.3,
-            "moneyline": 245
+            "moneyline": 250
           },
           "legs": [
             {
@@ -1009,10 +1129,10 @@
               "team_id": "13",
               "team_name": "Las Vegas Raiders",
               "team_abbr": "LV",
-              "odds": 245,
+              "odds": 250,
               "model_prob": 0.34536,
-              "implied_prob": 0.27792,
-              "edge_pp": 6.743939,
+              "implied_prob": 0.27425,
+              "edge_pp": 7.111264,
               "fair_odds": 190,
               "sample": 8.0,
               "team_sample": 8.0,
@@ -1026,10 +1146,10 @@
               "team_id": "24",
               "team_name": "Los Angeles Chargers",
               "team_abbr": "LAC",
-              "odds": -305,
+              "odds": -310,
               "model_prob": 0.65464,
-              "implied_prob": 0.72208,
-              "edge_pp": -6.743939,
+              "implied_prob": 0.72575,
+              "edge_pp": -7.111264,
               "fair_odds": -190,
               "sample": 8.0,
               "team_sample": 8.0,
@@ -1049,14 +1169,22 @@
                 "players": []
               },
               "away": {
-                "count": 0,
+                "count": 1,
                 "long_term": 0,
                 "qb_out": 0,
                 "qbs": [],
-                "players": []
+                "players": [
+                  {
+                    "player": "Darien Porter",
+                    "position": "CB",
+                    "status": "Out",
+                    "detail": "Foot",
+                    "since": "2026-09-18T18:57Z"
+                  }
+                ]
               },
               "source": "espn",
-              "teams_covered": 25,
+              "teams_covered": 27,
               "teams_playing": 30,
               "error": null
             },
@@ -1067,9 +1195,9 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 77.0,
-              "wind_mph": 8.3,
-              "gust_mph": 4.3,
+              "temp_f": 78.1,
+              "wind_mph": 9.2,
+              "gust_mph": 4.9,
               "precip_pct": 0,
               "snow_in": 0.0
             },
@@ -1084,8 +1212,8 @@
           "status": "Scheduled",
           "neutral": false,
           "provider": "DraftKings",
-          "spread": -3.5,
-          "spread_details": "DAL -3.5",
+          "spread": -4.5,
+          "spread_details": "DAL -4.5",
           "total": 50.5,
           "home": {
             "id": "6",
@@ -1157,14 +1285,29 @@
                 ]
               },
               "away": {
-                "count": 0,
+                "count": 2,
                 "long_term": 1,
                 "qb_out": 0,
                 "qbs": [],
-                "players": []
+                "players": [
+                  {
+                    "player": "Chig Okonkwo",
+                    "position": "TE",
+                    "status": "Out",
+                    "detail": "Hamstring",
+                    "since": "2026-09-18T16:59Z"
+                  },
+                  {
+                    "player": "Frankie Luvu",
+                    "position": "LB",
+                    "status": "Out",
+                    "detail": "Groin",
+                    "since": "2026-09-18T16:42Z"
+                  }
+                ]
               },
               "source": "espn",
-              "teams_covered": 25,
+              "teams_covered": 27,
               "teams_playing": 30,
               "error": null
             },
@@ -1272,7 +1415,7 @@
                 ]
               },
               "source": "espn",
-              "teams_covered": 25,
+              "teams_covered": 27,
               "teams_playing": 30,
               "error": null
             },
@@ -1301,8 +1444,8 @@
           "status": "Scheduled",
           "neutral": false,
           "provider": "DraftKings",
-          "spread": -12.5,
-          "spread_details": "SF -12.5",
+          "spread": -13.5,
+          "spread_details": "SF -13.5",
           "total": 44.5,
           "home": {
             "id": "25",
@@ -1374,14 +1517,29 @@
                 ]
               },
               "away": {
-                "count": 0,
+                "count": 2,
                 "long_term": 1,
                 "qb_out": 0,
                 "qbs": [],
-                "players": []
+                "players": [
+                  {
+                    "player": "Ronnie Harrison Jr.",
+                    "position": "LB",
+                    "status": "Out",
+                    "detail": "Hamstring",
+                    "since": "2026-09-18T17:56Z"
+                  },
+                  {
+                    "player": "Chop Robinson",
+                    "position": "LB",
+                    "status": "Out",
+                    "detail": "Concussion",
+                    "since": "2026-09-18T00:32Z"
+                  }
+                ]
               },
               "source": "espn",
-              "teams_covered": 25,
+              "teams_covered": 27,
               "teams_playing": 30,
               "error": null
             },
@@ -1493,14 +1651,22 @@
                 ]
               },
               "away": {
-                "count": 0,
+                "count": 1,
                 "long_term": 3,
                 "qb_out": 0,
                 "qbs": [],
-                "players": []
+                "players": [
+                  {
+                    "player": "Ashton Dulin",
+                    "position": "WR",
+                    "status": "Out",
+                    "detail": "Ankle",
+                    "since": "2026-09-17T22:39Z"
+                  }
+                ]
               },
               "source": "espn",
-              "teams_covered": 25,
+              "teams_covered": 27,
               "teams_playing": 30,
               "error": null
             },
@@ -1511,19 +1677,13 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 74.9,
-              "wind_mph": 9.8,
-              "gust_mph": 17.9,
+              "temp_f": 74.7,
+              "wind_mph": 8.4,
+              "gust_mph": 13.6,
               "precip_pct": 36,
               "snow_in": 0.0
             },
-            "flags": [
-              {
-                "kind": "wind",
-                "severity": "low",
-                "text": "Breezy: 10 mph, gusting 18"
-              }
-            ]
+            "flags": []
           }
         },
         {
@@ -1606,7 +1766,7 @@
                 "players": []
               },
               "source": "espn",
-              "teams_covered": 25,
+              "teams_covered": 27,
               "teams_playing": 30,
               "error": null
             },
@@ -1617,9 +1777,9 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 73.2,
-              "wind_mph": 9.8,
-              "gust_mph": 5.6,
+              "temp_f": 73.4,
+              "wind_mph": 8.7,
+              "gust_mph": 5.1,
               "precip_pct": 0,
               "snow_in": 0.0
             },
@@ -2755,7 +2915,7 @@
               "temp_f": 75.1,
               "wind_mph": 5.6,
               "gust_mph": 8.3,
-              "precip_pct": 23,
+              "precip_pct": 21,
               "snow_in": 0.0
             },
             "flags": []
@@ -2961,7 +3121,7 @@
               "temp_f": 87.6,
               "wind_mph": 5.1,
               "gust_mph": 6.9,
-              "precip_pct": 3,
+              "precip_pct": 2,
               "snow_in": 0.0
             },
             "flags": []
@@ -3044,7 +3204,7 @@
               "temp_f": 58.0,
               "wind_mph": 7.2,
               "gust_mph": 15.0,
-              "precip_pct": 5,
+              "precip_pct": 13,
               "snow_in": 0.0
             },
             "flags": [
@@ -3233,7 +3393,7 @@
               "temp_f": 64.6,
               "wind_mph": 8.7,
               "gust_mph": 16.8,
-              "precip_pct": 35,
+              "precip_pct": 33,
               "snow_in": 0.0
             },
             "flags": [
@@ -3445,7 +3605,7 @@
               "temp_f": 59.1,
               "wind_mph": 5.4,
               "gust_mph": 12.5,
-              "precip_pct": 46,
+              "precip_pct": 48,
               "snow_in": 0.0
             },
             "flags": []
@@ -3545,7 +3705,7 @@
               "temp_f": 65.0,
               "wind_mph": 7.9,
               "gust_mph": 14.8,
-              "precip_pct": 33,
+              "precip_pct": 38,
               "snow_in": 0.0
             },
             "flags": []
@@ -3751,7 +3911,7 @@
               "temp_f": 99.5,
               "wind_mph": 3.3,
               "gust_mph": 4.0,
-              "precip_pct": 6,
+              "precip_pct": 4,
               "snow_in": 0.0
             },
             "flags": [
@@ -4025,7 +4185,13 @@
               "state": "UT",
               "indoor": false
             },
-            "weather": null,
+            "weather": {
+              "temp_f": 69.5,
+              "wind_mph": 10.0,
+              "gust_mph": 12.8,
+              "precip_pct": 2,
+              "snow_in": 0.0
+            },
             "flags": []
           }
         },
@@ -4119,8 +4285,20 @@
               "state": "OH",
               "indoor": false
             },
-            "weather": null,
-            "flags": []
+            "weather": {
+              "temp_f": 94.8,
+              "wind_mph": 9.7,
+              "gust_mph": 14.5,
+              "precip_pct": 8,
+              "snow_in": 0.0
+            },
+            "flags": [
+              {
+                "kind": "heat",
+                "severity": "low",
+                "text": "95\u00b0F at kickoff"
+              }
+            ]
           }
         },
         {
@@ -4213,7 +4391,13 @@
               "state": "NC",
               "indoor": false
             },
-            "weather": null,
+            "weather": {
+              "temp_f": 76.7,
+              "wind_mph": 8.9,
+              "gust_mph": 12.8,
+              "precip_pct": 6,
+              "snow_in": 0.0
+            },
             "flags": []
           }
         },
@@ -4307,7 +4491,13 @@
               "state": "VA",
               "indoor": false
             },
-            "weather": null,
+            "weather": {
+              "temp_f": 77.3,
+              "wind_mph": 5.4,
+              "gust_mph": 7.2,
+              "precip_pct": 2,
+              "snow_in": 0.0
+            },
             "flags": []
           }
         },
@@ -4401,8 +4591,20 @@
               "state": "TX",
               "indoor": false
             },
-            "weather": null,
-            "flags": []
+            "weather": {
+              "temp_f": 95.0,
+              "wind_mph": 6.9,
+              "gust_mph": 7.8,
+              "precip_pct": 0,
+              "snow_in": 0.0
+            },
+            "flags": [
+              {
+                "kind": "heat",
+                "severity": "low",
+                "text": "95\u00b0F at kickoff"
+              }
+            ]
           }
         },
         {
@@ -4499,7 +4701,7 @@
               "temp_f": 94.3,
               "wind_mph": 6.5,
               "gust_mph": 8.3,
-              "precip_pct": 17,
+              "precip_pct": 13,
               "snow_in": 0.0
             },
             "flags": [
@@ -4605,7 +4807,7 @@
               "temp_f": 78.3,
               "wind_mph": 9.3,
               "gust_mph": 13.9,
-              "precip_pct": 2,
+              "precip_pct": 5,
               "snow_in": 0.0
             },
             "flags": []
@@ -4705,7 +4907,7 @@
               "temp_f": 80.9,
               "wind_mph": 8.7,
               "gust_mph": 12.3,
-              "precip_pct": 23,
+              "precip_pct": 21,
               "snow_in": 0.0
             },
             "flags": []
@@ -4805,7 +5007,7 @@
               "temp_f": 78.2,
               "wind_mph": 6.3,
               "gust_mph": 8.1,
-              "precip_pct": 12,
+              "precip_pct": 20,
               "snow_in": 0.0
             },
             "flags": []
@@ -5107,7 +5309,7 @@
               "temp_f": 64.6,
               "wind_mph": 4.3,
               "gust_mph": 8.5,
-              "precip_pct": 3,
+              "precip_pct": 1,
               "snow_in": 0.0
             },
             "flags": []
@@ -5207,7 +5409,7 @@
               "temp_f": 78.0,
               "wind_mph": 7.9,
               "gust_mph": 16.3,
-              "precip_pct": 20,
+              "precip_pct": 16,
               "snow_in": 0.0
             },
             "flags": [
@@ -5513,7 +5715,7 @@
               "temp_f": 90.9,
               "wind_mph": 9.2,
               "gust_mph": 11.9,
-              "precip_pct": 7,
+              "precip_pct": 12,
               "snow_in": 0.0
             },
             "flags": []
@@ -5527,8 +5729,8 @@
           "status": "Scheduled",
           "neutral": false,
           "provider": "DraftKings",
-          "spread": -6.5,
-          "spread_details": "USA -6.5",
+          "spread": -7.0,
+          "spread_details": "USA -7",
           "total": 48.5,
           "home": {
             "id": "6",
@@ -5613,7 +5815,7 @@
               "temp_f": 91.2,
               "wind_mph": 8.4,
               "gust_mph": 12.5,
-              "precip_pct": 5,
+              "precip_pct": 4,
               "snow_in": 0.0
             },
             "flags": []
@@ -5796,7 +5998,7 @@
               "temp_f": 72.4,
               "wind_mph": 7.6,
               "gust_mph": 16.8,
-              "precip_pct": 7,
+              "precip_pct": 5,
               "snow_in": 0.0
             },
             "flags": [
@@ -5882,9 +6084,9 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 57.3,
-              "wind_mph": 1.9,
-              "gust_mph": 2.5,
+              "temp_f": 59.5,
+              "wind_mph": 0.3,
+              "gust_mph": 0.9,
               "precip_pct": 0,
               "snow_in": 0.0
             },
@@ -6081,7 +6283,13 @@
               "state": "CO",
               "indoor": false
             },
-            "weather": null,
+            "weather": {
+              "temp_f": 74.1,
+              "wind_mph": 7.9,
+              "gust_mph": 12.3,
+              "precip_pct": 20,
+              "snow_in": 0.0
+            },
             "flags": []
           }
         },
@@ -6162,7 +6370,7 @@
               "temp_f": 96.3,
               "wind_mph": 11.5,
               "gust_mph": 15.7,
-              "precip_pct": 1,
+              "precip_pct": 0,
               "snow_in": 0.0
             },
             "flags": [
@@ -6273,7 +6481,7 @@
               "temp_f": 85.8,
               "wind_mph": 6.4,
               "gust_mph": 11.4,
-              "precip_pct": 11,
+              "precip_pct": 9,
               "snow_in": 0.0
             },
             "flags": []
@@ -6369,8 +6577,20 @@
               "state": "IL",
               "indoor": false
             },
-            "weather": null,
-            "flags": []
+            "weather": {
+              "temp_f": 54.2,
+              "wind_mph": 16.3,
+              "gust_mph": 20.1,
+              "precip_pct": 4,
+              "snow_in": 0.0
+            },
+            "flags": [
+              {
+                "kind": "wind",
+                "severity": "high",
+                "text": "Wind 16 mph, gusting 20 \u2014 kicking and the deep ball suffer"
+              }
+            ]
           }
         },
         {
@@ -6463,7 +6683,13 @@
               "state": "MD",
               "indoor": false
             },
-            "weather": null,
+            "weather": {
+              "temp_f": 75.3,
+              "wind_mph": 6.1,
+              "gust_mph": 12.5,
+              "precip_pct": 4,
+              "snow_in": 0.0
+            },
             "flags": []
           }
         },
@@ -6540,8 +6766,20 @@
               "state": "TX",
               "indoor": false
             },
-            "weather": null,
-            "flags": []
+            "weather": {
+              "temp_f": 94.0,
+              "wind_mph": 9.2,
+              "gust_mph": 13.6,
+              "precip_pct": 0,
+              "snow_in": 0.0
+            },
+            "flags": [
+              {
+                "kind": "heat",
+                "severity": "low",
+                "text": "94\u00b0F at kickoff"
+              }
+            ]
           }
         },
         {
@@ -6634,8 +6872,25 @@
               "state": "TX",
               "indoor": false
             },
-            "weather": null,
-            "flags": []
+            "weather": {
+              "temp_f": 93.7,
+              "wind_mph": 10.3,
+              "gust_mph": 15.4,
+              "precip_pct": 0,
+              "snow_in": 0.0
+            },
+            "flags": [
+              {
+                "kind": "wind",
+                "severity": "low",
+                "text": "Breezy: 10 mph, gusting 15"
+              },
+              {
+                "kind": "heat",
+                "severity": "low",
+                "text": "94\u00b0F at kickoff"
+              }
+            ]
           }
         },
         {
@@ -8506,20 +8761,6 @@
             "push_risk": false
           },
           {
-            "event_id": "401866423",
-            "matchup": "OHIO @ USA",
-            "kickoff": "2026-09-19T23:00Z",
-            "team_abbr": "USA",
-            "team_name": "South Alabama Jaguars",
-            "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/6.png",
-            "spread": -6.5,
-            "source": "DraftKings",
-            "teased": -0.5,
-            "band": "fav -7.5..-6.5",
-            "prob": 0.7063,
-            "push_risk": false
-          },
-          {
             "event_id": "401862776",
             "matchup": "UAB @ UL",
             "kickoff": "2026-09-20T00:00Z",
@@ -8560,6 +8801,20 @@
             "band": "fav -8.5..-7.5",
             "prob": 0.7063,
             "push_risk": false
+          },
+          {
+            "event_id": "401866423",
+            "matchup": "OHIO @ USA",
+            "kickoff": "2026-09-19T23:00Z",
+            "team_abbr": "USA",
+            "team_name": "South Alabama Jaguars",
+            "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/6.png",
+            "spread": -7.0,
+            "source": "DraftKings",
+            "teased": -1.0,
+            "band": "fav -7.5..-6.5",
+            "prob": 0.6886,
+            "push_risk": true
           }
         ],
         "per_leg_rate": 0.7063,
@@ -8568,7 +8823,7 @@
         "provider_is_mine": false,
         "captured_at": null,
         "max_price_best": 101,
-        "max_price_worst": 101,
+        "max_price_worst": 106,
         "max_price_best_se": 113,
         "at_my_books": [
           {
