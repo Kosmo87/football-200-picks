@@ -1838,18 +1838,31 @@ function renderSolver() {
   box.innerHTML = "";
   const target = Math.round(Number($("#solver-target").value) || 300);
   const maxLegs = Number($("#solver-maxlegs").value) || 6;
+  // A floor on the win chance, because "pay me +750" and "I want to win more
+  // often than not" are both real asks and the honest answer to holding both
+  // at once is usually "nothing does that" — which this now says out loud
+  // instead of quietly showing a 15% ticket.
+  const minWin = Math.min(0.95, Math.max(0, (Number($("#solver-minwin").value) || 0) / 100));
   const want = americanToDecimal(target);
   const fair = 1 / want;
-  const routes = solveRoutes(target, maxLegs);
+  const all = solveRoutes(target, maxLegs);
+  const routes = all.filter((r) => r.prob >= minWin);
   $("#solver-note").textContent = `${state.league} · best chance at the payout you name`;
   $("#solver-summary").innerHTML =
     `${fmtOdds(target)} pays ${want.toFixed(2)}x, so <strong>${fmtPct(fair)}</strong> `
     + `is break-even — anything above that is the book paying you to take it`;
 
   if (!routes.length) {
+    const best = all.length ? all[0] : null;
     box.appendChild(el("div", "empty",
-      `<strong>Nothing on this board reaches ${fmtOdds(target)}</strong>`
-      + `Ask for less and the routes come back.`));
+      minWin > 0 && best
+        ? `<strong>Nothing pays ${fmtOdds(target)} and wins ${fmtPct(minWin)} of `
+          + `the time</strong>The best this board can do at that payout is `
+          + `${fmtPct(best.prob)} — ${best.what.toLowerCase()}. Payout and `
+          + `certainty are one knob: asking for more of both is asking the `
+          + `market for a gift.`
+        : `<strong>Nothing on this board reaches ${fmtOdds(target)}</strong>`
+          + `Ask for less and the routes come back.`));
     return;
   }
 
@@ -1955,7 +1968,7 @@ async function boot() {
     month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}`;
   $("#season").textContent = `${board.season} season`;
 
-  for (const id of ["#solver-target", "#solver-maxlegs"]) {
+  for (const id of ["#solver-target", "#solver-maxlegs", "#solver-minwin"]) {
     $(id).addEventListener("change", renderSolver);
     $(id).addEventListener("input", renderSolver);
   }

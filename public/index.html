@@ -68,6 +68,11 @@
         <input type="number" id="solver-target" value="300" step="50"
                aria-label="Target payout in American odds">
       </label>
+      <label>winning at least
+        <input type="number" id="solver-minwin" value="0" step="5" min="0" max="95"
+               aria-label="Minimum win chance, percent">
+        <span>%</span>
+      </label>
       <label>with no more than
         <select id="solver-maxlegs" aria-label="Maximum number of legs">
           <option value="1">1 leg</option>

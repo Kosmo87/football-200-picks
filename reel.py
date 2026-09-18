@@ -688,6 +688,16 @@ def narrate_scenes(lines: List[str], out_dir: str, rate: int = 195):
     made = []
     for i, line in enumerate(lines, start=1):
         path = os.path.join(out_dir, f"voice-{i:02d}.aiff")
+        if not line.strip():
+            # A scene the voice sits out. Silence is generated rather than
+            # skipped: drop the file and every scene after it slides earlier
+            # than its own line, which is worse than a quiet card.
+            subprocess.run(["ffmpeg", "-y", "-f", "lavfi", "-i",
+                            "anullsrc=r=22050:cl=mono", "-t", "3.5",
+                            "-c:a", "pcm_s16le", path],
+                           check=True, capture_output=True, timeout=120)
+            made.append((path, audio_seconds(path)))
+            continue
         subprocess.run(["say", "-v", VOICE, "-r", str(rate), "-o", path, line],
                        check=True, capture_output=True, timeout=180)
         if not os.path.exists(path) or os.path.getsize(path) < 1024:
@@ -781,12 +791,10 @@ def render(route: Dict, league: str, board: Dict, history: Dict, out_dir: str,
     slate = slate_label(route["fill"], spoken=True)
     scenes = [
         ("01-intro", intro_scene(), 3.0,
-         "Hey guys, welcome to another round of Parlay Finder, where we train "
-         "AI to help us build our parlay bets. Today we found one for you to "
-         "follow along with."),
-        ("02-record", record_scene(history, placed_record()), 4.5,
-         "Quick word on the record. We are starting from zero, this is ticket "
-         "number one, and every one after it goes up here win or lose."),
+         "Hey guys, welcome to another round of Parlay Finder, where we let "
+         "twenty five years of results pick the parlays. Today we found one "
+         "for you to follow along with."),
+        ("02-record", record_scene(history, placed_record()), 3.5, ""),
         ("03-ticket", ticket_scene(route, league, history, board), 6.0,
          f"So here is the play for {slate}. A {route['legs']} leg, "
          f"{route['points']} point teaser at {route['price']}. It hits about "
@@ -798,9 +806,10 @@ def render(route: Dict, league: str, board: Dict, history: Dict, out_dir: str,
          "seven points. Moving a line across both of those is worth way more "
          "than six points anywhere else, and that gap is the whole bet."),
         ("05-cta", cta_scene(league, board), 4.5,
-         "Come build your own on the site. Every qualifying leg and the price "
-         "each one needs. It is free while we are still proving this out, and "
-         "that will not last forever."),
+         "Come build your own on the site. Set the payout you want and the "
+         "win rate you will accept, and it shows you every ticket that clears "
+         "both. Free while we are still proving this out, and that will not "
+         "last forever."),
         ("06-outro", outro_scene(), 3.0,
          "That is it for today. Win or lose, you will see this one on the "
          "record next time. Let us see how it goes."),
