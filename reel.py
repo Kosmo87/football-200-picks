@@ -35,7 +35,13 @@ from typing import Dict, List, Optional
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 DATA = os.path.join(ROOT, "public", "data")
-OUT = os.path.join(ROOT, "video", "out")
+# ready/ is the upload queue and uploaded/ is the archive the user moves
+# files into by hand. A clip already sitting in either is never regenerated:
+# the point of two folders is that "what do I still owe TikTok" is answered by
+# looking, not by remembering.
+READY = os.path.join(ROOT, "video", "ready")
+UPLOADED = os.path.join(ROOT, "video", "uploaded")
+OUT = READY
 CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 
 W, H = 1080, 1920
@@ -54,6 +60,16 @@ INTRO_LINE = "Join me on my journey to building the best parlay finder"
 INTRO_SUB = "Every ticket measured. Every result posted. Win or lose."
 OUTRO_LINE = "The record updates whether I win or lose"
 OUTRO_SUB = "Nobody posts their losses. That is the point."
+
+# Where the clip sends people. A raw Netlify subdomain is unusable in a video
+# -- nobody types "statuesque-brioche-a8fa92" from memory -- so this is a
+# constant to change the day a domain exists, and the call to action leans on
+# "no sign-up" rather than on the address, because that part is true today and
+# the address is not memorable.
+SITE_URL = "statuesque-brioche-a8fa92.netlify.app"
+CTA_LINE = "Build your own"
+CTA_SUB = ("Every qualifying leg, every leg count, and the price each one "
+           "needs. No sign-up, no email, nothing to buy.")
 
 
 def _read(name: str, default):
@@ -161,6 +177,38 @@ def record_line(history: Dict) -> str:
     return f"RECORD SO FAR  {won}-{lost}  ({roi:+.0f}% RETURN)"
 
 
+def all_routes(board: Dict, league: str) -> List[Dict]:
+    """
+    Every teaser ticket the board can actually fill, richest edge first.
+
+    One clip per ticket rather than one clip listing them: eight routes on a
+    card is a spreadsheet, and the leg counts are genuinely different bets --
+    the 6-leg hits one week in six for a third more edge, the 4-leg nearly a
+    third of the time. Those deserve separate posts, not separate lines.
+    """
+    lg = (board.get("leagues") or {}).get(league) or {}
+    teasers = lg.get("teasers") or {}
+    out: List[Dict] = []
+    for pts, block in (teasers.get("ladder") or {}).items():
+        pool = ((teasers.get("ten") if pts == "10" else teasers) or {}).get("legs") or []
+        for n_str, price in (block.get("prices") or {}).items():
+            n = int(n_str)
+            p = (block.get("joint") or {}).get(n_str)
+            if p is None or len(pool) < n:
+                continue
+            dec = 1 + (price / 100.0 if price > 0 else 100.0 / -price)
+            out.append({"points": int(pts), "legs": n, "price": int(price),
+                        "prob": float(p), "ev": p * (dec - 1) - (1 - p),
+                        "needs": 1 / dec, "fill": pool[:n]})
+    return sorted(out, key=lambda r: -r["ev"])
+
+
+def slug(league: str, route: Dict, built: str) -> str:
+    """A filename that says what the ticket is, so a folder of them is legible."""
+    return (f"{league.lower()}-{route['points']}pt-{route['legs']}leg"
+            f"-{route['price']:+d}-{built[:10]}")
+
+
 def best_route(board: Dict, league: str, target: int) -> Optional[Dict]:
     """
     The route the site would lead with: measured teaser first, by chance.
@@ -237,6 +285,31 @@ def outro_scene() -> str:
         "<div class='banner warn'>Not advice. A model under evaluation, posted "
         "in public so it can be judged.</div>"
         "<div class='spacer'></div>"
+    )
+
+
+def cta_scene(league: str, board: Dict) -> str:
+    """
+    The one scene that asks for something.
+
+    It asks for a visit, not a subscription, because there is nothing to
+    subscribe to -- and saying "no sign-up" is both the truth and the better
+    hook. Naming what the site actually does beats naming the site, given the
+    address is a Netlify subdomain nobody will retype.
+    """
+    t = ((board.get("leagues") or {}).get(league) or {}).get("teasers") or {}
+    six = len(t.get("legs") or [])
+    ten = len((t.get("ten") or {}).get("legs") or [])
+    return scene_html(
+        "<div class='mark'>+200</div>"
+        f"<div class='spacer'></div>"
+        f"<h1>{html.escape(CTA_LINE)}</h1>"
+        f"<div class='sub'>{html.escape(CTA_SUB)}</div>"
+        f"<div class='banner'>{html.escape(SITE_URL)}</div>"
+        f"<div class='sub'>{six} qualifying legs at 6 points and {ten} at 10 on "
+        f"the {html.escape(league)} board today &mdash; name a payout and it "
+        f"builds the ticket.</div>"
+        f"<div class='spacer'></div>"
     )
 
 
@@ -363,70 +436,120 @@ def stitch(frames: List[tuple], mp4: str, audio: Optional[str]) -> bool:
     return True
 
 
+def render(route: Dict, league: str, board: Dict, history: Dict, out_dir: str,
+           narrate_it: bool, frames_only: bool) -> Optional[str]:
+    """One clip for one ticket. Frames land beside it in a working folder."""
+    built = board.get("generated_at") or ""
+    name = slug(league, route, built)
+    work = os.path.join(out_dir, "frames", name)
+    os.makedirs(work, exist_ok=True)
+
+    scenes = [
+        ("01-intro", intro_scene(), 3.0, f"{INTRO_LINE}. {INTRO_SUB}"),
+        ("02-record", record_scene(history), 4.5,
+         "Here is where the record stands. The model's own picks lost money, "
+         "which is why the board stopped recommending them."),
+        ("03-ticket", ticket_scene(route, league, history), 6.0,
+         f"This week: a {route['legs']} leg {route['points']} point teaser at "
+         f"{route['price']}, which wins {route['prob']*100:.0f} percent of the "
+         f"time. The price only needs {route['needs']*100:.0f}."),
+        ("04-why", why_scene(route, board, league), 5.5,
+         "Six points moved across three and seven is worth more than six points "
+         "anywhere else. That gap is the entire bet."),
+        ("05-cta", cta_scene(league, board), 4.5,
+         f"{CTA_LINE}. {CTA_SUB}"),
+        ("06-outro", outro_scene(), 3.0, f"{OUTRO_LINE}. {OUTRO_SUB}"),
+    ]
+
+    frames = []
+    for scene_name, markup, secs, _ in scenes:
+        png = os.path.join(work, f"{scene_name}.png")
+        shoot(markup, png)
+        frames.append((png, secs))
+
+    audio = None
+    if narrate_it:
+        parts = narrate_scenes([sc[3] for sc in scenes], work)
+        if parts:
+            frames = [(png, max(base, secs + 0.6))
+                      for (png, base), (_, secs) in zip(frames, parts)]
+            audio = join_audio(parts, os.path.join(work, "voice.wav"))
+
+    if frames_only:
+        print(f"  {name}: {len(frames)} frames (no mp4)")
+        return None
+    mp4 = os.path.join(out_dir, f"{name}.mp4")
+    if not stitch(frames, mp4, audio):
+        print("  ffmpeg missing — frames only")
+        return None
+    total = sum(sec for _, sec in frames)
+    print(f"  {name}.mp4  {total:.0f}s  ev {route['ev']*100:+.1f}%")
+    return mp4
+
+
+def already_done(name: str) -> Optional[str]:
+    """Has this exact ticket already been rendered, or posted?"""
+    for folder, label in ((READY, "ready"), (UPLOADED, "uploaded")):
+        if os.path.exists(os.path.join(folder, f"{name}.mp4")):
+            return label
+    return None
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[1])
     ap.add_argument("--league", default="NFL", choices=("NFL", "NCAAF"))
-    ap.add_argument("--target", type=int, default=300)
-    ap.add_argument("--out", default=OUT)
+    ap.add_argument("--target", type=int, default=300,
+                    help="single-clip mode: the payout to build for")
+    ap.add_argument("--all", action="store_true",
+                    help="one clip per fillable ticket, richest edge first")
+    ap.add_argument("--out", default=READY)
     ap.add_argument("--frames-only", action="store_true")
     ap.add_argument("--narrate", action="store_true")
+    ap.add_argument("--force", action="store_true",
+                    help="re-render a ticket already in ready/ or uploaded/")
+    ap.add_argument("--min-ev", type=float, default=0.0,
+                    help="skip tickets whose edge is below this (default: %(default)s)")
     a = ap.parse_args()
 
     board, history = _read("board.json", {}), _read("history.json", {})
     if not board:
         raise SystemExit("no board.json — run build_board.py first")
-    route = best_route(board, a.league, a.target)
-    if not route:
-        raise SystemExit(f"no teaser route to {a.target:+d} on the {a.league} board")
-
     os.makedirs(a.out, exist_ok=True)
-    scenes = [
-        ("01-intro", intro_scene(), 3.0,
-         f"{INTRO_LINE}. {INTRO_SUB}"),
-        ("02-record", record_scene(history), 4.5,
-         "Here is where the record stands. The model's own picks lost money, "
-         "which is why the board stopped recommending them."),
-        ("03-ticket", ticket_scene(route, a.league, history), 6.0,
-         f"This week: a {route['legs']} leg {route['points']} point teaser at "
-         f"{route['price']}, which wins {route['prob']*100:.0f} percent of the time."),
-        ("04-why", why_scene(route, board, a.league), 5.5,
-         "Six points moved across three and seven is worth more than six points "
-         "anywhere else. That gap is the entire bet."),
-        ("05-outro", outro_scene(), 3.0,
-         f"{OUTRO_LINE}. {OUTRO_SUB}"),
-    ]
+    os.makedirs(UPLOADED, exist_ok=True)
 
-    frames = []
-    for name, markup, secs, _ in scenes:
-        png = os.path.join(a.out, f"{name}.png")
-        shoot(markup, png)
-        frames.append((png, secs))
-        print(f"  {name}.png  {secs:g}s")
+    if a.all:
+        routes = all_routes(board, a.league)
+        # A losing ticket does not get a video. The 2-leg 6-pointer is the one
+        # count the ladder prices above its measured rate, and posting it would
+        # be promoting the single bet this project refuses to make.
+        routes = [r for r in routes if r["ev"] > a.min_ev]
+    else:
+        one = best_route(board, a.league, a.target)
+        if not one:
+            raise SystemExit(f"no teaser route to {a.target:+d} on the {a.league} board")
+        routes = [one]
 
-    audio = None
-    if a.narrate:
-        parts = narrate_scenes([s[3] for s in scenes], a.out)
-        if parts:
-            # Hold each scene for its own line plus a beat of silence, never
-            # less than the designed minimum: a 3-second intro that reads in
-            # 4.2 seconds would talk over the next card.
-            frames = [(png, max(base, secs + 0.6))
-                      for (png, base), (_, secs) in zip(frames, parts)]
-            audio = join_audio(parts, os.path.join(a.out, "voice.wav"))
-            for png, secs in frames:
-                print(f"  {os.path.basename(png)} held {secs:.1f}s to fit its line")
-        print(f"  voice: {'written' if audio else 'skipped'}")
-
-    if a.frames_only:
-        print(f"\n{len(frames)} frames in {a.out} — install ffmpeg to stitch them.")
+    if not routes:
+        print("Nothing on this board clears the edge floor — no clips to make.")
         return 0
 
-    mp4 = os.path.join(a.out, f"reel-{a.league.lower()}.mp4")
-    if stitch(frames, mp4, audio):
-        print(f"\nwrote {mp4}  ({sum(s for _, s in frames):g}s)")
-    else:
-        print("\nffmpeg not installed — frames are written. Install with:")
-        print("  brew install ffmpeg")
+    built = board.get("generated_at") or ""
+    made, skipped = 0, 0
+    print(f"{len(routes)} ticket(s) from the {built[:16]} board\n")
+    for route in routes:
+        name = slug(a.league, route, built)
+        where = None if a.force else already_done(name)
+        if where:
+            print(f"  {name}: already {where} — skipping")
+            skipped += 1
+            continue
+        if render(route, a.league, board, history, a.out, a.narrate, a.frames_only):
+            made += 1
+
+    print(f"\n{made} clip(s) in {a.out}")
+    if skipped:
+        print(f"{skipped} skipped (already rendered or posted)")
+    print(f"Move each one to {UPLOADED} once it is up, and it will not come back.")
     return 0
 
 

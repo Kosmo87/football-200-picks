@@ -89,6 +89,22 @@ def main():
     scene = R.ticket_scene(R.best_route(bad, "NFL", 265), "NFL", history())
     r.append(check("feed text is escaped", "<script>" in scene, False))
 
+    # Batch mode: every fillable ticket, and nothing that loses money.
+    many = R.all_routes(board(legs=4, pool=6), "NFL")
+    r.append(check("all_routes finds the fillable ticket", len(many), 1))
+    r.append(check("a ticket needing more legs than the board has is dropped",
+                   R.all_routes(board(legs=6, pool=3), "NFL"), []))
+
+    # Filenames carry the ticket, so a folder of clips is legible and the
+    # skip-if-already-done check has something stable to match on.
+    name = R.slug("NFL", many[0], "2026-09-18T14:01:38+00:00")
+    r.append(check("slug names the ticket", name, "nfl-6pt-4leg-+265-2026-09-18"))
+
+    # The call to action points at the site and says what is free about it.
+    cta = R.cta_scene("NFL", board())
+    r.append(check("cta carries the url", R.SITE_URL in cta, True))
+    r.append(check("cta says no sign-up", "No sign-up" in cta, True))
+
     print(f"\n  {sum(r)} passed, {len(r) - sum(r)} failed")
     return 0 if all(r) else 1
 
