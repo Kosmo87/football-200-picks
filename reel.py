@@ -306,6 +306,52 @@ def best_route(board: Dict, league: str, target: int) -> Optional[Dict]:
     return best
 
 
+GAME_TZ = "America/New_York"
+
+
+def _eastern(iso: str):
+    """
+    A kickoff in the timezone the schedule is written in.
+
+    Not cosmetic. Kickoffs are stored in UTC, where a Sunday night game reads
+    as Monday and Monday Night Football reads as Tuesday: 2026-09-22T00:15Z is
+    Monday 8:15pm in New York. A clip captioned "bets for Tuesday" over a
+    Monday night game is wrong in the one way a betting post cannot afford.
+    """
+    from datetime import datetime
+    from zoneinfo import ZoneInfo
+    try:
+        return datetime.fromisoformat(str(iso).replace("Z", "+00:00")).astimezone(
+            ZoneInfo(GAME_TZ))
+    except Exception:
+        return None
+
+
+def slate_label(legs: List[Dict], spoken: bool = False) -> str:
+    """
+    Which day these bets are for, from the legs themselves.
+
+    One day reads "Sunday, Sep 20"; a ticket spanning the Sunday and Monday
+    games reads "Sun Sep 20 - Mon Sep 21", because a viewer who sees only
+    "Sunday" and takes the ticket on Monday morning has already lost a leg.
+    """
+    days = []
+    for l in legs:
+        dt = _eastern(l.get("kickoff"))
+        if dt and dt.date() not in [d.date() for d in days]:
+            days.append(dt)
+    if not days:
+        return ""
+    days.sort()
+    if spoken:
+        if len(days) == 1:
+            return f"{days[0]:%A}, {days[0]:%B} {days[0].day}"
+        return f"{days[0]:%A} and {days[-1]:%A}"
+    if len(days) == 1:
+        return f"{days[0]:%A}, %b {days[0].day}".replace("%b", f"{days[0]:%b}")
+    return f"{days[0]:%a %b} {days[0].day} \u2013 {days[-1]:%a %b} {days[-1].day}"
+
+
 def source_note(route: Dict, board: Dict, league: str) -> str:
     """
     Where the numbers came from, said on screen.
@@ -350,7 +396,8 @@ def ticket_scene(route: Dict, league: str, history: Dict,
     legs = "".join(rows)
     price = f"{route['price']:+d}"
     return scene_html(
-        f"<div class='kicker'>This week &middot; {html.escape(league)}</div>"
+        f"<div class='kicker'>{html.escape(slate_label(route['fill']) or 'This week')}"
+        f" &middot; {html.escape(league)}</div>"
         f"<h2>{route['legs']}-leg, {route['points']}-point teaser at {price}</h2>"
         f"<div class='sub'>Wins <span class='accent'>{route['prob']*100:.1f}%</span> "
         f"of the time. The price needs {route['needs']*100:.1f}%.</div>"
@@ -734,10 +781,10 @@ def render(route: Dict, league: str, board: Dict, history: Dict, out_dir: str,
          "The record starts at nothing, because this is ticket number one. "
          "Every one after it gets graded here, win or lose."),
         ("03-ticket", ticket_scene(route, league, history, board), 6.0,
-         f"A {route['legs']} leg {route['points']} point teaser at "
-         f"{route['price']}. It wins {route['prob']*100:.0f} percent of the "
-         f"time and the price only needs {route['needs']*100:.0f}. "
-         f"{spoken_source(route, board, league)}"),
+         f"For {slate_label(route['fill'], spoken=True)}: a {route['legs']} leg "
+         f"{route['points']} point teaser at {route['price']}. It wins "
+         f"{route['prob']*100:.0f} percent of the time and the price only needs "
+         f"{route['needs']*100:.0f}. {spoken_source(route, board, league)}"),
         ("04-why", why_scene(route, board, league), 5.5,
          "Six points across three and seven is worth more than six points "
          "anywhere else. That gap is the whole bet."),

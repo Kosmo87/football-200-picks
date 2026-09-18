@@ -135,6 +135,21 @@ def main():
     for word in ("Friday", "tonight", "24 hours", "midnight", "last chance"):
         r.append(check(f"cta invents no deadline ({word})", word in cta, False))
 
+    # Which day the bets are for, from the legs, in the timezone the schedule
+    # is written in. UTC would caption Monday Night Football as Tuesday.
+    mnf = [{"kickoff": "2026-09-22T00:15Z"}]
+    r.append(check("monday night is monday, not tuesday",
+                   R.slate_label(mnf), "Monday, Sep 21"))
+    snf = [{"kickoff": "2026-09-21T00:20Z"}]
+    r.append(check("sunday night is sunday, not monday",
+                   R.slate_label(snf), "Sunday, Sep 20"))
+    r.append(check("a two-day ticket names both ends",
+                   R.slate_label([{"kickoff": "2026-09-20T17:00Z"}] + mnf),
+                   "Sun Sep 20 \u2013 Mon Sep 21"))
+    r.append(check("spoken form is a weekday and a date",
+                   R.slate_label(snf, spoken=True), "Sunday, September 20"))
+    r.append(check("no kickoff, no claim about the day", R.slate_label([]), ""))
+
     print(f"\n  {sum(r)} passed, {len(r) - sum(r)} failed")
     return 0 if all(r) else 1
 
