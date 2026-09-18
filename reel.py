@@ -31,6 +31,7 @@ import os
 import shutil
 import subprocess
 import sys
+import time
 from typing import Dict, List, Optional
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -122,6 +123,7 @@ h2{font-size:70px;line-height:1.12;letter-spacing:-.02em;font-weight:750}
 .src strong{color:#e6edf3}
 .tag{margin-top:auto;font:700 28px/1.3 ui-monospace,Menlo,monospace;color:#6b7889;
  letter-spacing:.06em;border-top:2px solid #262f3b;padding-top:26px}
+.shot{width:100%;margin-top:30px;border:2px solid #262f3b;border-radius:18px}
 .banner{background:#12251a;border:2px solid #235c31;border-radius:22px;
  padding:34px 32px;margin-top:40px;font-size:38px;line-height:1.35}
 .warn{background:#241f12;border-color:#5c4a23}
@@ -437,7 +439,7 @@ def outro_scene() -> str:
     )
 
 
-def cta_scene(league: str, board: Dict) -> str:
+def cta_scene(league: str, board: Dict, shot: Optional[str] = None) -> str:
     """
     The one scene that asks for something.
 
@@ -454,7 +456,8 @@ def cta_scene(league: str, board: Dict) -> str:
         f"<div class='spacer'></div>"
         f"<h1>{html.escape(CTA_LINE)}</h1>"
         f"<div class='sub'>{html.escape(CTA_SUB)}</div>"
-        f"<div class='banner'>{html.escape(SITE_URL)}</div>"
+        + (f"<img class='shot' src='file://{shot}' alt=''>" if shot else "")
+        + f"<div class='banner'>{html.escape(SITE_URL)}</div>"
         f"<div class='sub'>{six} qualifying legs at 6 points and {ten} at 10 on "
         f"the {html.escape(league)} board today &mdash; name a payout and it "
         f"builds the ticket.</div>"
@@ -491,6 +494,64 @@ def logo_file(leg: Dict) -> Optional[str]:
         return path
     except Exception:
         return None
+
+
+SHARED = None       # a scene with no line of its own: see render()
+
+
+def site_shot(png: str, width: int = 560, height: int = 1180) -> Optional[str]:
+    """
+    A photograph of the actual page, taken at render time.
+
+    Not a mock-up. The clip tells people they can set a payout and a win rate
+    on the site, and the proof of that is the controls themselves -- which
+    also means the still cannot drift from the thing it is advertising,
+    because it is generated from the same public/ directory that deploys.
+
+    Served over http rather than opened as file://: the page fetches
+    data/board.json, and Chrome refuses that from a file URL, so a file://
+    screenshot would be a picture of an empty board.
+    """
+    import random
+    import socket
+    port = random.randint(8900, 9400)
+    with socket.socket() as probe:
+        if probe.connect_ex(("127.0.0.1", port)) == 0:
+            port += 1
+    serve = subprocess.Popen(
+        [sys.executable, "-m", "http.server", str(port), "--bind", "127.0.0.1"],
+        cwd=os.path.join(ROOT, "public"),
+        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+    )
+    try:
+        time.sleep(1.2)
+        subprocess.run(
+            [CHROME, "--headless=new", "--disable-gpu", "--hide-scrollbars",
+             "--force-device-scale-factor=1", f"--window-size=1080,{height}",
+             f"--screenshot={png}", "--virtual-time-budget=4000",
+             f"http://127.0.0.1:{port}/"],
+            check=True, capture_output=True, timeout=120,
+        )
+    except Exception as e:
+        print(f"  site screenshot failed: {e}")
+        return None
+    finally:
+        serve.terminate()
+        serve.wait(timeout=10)
+    if not (os.path.exists(png) and os.path.getsize(png) > 4096):
+        return None
+    # Cropped to the controls, the break-even line and the top ticket. The
+    # whole page at this scale is a wall of 12px text nobody can read in a
+    # vertical frame; this band is the claim the scene is making -- set a
+    # payout, set a win rate, cap the legs -- and it is legible.
+    cropped = png.replace(".png", "-controls.png")
+    try:
+        subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", png,
+                        "-vf", "crop=1080:330:0:355", cropped],
+                       check=True, capture_output=True, timeout=120)
+    except Exception:
+        return png
+    return cropped if os.path.exists(cropped) else png
 
 
 def shoot(html_text: str, png: str) -> None:
@@ -783,18 +844,26 @@ def render(route: Dict, league: str, board: Dict, history: Dict, out_dir: str,
     built = board.get("generated_at") or ""
     name = slug(league, route, built)
     work = os.path.join(out_dir, "frames", name)
+    # Cleared, not reused: a re-render with fewer spoken lines used to leave
+    # the previous run's voice-06.aiff lying beside the new ones, which is the
+    # sort of thing that ends up in a clip.
+    shutil.rmtree(work, ignore_errors=True)
     os.makedirs(work, exist_ok=True)
 
     # Spoken register is casual on purpose -- this is a channel, not a
     # prospectus -- while every number in it still comes off the board. The
     # cards stay terse; the voice is what carries the tone.
     slate = slate_label(route["fill"], spoken=True)
+    shot = site_shot(os.path.join(work, "site.png"))
     scenes = [
         ("01-intro", intro_scene(), 3.0,
          "Hey guys, welcome to another round of Parlay Finder, where we let "
          "twenty five years of results pick the parlays. Today we found one "
          "for you to follow along with."),
-        ("02-record", record_scene(history, placed_record()), 3.5, ""),
+        # SHARED: no line of its own. The intro's narration keeps running while
+        # this card is on screen, so the record is seen without the voice
+        # stopping to describe a number in 190-point type.
+        ("02-record", record_scene(history, placed_record()), 0.40, SHARED),
         ("03-ticket", ticket_scene(route, league, history, board), 6.0,
          f"So here is the play for {slate}. A {route['legs']} leg, "
          f"{route['points']} point teaser at {route['price']}. It hits about "
@@ -805,7 +874,7 @@ def render(route: Dict, league: str, board: Dict, history: Dict, out_dir: str,
          "Why teasers? Almost a quarter of NFL games land on exactly three or "
          "seven points. Moving a line across both of those is worth way more "
          "than six points anywhere else, and that gap is the whole bet."),
-        ("05-cta", cta_scene(league, board), 4.5,
+        ("05-cta", cta_scene(league, board, shot), 4.5,
          "Come build your own on the site. Set the payout you want and the "
          "win rate you will accept, and it shows you every ticket that clears "
          "both. Free while we are still proving this out, and that will not "
@@ -820,6 +889,8 @@ def render(route: Dict, league: str, board: Dict, history: Dict, out_dir: str,
         png = os.path.join(work, f"{scene_name}.png")
         shoot(markup, png)
         frames.append((png, secs))
+    # A shared scene's "seconds" is a FRACTION of the owning scene's audio.
+    spoken_idx = [i for i, sc in enumerate(scenes) if sc[3] is not SHARED]
 
     # The script, always, whether or not this run narrates: it is what you read
     # from when recording, and it is the only place the spoken wording can be
@@ -834,11 +905,29 @@ def render(route: Dict, league: str, board: Dict, history: Dict, out_dir: str,
 
     audio = None
     if narrate_it:
-        parts = own_takes(name, len(scenes)) or narrate_scenes(
-            [sc[3] for sc in scenes], work)
+        lines = [scenes[i][3] for i in spoken_idx]
+        parts = own_takes(name, len(lines)) or narrate_scenes(lines, work)
         if parts:
-            frames = [(png, max(base, secs + 0.6))
-                      for (png, base), (_, secs) in zip(frames, parts)]
+            # Give every scene its slice. A spoken scene gets its own audio
+            # plus a beat; a shared scene takes its fraction out of the scene
+            # it follows, so the two cards together last exactly as long as
+            # the one line that covers them both.
+            timed = [0.0] * len(scenes)
+            for slot, (_, secs) in zip(spoken_idx, parts):
+                span = secs + 0.6
+                shares = []
+                j = slot + 1
+                while j < len(scenes) and scenes[j][3] is SHARED:
+                    shares.append(j)
+                    j += 1
+                taken = 0.0
+                for j in shares:
+                    piece = max(1.6, span * float(scenes[j][2]))
+                    timed[j] = piece
+                    taken += piece
+                timed[slot] = max(1.6, span - taken)
+            frames = [(png, timed[i] or base)
+                      for i, (png, base) in enumerate(frames)]
             audio = join_audio(parts, os.path.join(work, "voice.wav"))
 
     if frames_only:
