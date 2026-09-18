@@ -48,6 +48,10 @@ def main():
     a, b = R.intro_scene(), R.intro_scene()
     r.append(check("intro is deterministic", a, b))
     r.append(check("intro carries the brand line", R.INTRO_LINE in a, True))
+    # "Finder", never "predictor": prediction is the thing this project
+    # measured and lost at, so the brand must not promise it.
+    r.append(check("brand says finder", "finder" in R.INTRO_LINE.lower(), True))
+    r.append(check("brand avoids predictor", "predictor" in R.INTRO_LINE.lower(), False))
 
     # The record travels with the ticket. Without this a clip is a tout.
     t = R.ticket_scene(R.best_route(board(), "NFL", 265), "NFL", history())

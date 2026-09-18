@@ -40,10 +40,17 @@ CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 
 W, H = 1080, 1920
 
-# The brand line, in the user's own words. Fixed on purpose -- see the module
-# docstring. If this ever changes, every clip after it looks like a different
-# channel, so it is a constant rather than an argument.
-INTRO_LINE = "Join me on my journey to building the best parlay predictor"
+# The brand line. Fixed on purpose -- see the module docstring. If this ever
+# changes, every clip after it looks like a different channel, so it is a
+# constant rather than an argument.
+#
+# "Finder", not "predictor", and the distinction is the project's whole
+# finding: every prediction model here has been graded against closing lines
+# and lost, while the teaser windows work precisely BECAUSE they do not
+# predict anything -- they price a shape in the results the ladder ignores. A
+# channel called a predictor would be promising the one thing the data says
+# cannot be done.
+INTRO_LINE = "Join me on my journey to building the best parlay finder"
 INTRO_SUB = "Every ticket measured. Every result posted. Win or lose."
 OUTRO_LINE = "The record updates whether I win or lose"
 OUTRO_SUB = "Nobody posts their losses. That is the point."
@@ -248,12 +255,83 @@ def shoot(html_text: str, png: str) -> None:
     os.remove(tmp)
 
 
-def narrate(lines: List[str], path: str) -> Optional[str]:
-    """macOS `say` to an AIFF. Free, local, and sounds like a Mac."""
+VOICE = "Samantha"          # the only intelligible en_US voice on this machine
+
+
+def audio_seconds(path: str) -> float:
+    """How long a rendered clip actually is, asked of ffprobe not guessed."""
+    out = subprocess.run(
+        ["ffprobe", "-v", "error", "-show_entries", "format=duration",
+         "-of", "default=noprint_wrappers=1:nokey=1", path],
+        capture_output=True, text=True, timeout=60,
+    )
+    try:
+        return float(out.stdout.strip())
+    except ValueError:
+        return 0.0
+
+
+def narrate_scenes(lines: List[str], out_dir: str, rate: int = 180):
+    """
+    One audio file per scene, so a scene can be held for exactly as long as
+    its own line takes to read.
+
+    Narrating the whole script in one pass and hoping the visuals line up is
+    how the first cut ended up three seconds longer than its pictures, with
+    the voice still talking over a finished clip. Timing the scene to the
+    sentence is the fix, and it means editing a line changes the pacing by
+    itself.
+    """
+    if not shutil.which("say") or not shutil.which("ffprobe"):
+        return []
+    made = []
+    for i, line in enumerate(lines, start=1):
+        path = os.path.join(out_dir, f"voice-{i:02d}.aiff")
+        subprocess.run(["say", "-v", VOICE, "-r", str(rate), "-o", path, line],
+                       check=True, capture_output=True, timeout=180)
+        if not os.path.exists(path) or os.path.getsize(path) < 1024:
+            return []
+        made.append((path, audio_seconds(path)))
+    return made
+
+
+def join_audio(parts: List[tuple], out: str) -> Optional[str]:
+    """Concatenate the per-scene narration into one track."""
+    if not parts or not shutil.which("ffmpeg"):
+        return None
+    listing = out + ".txt"
+    with open(listing, "w") as fh:
+        for path, _ in parts:
+            fh.write(f"file '{path}'\n")
+    subprocess.run(["ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", listing,
+                    "-c:a", "pcm_s16le", out],
+                   check=True, capture_output=True, timeout=300)
+    os.remove(listing)
+    return out
+
+
+def narrate(lines: List[str], path: str, rate: int = 180) -> Optional[str]:
+    """
+    macOS `say` to an AIFF. Free, local, and sounds like a Mac.
+
+    Named voice rather than the system default, which varies by machine and
+    would change the channel's sound without anyone touching this file. 180
+    words a minute is a shade quicker than the default 175 and lands the
+    script inside the scene timings.
+    """
     if not shutil.which("say"):
         return None
-    subprocess.run(["say", "-o", path, "--data-format=LEI16@22050", " ".join(lines)],
+    # No --data-format: on this machine `say` answers "Opening output file
+    # failed: fmt?" and writes a zero-byte file while still exiting 0, so the
+    # failure only shows up as silence in the finished clip. The default AIFF
+    # is fine -- ffmpeg re-encodes it to AAC anyway.
+    subprocess.run(["say", "-v", VOICE, "-r", str(rate), "-o", path,
+                    " ".join(lines)],
                    check=True, capture_output=True, timeout=180)
+    # Exit 0 is not proof: check the file actually has audio in it.
+    if not os.path.exists(path) or os.path.getsize(path) < 1024:
+        print("  narration produced no audio — carrying on without it")
+        return None
     return path
 
 
@@ -327,8 +405,17 @@ def main() -> int:
 
     audio = None
     if a.narrate:
-        audio = narrate([s[3] for s in scenes], os.path.join(a.out, "voice.aiff"))
-        print(f"  voice: {'written' if audio else 'skipped (no say)'}")
+        parts = narrate_scenes([s[3] for s in scenes], a.out)
+        if parts:
+            # Hold each scene for its own line plus a beat of silence, never
+            # less than the designed minimum: a 3-second intro that reads in
+            # 4.2 seconds would talk over the next card.
+            frames = [(png, max(base, secs + 0.6))
+                      for (png, base), (_, secs) in zip(frames, parts)]
+            audio = join_audio(parts, os.path.join(a.out, "voice.wav"))
+            for png, secs in frames:
+                print(f"  {os.path.basename(png)} held {secs:.1f}s to fit its line")
+        print(f"  voice: {'written' if audio else 'skipped'}")
 
     if a.frames_only:
         print(f"\n{len(frames)} frames in {a.out} — install ffmpeg to stitch them.")
