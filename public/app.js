@@ -1200,7 +1200,7 @@ function solveRoutes(target, maxLegs = 6, tolerance = 0.12) {
         routes.push({
           what: `${pts}-pt teaser, ${n} legs (${fmtOdds(Number(price))})`,
           dec, prob: joint, teaser: true, legs: Number(n), fillable,
-          fill,
+          fill, price: Number(price), points: Number(pts),
           // Each leg's own chance, kept beside the ticket's. Showing only the
           // ticket makes 15.6% look like a bad bet built from good legs;
           // showing only the leg would be a lie, because five of six pays
@@ -1277,8 +1277,20 @@ function renderSolver() {
     return;
   }
 
-  const best = routes[0];
-  routes.forEach((r) => {
+  // Meeting the ask comes first. A +265 ticket is worth seeing when +300 was
+  // asked for -- it is one leg cheaper and likelier -- but it is not an
+  // answer to the question, so it sits under its own heading instead of at
+  // the top pretending to be one.
+  const meets = routes.filter((r) => !r.short);
+  const under = routes.filter((r) => r.short);
+  const best = (meets[0] || routes[0]);
+  let headed = false;
+  [...meets, ...under].forEach((r) => {
+    if (r.short && !headed) {
+      headed = true;
+      box.appendChild(el("p", "group-head",
+        `Just under ${fmtOdds(target)} — fewer legs, better odds of landing`));
+    }
     const ev = r.prob * (r.dec - 1) - (1 - r.prob);
     const cls = ev > 0 ? "route beats-fair" : r === best ? "route best" : "route";
     const node = el("div", cls);
@@ -1296,6 +1308,17 @@ function renderSolver() {
         r.fill.map((l) => `<span class="rl"><strong>${l.team_abbr} ${fmtLine(l.teased)}</strong>`
           + `<span class="dim"> from ${fmtLine(l.spread)} · ${l.matchup}</span></span>`).join("")
       }</div>` : ""}`;
+    // Tag it here rather than rebuilding it below: this is the card someone
+    // is looking at when they decide, and a ticket that cannot be marked from
+    // where it is read does not get marked at all.
+    if (r.teaser && r.fill && r.fill.length) {
+      const foot = el("div", "route-foot");
+      foot.appendChild(placementControls(
+        teaserBet(state.league, r.fill, Number(r.price), Number(r.points)), 1));
+      foot.appendChild(el("span", "dim",
+        `1u returns ${(r.dec - 1).toFixed(2)}u · a pushed leg is graded a loss`));
+      node.appendChild(foot);
+    }
     box.appendChild(node);
   });
 
