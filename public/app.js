@@ -488,23 +488,6 @@ function betLabel(league, legs, kind, points) {
   return `${legs.length}-leg: ${legs.map((l) => l.team_abbr).join(" + ")}`;
 }
 
-/** A tip or a board row, in the shape the store keeps. */
-function betFromLegs(league, legs, combinedOdds, winProb, marketProb, edgePP) {
-  return {
-    league,
-    odds: combinedOdds,
-    model_prob: round5(winProb),
-    implied_prob: round5(marketProb),
-    edge_pp: Math.round(edgePP * 100) / 100,
-    legs: legs.map((l) => ({
-      event_id: l.eventId, side: l.side, team_id: l.team_id,
-      team_abbr: l.team_abbr, team_name: l.team_name, opp_abbr: l.oppAbbr,
-      matchup: l.matchup, kickoff: l.kickoff, odds: l.odds,
-      model_prob: round5(l.model_prob), implied_prob: round5(l.implied_prob),
-      edge_pp: l.edge_pp,
-    })),
-  };
-}
 const round5 = (n) => (n == null ? null : Math.round(n * 1e5) / 1e5);
 
 async function fetchPlacements() {
@@ -764,12 +747,6 @@ const kickoffMs = (iso) => {
   return Number.isNaN(t) ? Infinity : t;
 };
 
-/** Picks by first kickoff, each parlay's legs in kickoff order too. */
-function byKickoff(picks) {
-  return picks
-    .map((p) => ({ ...p, legs: [...p.legs].sort((a, b) => kickoffMs(a.kickoff) - kickoffMs(b.kickoff)) }))
-    .sort((a, b) => kickoffMs(a.legs[0].kickoff) - kickoffMs(b.legs[0].kickoff));
-}
 
 function dayLabel(iso) {
   const t = kickoffMs(iso);
@@ -789,25 +766,6 @@ function kickoffLabel(iso) {
   });
 }
 
-/**
- * Games of evidence behind the rating.
- *
- * This replaced a 0-100 "signal" score that was mostly a restatement of numbers
- * already on the card: 35 of its points were the claimed edge, which is the
- * subtraction of the model and market columns sitting next to it, and 25 were a
- * function of the price, also shown. Only the 40 sample points said anything
- * new, so the card now shows that directly instead of blended into an index
- * whose movement could not be attributed to anything.
- */
-function sampleBadge(sample) {
-  const tone = sample >= 6 ? "high" : sample >= 3 ? "med" : "low";
-  const word = sample >= 6 ? "deep" : sample >= 3 ? "fair" : "thin";
-  return (
-    `<span class="badge ${tone}" title="Games of evidence behind this rating, ` +
-    `including capped credit for last season. Thin samples move a rating a long ` +
-    `way on one result.">${sample.toFixed(1)} gm · ${word}</span>`
-  );
-}
 
 // --------------------------------------------------------------------------
 // Context — what the ratings do not know
@@ -832,52 +790,8 @@ function legFlags(leg, game) {
   return gameFlags(game).filter((f) => !f.side || f.side === leg.side);
 }
 
-function weatherLine(game) {
-  const c = game.context || {};
-  const w = c.weather;
-  if (!w) {
-    return c.venue && c.venue.indoor ? `Indoors · ${c.venue.venue}` : null;
-  }
-  const bits = [`${Math.round(w.temp_f)}°F`];
-  bits.push(`wind ${Math.round(w.wind_mph)}${
-    w.gust_mph > w.wind_mph + 3 ? ` (gusts ${Math.round(w.gust_mph)})` : ""} mph`);
-  if (w.precip_pct >= 20) bits.push(`${Math.round(w.precip_pct)}% rain`);
-  if (w.snow_in > 0) bits.push("snow");
-  return bits.join(" · ") + ((c.venue && c.venue.venue) ? ` · ${c.venue.venue}` : "");
-}
 
-/** The strip under a tip: every warning that applies to its legs. */
-function flagStrip(legs, gamesById) {
-  const seen = new Set();
-  const out = [];
-  for (const leg of legs) {
-    const game = gamesById.get(leg.eventId);
-    if (!game) continue;
-    for (const f of legFlags(leg, game)) {
-      const k = `${f.kind}|${f.text}`;
-      if (seen.has(k)) continue;
-      seen.add(k);
-      out.push(f);
-    }
-  }
-  if (!out.length) return null;
-  const box = el("div", "flags");
-  for (const f of out) {
-    box.appendChild(el("div", `flag ${f.severity}`,
-      `<span class="flag-mark">${f.severity === "high" ? "!" : "i"}</span>${f.text}`));
-  }
-  return box;
-}
 
-/** A compact marker for the full board, where there is no room for sentences. */
-function flagBadge(game) {
-  const flags = gameFlags(game);
-  if (!flags.length) return "";
-  const high = flags.filter((f) => f.severity === "high");
-  const tip = flags.map((f) => f.text).join(" \n");
-  return ` <span class="flag-dot ${high.length ? "high" : "low"}" title="${
-    tip.replace(/"/g, "&quot;")}">${high.length ? "!" : "i"}</span>`;
-}
 
 /** Said once, at the top of the board, rather than implied by empty badges. */
 function injuryCoverageNote() {
@@ -901,34 +815,6 @@ function injuryCoverageNote() {
 // Rendering
 // --------------------------------------------------------------------------
 
-function renderRecord() {
-  const s = state.history && state.history.summary;
-  if (!s || (!s.won && !s.lost && !s.open)) return;
-  const box = $("#record-stats");
-  box.innerHTML = "";
-
-  const settled = s.won + s.lost;
-  const stats = [
-    { label: "Record", value: `${s.won}–${s.lost}`,
-      sub: s.pushed ? `${s.pushed} push` : `${settled} settled`, tone: "" },
-    { label: "Units", value: `${s.units >= 0 ? "+" : ""}${s.units.toFixed(2)}u`,
-      sub: "flat 1u per pick", tone: s.units > 0 ? "pos" : s.units < 0 ? "neg" : "" },
-    { label: "ROI", value: `${s.roi_pct >= 0 ? "+" : ""}${s.roi_pct.toFixed(1)}%`,
-      sub: `${s.win_pct.toFixed(0)}% win rate`, tone: s.roi_pct > 0 ? "pos" : s.roi_pct < 0 ? "neg" : "" },
-    { label: "Avg CLV", value: fmtPP(s.avg_clv_pp),
-      sub: `beat close ${s.beat_close_pct.toFixed(0)}%`, tone: s.avg_clv_pp > 0 ? "pos" : s.avg_clv_pp < 0 ? "neg" : "" },
-    { label: "Open", value: `${s.open}`, sub: "awaiting result", tone: "" },
-  ];
-
-  for (const st of stats) {
-    const card = el("div", "stat");
-    card.appendChild(el("div", "stat-label", st.label));
-    card.appendChild(el("div", `stat-value ${st.tone}`, st.value));
-    card.appendChild(el("div", "stat-sub", st.sub));
-    box.appendChild(card);
-  }
-  $("#record").hidden = false;
-}
 
 function renderTabs() {
   const nav = $("#league-tabs");
@@ -947,353 +833,9 @@ function renderTabs() {
   }
 }
 
-/** What was examined to arrive at the list above. Not a set of controls. */
-function renderGateSummary() {
-  const lg = state.board.leagues[state.league];
-  const legs = flattenLegs(lg);
-  const gated = legs.filter((l) => passesGates(l, state.cfg));
-  const plusEV = legs.filter((l) => l.edge_pp > 0);
-  const stale = legs.filter((l) => l.stale).length;
-  const m = lg.meta;
-  $("#gate-summary").textContent =
-    `Looked at ${m.upcoming_games} games · ${legs.length} priced sides · ` +
-    `${plusEV.length} +EV · ${gated.length} cleared every gate` +
-    (stale ? ` · ${stale} dropped for a late quarterback ruling` : "") +
-    ` · ${m.rated_teams} teams rated from ${m.completed_games} finals` +
-    (m.carryover ? ` + ${m.prior_games_used} prior-season games` : " (no carryover)") +
-    (injuryCoverageNote() ? ` · ${injuryCoverageNote()}` : "");
-}
 
-/**
- * Two decided lists, not one list and a pile of sliders.
- *
- * "Safest" and "Best priced" are the same engine and the same gates read in the
- * two directions a bet can be good: likely to land, or generously priced. They
- * are genuinely different bets — the market prices certainty, so a likely
- * winner pays little and a big payout is a longshot, and no single ordering can
- * be both. Showing both as finished lists keeps the choice ("which kind of bet
- * am I making today") without handing back the choice that ruined the old
- * board ("which gates should the model use"), where whatever it recommended was
- * whatever you had just asked it to recommend.
- */
-/**
- * Does the model board still get to call itself a set of bets?
- *
- * Only where nothing better exists. Where a teaser shortlist is present the
- * model's own graded record — 10-24 at 5-10pp of claimed edge, 5-21 at 10+ —
- * is a worse bet than the teaser's measured 73.6% per leg, so the picks stay
- * on the page as an evaluation record and lose their stakes. Reference mode is
- * therefore decided by what else is on the board, not by league.
- */
-// Always, now, in both leagues. It was briefly conditional on a teaser
-// shortlist existing, which made college the exception by accident -- and
-// college is the worse half: its longshots have gone 4-20. The Elo picks are
-// an evaluation record everywhere, and if that ever changes it will be because
-// a backtest said so, not because a section had nothing else to show.
-const referenceMode = () => true;
 
-/** A bucket of settled picks: record, realised units, what was claimed. */
-function gradedBucket(rows) {
-  const won = rows.filter((r) => r.status === "won").length;
-  const units = rows.reduce((u, r) => {
-    const d = r.open_odds > 0 ? r.open_odds / 100 : 100 / -r.open_odds;
-    return u + (r.status === "won" ? d : -1);
-  }, 0);
-  const model = rows.reduce((a, r) => a + (r.model_prob || 0), 0) / (rows.length || 1);
-  const market = rows.reduce((a, r) => a + (r.open_implied || 0), 0) / (rows.length || 1);
-  return { won, n: rows.length, units, roi: rows.length ? units / rows.length : 0, model, market };
-}
 
-/**
- * Why the model board carries no stake, in this league's own numbers.
- *
- * Read off the ledger at render time rather than written into the page. The
- * first version quoted the September buckets as prose, which would have had
- * the page defending the decision with numbers months out of date — and a
- * stale number arguing for a decision is worse than no number, because it
- * cannot be checked against the table two sections below it.
- */
-function renderReferenceNote() {
-  const el_ = $("#tips-reference-note");
-  const rows = (state.history?.picks || []).filter(
-    (p) => p.league === state.league && (p.status === "won" || p.status === "lost"));
-  if (rows.length < 8) {
-    el_.innerHTML = `Kept for evaluation, not to bet. The model's picks are `
-      + `graded in public here and carry no stake: every version of this engine `
-      + `tested against closing lines has lost, and ${rows.length} settled `
-      + `${state.league} pick${rows.length === 1 ? "" : "s"} is too few to `
-      + `argue otherwise either way.`;
-    return;
-  }
-  const mid = gradedBucket(rows.filter((r) => (r.edge_pp || 0) >= 5 && (r.edge_pp || 0) < 10));
-  const wide = gradedBucket(rows.filter((r) => (r.edge_pp || 0) >= 10));
-  const long = gradedBucket(rows.filter((r) => r.open_odds >= 150));
-  const pct = (b) => `${b.roi >= 0 ? "+" : ""}${(b.roi * 100).toFixed(0)}%`;
-  const part = (label, b) => b.n
-    ? `${label} <strong>${b.won}-${b.n - b.won} (${pct(b)})</strong>` : null;
-  const bits = [
-    part("sides where it claimed 5-10 points of edge have gone", mid),
-    part("sides where it claimed 10 or more have gone", wide),
-    part("and every pick priced at +150 or longer has gone", long),
-  ].filter(Boolean);
-  el_.innerHTML = `Kept for evaluation, not to bet. The model's picks are graded `
-    + `in public here, and this league's own record is why they carry no stake: `
-    + `${bits.join(", ")}`
-    + (long.n
-        ? ` — the long ones while the model forecast ${fmtPct(long.model)} and the `
-          + `market said ${fmtPct(long.market)}. <em>The price was closer.</em>`
-        : ".")
-    + ` A big gap between our number and the price is evidence the model is `
-    + `wrong, not evidence of a bet.`;
-}
-
-/**
- * What to say in a league where no structural bet exists at all.
- *
- * The NFL has a teaser shortlist, so its own section carries the verdict. In
- * college there is nothing to list, and the honest version of that is a
- * heading that says so with the measurements under it -- not an empty space
- * above a board of longshots, which would read as the picks being the answer.
- */
-function renderNoStructure() {
-  const section = $("#nostructure");
-  const lg = state.board.leagues[state.league] || {};
-  const hasTeasers = ((lg.teasers || {}).legs || []).length >= 2;
-  if (hasTeasers) {
-    section.hidden = true;
-    return;
-  }
-  section.hidden = false;
-  $("#nostructure-note").textContent =
-    `${state.league} · nothing here has beaten its own backtest`;
-  const body = $("#nostructure-body");
-  body.innerHTML = "";
-  body.appendChild(el("div", "empty",
-    `<strong>Keep your money in your pocket</strong>`
-    + `The one structure that beat its test is an NFL bet, and it does not `
-    + `transfer here: college margins land on 3 or 7 only <strong>17.8%</strong> `
-    + `of the time against the NFL's 24.1%, so six teased points buy less. The `
-    + `NFL's own qualifying windows, measured on 2,646 college games, win `
-    + `<strong>70.9% ± 2.0</strong> per leg where -110 needs 72.4% — below the `
-    + `bar, not above it.`
-    + `<div class="empty-extra">Line shopping, the other candidate, is `
-    + `<strong>3-17</strong> across its live ledger against the +5.8% it `
-    + `claimed, on one logged closing price. Too early to call, and nothing to `
-    + `bet on. The board below is kept as a record.</div>`));
-}
-
-function renderTips() {
-  const ref = referenceMode();
-  $("#tips-heading").firstChild.textContent =
-    ref ? "Model board " : "Bets this week ";
-  $("#tips-legend").hidden = ref;
-  $("#tips-reference-note").hidden = !ref;
-  if (ref) renderReferenceNote();
-  const lg = state.board.leagues[state.league];
-  const gamesById = new Map(lg.games.map((g) => [g.event_id, g]));
-  const legs = flattenLegs(lg);
-
-  const safeCfg = applyCertaintyTo(state.cfg);
-  const safe = buildPicks(legs, safeCfg);
-
-  // The second list is built from what the first did not take.
-  //
-  // Deduping whole bets was not enough. The safe list took Wake Forest at -148
-  // as a single while the value list put Wake Forest in a parlay — two
-  // different bets, so nothing was duplicated, and anyone placing both lists
-  // would still be doubling down on one team. These are meant to be placeable
-  // together, so the value list gets the same treatment selection already gives
-  // itself: no reusing a team or a game.
-  const usedTeams = new Set();
-  const usedGames = new Set();
-  for (const p of safe) {
-    for (const l of p.legs) {
-      usedTeams.add(l.team_id);
-      usedTeams.add(l.oppId);
-      usedGames.add(l.eventId);
-    }
-  }
-  const free = legs.filter((l) => !usedTeams.has(l.team_id) && !usedGames.has(l.eventId));
-  const value = buildPicks(free, state.cfg);
-
-  renderPickList($("#tips-safe"), safe, safeCfg, legs, gamesById, ref);
-  renderPickList($("#tips-value"), value, state.cfg, legs, gamesById, ref);
-
-  const all = [...safe, ...value];
-  const totalUnits = all.reduce((t, p) => t + p.stakeUnits, 0);
-  $("#tips-note").textContent = ref
-    ? "what the model would have bet · not recommended · graded below"
-    : all.length
-      ? `${all.length} bet${all.length > 1 ? "s" : ""} · ${+totalUnits.toFixed(1)}U total`
-      : "nothing this week";
-}
-
-/** The leg shape betId() expects, from a built pick. */
-const legsOf = (pick) => pick.legs.map((l) => ({ event_id: l.eventId, side: l.side }));
-
-/**
- * Why the list looks the way it does on leg count.
- *
- * Selection walks singles first and stops once it has enough picks, so parlays
- * only appear when singles cannot reach the payout floor on their own. That
- * ordering is deliberate and it is the one thing about this board people ask
- * about, because a night of all singles looks like a missing feature.
- *
- * It is not. A parlay's expectation is the product of its legs' expectations,
- * so stacking two legs roughly doubles the house's cut for the same opinion. A
- * parlay is a way to REACH a payout, never a source of edge — so when a single
- * already pays +295 there is nothing to reach for, and stacking would only cost
- * more.
- */
-function legCountNote(picks, cfg) {
-  if (!picks.length) return null;
-  const parlays = picks.filter((p) => p.legs.length > 1).length;
-  if (parlays === picks.length) {
-    return `Every one of these is a parlay: no single side pays `
-         + `${fmtOdds(cfg.minCombined)} on its own this week, so legs are stacked to `
-         + `reach it. Stacking costs — a parlay's expectation is the product of its `
-         + `legs', so two legs roughly double the house's cut on the same opinion.`;
-  }
-  if (parlays === 0) {
-    // Say what actually happened: singles filled the list. Naming the payout
-    // floor here was wrong on the safe list, where the floor is -400 and every
-    // single clears it trivially — the reason was never the floor.
-    let why = `All singles this week —${picks.length} cleared on their own, and `
-            + `singles are taken first. Parlays only appear when singles cannot fill `
-            + `the list, because a parlay is a way to reach a payout, not a source of `
-            + `edge: its expectation is the product of its legs', so stacking two `
-            + `roughly doubles the house's cut on the same opinion.`;
-    if (cfg.minPickWinProb > 0) {
-      why += ` Here a parlay also has to stay above `
-           + `${(cfg.minPickWinProb * 100).toFixed(0)}% as a whole ticket, which two `
-           + `likely winners only just manage — 76% and 70% multiply to 53%.`;
-    }
-    return why;
-  }
-  return `${parlays} of these stack legs to reach ${fmtOdds(cfg.minCombined)}; the `
-       + `rest get there on their own. Singles are preferred — a parlay multiplies `
-       + `the house's cut along with the payout.`;
-}
-
-function renderPickList(box, picks, cfg, legs, gamesById, reference = false) {
-  box.innerHTML = "";
-
-  const gated = legs.filter((l) => passesGates(l, cfg)).length;
-  if (!picks.length) {
-    // Which gate emptied the board, counted rather than guessed. "No tips" and
-    // "no tips worth backing" are different answers and only one of them means
-    // something is wrong.
-    const staleCut = legs.filter((l) => l.stale).length;
-    const certaintyCut = cfg.minWinProb > 0
-      ? legs.filter((l) => !l.stale && l.model_prob < cfg.minWinProb).length : 0;
-    const best = legs
-      .filter((l) => passesGates(l, cfg))
-      .map((l) => stakeUnits(l.model_prob, l.odds, l.implied_prob))
-      .reduce((a, b) => Math.max(a, b), 0);
-
-    let why;
-    if (gated && best <= 0) {
-      why = `${gated} sides cleared the gates, but every one of them sized under `
-          + `half a unit — which is the engine saying it does not believe them `
-          + `enough to back them. That is an answer, not a failure.`;
-    } else if (gated) {
-      why = `${gated} sides cleared the gates, but none combine to `
-          + `${fmtOdds(cfg.minCombined)} without overlapping teams.`;
-    } else if (cfg.minWinProb > 0) {
-      why = `Nothing clears a ${(cfg.minWinProb * 100).toFixed(0)}% win chance with an `
-          + `edge on the price — ${certaintyCut} sides were cut by the win-chance floor `
-          + `alone. The market prices certainty accurately, so the likely winners `
-          + `usually pay too little to be worth backing.`;
-    } else {
-      why = `No side clears ${cfg.minEdgePP.toFixed(1)}pp of edge on `
-          + `${cfg.minSample}+ games of sample. Nothing here is worth a bet this week `
-          + `— keep your money in your pocket.`;
-    }
-    if (staleCut && cfg.excludeStale) {
-      why += `<div class="empty-extra">${staleCut} side${staleCut > 1 ? "s were" : " was"} `
-           + `excluded outright: a quarterback was ruled out after the ratings were `
-           + `built, so the model has no informed opinion on either side of `
-           + `${staleCut > 2 ? "those games" : "that game"}.</div>`;
-    }
-    box.appendChild(el("div", "empty", `<strong>No bets this week</strong>${why}`));
-    return;
-  }
-
-  // Selection ranks by likelihood; the page lists by when you have to place
-  // them. Sorting here and not in buildPicks keeps the parity harness's order.
-  picks = byKickoff(picks);
-  let day = null;
-
-  picks.forEach((pick, i) => {
-    const pickDay = dayLabel(pick.legs[0].kickoff);
-    if (pickDay !== day) {
-      box.appendChild(el("div", "tip-day", pickDay));
-      day = pickDay;
-    }
-    const card = el("div", reference ? "tip reference" : "tip");
-    const head = el("div", "tip-head");
-    // No trust badge: the gate now refuses anything past ten points from the
-    // price, so every pick that reaches this page is in the same band and the
-    // badge was the same word every time. The gap itself is still shown, as the
-    // two probabilities and their difference.
-    head.innerHTML = `
-      <div class="tip-title"><span class="tip-rank">#${i + 1}</span>${
-        // The stake comes off the label in reference mode rather than being
-        // greyed out: a number in units is an instruction however it is styled.
-        reference ? pick.label.replace(/^[\d.]+U · /, "") : pick.label}</div>
-      <div class="tip-meta">
-        <span class="dim">we say ${fmtPct(pick.winProb)} · market says ${fmtPct(pick.marketProb)}</span>
-        <span class="tip-odds ${pick.combined > 0 ? "pos" : ""}">${fmtOdds(pick.combined)}</span>
-      </div>`;
-    card.appendChild(head);
-
-    const table = el("table", "tip-legs");
-    const body = el("tbody");
-    for (const l of pick.legs) {
-      const tr = el("tr");
-      tr.innerHTML = `
-        <td>
-          <div class="lg-team">${l.team_name} ML</div>
-          <div class="lg-game">${l.matchup}${l.neutral ? " · neutral" : ""} · ${kickoffLabel(l.kickoff)}</div>
-          ${(() => {
-            const wl = weatherLine(gamesById.get(l.eventId) || {});
-            return wl ? `<div class="lg-game dim">${wl}</div>` : "";
-          })()}
-        </td>
-        <td class="num">${fmtOdds(l.odds)}</td>
-        <td class="num">${fmtPct(l.model_prob)}<div class="lg-game">model win%</div></td>
-        <td class="num">${fmtPct(l.implied_prob)}<div class="lg-game">market win%</div></td>
-        <td class="num pos">${fmtPP(l.edge_pp)}<div class="lg-game">fair ${fmtOdds(l.fair_odds)}</div></td>
-        <td class="num">${sampleBadge(l.sample)}</td>`;
-      body.appendChild(tr);
-    }
-    table.appendChild(body);
-    card.appendChild(table);
-
-    const strip = flagStrip(pick.legs, gamesById);
-    if (strip) card.appendChild(strip);
-
-    const foot = el("div", "tip-foot");
-    // The checkbox stays in reference mode — tagging one is how it gets graded,
-    // and the record is the point of keeping the list — but it is offered with
-    // no suggested stake attached.
-    foot.appendChild(placementControls(
-      betFromLegs(state.league, pick.legs, pick.combined, pick.winProb,
-                  pick.marketProb, pick.combinedEdgePP),
-      reference ? 0 : pick.stakeUnits
-    ));
-    foot.appendChild(el("span", "dim",
-      (pick.legs.length > 1
-        ? `${pick.legs.length} legs · no shared teams or games · `
-        : "")
-      + `1u returns ${pick.payout.toFixed(2)}u`));
-    card.appendChild(foot);
-    box.appendChild(card);
-  });
-
-  const note = legCountNote(picks, cfg);
-  if (note) box.appendChild(el("p", "list-note", note));
-}
 
 /**
  * The two-leg ticket, priced at what the book is actually offering.
@@ -1555,91 +1097,8 @@ function renderTeasers() {
     + `its win% already.`));
 }
 
-function renderBoard() {
-  const lg = state.board.leagues[state.league];
-  const gamesById = new Map(lg.games.map((g) => [g.event_id, g]));
-  let legs = flattenLegs(lg);
-  if (state.onlyEV) legs = legs.filter((l) => l.edge_pp > 0);
-  legs.sort((a, b) => b.edge_pp - a.edge_pp);
 
-  const body = $("#board-table tbody");
-  body.innerHTML = "";
-  if (!legs.length) {
-    body.innerHTML = `<tr><td colspan="11" class="dim" style="padding:20px;text-align:center">
-      No priced sides to show.</td></tr>`;
-    return;
-  }
-  for (const l of legs) {
-    const passes = passesGates(l, state.cfg);
-    const suggested = stakeUnits(l.model_prob, l.odds, l.implied_prob);
-    const tr = el("tr");
-    tr.innerHTML = `
-      <td class="bet-cell"></td>
-      <td class="${passes ? "team-cell" : "dim"}">${l.matchup}${l.neutral ? ' <span class="dim">N</span>' : ""}${flagBadge(gamesById.get(l.eventId) || {})}</td>
-      <td class="dim">${kickoffLabel(l.kickoff)}</td>
-      <td class="${passes ? "team-cell" : "dim"}">${l.team_abbr} <span class="dim">vs ${l.oppAbbr}</span></td>
-      <td class="num">${fmtOdds(l.odds)}</td>
-      <td class="num">${fmtPct(l.model_prob)}</td>
-      <td class="num dim">${fmtPct(l.implied_prob)}</td>
-      <td class="num ${l.edge_pp > 0 ? "pos" : "neg"}">${fmtPP(l.edge_pp)}</td>
-      <td class="num dim">${fmtOdds(l.fair_odds)}</td>
-      <td class="num">${sampleBadge(l.sample)}</td>
-      <td class="num">${(() => {
-        const u = stakeUnits(l.model_prob, l.odds, l.implied_prob);
-        return u > 0
-          ? `<strong>${unitsLabel(u)}</strong>`
-          : `<span class="dim">no bet</span>`;
-      })()}</td>`;
-    // A single-leg ticket on this side, at whatever price is showing now.
-    tr.querySelector(".bet-cell").appendChild(placementControls(
-      betFromLegs(state.league, [l], l.odds, l.model_prob, l.implied_prob, l.edge_pp),
-      suggested > 0 ? suggested : 1
-    ));
-    if (!passes) tr.style.opacity = "0.55";
-    body.appendChild(tr);
-  }
-}
 
-function renderRatings() {
-  const lg = state.board.leagues[state.league];
-  const body = $("#ratings-table tbody");
-  body.innerHTML = "";
-  lg.ratings.slice(0, 25).forEach((r, i) => {
-    const tr = el("tr");
-    tr.innerHTML = `<td class="dim">${i + 1}</td>
-      <td class="team-cell">${r.name}</td>
-      <td class="num">${r.elo.toFixed(0)}</td>
-      <td class="num dim">${r.games}</td>`;
-    body.appendChild(tr);
-  });
-}
-
-function renderHistory() {
-  const body = $("#history-table tbody");
-  body.innerHTML = "";
-  const settled = (state.history?.picks || [])
-    .filter((p) => p.status !== "open" && p.league === state.league)
-    .sort((a, b) => (b.graded_at || "").localeCompare(a.graded_at || ""))
-    .slice(0, 25);
-
-  if (!settled.length) {
-    body.innerHTML = `<tr><td colspan="4" class="dim" style="padding:18px;text-align:center">
-      No settled ${state.league} picks yet — results land after kickoff.</td></tr>`;
-    return;
-  }
-  for (const p of settled) {
-    const won = p.status === "won";
-    const score = p.result ? `${p.result.away_score}–${p.result.home_score}` : "";
-    const tr = el("tr");
-    tr.innerHTML = `
-      <td class="team-cell">${p.team_abbr} <span class="dim">vs ${p.opp_abbr}</span></td>
-      <td class="num">${fmtOdds(p.open_odds)}</td>
-      <td class="num ${p.clv_pp > 0 ? "pos" : p.clv_pp < 0 ? "neg" : "dim"}">${fmtPP(p.clv_pp || 0)}</td>
-      <td class="${won ? "pos" : p.status === "lost" ? "neg" : "dim"}">
-        ${p.status.toUpperCase()} <span class="dim">${score}</span></td>`;
-    body.appendChild(tr);
-  }
-}
 
 /**
  * Say so when the board has stopped being refreshed.
@@ -1719,69 +1178,10 @@ function solveRoutes(target, maxLegs = 6, tolerance = 0.12) {
     }
   }
   const routes = [];
-
-  // A single is always the least given away: the cut is paid once.
-  const singles = legs.filter((l) => l.dec >= floor);
-  if (singles.length) {
-    const best = singles.reduce((a, b) => (b.prob > a.prob ? b : a));
-    routes.push({
-      what: `Single: ${best.abbr} ${fmtOdds(best.odds)}`,
-      dec: best.dec, prob: best.prob, legs: 1, perLeg: best.prob,
-      why: `${best.matchup}. One leg, so the book's cut is paid once — this is `
-         + `the cleanest route to ${fmtOdds(target)} on the board.`,
-    });
-  }
-
-  // The fewest legs that reach the target, giving away as little as possible.
-  //
-  // The pool is NOT just the lowest-hold legs. Ranking by hold alone fills it
-  // with heavy favourites — a -5000 side keeps almost nothing back — and then
-  // no pair of them reaches a big payout, so the search returns some absurd
-  // 9.6% ticket while a 24% one sits on the board. A route needs a long leg to
-  // carry the payout AND a cheap leg to keep the probability, so both ends are
-  // kept: every leg for two- and three-leg tickets (a few hundred thousand
-  // combinations, which the browser does instantly), and both extremes when
-  // the search has to go deeper.
-  const byHold = [...legs].sort((a, b) => (b.prob * b.dec) - (a.prob * a.dec));
-  const byPayout = [...legs].sort((a, b) => b.dec - a.dec);
-  const deepPool = [...new Set([...byHold.slice(0, 16), ...byPayout.slice(0, 16)])];
-  // Up to eight legs searched. Beyond that the combinations explode and the
-  // answer stops changing: a ninth leg multiplies the chance down by another
-  // quarter while the payout the market offers for it does not keep up.
-  outer:
-  for (let n = 2; n <= Math.min(8, maxLegs); n++) {
-    let best = null;
-    const pool = n <= 3 ? legs : deepPool.slice(0, n >= 6 ? 14 : 32);
-    const walk = (start, chosen, dec, prob, games) => {
-      if (chosen.length === n) {
-        if (dec >= floor && (!best || prob > best.prob)) best = { legs: [...chosen], dec, prob };
-        return;
-      }
-      for (let i = start; i < pool.length; i++) {
-        const l = pool[i];
-        if (games.has(l.eventId)) continue;
-        games.add(l.eventId);
-        chosen.push(l);
-        walk(i + 1, chosen, dec * l.dec, prob * l.prob, games);
-        chosen.pop();
-        games.delete(l.eventId);
-      }
-    };
-    walk(0, [], 1, 1, new Set());
-    if (best) {
-      routes.push({
-        what: `${n}-leg parlay: ${best.legs.map((l) => `${l.abbr} ${fmtOdds(l.odds)}`).join(" + ")}`,
-        dec: best.dec, prob: best.prob, legs: n,
-        perLeg: Math.pow(best.prob, 1 / n),
-        why: `The fewest legs that reach it. Each leg pays the book's cut `
-           + `again, which is why this sits below the single.`,
-      });
-      break outer;
-    }
-  }
-
-  // The teaser ladder — the one route whose probability does not come from the
-  // price, and so the only one that can be better than fair.
+  // Teasers only. Singles and moneyline parlays are rearrangements of the same
+  // market prices and land about 4% short however they are stacked; showing
+  // them beside the one structure that measures positive buried it. They live
+  // on in target.py, which is where a price gets checked.
   const ladder = (lg.teasers || {}).ladder;
   if (ladder) {
     for (const [pts, block] of Object.entries(ladder)) {
@@ -1922,17 +1322,16 @@ function renderSolver() {
 }
 
 function render() {
+  // The page is the teaser tickets, the legs behind them, and what you
+  // placed. Everything else -- the Elo model's board, the full price table,
+  // the power ratings, its settled picks -- described a strategy the ledger
+  // retired, and kept a reader scrolling past four sections to reach the one
+  // bet worth making.
   renderStaleness();
-  renderSolver();
   renderTabs();
-  renderYourBets();
-  renderGateSummary();
-  renderNoStructure();
+  renderSolver();
   renderTeasers();
-  renderTips();
-  renderBoard();
-  renderRatings();
-  renderHistory();
+  renderYourBets();
 }
 
 // --------------------------------------------------------------------------
@@ -1986,12 +1385,6 @@ async function boot() {
     $(id).addEventListener("input", renderSolver);
   }
 
-  $("#only-ev").addEventListener("change", (e) => {
-    state.onlyEV = e.target.checked;
-    renderBoard();
-  });
-
-  renderRecord();
   render();
 }
 

@@ -259,7 +259,33 @@ def qualifying_legs(payload: List[dict], within_days: int = 8) -> List[Leg]:
     return out
 
 
+# A leg has to clear this on its own before it can be in a ticket. Every
+# measured window does -- 73.6% and 79.2% in the NFL, 70.6% and 77.2% in
+# college -- but a leg teased onto a whole number is charged 2.5% for push
+# risk, and that is what drops a college six-pointer to 68.9%. Those are the
+# legs this removes: the ones whose own number does not stand up.
+MIN_LEG_RATE = 0.70
+
 SNAPSHOT_MAX_AGE_H = 12.0
+
+
+def slate_end(now=None):
+    """
+    The end of the week being played, in UTC.
+
+    Not "eight days from now", which is what the window used to be and which
+    quietly mixed next Saturday's college card into this Sunday's list. A
+    football week ends when Monday night does, so the cutoff is the coming
+    Tuesday at 06:00 UTC -- 2am Eastern, after the last whistle and before
+    anybody is betting the next one.
+    """
+    from datetime import datetime, timedelta, timezone
+    now = now or datetime.now(timezone.utc)
+    # Monday is 0; Tuesday is 1. Days until the NEXT Tuesday, never today.
+    ahead = (1 - now.weekday()) % 7 or 7
+    tuesday = (now + timedelta(days=ahead)).replace(
+        hour=6, minute=0, second=0, microsecond=0)
+    return tuesday
 
 # Where faults.py leaves the snapshot of the user's own books. A module
 # constant rather than a path built inside the reader, so a test can point it
@@ -347,7 +373,11 @@ def candidates_from_board(games: List[dict], within_days: int = 8,
     Returned as plain dicts because it is written straight into board.json.
     """
     from datetime import datetime, timedelta, timezone
-    cutoff = datetime.now(timezone.utc) + timedelta(days=within_days)
+    # This week's games only. `within_days` still caps it, but the slate end
+    # is what actually decides: a list that reaches into next weekend is a
+    # list of bets nobody can place yet.
+    cutoff = min(datetime.now(timezone.utc) + timedelta(days=within_days),
+                 slate_end())
     book_lines, book_name, captured = _book_spreads(league)
     legs: List[dict] = []
     for g in games:
@@ -375,6 +405,8 @@ def candidates_from_board(games: List[dict], within_days: int = 8,
                 prob = leg_probability(band, teased)
             else:
                 prob = (1.0 - push) * leg_rate(league, points)[0]
+            if prob < MIN_LEG_RATE:
+                continue          # its own number does not stand up
             legs.append({
                 "event_id": str(g.get("event_id", "")),
                 "matchup": g.get("short_name") or g.get("name") or "",
