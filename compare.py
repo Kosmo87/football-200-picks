@@ -153,6 +153,52 @@ def best_parlays(legs: List[Dict], target: int, pool: int = 12,
     return [by_count[n] for n in sorted(by_count)][:top]
 
 
+def mixed_pool(board: Dict, points: int) -> List[Dict]:
+    """
+    Every qualifying leg from both leagues at one tease size, best first.
+
+    Books let a football teaser mix NFL and college, which is worth using --
+    but only as filler. A college leg wins 70.6% at six points against the
+    NFL's 73.6%, and 77.2% against 79.2% at ten, so every college leg added
+    ahead of an available NFL one makes the ticket worse. Sorted by measured
+    rate, the order takes care of itself.
+    """
+    out = []
+    for lg in ("NFL", "NCAAF"):
+        t = ((board.get("leagues") or {}).get(lg) or {}).get("teasers") or {}
+        block = t if points == 6 else (t.get("ten") or {})
+        rate = block.get("per_leg_rate")
+        for leg in block.get("legs") or []:
+            if rate:
+                out.append(dict(leg, league=lg, rate=rate, points=points))
+    return sorted(out, key=lambda l: -l["rate"])
+
+
+def mixed_ticket(board: Dict, points: int, n: int, price: int) -> Optional[Dict]:
+    """
+    The best n-leg ticket at one tease size, across both leagues.
+
+    Priced by MULTIPLYING each leg's own measured rate rather than reading a
+    joint rate off the table: the joints were measured within one league, and
+    a ticket spanning two has no measured joint. Multiplying is the
+    conservative choice -- the NFL's measured joints came in slightly above
+    independence, so this understates a same-league ticket rather than
+    flattering a mixed one.
+    """
+    pool = mixed_pool(board, points)
+    if len(pool) < n:
+        return None
+    legs = pool[:n]
+    p = 1.0
+    for l in legs:
+        p *= l["rate"]
+    dec = _dec(price)
+    return {"points": points, "n": n, "price": price, "dec": dec, "legs": legs,
+            "p": p, "needs": 1 / dec, "ev": p * (dec - 1) - (1 - p),
+            "leagues": sorted({l["league"] for l in legs}),
+            "independent": True}
+
+
 def teaser_routes(league: str, board: Dict, target: int) -> List[Dict]:
     """Ladder tickets that clear the target, priced off measured joint rates."""
     lg = (board.get("leagues") or {}).get(league) or {}
@@ -199,23 +245,33 @@ def main() -> int:
 
     print(f"\n{'='*66}\nMONEYLINE ROUTES TO {a.target:+d}\n{'='*66}")
     for r in best_parlays(legs, a.target, a.pool, a.max_legs):
-        names = " + ".join(f"{c['team']} {c['odds']:+d}" for c in r["legs"])
-        print(f"\n  {r['n']} legs, pays {_american(r['dec']):+d}: {names}")
-        print(f"    our models say it wins {r['p_model']*100:5.1f}%  -> EV {r['ev_model']*100:+7.1f}%")
-        print(f"    the market says        {r['p_market']*100:5.1f}%  -> EV {r['ev_market']*100:+7.1f}%")
-        print(f"    needs {r['needs']*100:.1f}% to break even; "
-              f"biggest single disagreement in it: {r['gap']*100:+.1f}pp")
+        print(f"\n  {r['n']} legs, pays {_american(r['dec']):+d}")
+        # Leg by leg, because a ticket's number hides which leg is carrying the
+        # risk. Two models and the price, side by side: where all three agree
+        # the leg is solid and cheap; where the models run ahead of the price
+        # that leg is both the reason the payout exists and the reason to
+        # doubt it.
+        print(f"      {'leg':6}{'price':>7}{'box':>8}{'elo':>8}{'market':>9}{'gap':>9}")
+        for c in r["legs"]:
+            flag = "  <- carries it" if c["gap"] > 0.10 else ""
+            print(f"      {c['team']:6}{c['odds']:+7}{c['box']*100:7.1f}%"
+                  f"{c['elo']*100:7.1f}%{c['market']*100:8.1f}%{c['gap']*100:+8.1f}pp{flag}")
+        print(f"    all of them landing: models {r['p_model']*100:5.1f}%  -> EV {r['ev_model']*100:+7.1f}%")
+        print(f"                         market {r['p_market']*100:5.1f}%  -> EV {r['ev_market']*100:+7.1f}%")
+        print(f"    needs {r['needs']*100:.1f}% to break even")
 
     print(f"\n{'='*66}\nTEASER ROUTES TO {a.target:+d}\n{'='*66}")
     routes = teaser_routes(a.league, board, a.target)
     if not routes:
         print("\n  none: the ladder tops out below this payout.")
     for r in routes:
-        legs_txt = ", ".join(f"{l['team_abbr']} {l['teased']:+g}" for l in r["legs"])
         print(f"\n  {r['n']} legs at {r['points']} points, pays {r['price']:+d}")
-        print(f"    measured to win {r['p']*100:5.1f}%  -> EV {r['ev']*100:+7.1f}%"
-              f"   (needs {r['needs']*100:.1f}%)")
-        print(f"    {legs_txt}")
+        print(f"      {'leg':16}{'from':>7}{'to':>8}{'wins':>8}")
+        for l in r["legs"]:
+            print(f"      {l['team_abbr'] + ' ' + l.get('matchup', ''):16}"
+                  f"{l['spread']:+7g}{l['teased']:+8g}{l['prob']*100:7.1f}%")
+        print(f"    all of them landing: {r['p']*100:5.1f}% measured  -> EV {r['ev']*100:+7.1f}%")
+        print(f"    needs {r['needs']*100:.1f}% to break even")
 
     print(f"\n{'='*66}")
     print("The moneyline EV on our models is a forecast; the teaser EV is a")

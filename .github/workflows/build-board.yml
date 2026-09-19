@@ -363,6 +363,20 @@ jobs:
           python placements.py --publish
           python placements.py --report
 
+      - name: Run the top-4 poll parlay, on paper
+        # A FORWARD TEST, not a bet. The rule (AP top 4, unranked opponents
+        # only) returned +225% over 2022-2025, but depth 4 was chosen by
+        # sweeping ten depths across those same four seasons, and 2024 lost
+        # money at every one of them. Logging it weekly with no stake is the
+        # only way to find out how much of that was fitting.
+        #
+        # --log is idempotent per slate, so the hourly cadence writes once.
+        continue-on-error: true
+        run: |
+          python ranked.py --settle
+          python ranked.py --log
+          python ranked.py --record
+
       - name: Build board
         run: |
           python build_board.py \
@@ -380,6 +394,7 @@ jobs:
         # whether or not a key is present, and they are NOT continue-on-error.
         run: |
           python shop_close_test.py
+          python ranked_test.py
           python teaser_test.py
           python target_test.py
           python reel_test.py

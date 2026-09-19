@@ -20,11 +20,26 @@ five return the same current poll. There is no historical poll behind this
 endpoint. The check that caught it is cheap and worth repeating on any dated
 feed: ask for two different weeks and confirm the answers differ.
 
-WHAT THIS FILE DOES NOW. Captures the current poll, weekly, so a real history
-accumulates from here. Testing whether polls carry information the price has
-missed needs either that history or a source that actually serves dated polls
-(collegefootballdata.com has one behind a free key). Until then the question
-is open, and this file makes no claim about it.
+THE HISTORY DOES EXIST -- ON A DIFFERENT HOST. The paragraph above is about
+site.api.espn.com, and it is still true of that path. But ESPN's CORE api
+serves genuinely dated polls:
+
+  sports.core.api.espn.com/v2/sports/football/leagues/college-football/
+      seasons/{year}/types/{2}/weeks/{week}/rankings/{1 = AP, 2 = coaches}
+
+Weeks differ from one another, carry the right team records, and are dated the
+Sunday they were released. The preseason poll is seasontype 1 week 1; regular
+seasontype 2 starts at week 2, and week 1 there is a 404. No key is needed,
+and collegefootballdata.com is not required after all.
+
+fetch_poll() below reads that host. THE TRAP IT REPLACES IS STILL LIVE: a poll
+dated Sunday describes the weekend that just ENDED, so selecting teams with
+"the poll on or before this weekend" hands the bettor Sunday's poll for
+Saturday's games. That mistake returned an 11-0 season and +$85,000 the first
+time it was run. Polls must be filtered STRICTLY BEFORE the slate opens.
+
+WHAT --capture STILL DOES. Appends the current poll weekly. Kept because it
+records what we saw at the time, which no backfill can prove.
 
 TWO HEADER REGIMES. The rankings path 403s on espn.py's browser-shaped headers
 and returns 200 to a plain client, exactly as /injuries does. Sending nothing
@@ -51,6 +66,62 @@ RANK_URL = ("https://site.api.espn.com/apis/site/v2/sports/football/"
 
 
 ARCHIVE = os.path.join(ROOT, "data", "archive", "rankings.ndjson")
+
+# The core host, which honours season and week. AP is poll 1, coaches is 2.
+CORE_URL = ("https://sports.core.api.espn.com/v2/sports/football/leagues/"
+            "college-football/seasons/{year}/types/{stype}/weeks/{week}/rankings/{poll}")
+
+# Preseason lives under seasontype 1; regular-season week 1 does not exist.
+POLL_WEEKS = [(1, 1)] + [(2, w) for w in range(2, 18)]
+
+
+def fetch_poll(year: int, stype: int, week: int, poll: int = 1) -> Optional[dict]:
+    """
+    One dated poll: {"released": date, "name": str, "ranks": {team_id: rank}}.
+
+    `released` is the date the poll came out, and it is the field that keeps
+    this honest -- it is a SUNDAY, at the end of the weekend it judges, so a
+    caller picking a poll for a slate must require released < first kickoff.
+    Returned rather than dropped so the caller cannot forget it exists.
+    """
+    url = CORE_URL.format(year=year, stype=stype, week=week, poll=poll)
+    r = requests.get(url, timeout=25)
+    if r.status_code != 200:
+        return None
+    d = r.json()
+    ranks = {}
+    for rk in d.get("ranks") or []:
+        tid = str((rk.get("team") or {}).get("$ref", "")).split("/")[-1].split("?")[0]
+        if tid:
+            ranks[tid] = int(rk.get("current") or 0)
+    if not ranks:
+        return None
+    from datetime import datetime
+    return {"released": datetime.strptime(d["date"], "%Y-%m-%dT%H:%MZ").date(),
+            "name": d.get("shortName") or d.get("name") or "poll",
+            "week": week, "ranks": ranks}
+
+
+def season_polls(year: int, poll: int = 1) -> List[dict]:
+    """Every poll of one season, oldest first."""
+    out = []
+    for stype, week in POLL_WEEKS:
+        got = fetch_poll(year, stype, week, poll)
+        if got:
+            out.append(got)
+    return sorted(out, key=lambda p: p["released"])
+
+
+def poll_in_effect(polls: List[dict], kickoff_date) -> Optional[dict]:
+    """
+    The last poll released STRICTLY BEFORE the slate opens.
+
+    Strict on purpose, and the whole reason this function exists rather than
+    being written inline at each call site: `<=` silently admits the Sunday
+    poll that already knows Saturday's results.
+    """
+    live = [p for p in polls if p["released"] < kickoff_date]
+    return live[-1] if live else None
 
 
 def fetch_current() -> Tuple[str, Dict[str, int]]:
