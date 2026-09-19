@@ -123,7 +123,11 @@ def load_boxscores(league: str, season: int, refresh: bool = False) -> List[Team
         except (OSError, ValueError):
             pass
 
-    games = load_season(league, season)
+    # Refresh means refresh: the season's game LIST is cached too, and asking
+    # for fresh box scores while reusing a stale list returns the same two
+    # games it returned last week. That is how a model ended up rating this
+    # season's teams off one September game without saying so.
+    games = load_season(league, season, refresh=refresh)
     print(f"  fetching {len(games)} box scores for {league} {season}…", flush=True)
 
     def one(g):
