@@ -68,23 +68,33 @@
         <input type="number" id="solver-target" value="300" step="50"
                aria-label="Target payout in American odds">
       </label>
-      <label>winning at least
-        <input type="number" id="solver-minwin" value="0" step="5" min="0" max="95"
-               aria-label="Minimum win chance, percent">
-        <span>%</span>
-      </label>
-      <label>with no more than
-        <select id="solver-maxlegs" aria-label="Maximum number of legs">
-          <option value="1">1 leg</option>
-          <option value="2">2 legs</option>
-          <option value="3">3 legs</option>
-          <option value="4">4 legs</option>
-          <option value="5">5 legs</option>
-          <option value="6" selected>6 legs</option>
-        </select>
-      </label>
       <span class="dim" id="solver-summary"></span>
     </div>
+    <!-- Everything else is optional. The payout is the only question that has
+         to be answered; these two narrow the list for people who care, and
+         stay shut for people who do not. -->
+    <details class="solver-more">
+      <summary>Narrow it down</summary>
+      <div class="solver-bar">
+        <label>winning at least
+          <input type="number" id="solver-minwin" value="0" step="5" min="0" max="95"
+                 aria-label="Minimum win chance, percent">
+          <span>%</span>
+        </label>
+        <label>with no more than
+          <select id="solver-maxlegs" aria-label="Maximum number of legs">
+            <option value="1">1 leg</option>
+            <option value="2">2 legs</option>
+            <option value="3">3 legs</option>
+            <option value="4">4 legs</option>
+            <option value="6">6 legs</option>
+            <option value="8">8 legs</option>
+            <option value="10">10 legs</option>
+            <option value="12" selected>12 legs</option>
+          </select>
+        </label>
+      </div>
+    </details>
     <div id="solver-routes"></div>
   </section>
 

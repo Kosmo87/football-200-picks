@@ -439,3 +439,11 @@ table.compact td, table.compact th { padding: 7px 11px; }
   background: var(--panel-2); border: 1px solid var(--line); border-radius: 7px;
 }
 .route-short { color: var(--med); }
+
+.solver-more { margin: -4px 0 14px; }
+.solver-more summary {
+  cursor: pointer; font-size: 12.5px; color: var(--ink-dim);
+  padding: 4px 0; list-style: revert;
+}
+.solver-more summary:hover { color: var(--ink); }
+.solver-more .solver-bar { margin-top: 10px; }

@@ -1726,7 +1726,7 @@ function solveRoutes(target, maxLegs = 6, tolerance = 0.12) {
     const best = singles.reduce((a, b) => (b.prob > a.prob ? b : a));
     routes.push({
       what: `Single: ${best.abbr} ${fmtOdds(best.odds)}`,
-      dec: best.dec, prob: best.prob, legs: 1,
+      dec: best.dec, prob: best.prob, legs: 1, perLeg: best.prob,
       why: `${best.matchup}. One leg, so the book's cut is paid once — this is `
          + `the cleanest route to ${fmtOdds(target)} on the board.`,
     });
@@ -1745,10 +1745,13 @@ function solveRoutes(target, maxLegs = 6, tolerance = 0.12) {
   const byHold = [...legs].sort((a, b) => (b.prob * b.dec) - (a.prob * a.dec));
   const byPayout = [...legs].sort((a, b) => b.dec - a.dec);
   const deepPool = [...new Set([...byHold.slice(0, 16), ...byPayout.slice(0, 16)])];
+  // Up to eight legs searched. Beyond that the combinations explode and the
+  // answer stops changing: a ninth leg multiplies the chance down by another
+  // quarter while the payout the market offers for it does not keep up.
   outer:
-  for (let n = 2; n <= Math.min(4, maxLegs); n++) {
+  for (let n = 2; n <= Math.min(8, maxLegs); n++) {
     let best = null;
-    const pool = n <= 3 ? legs : deepPool;
+    const pool = n <= 3 ? legs : deepPool.slice(0, n >= 6 ? 14 : 32);
     const walk = (start, chosen, dec, prob, games) => {
       if (chosen.length === n) {
         if (dec >= floor && (!best || prob > best.prob)) best = { legs: [...chosen], dec, prob };
@@ -1769,6 +1772,7 @@ function solveRoutes(target, maxLegs = 6, tolerance = 0.12) {
       routes.push({
         what: `${n}-leg parlay: ${best.legs.map((l) => `${l.abbr} ${fmtOdds(l.odds)}`).join(" + ")}`,
         dec: best.dec, prob: best.prob, legs: n,
+        perLeg: Math.pow(best.prob, 1 / n),
         why: `The fewest legs that reach it. Each leg pays the book's cut `
            + `again, which is why this sits below the single.`,
       });
@@ -1797,6 +1801,13 @@ function solveRoutes(target, maxLegs = 6, tolerance = 0.12) {
           what: `${pts}-pt teaser, ${n} legs (${fmtOdds(Number(price))})`,
           dec, prob: joint, teaser: true, legs: Number(n), fillable,
           fill,
+          // Each leg's own chance, kept beside the ticket's. Showing only the
+          // ticket makes 15.6% look like a bad bet built from good legs;
+          // showing only the leg would be a lie, because five of six pays
+          // nothing. Both, always.
+          perLeg: pts === "10"
+            ? ((lg.teasers || {}).ten || {}).per_leg_rate
+            : (lg.teasers || {}).per_leg_rate,
           why: (fillable
                  ? `${pool.length} qualifying legs at ${pts} points, so this is fillable today. `
                  : `Only ${pool.length} qualifying legs at ${pts} points — needs ${n}. `)
@@ -1837,7 +1848,7 @@ function renderSolver() {
   const box = $("#solver-routes");
   box.innerHTML = "";
   const target = Math.round(Number($("#solver-target").value) || 300);
-  const maxLegs = Number($("#solver-maxlegs").value) || 6;
+  const maxLegs = Number($("#solver-maxlegs").value) || 12;
   // A floor on the win chance, because "pay me +750" and "I want to win more
   // often than not" are both real asks and the honest answer to holding both
   // at once is usually "nothing does that" — which this now says out loud
@@ -1875,7 +1886,9 @@ function renderSolver() {
     node.innerHTML = `
       <div class="route-what">${r === best ? "<strong>Best chance:</strong> " : ""}${r.what}${
         r.teaser && !r.fillable ? ' <span class="dim">(not fillable today)</span>' : ""}</div>
-      <div class="route-nums">wins <strong>${fmtPct(r.prob)}</strong> · ${r.legs || 1} leg${(r.legs || 1) > 1 ? "s" : ""} · pays ${fmtOdds(pays)}${
+      <div class="route-nums">${(r.legs || 1) > 1 && r.perLeg
+          ? `each leg ${fmtPct(r.perLeg)} · <strong>all ${r.legs} land ${fmtPct(r.prob)}</strong>`
+          : `wins <strong>${fmtPct(r.prob)}</strong>`} · pays ${fmtOdds(pays)}${
         r.short ? ' <span class="route-short">(under your ask)</span>' : ""}
         · <span class="${ev > 0 ? "pos" : "neg"}">${ev >= 0 ? "+" : ""}${(ev * 100).toFixed(1)}%</span></div>
       <div class="route-why">${r.why}</div>
