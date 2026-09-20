@@ -1589,10 +1589,15 @@
       "model_prob": 0.5329,
       "edge_pp": 5.464011,
       "sample": 6.0,
-      "status": "open",
-      "result": null,
+      "status": "lost",
+      "result": {
+        "home_abbr": "LOU",
+        "away_abbr": "SMU",
+        "home_score": 41,
+        "away_score": 31
+      },
       "clv_pp": -6.13,
-      "graded_at": null
+      "graded_at": "2026-09-20T01:15:34+00:00"
     },
     {
       "id": "NCAAF:401856797:193",
@@ -1642,10 +1647,15 @@
       "model_prob": 0.83876,
       "edge_pp": 6.725338,
       "sample": 6.0,
-      "status": "open",
-      "result": null,
+      "status": "won",
+      "result": {
+        "home_abbr": "DUKE",
+        "away_abbr": "STAN",
+        "home_score": 35,
+        "away_score": 7
+      },
       "clv_pp": -1.43,
-      "graded_at": null
+      "graded_at": "2026-09-20T01:15:34+00:00"
     },
     {
       "id": "NCAAF:401866422:2050",
@@ -1666,10 +1676,15 @@
       "model_prob": 0.31799,
       "edge_pp": 17.593525,
       "sample": 6.0,
-      "status": "open",
-      "result": null,
+      "status": "lost",
+      "result": {
+        "home_abbr": "LIB",
+        "away_abbr": "BALL",
+        "home_score": 51,
+        "away_score": 15
+      },
       "clv_pp": 2.63,
-      "graded_at": null
+      "graded_at": "2026-09-20T01:15:34+00:00"
     },
     {
       "id": "NCAAF:401862771:2229",
@@ -2453,18 +2468,42 @@
       "result": null,
       "clv_pp": 0.0,
       "graded_at": null
+    },
+    {
+      "id": "NCAAF:401858469:30",
+      "league": "NCAAF",
+      "event_id": "401858469",
+      "matchup": "ORE @ USC",
+      "kickoff": "2026-09-26T23:30Z",
+      "team_id": "30",
+      "team_abbr": "USC",
+      "team_name": "USC Trojans",
+      "opp_abbr": "ORE",
+      "side": "home",
+      "logged_at": "2026-09-20T01:15:33+00:00",
+      "open_odds": -118,
+      "open_implied": 0.51736,
+      "close_odds": -118,
+      "close_implied": 0.51736,
+      "model_prob": 0.58598,
+      "edge_pp": 6.862063,
+      "sample": 7.0,
+      "status": "open",
+      "result": null,
+      "clv_pp": 0.0,
+      "graded_at": null
     }
   ],
   "summary": {
-    "open": 37,
-    "won": 21,
-    "lost": 33,
+    "open": 35,
+    "won": 22,
+    "lost": 35,
     "pushed": 0,
-    "units": -10.5,
-    "roi_pct": -19.4,
-    "win_pct": 38.9,
-    "avg_clv_pp": -0.36,
-    "beat_close_pct": 35.2,
+    "units": -12.26,
+    "roi_pct": -21.5,
+    "win_pct": 38.6,
+    "avg_clv_pp": -0.43,
+    "beat_close_pct": 35.1,
     "by_league": {
       "NFL": {
         "won": 5,
@@ -2473,12 +2512,12 @@
         "roi_pct": -12.6
       },
       "NCAAF": {
-        "won": 16,
-        "lost": 23,
-        "units": -8.61,
-        "roi_pct": -22.1
+        "won": 17,
+        "lost": 25,
+        "units": -10.36,
+        "roi_pct": -24.7
       }
     }
   },
-  "updated_at": "2026-09-19T23:15:25+00:00"
+  "updated_at": "2026-09-20T01:15:34+00:00"
 }
