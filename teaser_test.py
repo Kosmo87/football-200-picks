@@ -110,9 +110,18 @@ def test_books_are_kept_separate():
 
 
 def _soon():
-    """Inside the scanner's window, whenever the suite happens to run."""
-    from datetime import datetime, timedelta, timezone
-    return (datetime.now(timezone.utc) + timedelta(days=2)).strftime("%Y-%m-%dT%H:%MZ")
+    """
+    Inside the scanner's window, whenever the suite happens to run.
+
+    That sentence used to be a claim rather than a fact. This returned "now
+    plus two days", which is inside the window from Wednesday to Friday and
+    outside it from Saturday on: the slate ends the coming Tuesday at 06:00
+    UTC, so a Sunday run put every fixture six hours past the cutoff and the
+    shortlist came back empty. Anchored to slate_end() it moves with the
+    window it is testing instead of with the calendar.
+    """
+    from datetime import timedelta
+    return (T.slate_end() - timedelta(hours=1)).strftime("%Y-%m-%dT%H:%MZ")
 
 
 def _game(event_id, spread, kickoff=None, home="HOME", away="AWAY"):

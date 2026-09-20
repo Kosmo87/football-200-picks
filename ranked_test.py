@@ -31,9 +31,21 @@ def _game(event_id, home, away, home_id, away_id, kickoff,
                       "odds": away_odds, "implied_prob": 0.29}]}
 
 
-def _soon(days=2):
-    return (datetime.datetime.now(datetime.timezone.utc)
-            + datetime.timedelta(days=days)).strftime("%Y-%m-%dT%H:%MZ")
+def _soon():
+    """
+    A kickoff that is inside the slate window WHENEVER the suite runs.
+
+    This used to be "now plus two days", which is inside the window from
+    Wednesday to Friday and outside it the rest of the week: the slate ends
+    the coming Tuesday at 06:00 UTC, so on a Sunday two-days-out lands six
+    hours past the cutoff and every ticket came back empty. CI went red on a
+    Sunday morning with no change behind it.
+
+    Anchoring to slate_end() instead means the fixture moves with the window
+    it is testing rather than with the calendar.
+    """
+    import teaser as T
+    return (T.slate_end() - datetime.timedelta(hours=1)).strftime("%Y-%m-%dT%H:%MZ")
 
 
 def _board(games):
@@ -91,6 +103,26 @@ def test_an_impossible_price_is_never_bet():
     """A -1 moneyline is a data artifact; paying it 100-to-1 faked a +40%."""
     ko = _soon()
     board = _board([_game("1", "OSU", "CUPCAKE", "194", "999", ko, home_odds=-1)])
+    polls = [_poll("2025-01-01", {"194": 1})]
+    assert R.build_ticket(board, depth=4, polls=polls) is None
+
+
+def test_the_fixture_itself_is_inside_the_window():
+    """
+    Guards the guard. Every test above is meaningless if _soon() drifts back
+    outside the slate -- build_ticket() would return None and the assertions
+    would fail for a reason that has nothing to do with the code under test.
+    """
+    import teaser as T
+    ko = datetime.datetime.fromisoformat(_soon().replace("Z", "+00:00"))
+    assert ko <= T.slate_end(), "fixture kickoff must sit inside the slate window"
+
+
+def test_a_game_past_the_cutoff_is_left_out():
+    """The boundary, from the other side: next week's game is not this week's."""
+    import teaser as T
+    late = (T.slate_end() + datetime.timedelta(hours=1)).strftime("%Y-%m-%dT%H:%MZ")
+    board = _board([_game("1", "OSU", "CUPCAKE", "194", "999", late)])
     polls = [_poll("2025-01-01", {"194": 1})]
     assert R.build_ticket(board, depth=4, polls=polls) is None
 
