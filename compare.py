@@ -73,7 +73,7 @@ def model_legs(league: str, board: Dict, floor: float = 0.60) -> List[Dict]:
     rows = boxscores.load_boxscores(league, 2026) + boxscores.load_boxscores(league, 2025)
     eff = efficiency.build_ratings(rows)
     sd = MARGIN_SD.get(league, 14.0)
-    cutoff = T.slate_end()
+    cutoff = T.slate_end(league=league)
 
     out: List[Dict] = []
     for g in lg.get("games") or []:

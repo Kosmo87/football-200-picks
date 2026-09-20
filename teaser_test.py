@@ -131,6 +131,49 @@ def _game(event_id, spread, kickoff=None, home="HOME", away="AWAY"):
             "home": {"abbr": home, "name": home}, "away": {"abbr": away, "name": away}}
 
 
+def _utc(y, m, d, hh=0, mm=0):
+    from datetime import datetime, timezone
+    return datetime(y, m, d, hh, mm, tzinfo=timezone.utc)
+
+
+def test_the_two_leagues_end_their_week_on_different_nights():
+    """
+    College finishes Saturday; the NFL finishes Monday. One shared Tuesday
+    cutoff left the college board EMPTY from Saturday night to Tuesday
+    morning -- two and a half days during which FanDuel had next Saturday's
+    card priced and this site showed nothing.
+    """
+    sunday_noon = _utc(2026, 9, 20, 12)
+    assert T.slate_end(sunday_noon, "NCAAF") == _utc(2026, 9, 27, 6), \
+        "by Sunday noon the college window must already hold next Saturday"
+    assert T.slate_end(sunday_noon, "NFL") == _utc(2026, 9, 22, 6), \
+        "the NFL week is still being played on Sunday"
+
+
+def test_the_week_rolls_at_0600_not_at_midnight():
+    """
+    Six hours that matter. 11pm Eastern on Saturday is already Sunday in UTC,
+    and rolling on the calendar day threw out the late game while it was
+    being played -- and did the same to Monday Night Football at 9pm Eastern.
+    """
+    late_saturday = _utc(2026, 9, 20, 3)       # 11pm ET Saturday
+    assert T.slate_end(late_saturday, "NCAAF") == _utc(2026, 9, 20, 6), \
+        "a college game still in progress stays inside the window"
+    mnf_kicked = _utc(2026, 9, 22, 1)          # 9pm ET Monday
+    assert T.slate_end(mnf_kicked, "NFL") == _utc(2026, 9, 22, 6), \
+        "Monday Night Football is part of the NFL week it ends"
+
+
+def test_the_window_is_always_in_the_future():
+    """Whatever the hour, a cutoff behind us would empty the board."""
+    from datetime import timedelta
+    start = _utc(2026, 9, 20)
+    for hours in range(0, 24 * 8):
+        now = start + timedelta(hours=hours)
+        for league in ("NFL", "NCAAF"):
+            assert T.slate_end(now, league) > now, f"{league} at {now}"
+
+
 def test_board_shortlist_reads_the_home_spread():
     """The board stores the HOME spread; the away side is its mirror."""
     out = T.candidates_from_board([_game("1", 2.5, home="ATL", away="CAR")])

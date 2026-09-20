@@ -45,7 +45,10 @@ def _soon():
     it is testing rather than with the calendar.
     """
     import teaser as T
-    return (T.slate_end() - datetime.timedelta(hours=1)).strftime("%Y-%m-%dT%H:%MZ")
+    # NCAAF: this module is college, and the two leagues end their weeks on
+    # different nights, so the NFL default would be the wrong window.
+    return (T.slate_end(league="NCAAF")
+            - datetime.timedelta(hours=1)).strftime("%Y-%m-%dT%H:%MZ")
 
 
 def _board(games):
@@ -115,13 +118,15 @@ def test_the_fixture_itself_is_inside_the_window():
     """
     import teaser as T
     ko = datetime.datetime.fromisoformat(_soon().replace("Z", "+00:00"))
-    assert ko <= T.slate_end(), "fixture kickoff must sit inside the slate window"
+    assert ko <= T.slate_end(league="NCAAF"), \
+        "fixture kickoff must sit inside the slate window"
 
 
 def test_a_game_past_the_cutoff_is_left_out():
     """The boundary, from the other side: next week's game is not this week's."""
     import teaser as T
-    late = (T.slate_end() + datetime.timedelta(hours=1)).strftime("%Y-%m-%dT%H:%MZ")
+    late = (T.slate_end(league="NCAAF")
+            + datetime.timedelta(hours=1)).strftime("%Y-%m-%dT%H:%MZ")
     board = _board([_game("1", "OSU", "CUPCAKE", "194", "999", late)])
     polls = [_poll("2025-01-01", {"194": 1})]
     assert R.build_ticket(board, depth=4, polls=polls) is None

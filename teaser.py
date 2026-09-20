@@ -269,23 +269,40 @@ MIN_LEG_RATE = 0.70
 SNAPSHOT_MAX_AGE_H = 12.0
 
 
-def slate_end(now=None):
+# The weekday each league's football week ENDS on, as a Python weekday
+# (Monday 0 ... Sunday 6). The NFL's week ends when Monday night does, so the
+# cutoff is Tuesday. College finishes Saturday night, so its week ends Sunday.
+WEEK_ENDS = {"NFL": 1, "NCAAF": 6}      # Tuesday, Sunday
+
+
+def slate_end(now=None, league: str = "NFL"):
     """
     The end of the week being played, in UTC.
 
     Not "eight days from now", which is what the window used to be and which
-    quietly mixed next Saturday's college card into this Sunday's list. A
-    football week ends when Monday night does, so the cutoff is the coming
-    Tuesday at 06:00 UTC -- 2am Eastern, after the last whistle and before
-    anybody is betting the next one.
+    quietly mixed next Saturday's college card into this Sunday's list.
+
+    PER LEAGUE, because the two seasons do not end on the same night. A single
+    Tuesday cutoff is right for the NFL and leaves COLLEGE BLANK FOR TWO AND A
+    HALF DAYS: the last college game finishes late Saturday, but the window
+    kept reaching for "games before Tuesday" until Tuesday arrived, so from
+    Saturday night until Tuesday morning the college board had nothing in it
+    and next Saturday's card -- already priced at FanDuel by Sunday -- was
+    held back. Both cutoffs are 06:00 UTC, 2am Eastern: after the last whistle
+    of the week and before anybody is betting the next one.
     """
     from datetime import datetime, timedelta, timezone
     now = now or datetime.now(timezone.utc)
-    # Monday is 0; Tuesday is 1. Days until the NEXT Tuesday, never today.
-    ahead = (1 - now.weekday()) % 7 or 7
-    tuesday = (now + timedelta(days=ahead)).replace(
+    end_day = WEEK_ENDS.get(league, 1)
+    # Roll at 06:00 on the end day, not at midnight. "The next such weekday,
+    # never today" reads correct and is off by six hours: at 11pm Eastern on
+    # Saturday it is already Sunday in UTC, so the college window jumped a
+    # week while the late game was still being played, and the same arithmetic
+    # dropped Monday Night Football out of the NFL window at 9pm Eastern.
+    ahead = (end_day - now.weekday()) % 7
+    end = (now + timedelta(days=ahead)).replace(
         hour=6, minute=0, second=0, microsecond=0)
-    return tuesday
+    return end if end > now else end + timedelta(days=7)
 
 # Where faults.py leaves the snapshot of the user's own books. A module
 # constant rather than a path built inside the reader, so a test can point it
@@ -377,7 +394,7 @@ def candidates_from_board(games: List[dict], within_days: int = 8,
     # is what actually decides: a list that reaches into next weekend is a
     # list of bets nobody can place yet.
     cutoff = min(datetime.now(timezone.utc) + timedelta(days=within_days),
-                 slate_end())
+                 slate_end(league=league))
     book_lines, book_name, captured = _book_spreads(league)
     legs: List[dict] = []
     for g in games:

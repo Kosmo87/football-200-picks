@@ -81,7 +81,7 @@ def to_american(dec: float) -> int:
 def slate_games(board: Dict, league: str = "NCAAF") -> List[dict]:
     """This week's college games, in kickoff order."""
     import teaser as T
-    cutoff = T.slate_end()
+    cutoff = T.slate_end(league=league)
     out = []
     for g in ((board.get("leagues") or {}).get(league) or {}).get("games") or []:
         try:
