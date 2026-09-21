@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-21T19:33:07+00:00",
+  "generated_at": "2026-09-21T23:20:06+00:00",
   "season": 2026,
   "leagues": {
     "NFL": {
@@ -48,7 +48,9 @@
               "opp_sample": 8.0,
               "team_games": 4,
               "opp_games": 4,
-              "prior_credit": 4.0
+              "prior_credit": 4.0,
+              "stale": true,
+              "stale_reason": "LAR quarterback out: Ty Simpson (Coach's Decision)"
             },
             {
               "side": "home",
@@ -65,39 +67,121 @@
               "opp_sample": 8.0,
               "team_games": 4,
               "opp_games": 4,
-              "prior_credit": 4.0
+              "prior_credit": 4.0,
+              "stale": true,
+              "stale_reason": "LAR quarterback out: Ty Simpson (Coach's Decision)"
             }
           ],
           "context": {
             "injuries": {
               "home": {
-                "count": 2,
+                "count": 6,
                 "long_term": 1,
-                "qb_out": 0,
-                "qbs": [],
+                "qb_out": 1,
+                "qbs": [
+                  "Ty Simpson (Coach's Decision)"
+                ],
                 "players": [
+                  {
+                    "player": "Ty Simpson",
+                    "position": "QB",
+                    "status": "Out",
+                    "detail": "Coach's Decision",
+                    "since": "2026-09-21T23:03Z"
+                  },
+                  {
+                    "player": "Jordan Whittington",
+                    "position": "WR",
+                    "status": "Out",
+                    "detail": "Quadriceps",
+                    "since": "2026-09-21T22:59Z"
+                  },
+                  {
+                    "player": "Bill Murray",
+                    "position": "G",
+                    "status": "Out",
+                    "detail": "Coach's Decision",
+                    "since": "2026-09-21T22:56Z"
+                  },
                   {
                     "player": "Kamren Kinchens",
                     "position": "S",
                     "status": "Out",
                     "detail": "Hamstring",
-                    "since": "2026-09-19T21:07Z"
+                    "since": "2026-09-21T22:56Z"
                   },
                   {
-                    "player": "Jordan Whittington",
+                    "player": "CJ Daniels",
                     "position": "WR",
-                    "status": "Doubtful",
-                    "detail": "Quadriceps",
-                    "since": "2026-09-19T18:50Z"
+                    "status": "Out",
+                    "detail": "Coach's Decision",
+                    "since": "2026-09-21T22:56Z"
+                  },
+                  {
+                    "player": "Puka Nacua",
+                    "position": "WR",
+                    "status": "Out",
+                    "detail": "Hip",
+                    "since": "2026-09-21T22:50Z"
                   }
                 ]
               },
               "away": {
-                "count": 0,
+                "count": 7,
                 "long_term": 1,
                 "qb_out": 0,
                 "qbs": [],
-                "players": []
+                "players": [
+                  {
+                    "player": "Micah McFadden",
+                    "position": "LB",
+                    "status": "Out",
+                    "detail": "Neck",
+                    "since": "2026-09-21T22:59Z"
+                  },
+                  {
+                    "player": "Jason Pinnock",
+                    "position": "S",
+                    "status": "Out",
+                    "detail": "Coach's Decision",
+                    "since": "2026-09-21T22:59Z"
+                  },
+                  {
+                    "player": "Bobby Jamison-Travis",
+                    "position": "DT",
+                    "status": "Out",
+                    "detail": "Coach's Decision",
+                    "since": "2026-09-21T22:59Z"
+                  },
+                  {
+                    "player": "Darius Alexander",
+                    "position": "DT",
+                    "status": "Out",
+                    "detail": "Coach's Decision",
+                    "since": "2026-09-21T22:59Z"
+                  },
+                  {
+                    "player": "Deonte Banks",
+                    "position": "CB",
+                    "status": "Out",
+                    "detail": "Calf",
+                    "since": "2026-09-21T22:59Z"
+                  },
+                  {
+                    "player": "J.C. Davis",
+                    "position": "OT",
+                    "status": "Out",
+                    "detail": "Coach's Decision",
+                    "since": "2026-09-21T22:59Z"
+                  },
+                  {
+                    "player": "Thomas Fidone II",
+                    "position": "TE",
+                    "status": "Out",
+                    "detail": "Coach's Decision",
+                    "since": "2026-09-21T22:59Z"
+                  }
+                ]
               },
               "source": "espn",
               "teams_covered": 2,
@@ -111,13 +195,32 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 72.9,
-              "wind_mph": 10.1,
-              "gust_mph": 13.0,
+              "temp_f": 74.0,
+              "wind_mph": 9.9,
+              "gust_mph": 12.5,
               "precip_pct": 0,
               "snow_in": 0.0
             },
-            "flags": []
+            "flags": [
+              {
+                "kind": "qb_out",
+                "severity": "high",
+                "side": "home",
+                "text": "LAR quarterback out: Ty Simpson (Coach's Decision). The ratings are built from final scores and do not know this; the price does."
+              },
+              {
+                "kind": "injuries",
+                "severity": "low",
+                "side": "home",
+                "text": "LAR ruled out 6 rotation players this week"
+              },
+              {
+                "kind": "injuries",
+                "severity": "low",
+                "side": "away",
+                "text": "NYG ruled out 7 rotation players this week"
+              }
+            ]
           }
         }
       ],
@@ -676,7 +779,7 @@
               "temp_f": 73.2,
               "wind_mph": 10.6,
               "gust_mph": 15.0,
-              "precip_pct": 20,
+              "precip_pct": 12,
               "snow_in": 0.0
             },
             "flags": [
@@ -779,9 +882,9 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 51.9,
-              "wind_mph": 7.2,
-              "gust_mph": 14.3,
+              "temp_f": 55.9,
+              "wind_mph": 6.0,
+              "gust_mph": 12.5,
               "precip_pct": 11,
               "snow_in": 0.0
             },
@@ -1084,7 +1187,13 @@
               "state": "TN",
               "indoor": false
             },
-            "weather": null,
+            "weather": {
+              "temp_f": 72.7,
+              "wind_mph": 1.3,
+              "gust_mph": 2.0,
+              "precip_pct": 0,
+              "snow_in": 0.0
+            },
             "flags": []
           }
         },
@@ -1161,7 +1270,13 @@
               "state": "OH",
               "indoor": false
             },
-            "weather": null,
+            "weather": {
+              "temp_f": 64.3,
+              "wind_mph": 3.0,
+              "gust_mph": 5.6,
+              "precip_pct": 0,
+              "snow_in": 0.0
+            },
             "flags": []
           }
         },
@@ -1255,7 +1370,13 @@
               "state": "KY",
               "indoor": false
             },
-            "weather": null,
+            "weather": {
+              "temp_f": 73.3,
+              "wind_mph": 4.0,
+              "gust_mph": 5.1,
+              "precip_pct": 0,
+              "snow_in": 0.0
+            },
             "flags": []
           }
         },
@@ -1349,7 +1470,13 @@
               "state": "TX",
               "indoor": false
             },
-            "weather": null,
+            "weather": {
+              "temp_f": 88.9,
+              "wind_mph": 11.4,
+              "gust_mph": 13.2,
+              "precip_pct": 0,
+              "snow_in": 0.0
+            },
             "flags": []
           }
         },
@@ -1443,8 +1570,20 @@
               "state": "MA",
               "indoor": false
             },
-            "weather": null,
-            "flags": []
+            "weather": {
+              "temp_f": 72.0,
+              "wind_mph": 7.1,
+              "gust_mph": 14.1,
+              "precip_pct": 52,
+              "snow_in": 0.0
+            },
+            "flags": [
+              {
+                "kind": "rain",
+                "severity": "low",
+                "text": "52% chance of rain"
+              }
+            ]
           }
         },
         {
@@ -1735,7 +1874,7 @@
               "temp_f": 65.0,
               "wind_mph": 5.9,
               "gust_mph": 9.6,
-              "precip_pct": 1,
+              "precip_pct": 0,
               "snow_in": 0.0
             },
             "flags": []
@@ -1835,7 +1974,7 @@
               "temp_f": 51.4,
               "wind_mph": 2.3,
               "gust_mph": 3.8,
-              "precip_pct": 5,
+              "precip_pct": 4,
               "snow_in": 0.0
             },
             "flags": []
@@ -2318,7 +2457,7 @@
               "temp_f": 73.9,
               "wind_mph": 18.1,
               "gust_mph": 20.6,
-              "precip_pct": 7,
+              "precip_pct": 2,
               "snow_in": 0.0
             },
             "flags": [
@@ -2532,7 +2671,7 @@
               "temp_f": 85.4,
               "wind_mph": 7.0,
               "gust_mph": 6.5,
-              "precip_pct": 4,
+              "precip_pct": 2,
               "snow_in": 0.0
             },
             "flags": []
@@ -2632,7 +2771,7 @@
               "temp_f": 68.7,
               "wind_mph": 11.8,
               "gust_mph": 23.3,
-              "precip_pct": 42,
+              "precip_pct": 38,
               "snow_in": 0.0
             },
             "flags": [
@@ -3608,7 +3747,7 @@
               "temp_f": 85.4,
               "wind_mph": 3.0,
               "gust_mph": 2.7,
-              "precip_pct": 1,
+              "precip_pct": 0,
               "snow_in": 0.0
             },
             "flags": []
@@ -3708,7 +3847,7 @@
               "temp_f": 68.8,
               "wind_mph": 4.8,
               "gust_mph": 4.3,
-              "precip_pct": 1,
+              "precip_pct": 0,
               "snow_in": 0.0
             },
             "flags": []
@@ -3808,7 +3947,7 @@
               "temp_f": 70.7,
               "wind_mph": 8.1,
               "gust_mph": 10.5,
-              "precip_pct": 5,
+              "precip_pct": 6,
               "snow_in": 0.0
             },
             "flags": []
@@ -3908,7 +4047,7 @@
               "temp_f": 71.5,
               "wind_mph": 3.8,
               "gust_mph": 5.6,
-              "precip_pct": 2,
+              "precip_pct": 0,
               "snow_in": 0.0
             },
             "flags": []
@@ -4008,7 +4147,7 @@
               "temp_f": 79.8,
               "wind_mph": 3.1,
               "gust_mph": 3.6,
-              "precip_pct": 1,
+              "precip_pct": 2,
               "snow_in": 0.0
             },
             "flags": []
@@ -4108,7 +4247,7 @@
               "temp_f": 65.6,
               "wind_mph": 4.6,
               "gust_mph": 9.4,
-              "precip_pct": 1,
+              "precip_pct": 0,
               "snow_in": 0.0
             },
             "flags": []
@@ -4308,7 +4447,7 @@
               "temp_f": 84.9,
               "wind_mph": 10.2,
               "gust_mph": 11.6,
-              "precip_pct": 4,
+              "precip_pct": 2,
               "snow_in": 0.0
             },
             "flags": []
@@ -4408,7 +4547,7 @@
               "temp_f": 64.7,
               "wind_mph": 2.4,
               "gust_mph": 3.6,
-              "precip_pct": 1,
+              "precip_pct": 2,
               "snow_in": 0.0
             },
             "flags": []
@@ -4508,7 +4647,7 @@
               "temp_f": 76.2,
               "wind_mph": 10.8,
               "gust_mph": 15.0,
-              "precip_pct": 4,
+              "precip_pct": 3,
               "snow_in": 0.0
             },
             "flags": [
@@ -4614,7 +4753,7 @@
               "temp_f": 85.8,
               "wind_mph": 8.6,
               "gust_mph": 14.5,
-              "precip_pct": 2,
+              "precip_pct": 1,
               "snow_in": 0.0
             },
             "flags": []
@@ -4810,7 +4949,13 @@
               "state": "WA",
               "indoor": false
             },
-            "weather": null,
+            "weather": {
+              "temp_f": 63.7,
+              "wind_mph": 5.4,
+              "gust_mph": 4.9,
+              "precip_pct": 1,
+              "snow_in": 0.0
+            },
             "flags": []
           }
         },
@@ -4904,8 +5049,20 @@
               "state": "UT",
               "indoor": false
             },
-            "weather": null,
-            "flags": []
+            "weather": {
+              "temp_f": 79.2,
+              "wind_mph": 6.8,
+              "gust_mph": 19.0,
+              "precip_pct": 1,
+              "snow_in": 0.0
+            },
+            "flags": [
+              {
+                "kind": "wind",
+                "severity": "low",
+                "text": "Breezy: 7 mph, gusting 19"
+              }
+            ]
           }
         },
         {
@@ -4998,7 +5155,13 @@
               "state": "NC",
               "indoor": false
             },
-            "weather": null,
+            "weather": {
+              "temp_f": 69.8,
+              "wind_mph": 5.7,
+              "gust_mph": 8.3,
+              "precip_pct": 1,
+              "snow_in": 0.0
+            },
             "flags": []
           }
         },
@@ -5092,7 +5255,13 @@
               "state": "MS",
               "indoor": false
             },
-            "weather": null,
+            "weather": {
+              "temp_f": 81.5,
+              "wind_mph": 5.7,
+              "gust_mph": 8.7,
+              "precip_pct": 1,
+              "snow_in": 0.0
+            },
             "flags": []
           }
         },
@@ -5186,7 +5355,13 @@
               "state": "AR",
               "indoor": false
             },
-            "weather": null,
+            "weather": {
+              "temp_f": 63.4,
+              "wind_mph": 6.0,
+              "gust_mph": 6.7,
+              "precip_pct": 1,
+              "snow_in": 0.0
+            },
             "flags": []
           }
         },
@@ -5384,7 +5559,7 @@
               "temp_f": 86.9,
               "wind_mph": 2.3,
               "gust_mph": 3.8,
-              "precip_pct": 13,
+              "precip_pct": 10,
               "snow_in": 0.0
             },
             "flags": []
@@ -5684,7 +5859,7 @@
               "temp_f": 59.7,
               "wind_mph": 4.1,
               "gust_mph": 12.1,
-              "precip_pct": 0,
+              "precip_pct": 1,
               "snow_in": 0.0
             },
             "flags": []
@@ -5784,7 +5959,7 @@
               "temp_f": 72.6,
               "wind_mph": 8.6,
               "gust_mph": 10.1,
-              "precip_pct": 1,
+              "precip_pct": 0,
               "snow_in": 0.0
             },
             "flags": []
