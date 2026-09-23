@@ -199,6 +199,32 @@ def test_one_ticket_per_slate():
     assert n == 1, "re-running the weekly job must not double the ledger"
 
 
+def test_a_newer_poll_replaces_a_pending_ticket():
+    old = {"slate": "2025-09-06", "depth": 4, "decimal": 1.02, "legs": [{"team": "IU"}],
+           "price": -4000, "poll_released": "2025-08-24"}
+    new = dict(old, legs=[{"team": "ND"}, {"team": "UGA"}], decimal=1.2,
+               poll_released="2025-08-31")
+    def run():
+        R.log_ticket(old)
+        msg = R.log_ticket(new)
+        again = R.log_ticket(new)
+        stale = R.log_ticket(old)
+        return msg, again, stale, R.paper_rows()
+    msg, again, stale, rows = _with_ledger([], run)
+    assert msg.startswith("re-logged") and again == stale == "already logged"
+    assert len(rows) == 1 and rows[0]["poll_released"] == "2025-08-31"
+    assert [l["team"] for l in rows[0]["legs"]] == ["ND", "UGA"]
+
+
+def test_a_settled_ticket_is_never_rewritten():
+    done = [{"slate": "2025-09-06", "depth": 4, "decimal": 1.1, "legs": [],
+             "price": -1000, "poll_released": "2025-08-24", "result": "won"}]
+    newer = dict(done[0], poll_released="2025-08-31")
+    del newer["result"]
+    msg = _with_ledger(done, lambda: R.log_ticket(newer))
+    assert msg == "already logged"
+
+
 if __name__ == "__main__":
     fails = 0
     for name, fn in sorted(globals().items()):

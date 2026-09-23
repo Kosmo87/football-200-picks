@@ -199,17 +199,38 @@ def bank_state(rows: Optional[List[dict]] = None) -> dict:
 
 
 def log_ticket(ticket: dict) -> str:
-    """Append a pending paper ticket. One per slate; re-running is a no-op."""
+    """
+    Write this slate's pending paper ticket. One per slate; re-running is a
+    no-op -- unless a newer poll has come out since it was written.
+
+    The job runs hourly and the college week ends Saturday night, so the first
+    run on Sunday logs next weekend's ticket at ~12:00 UTC. The AP poll is
+    released Sunday afternoon Eastern, hours later. Locking the ticket on first
+    write froze the 2026-09-26 slate on the 09-13 poll: it bet #4 Indiana, who
+    had dropped to #5, and missed Notre Dame and Georgia. current_poll() only
+    admits polls released before the first kickoff, so a newer poll here is
+    never lookahead; a settled ticket is never rewritten.
+    """
     rows = paper_rows()
-    if any(r["slate"] == ticket["slate"] and r["depth"] == ticket["depth"] for r in rows):
-        return "already logged"
+    same = [i for i, r in enumerate(rows)
+            if r["slate"] == ticket["slate"] and r["depth"] == ticket["depth"]]
+    if same:
+        old = rows[same[0]]
+        if (old.get("result") != "pending"
+                or str(ticket.get("poll_released", "")) <= str(old.get("poll_released", ""))):
+            return "already logged"
+        del rows[same[0]]
     state = bank_state(rows)
     row = dict(ticket, result="pending", stake=round(state["next_stake"], 2),
                logged_at=datetime.datetime.now(datetime.timezone.utc)
                .isoformat(timespec="seconds"))
+    rows.append(row)
     os.makedirs(os.path.dirname(PAPER), exist_ok=True)
-    with open(PAPER, "a") as fh:
-        fh.write(json.dumps(row) + "\n")
+    with open(PAPER, "w") as fh:
+        fh.writelines(json.dumps(r) + "\n" for r in rows)
+    if same:
+        return (f"re-logged on the {row['poll_released']} poll "
+                f"(was {old.get('poll_released')}), staking {row['stake']:.2f} on paper")
     return f"logged, staking {row['stake']:.2f} on paper"
 
 
