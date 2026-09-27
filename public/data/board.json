@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-27T18:54:52+00:00",
+  "generated_at": "2026-09-27T19:04:58+00:00",
   "season": 2026,
   "leagues": {
     "NFL": {
@@ -22,7 +22,7 @@
             "abbr": "SF",
             "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/sf.png",
             "elo": 1614.3,
-            "moneyline": -395
+            "moneyline": -380
           },
           "away": {
             "id": "22",
@@ -30,7 +30,7 @@
             "abbr": "ARI",
             "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/ari.png",
             "elo": 1419.2,
-            "moneyline": 310
+            "moneyline": 300
           },
           "legs": [
             {
@@ -38,10 +38,10 @@
               "team_id": "22",
               "team_name": "Arizona Cardinals",
               "team_abbr": "ARI",
-              "odds": 310,
+              "odds": 300,
               "model_prob": 0.20999,
-              "implied_prob": 0.2341,
-              "edge_pp": -2.410953,
+              "implied_prob": 0.24,
+              "edge_pp": -3.001164,
               "fair_odds": 376,
               "sample": 9.0,
               "team_sample": 10.0,
@@ -57,10 +57,10 @@
               "team_id": "25",
               "team_name": "San Francisco 49ers",
               "team_abbr": "SF",
-              "odds": -395,
+              "odds": -380,
               "model_prob": 0.79001,
-              "implied_prob": 0.7659,
-              "edge_pp": 2.410953,
+              "implied_prob": 0.76,
+              "edge_pp": 3.001164,
               "fair_odds": -376,
               "sample": 9.0,
               "team_sample": 9.0,
@@ -123,7 +123,7 @@
                     "position": "QB",
                     "status": "Out",
                     "detail": "Coach's Decision",
-                    "since": "2026-09-27T18:40Z"
+                    "since": "2026-09-27T18:46Z"
                   },
                   {
                     "player": "Dadrion Taylor-Demerson",
@@ -326,7 +326,7 @@
             "abbr": "DAL",
             "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/dal.png",
             "elo": 1486.3,
-            "moneyline": 140
+            "moneyline": 142
           },
           "away": {
             "id": "33",
@@ -334,7 +334,7 @@
             "abbr": "BAL",
             "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/bal.png",
             "elo": 1550.0,
-            "moneyline": -166
+            "moneyline": -170
           },
           "legs": [
             {
@@ -342,10 +342,10 @@
               "team_id": "33",
               "team_name": "Baltimore Ravens",
               "team_abbr": "BAL",
-              "odds": -166,
+              "odds": -170,
               "model_prob": 0.59063,
-              "implied_prob": 0.59964,
-              "edge_pp": -0.901136,
+              "implied_prob": 0.60376,
+              "edge_pp": -1.312956,
               "fair_odds": -144,
               "sample": 9.0,
               "team_sample": 9.0,
@@ -359,10 +359,10 @@
               "team_id": "6",
               "team_name": "Dallas Cowboys",
               "team_abbr": "DAL",
-              "odds": 140,
+              "odds": 142,
               "model_prob": 0.40937,
-              "implied_prob": 0.40036,
-              "edge_pp": 0.901136,
+              "implied_prob": 0.39624,
+              "edge_pp": 1.312956,
               "fair_odds": 144,
               "sample": 9.0,
               "team_sample": 9.0,
@@ -807,7 +807,7 @@
                     "position": "S",
                     "status": "Out",
                     "detail": "Undisclosed",
-                    "since": "2026-09-27T18:36Z"
+                    "since": "2026-09-27T18:57Z"
                   },
                   {
                     "player": "Shemar Turner",
@@ -1787,8 +1787,20 @@
               "state": "IL",
               "indoor": false
             },
-            "weather": null,
-            "flags": []
+            "weather": {
+              "temp_f": 71.6,
+              "wind_mph": 11.4,
+              "gust_mph": 15.9,
+              "precip_pct": 0,
+              "snow_in": 0.0
+            },
+            "flags": [
+              {
+                "kind": "wind",
+                "severity": "low",
+                "text": "Breezy: 11 mph, gusting 16"
+              }
+            ]
           }
         },
         {
@@ -1864,8 +1876,20 @@
               "state": "NC",
               "indoor": false
             },
-            "weather": null,
-            "flags": []
+            "weather": {
+              "temp_f": 52.3,
+              "wind_mph": 14.0,
+              "gust_mph": 34.9,
+              "precip_pct": 21,
+              "snow_in": 0.0
+            },
+            "flags": [
+              {
+                "kind": "wind",
+                "severity": "high",
+                "text": "Wind 14 mph, gusting 35 \u2014 kicking and the deep ball suffer"
+              }
+            ]
           }
         },
         {
@@ -1958,8 +1982,20 @@
               "state": "MS",
               "indoor": false
             },
-            "weather": null,
-            "flags": []
+            "weather": {
+              "temp_f": 61.7,
+              "wind_mph": 12.2,
+              "gust_mph": 26.2,
+              "precip_pct": 37,
+              "snow_in": 0.0
+            },
+            "flags": [
+              {
+                "kind": "wind",
+                "severity": "high",
+                "text": "Wind 12 mph, gusting 26 \u2014 kicking and the deep ball suffer"
+              }
+            ]
           }
         },
         {
@@ -2052,8 +2088,20 @@
               "state": "MN",
               "indoor": false
             },
-            "weather": null,
-            "flags": []
+            "weather": {
+              "temp_f": 55.5,
+              "wind_mph": 8.9,
+              "gust_mph": 17.0,
+              "precip_pct": 5,
+              "snow_in": 0.0
+            },
+            "flags": [
+              {
+                "kind": "wind",
+                "severity": "low",
+                "text": "Breezy: 9 mph, gusting 17"
+              }
+            ]
           }
         },
         {
@@ -2129,7 +2177,13 @@
               "state": "TX",
               "indoor": false
             },
-            "weather": null,
+            "weather": {
+              "temp_f": 70.0,
+              "wind_mph": 8.9,
+              "gust_mph": 13.0,
+              "precip_pct": 38,
+              "snow_in": 0.0
+            },
             "flags": []
           }
         },
@@ -2824,13 +2878,7 @@
               "state": "WI",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 55.0,
-              "wind_mph": 4.6,
-              "gust_mph": 5.6,
-              "precip_pct": 6,
-              "snow_in": 0.0
-            },
+            "weather": null,
             "flags": []
           }
         },
@@ -2907,20 +2955,196 @@
               "state": "GA",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 64.4,
-              "wind_mph": 5.8,
-              "gust_mph": 19.5,
-              "precip_pct": 5,
-              "snow_in": 0.0
+            "weather": null,
+            "flags": []
+          }
+        },
+        {
+          "event_id": "401866432",
+          "name": "Western Michigan Broncos at Buffalo Bulls",
+          "short_name": "WMU @ BUFF",
+          "kickoff": "2026-10-03T17:00Z",
+          "status": "Scheduled",
+          "neutral": false,
+          "provider": "DraftKings",
+          "spread": 16.5,
+          "spread_details": "WMU -16.5",
+          "total": 49.5,
+          "home": {
+            "id": "2084",
+            "name": "Buffalo Bulls",
+            "abbr": "BUFF",
+            "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2084.png",
+            "elo": 1342.1,
+            "moneyline": 575
+          },
+          "away": {
+            "id": "2711",
+            "name": "Western Michigan Broncos",
+            "abbr": "WMU",
+            "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2711.png",
+            "elo": 1537.0,
+            "moneyline": -850
+          },
+          "legs": [
+            {
+              "side": "away",
+              "team_id": "2711",
+              "team_name": "Western Michigan Broncos",
+              "team_abbr": "WMU",
+              "odds": -850,
+              "model_prob": 0.69105,
+              "implied_prob": 0.85794,
+              "edge_pp": -16.689191,
+              "fair_odds": -224,
+              "sample": 8.0,
+              "team_sample": 8.0,
+              "opp_sample": 8.0,
+              "team_games": 4,
+              "opp_games": 4,
+              "prior_credit": 4.0
             },
-            "flags": [
-              {
-                "kind": "wind",
-                "severity": "low",
-                "text": "Breezy: 6 mph, gusting 20"
-              }
-            ]
+            {
+              "side": "home",
+              "team_id": "2084",
+              "team_name": "Buffalo Bulls",
+              "team_abbr": "BUFF",
+              "odds": 575,
+              "model_prob": 0.30895,
+              "implied_prob": 0.14206,
+              "edge_pp": 16.689191,
+              "fair_odds": 224,
+              "sample": 8.0,
+              "team_sample": 8.0,
+              "opp_sample": 8.0,
+              "team_games": 4,
+              "opp_games": 4,
+              "prior_credit": 4.0
+            }
+          ],
+          "context": {
+            "injuries": {
+              "home": {
+                "count": 0,
+                "long_term": 0,
+                "qb_out": 0,
+                "qbs": [],
+                "players": []
+              },
+              "away": {
+                "count": 0,
+                "long_term": 0,
+                "qb_out": 0,
+                "qbs": [],
+                "players": []
+              },
+              "source": "sparse",
+              "teams_covered": 1,
+              "teams_playing": 112,
+              "error": null
+            },
+            "venue": {
+              "venue": "Broadview Stadium",
+              "city": "Buffalo",
+              "state": "NY",
+              "indoor": false
+            },
+            "weather": null,
+            "flags": []
+          }
+        },
+        {
+          "event_id": "401866431",
+          "name": "Toledo Rockets at Ball State Cardinals",
+          "short_name": "TOL @ BALL",
+          "kickoff": "2026-10-03T18:00Z",
+          "status": "Scheduled",
+          "neutral": false,
+          "provider": "DraftKings",
+          "spread": 17.5,
+          "spread_details": "TOL -17.5",
+          "total": 51.5,
+          "home": {
+            "id": "2050",
+            "name": "Ball State Cardinals",
+            "abbr": "BALL",
+            "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2050.png",
+            "elo": 1235.0,
+            "moneyline": 900
+          },
+          "away": {
+            "id": "2649",
+            "name": "Toledo Rockets",
+            "abbr": "TOL",
+            "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2649.png",
+            "elo": 1546.4,
+            "moneyline": -1600
+          },
+          "legs": [
+            {
+              "side": "away",
+              "team_id": "2649",
+              "team_name": "Toledo Rockets",
+              "team_abbr": "TOL",
+              "odds": -1600,
+              "model_prob": 0.81397,
+              "implied_prob": 0.90395,
+              "edge_pp": -8.99813,
+              "fair_odds": -438,
+              "sample": 8.0,
+              "team_sample": 8.0,
+              "opp_sample": 8.0,
+              "team_games": 4,
+              "opp_games": 4,
+              "prior_credit": 4.0
+            },
+            {
+              "side": "home",
+              "team_id": "2050",
+              "team_name": "Ball State Cardinals",
+              "team_abbr": "BALL",
+              "odds": 900,
+              "model_prob": 0.18603,
+              "implied_prob": 0.09605,
+              "edge_pp": 8.99813,
+              "fair_odds": 438,
+              "sample": 8.0,
+              "team_sample": 8.0,
+              "opp_sample": 8.0,
+              "team_games": 4,
+              "opp_games": 4,
+              "prior_credit": 4.0
+            }
+          ],
+          "context": {
+            "injuries": {
+              "home": {
+                "count": 0,
+                "long_term": 0,
+                "qb_out": 0,
+                "qbs": [],
+                "players": []
+              },
+              "away": {
+                "count": 0,
+                "long_term": 0,
+                "qb_out": 0,
+                "qbs": [],
+                "players": []
+              },
+              "source": "sparse",
+              "teams_covered": 1,
+              "teams_playing": 112,
+              "error": null
+            },
+            "venue": {
+              "venue": "Scheumann Stadium",
+              "city": "Muncie",
+              "state": "IN",
+              "indoor": false
+            },
+            "weather": null,
+            "flags": []
           }
         },
         {
@@ -3013,13 +3237,7 @@
               "state": "IA",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 62.5,
-              "wind_mph": 8.7,
-              "gust_mph": 10.7,
-              "precip_pct": 5,
-              "snow_in": 0.0
-            },
+            "weather": null,
             "flags": []
           }
         },
@@ -3642,14 +3860,14 @@
           "provider": "DraftKings",
           "spread": -20.5,
           "spread_details": "NDSU -20.5",
-          "total": 47.5,
+          "total": 46.5,
           "home": {
             "id": "2449",
             "name": "North Dakota State Bison",
             "abbr": "NDSU",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2449.png",
             "elo": 1595.9,
-            "moneyline": -1800
+            "moneyline": -2100
           },
           "away": {
             "id": "2751",
@@ -3657,35 +3875,18 @@
             "abbr": "WYO",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2751.png",
             "elo": 1354.2,
-            "moneyline": 1000
+            "moneyline": 1100
           },
           "legs": [
-            {
-              "side": "away",
-              "team_id": "2751",
-              "team_name": "Wyoming Cowboys",
-              "team_abbr": "WYO",
-              "odds": 1000,
-              "model_prob": 0.1534,
-              "implied_prob": 0.08756,
-              "edge_pp": 6.584088,
-              "fair_odds": 552,
-              "sample": 4.0,
-              "team_sample": 8.0,
-              "opp_sample": 4.0,
-              "team_games": 4,
-              "opp_games": 4,
-              "prior_credit": 0.0
-            },
             {
               "side": "home",
               "team_id": "2449",
               "team_name": "North Dakota State Bison",
               "team_abbr": "NDSU",
-              "odds": -1800,
+              "odds": -2100,
               "model_prob": 0.8466,
-              "implied_prob": 0.91244,
-              "edge_pp": -6.584088,
+              "implied_prob": 0.91971,
+              "edge_pp": -7.310651,
               "fair_odds": -552,
               "sample": 4.0,
               "team_sample": 4.0,
@@ -4237,7 +4438,7 @@
             "abbr": "JMU",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/256.png",
             "elo": 1752.0,
-            "moneyline": -900
+            "moneyline": -950
           },
           "away": {
             "id": "276",
@@ -4245,7 +4446,7 @@
             "abbr": "MRSH",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/276.png",
             "elo": 1491.9,
-            "moneyline": 600
+            "moneyline": 625
           },
           "legs": [
             {
@@ -4253,10 +4454,10 @@
               "team_id": "276",
               "team_name": "Marshall Thundering Herd",
               "team_abbr": "MRSH",
-              "odds": 600,
+              "odds": 625,
               "model_prob": 0.14022,
-              "implied_prob": 0.13699,
-              "edge_pp": 0.323313,
+              "implied_prob": 0.13228,
+              "edge_pp": 0.793597,
               "fair_odds": 613,
               "sample": 8.0,
               "team_sample": 8.0,
@@ -4270,10 +4471,10 @@
               "team_id": "256",
               "team_name": "James Madison Dukes",
               "team_abbr": "JMU",
-              "odds": -900,
+              "odds": -950,
               "model_prob": 0.85978,
-              "implied_prob": 0.86301,
-              "edge_pp": -0.323313,
+              "implied_prob": 0.86772,
+              "edge_pp": -0.793597,
               "fair_odds": -613,
               "sample": 8.0,
               "team_sample": 8.0,
@@ -4938,7 +5139,7 @@
             "abbr": "TA&M",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/245.png",
             "elo": 1585.2,
-            "moneyline": -850
+            "moneyline": -800
           },
           "away": {
             "id": "8",
@@ -4946,7 +5147,7 @@
             "abbr": "ARK",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/8.png",
             "elo": 1446.3,
-            "moneyline": 575
+            "moneyline": 550
           },
           "legs": [
             {
@@ -4954,10 +5155,10 @@
               "team_id": "8",
               "team_name": "Arkansas Razorbacks",
               "team_abbr": "ARK",
-              "odds": 575,
+              "odds": 550,
               "model_prob": 0.24676,
-              "implied_prob": 0.14206,
-              "edge_pp": 10.47064,
+              "implied_prob": 0.14754,
+              "edge_pp": 9.922149,
               "fair_odds": 305,
               "sample": 8.0,
               "team_sample": 8.0,
@@ -4971,10 +5172,10 @@
               "team_id": "245",
               "team_name": "Texas A&M Aggies",
               "team_abbr": "TA&M",
-              "odds": -850,
+              "odds": -800,
               "model_prob": 0.75324,
-              "implied_prob": 0.85794,
-              "edge_pp": -10.47064,
+              "implied_prob": 0.85246,
+              "edge_pp": -9.922149,
               "fair_odds": -305,
               "sample": 8.0,
               "team_sample": 8.0,
@@ -6285,7 +6486,7 @@
             "abbr": "ASU",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/9.png",
             "elo": 1560.6,
-            "moneyline": -170
+            "moneyline": -166
           },
           "away": {
             "id": "239",
@@ -6293,7 +6494,7 @@
             "abbr": "BAY",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/239.png",
             "elo": 1526.7,
-            "moneyline": 142
+            "moneyline": 140
           },
           "legs": [
             {
@@ -6301,10 +6502,10 @@
               "team_id": "239",
               "team_name": "Baylor Bears",
               "team_abbr": "BAY",
-              "odds": 142,
+              "odds": 140,
               "model_prob": 0.37478,
-              "implied_prob": 0.39624,
-              "edge_pp": -2.145863,
+              "implied_prob": 0.40036,
+              "edge_pp": -2.557683,
               "fair_odds": 167,
               "sample": 7.0,
               "team_sample": 8.0,
@@ -6318,10 +6519,10 @@
               "team_id": "9",
               "team_name": "Arizona State Sun Devils",
               "team_abbr": "ASU",
-              "odds": -170,
+              "odds": -166,
               "model_prob": 0.62522,
-              "implied_prob": 0.60376,
-              "edge_pp": 2.145863,
+              "implied_prob": 0.59964,
+              "edge_pp": 2.557683,
               "fair_odds": -167,
               "sample": 7.0,
               "team_sample": 7.0,
