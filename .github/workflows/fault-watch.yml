@@ -20,6 +20,11 @@ on:
   schedule:
     - cron: "*/5 * * * *"
   workflow_dispatch:
+    inputs:
+      test:
+        description: "Send one sample alert instead of scanning"
+        type: boolean
+        default: false
 
 concurrency:
   group: fault-watch
@@ -59,7 +64,12 @@ jobs:
           key: faults-alerted-${{ github.run_id }}
           restore-keys: faults-alerted-
 
+      - name: Send a test alert
+        if: inputs.test
+        run: python faults.py --test-alert
+
       - name: Scan every book, alert on new faults
+        if: ${{ !inputs.test }}
         run: python faults.py --fast
 
       - name: Remember what was alerted

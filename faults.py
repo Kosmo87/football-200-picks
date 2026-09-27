@@ -758,6 +758,8 @@ def main() -> int:
                     help="comma-separated; fewer markets costs fewer credits")
     ap.add_argument("--source", choices=("odds-api", "an"), default="odds-api",
                     help="an = Action Network: free, so it can run every few minutes")
+    ap.add_argument("--test-alert", action="store_true",
+                    help="send one clearly-labelled sample through the real alert route")
     ap.add_argument("--fast", action="store_true",
                     help="the frequent free scan: --source an, alert only on faults "
                          "not already alerted, log to cache/ instead of the archive, "
@@ -771,6 +773,14 @@ def main() -> int:
         return ledger()
     if a.history:
         return history()
+    if a.test_alert:
+        # Through send_alert(), not send_push(), so the test exercises the same
+        # routing and secrets a real fault would.
+        sample = {"market": "spreads", "book": "betmgm", "side": "TEST — not a real line",
+                  "book_point": 5.0, "consensus_point": -5.5, "delta": 10.5, "price": -110,
+                  "peers": 5, "game": "Test @ Alert", "league": "NFL",
+                  "kickoff": "2099-01-01T00:00:00Z", "kind": "TRANSPOSED"}
+        return 0 if send_alert([sample]) else 1
     if a.fast:
         # Logs to cache/, not data/archive/: CI commits the archive, and a
         # local job appending to it every two minutes would collide with that.
