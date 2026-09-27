@@ -87,6 +87,34 @@ def fetch() -> List[dict]:
     return r.json()
 
 
+# Action Network republishes each book's Super Bowl price with no key. It is
+# the fallback when the odds API's 500 monthly credits run out, which they did
+# on 2026-09-27 and left the archive a week stale. Book 15 is their consensus
+# and 30 is the OPENING line, so neither is priced as a book here.
+AN_URL = ("https://api.actionnetwork.com/web/v2/leagues/1/futures/"
+          "nfl_futures_special_fixture_11020_2027_nfl_superbowl_to_win")
+AN_BOOKS = {68: "DraftKings", 69: "FanDuel", 75: "BetMGM", 123: "Caesars",
+            79: "bet365", 71: "BetRivers", 2988: "Fanatics"}
+
+
+def fetch_actionnetwork() -> Dict[str, Dict[str, int]]:
+    """team -> book -> american price, straight from Action Network."""
+    r = requests.get(AN_URL, params={"bookIds": ",".join(map(str, AN_BOOKS))},
+                     headers={"User-Agent": "Mozilla/5.0"}, timeout=40)
+    r.raise_for_status()
+    out: Dict[str, Dict[str, int]] = defaultdict(dict)
+    for m in r.json().get("markets") or []:
+        book = AN_BOOKS.get(m.get("book_id"))
+        play = str(m.get("play") or "")
+        if not book or not play.endswith(" Yes"):
+            continue
+        try:
+            out[play[:-4]][book] = int(str(m["odds"]).replace("+", ""))
+        except (KeyError, ValueError):
+            continue
+    return out
+
+
 def prices_from(payload: List[dict]) -> Dict[str, Dict[str, int]]:
     """team -> book -> american price."""
     out: Dict[str, Dict[str, int]] = defaultdict(dict)
@@ -148,8 +176,14 @@ def ratings(prices: Optional[Dict[str, Dict[str, int]]] = None) -> Dict[str, flo
 
 def capture(season: int = 2026) -> int:
     """Append today's board. One row per team per book, plus the de-vigged fair."""
-    payload = fetch()
-    prices = prices_from(payload)
+    source = "the-odds-api"
+    try:
+        prices = prices_from(fetch())
+    except SystemExit as e:
+        # No key, or out of credits: the capture still happens, from the
+        # keyless source, and the row says which one it came from.
+        print(f"  odds API unavailable ({str(e)[:80]}) -- using Action Network")
+        prices, source = fetch_actionnetwork(), "actionnetwork"
     if not prices:
         print("  no futures returned")
         return 1
@@ -165,6 +199,7 @@ def capture(season: int = 2026) -> int:
                     "captured_at": stamp, "season": season, "team": team,
                     "book": book, "price": price,
                     "fair_prob": round(fair.get(team, 0.0), 6),
+                    "source": source,
                 }) + "\n")
                 n += 1
     books = {b for d in prices.values() for b in d}

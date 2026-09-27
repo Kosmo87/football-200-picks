@@ -244,10 +244,8 @@ jobs:
         # anything, and it needs ~40 completed games before it says so.
         continue-on-error: true
         run: |
-          if [ -z "$ODDS_API_KEY" ]; then
-            echo "::warning::ODDS_API_KEY not set — skipping futures capture."
-            exit 0
-          fi
+          # No key or no credits falls back to Action Network (keyless) inside
+          # capture(); the archive went a week stale on 20 Sep before it did.
           HOUR=$(date -u +%H)
           if [ "$HOUR" = "12" ]; then
             python futures.py --capture
