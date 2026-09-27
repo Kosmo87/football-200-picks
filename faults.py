@@ -231,7 +231,8 @@ def snapshot_book_spreads(payload: List[dict], league: str, stamp: str) -> int:
 
 
 def scan(leagues=("NFL", "NCAAF"), min_lead_min: int = 10,
-         markets=("spreads", "h2h")) -> List[dict]:
+         markets=("spreads", "h2h"), source: str = "odds-api",
+         archive: Optional[str] = None) -> List[dict]:
     """
     Faults on games that have NOT started.
 
@@ -245,8 +246,23 @@ def scan(leagues=("NFL", "NCAAF"), min_lead_min: int = 10,
     stamp = now.isoformat(timespec="seconds")
     hits: List[dict] = []
     for league in leagues:
+        an_games = None
+        if source == "an":
+            import an_feed
+            an_games = an_feed.games(league)
         for market, finder in (("spreads", spread_faults), ("h2h", ml_faults)):
             if market not in markets:
+                continue
+            if an_games is not None:
+                # Free and unmetered (an_feed.py); no book-spread snapshot,
+                # that stays with the paid scan whose payload it already has.
+                for game, kick, prices in an_feed.games_from_an(an_games, market, MIN_PEERS + 1):
+                    k = datetime.fromisoformat(kick.replace("Z", "+00:00"))
+                    if (k - now).total_seconds() < min_lead_min * 60:
+                        continue
+                    for f in finder(prices):
+                        hits.append(dict(f, game=game, kickoff=kick, league=league,
+                                         captured_at=stamp, kind=classify(f), source="an"))
                 continue
             payload = LS.fetch_live(league, market, "us")
             if market == "spreads":
@@ -271,8 +287,9 @@ def scan(leagues=("NFL", "NCAAF"), min_lead_min: int = 10,
                     hits.append(dict(f, game=game, kickoff=kick, league=league,
                                      captured_at=stamp, kind=classify(f)))
     if hits:
-        os.makedirs(os.path.dirname(ARCHIVE), exist_ok=True)
-        with open(ARCHIVE, "a") as fh:
+        archive = archive or ARCHIVE
+        os.makedirs(os.path.dirname(archive), exist_ok=True)
+        with open(archive, "a") as fh:
             for h in hits:
                 fh.write(json.dumps(h) + "\n")
     return hits
@@ -643,6 +660,34 @@ def alert_text(hits: List[dict], mine_only: bool = True,
             f"{t['game'][:40]} {when}Z{tail}{more}")
 
 
+def _alert_key(h: dict) -> str:
+    """One fault = one book's number on one side of one game. A new number is a new fault."""
+    num = h.get("book_point", h.get("book_price"))
+    return f"{h['league']}|{h['game']}|{h['market']}|{h['book']}|{h['side']}|{num}"
+
+
+def new_only(hits: List[dict], state_path: str) -> List[dict]:
+    """
+    Drop hits already alerted, and remember the rest.
+
+    The fast scan runs every two minutes and a transposed line stands about an
+    hour, so without this one error is thirty texts. Keys expire with the game:
+    anything whose kickoff has passed is forgotten, which keeps the file small.
+    """
+    try:
+        seen = json.load(open(state_path))
+    except Exception:
+        seen = {}
+    now = datetime.now(timezone.utc).isoformat()
+    seen = {k: v for k, v in seen.items() if v > now}
+    fresh = [h for h in hits if _alert_key(h) not in seen]
+    for h in fresh:
+        seen[_alert_key(h)] = h["kickoff"].replace("Z", "+00:00")
+    os.makedirs(os.path.dirname(state_path), exist_ok=True)
+    json.dump(seen, open(state_path, "w"))
+    return fresh
+
+
 def send_alert(hits: List[dict]) -> bool:
     """SMS when Twilio is configured, email otherwise. Never both."""
     body = alert_text(hits)
@@ -681,6 +726,12 @@ def main() -> int:
                     help="text/email when a STALE line appears at your books")
     ap.add_argument("--markets", default="spreads,h2h",
                     help="comma-separated; fewer markets costs fewer credits")
+    ap.add_argument("--source", choices=("odds-api", "an"), default="odds-api",
+                    help="an = Action Network: free, so it can run every few minutes")
+    ap.add_argument("--fast", action="store_true",
+                    help="the frequent free scan: --source an, alert only on faults "
+                         "not already alerted, log to cache/ instead of the archive, "
+                         "no grading")
     a = ap.parse_args()
     if a.settle:
         return settle(a.settle)
@@ -690,6 +741,17 @@ def main() -> int:
         return ledger()
     if a.history:
         return history()
+    if a.fast:
+        # Logs to cache/, not data/archive/: CI commits the archive, and a
+        # local job appending to it every two minutes would collide with that.
+        hits = scan(source="an", archive=os.path.join(ROOT, "cache", "faults_fast.ndjson"))
+        fresh = new_only(hits, os.path.join(ROOT, "cache", "faults_alerted.json"))
+        stamp = datetime.now(timezone.utc).strftime("%H:%M:%S")
+        print(f"{stamp} {len(hits)} fault(s), {len(fresh)} new")
+        if fresh:
+            report(fresh)
+            send_alert(fresh)
+        return 0
     if a.scan:
         mk = tuple(m.strip() for m in a.markets.split(",") if m.strip())
         hits = scan(markets=mk)

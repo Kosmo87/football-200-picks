@@ -1,0 +1,69 @@
+name: Fault watch
+
+# Transposed and stale lines, every five minutes, on GitHub's machines so it
+# runs whether or not anyone's laptop is open.
+#
+# faults.py --fast reads every book from Action Network (an_feed.py): free,
+# keyless, no credit meter, so the only limit on cadence is GitHub's cron. The
+# paid scan in build-board.yml could afford a look every eight hours against
+# errors that stand about an hour.
+#
+# Five minutes is GitHub's floor, and scheduled runs are routinely a few
+# minutes late under load -- expect alerts 5-15 minutes after a line breaks,
+# not instantly. The repo is public, so the minutes cost nothing.
+#
+# This job commits nothing. What it has already alerted on lives in the
+# Actions cache (cache/faults_alerted.json), so a line that stands for an hour
+# alerts once rather than twelve times.
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: fault-watch
+  cancel-in-progress: false
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    env:
+      RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+      RESEND_FROM: ${{ vars.RESEND_FROM }}
+      DELIVER_TO: ${{ vars.DELIVER_TO }}
+      # Text instead of email once these exist; send_alert() prefers SMS.
+      SMS_TO: ${{ vars.SMS_TO }}
+      TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
+      TWILIO_API_KEY_SID: ${{ secrets.TWILIO_API_KEY_SID }}
+      TWILIO_API_KEY_SECRET: ${{ secrets.TWILIO_API_KEY_SECRET }}
+      TWILIO_FROM: ${{ vars.TWILIO_FROM }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - run: pip install -q requests
+
+      - name: Restore what has already been alerted
+        uses: actions/cache/restore@v4
+        with:
+          path: cache/faults_alerted.json
+          key: faults-alerted-${{ github.run_id }}
+          restore-keys: faults-alerted-
+
+      - name: Scan every book, alert on new faults
+        run: python faults.py --fast
+
+      - name: Remember what was alerted
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: cache/faults_alerted.json
+          key: faults-alerted-${{ github.run_id }}
