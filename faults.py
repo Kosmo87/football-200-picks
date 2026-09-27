@@ -41,6 +41,8 @@ from datetime import datetime, timezone
 from statistics import median
 from typing import Dict, List, Optional
 
+import requests
+
 import books as BOOKS
 import keys  # noqa: F401
 import line_shop as LS
@@ -688,12 +690,40 @@ def new_only(hits: List[dict], state_path: str) -> List[dict]:
     return fresh
 
 
+def send_push(topic: str, body: str) -> bool:
+    """
+    ntfy.sh push: lands on the lock screen in seconds, free, no account.
+
+    Chosen over SMS on 2026-09-27: Twilio needs a bought number and days of
+    carrier verification before a US text is delivered, and these lines stand
+    about an hour. The topic name IS the credential -- anyone who knows it can
+    read or forge alerts -- so it lives in secrets, never in the repo, and is
+    never printed.
+    """
+    title, _, rest = body.partition("\n")
+    transposed = title.startswith("WRONG TEAM")
+    try:
+        r = requests.post(f"https://ntfy.sh/{topic}", data=rest.encode("utf-8"),
+                          headers={"Title": title,
+                                   "Priority": "urgent" if transposed else "high",
+                                   "Tags": "rotating_light" if transposed else "moneybag"},
+                          timeout=20)
+    except requests.RequestException as e:
+        print(f"  push failed: {e}")
+        return False
+    print(f"  push -> ntfy: HTTP {r.status_code}")
+    return r.ok
+
+
 def send_alert(hits: List[dict]) -> bool:
-    """SMS when Twilio is configured, email otherwise. Never both."""
+    """Push when NTFY_TOPIC is set, else SMS when Twilio is, else email. Never two."""
     body = alert_text(hits)
     if not body:
         return False
     print("\n--- ALERT ---\n" + body)
+    topic = os.environ.get("NTFY_TOPIC", "").strip()
+    if topic:
+        return send_push(topic, body)
     import delivery
     sms_to = os.environ.get("SMS_TO", "").strip()
     if sms_to and os.environ.get("TWILIO_ACCOUNT_SID", "").strip():
