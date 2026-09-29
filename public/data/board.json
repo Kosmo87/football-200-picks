@@ -1,52 +1,456 @@
 {
-  "generated_at": "2026-09-28T22:05:33+00:00",
+  "generated_at": "2026-09-29T02:02:00+00:00",
   "season": 2026,
   "leagues": {
     "NFL": {
       "league": "NFL",
       "games": [
         {
-          "event_id": "401872963",
-          "name": "Philadelphia Eagles at Chicago Bears",
-          "short_name": "PHI @ CHI",
-          "kickoff": "2026-09-29T00:15Z",
+          "event_id": "401872964",
+          "name": "Pittsburgh Steelers at Cleveland Browns",
+          "short_name": "PIT @ CLE",
+          "kickoff": "2026-10-02T00:15Z",
           "status": "Scheduled",
           "neutral": false,
           "provider": "DraftKings",
+          "spread": 2.5,
+          "spread_details": "PIT -2.5",
+          "total": 38.5,
+          "home": {
+            "id": "5",
+            "name": "Cleveland Browns",
+            "abbr": "CLE",
+            "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/cle.png",
+            "elo": 1461.6,
+            "moneyline": 124
+          },
+          "away": {
+            "id": "23",
+            "name": "Pittsburgh Steelers",
+            "abbr": "PIT",
+            "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/pit.png",
+            "elo": 1509.7,
+            "moneyline": -148
+          },
+          "legs": [
+            {
+              "side": "away",
+              "team_id": "23",
+              "team_name": "Pittsburgh Steelers",
+              "team_abbr": "PIT",
+              "odds": -148,
+              "model_prob": 0.51875,
+              "implied_prob": 0.57206,
+              "edge_pp": -5.331305,
+              "fair_odds": -108,
+              "sample": 10.0,
+              "team_sample": 10.0,
+              "opp_sample": 10.0,
+              "team_games": 6,
+              "opp_games": 6,
+              "prior_credit": 4.0
+            },
+            {
+              "side": "home",
+              "team_id": "5",
+              "team_name": "Cleveland Browns",
+              "team_abbr": "CLE",
+              "odds": 124,
+              "model_prob": 0.48125,
+              "implied_prob": 0.42794,
+              "edge_pp": 5.331305,
+              "fair_odds": 108,
+              "sample": 10.0,
+              "team_sample": 10.0,
+              "opp_sample": 10.0,
+              "team_games": 6,
+              "opp_games": 6,
+              "prior_credit": 4.0
+            }
+          ],
+          "context": {
+            "injuries": {
+              "home": {
+                "count": 2,
+                "long_term": 0,
+                "qb_out": 0,
+                "qbs": [],
+                "players": [
+                  {
+                    "player": "Tyson Campbell",
+                    "position": "CB",
+                    "status": "Out",
+                    "detail": "Knee",
+                    "since": "2026-09-29T00:11Z"
+                  },
+                  {
+                    "player": "Teven Jenkins",
+                    "position": "G",
+                    "status": "Out",
+                    "detail": "Back",
+                    "since": "2026-09-28T18:19Z"
+                  }
+                ]
+              },
+              "away": {
+                "count": 1,
+                "long_term": 1,
+                "qb_out": 0,
+                "qbs": [],
+                "players": [
+                  {
+                    "player": "Rico Dowdle",
+                    "position": "RB",
+                    "status": "Out",
+                    "detail": "Toe",
+                    "since": "2026-09-28T20:45Z"
+                  }
+                ]
+              },
+              "source": "espn",
+              "teams_covered": 32,
+              "teams_playing": 32,
+              "error": null
+            },
+            "venue": null,
+            "weather": null,
+            "flags": []
+          }
+        },
+        {
+          "event_id": "401872965",
+          "name": "Indianapolis Colts at Washington Commanders",
+          "short_name": "IND VS WSH",
+          "kickoff": "2026-10-04T13:30Z",
+          "status": "Scheduled",
+          "neutral": true,
+          "provider": "DraftKings",
           "spread": 3.5,
-          "spread_details": "PHI -3.5",
-          "total": 42.5,
+          "spread_details": "IND -3.5",
+          "total": 47.5,
+          "home": {
+            "id": "28",
+            "name": "Washington Commanders",
+            "abbr": "WSH",
+            "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/wsh.png",
+            "elo": 1436.1,
+            "moneyline": 154
+          },
+          "away": {
+            "id": "11",
+            "name": "Indianapolis Colts",
+            "abbr": "IND",
+            "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/ind.png",
+            "elo": 1424.5,
+            "moneyline": -185
+          },
+          "legs": [
+            {
+              "side": "away",
+              "team_id": "11",
+              "team_name": "Indianapolis Colts",
+              "team_abbr": "IND",
+              "odds": -185,
+              "model_prob": 0.48335,
+              "implied_prob": 0.62247,
+              "edge_pp": -13.911243,
+              "fair_odds": 107,
+              "sample": 10.0,
+              "team_sample": 10.0,
+              "opp_sample": 10.0,
+              "team_games": 6,
+              "opp_games": 6,
+              "prior_credit": 4.0,
+              "stale": true,
+              "stale_reason": "WSH quarterback out: Jayden Daniels (Elbow)"
+            },
+            {
+              "side": "home",
+              "team_id": "28",
+              "team_name": "Washington Commanders",
+              "team_abbr": "WSH",
+              "odds": 154,
+              "model_prob": 0.51665,
+              "implied_prob": 0.37753,
+              "edge_pp": 13.911243,
+              "fair_odds": -107,
+              "sample": 10.0,
+              "team_sample": 10.0,
+              "opp_sample": 10.0,
+              "team_games": 6,
+              "opp_games": 6,
+              "prior_credit": 4.0,
+              "stale": true,
+              "stale_reason": "WSH quarterback out: Jayden Daniels (Elbow)"
+            }
+          ],
+          "context": {
+            "injuries": {
+              "home": {
+                "count": 6,
+                "long_term": 0,
+                "qb_out": 1,
+                "qbs": [
+                  "Jayden Daniels (Elbow)"
+                ],
+                "players": [
+                  {
+                    "player": "Jayden Daniels",
+                    "position": "QB",
+                    "status": "Out",
+                    "detail": "Elbow",
+                    "since": "2026-09-28T19:35Z"
+                  },
+                  {
+                    "player": "Chig Okonkwo",
+                    "position": "TE",
+                    "status": "Out",
+                    "detail": "Hamstring",
+                    "since": "2026-09-28T21:07Z"
+                  },
+                  {
+                    "player": "Leo Chenal",
+                    "position": "LB",
+                    "status": "Out",
+                    "detail": "Neck",
+                    "since": "2026-09-28T20:24Z"
+                  },
+                  {
+                    "player": "Frankie Luvu",
+                    "position": "LB",
+                    "status": "Out",
+                    "detail": "Groin",
+                    "since": "2026-09-28T19:21Z"
+                  },
+                  {
+                    "player": "Sam Cosmi",
+                    "position": "G",
+                    "status": "Out",
+                    "detail": "Concussion",
+                    "since": "2026-09-28T19:21Z"
+                  },
+                  {
+                    "player": "Nick Cross",
+                    "position": "S",
+                    "status": "Out",
+                    "detail": "Illness",
+                    "since": "2026-09-28T19:21Z"
+                  }
+                ]
+              },
+              "away": {
+                "count": 1,
+                "long_term": 2,
+                "qb_out": 0,
+                "qbs": [],
+                "players": [
+                  {
+                    "player": "Ashton Dulin",
+                    "position": "WR",
+                    "status": "Out",
+                    "detail": "Ankle",
+                    "since": "2026-09-28T18:33Z"
+                  }
+                ]
+              },
+              "source": "espn",
+              "teams_covered": 32,
+              "teams_playing": 32,
+              "error": null
+            },
+            "venue": null,
+            "weather": null,
+            "flags": [
+              {
+                "kind": "qb_out",
+                "severity": "high",
+                "side": "home",
+                "text": "WSH quarterback out: Jayden Daniels (Elbow). The ratings are built from final scores and do not know this; the price does."
+              },
+              {
+                "kind": "injuries",
+                "severity": "low",
+                "side": "home",
+                "text": "WSH ruled out 6 rotation players this week"
+              }
+            ]
+          }
+        },
+        {
+          "event_id": "401872971",
+          "name": "New England Patriots at Buffalo Bills",
+          "short_name": "NE @ BUF",
+          "kickoff": "2026-10-04T17:00Z",
+          "status": "Scheduled",
+          "neutral": false,
+          "provider": "DraftKings",
+          "spread": -7.0,
+          "spread_details": "BUF -7",
+          "total": 48.5,
+          "home": {
+            "id": "2",
+            "name": "Buffalo Bills",
+            "abbr": "BUF",
+            "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/buf.png",
+            "elo": 1650.5,
+            "moneyline": -310
+          },
+          "away": {
+            "id": "17",
+            "name": "New England Patriots",
+            "abbr": "NE",
+            "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/ne.png",
+            "elo": 1548.9,
+            "moneyline": 250
+          },
+          "legs": [
+            {
+              "side": "away",
+              "team_id": "17",
+              "team_name": "New England Patriots",
+              "team_abbr": "NE",
+              "odds": 250,
+              "model_prob": 0.31301,
+              "implied_prob": 0.27425,
+              "edge_pp": 3.876392,
+              "fair_odds": 219,
+              "sample": 10.0,
+              "team_sample": 10.0,
+              "opp_sample": 10.0,
+              "team_games": 6,
+              "opp_games": 6,
+              "prior_credit": 4.0
+            },
+            {
+              "side": "home",
+              "team_id": "2",
+              "team_name": "Buffalo Bills",
+              "team_abbr": "BUF",
+              "odds": -310,
+              "model_prob": 0.68699,
+              "implied_prob": 0.72575,
+              "edge_pp": -3.876392,
+              "fair_odds": -219,
+              "sample": 10.0,
+              "team_sample": 10.0,
+              "opp_sample": 10.0,
+              "team_games": 6,
+              "opp_games": 6,
+              "prior_credit": 4.0
+            }
+          ],
+          "context": {
+            "injuries": {
+              "home": {
+                "count": 2,
+                "long_term": 1,
+                "qb_out": 0,
+                "qbs": [],
+                "players": [
+                  {
+                    "player": "Ar'maj Reed-Adams",
+                    "position": "G",
+                    "status": "Out",
+                    "detail": "Elbow",
+                    "since": "2026-09-28T18:16Z"
+                  },
+                  {
+                    "player": "T.J. Sanders",
+                    "position": "DT",
+                    "status": "Out",
+                    "detail": "",
+                    "since": "2026-09-28T18:16Z"
+                  }
+                ]
+              },
+              "away": {
+                "count": 4,
+                "long_term": 3,
+                "qb_out": 0,
+                "qbs": [],
+                "players": [
+                  {
+                    "player": "Craig Woodson",
+                    "position": "S",
+                    "status": "Out",
+                    "detail": "Shoulder",
+                    "since": "2026-09-28T18:53Z"
+                  },
+                  {
+                    "player": "Eli Raridon",
+                    "position": "TE",
+                    "status": "Out",
+                    "detail": "Thigh",
+                    "since": "2026-09-28T18:53Z"
+                  },
+                  {
+                    "player": "Dre'Mont Jones",
+                    "position": "DE",
+                    "status": "Out",
+                    "detail": "Shoulder",
+                    "since": "2026-09-28T18:53Z"
+                  },
+                  {
+                    "player": "Brenden Schooler",
+                    "position": "S",
+                    "status": "Out",
+                    "detail": "Back",
+                    "since": "2026-09-24T01:02Z"
+                  }
+                ]
+              },
+              "source": "espn",
+              "teams_covered": 32,
+              "teams_playing": 32,
+              "error": null
+            },
+            "venue": null,
+            "weather": null,
+            "flags": []
+          }
+        },
+        {
+          "event_id": "401872972",
+          "name": "New York Jets at Chicago Bears",
+          "short_name": "NYJ @ CHI",
+          "kickoff": "2026-10-04T17:00Z",
+          "status": "Scheduled",
+          "neutral": false,
+          "provider": "DraftKings",
+          "spread": -3.0,
+          "spread_details": "CHI -3",
+          "total": 43.5,
           "home": {
             "id": "3",
             "name": "Chicago Bears",
             "abbr": "CHI",
             "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/chi.png",
             "elo": 1540.1,
-            "moneyline": 164
+            "moneyline": -155
           },
           "away": {
-            "id": "21",
-            "name": "Philadelphia Eagles",
-            "abbr": "PHI",
-            "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/phi.png",
-            "elo": 1522.5,
-            "moneyline": -198
+            "id": "20",
+            "name": "New York Jets",
+            "abbr": "NYJ",
+            "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/nyj.png",
+            "elo": 1389.9,
+            "moneyline": 130
           },
           "legs": [
             {
               "side": "away",
-              "team_id": "21",
-              "team_name": "Philadelphia Eagles",
-              "team_abbr": "PHI",
-              "odds": -198,
-              "model_prob": 0.42491,
-              "implied_prob": 0.6369,
-              "edge_pp": -21.199188,
-              "fair_odds": 135,
+              "team_id": "20",
+              "team_name": "New York Jets",
+              "team_abbr": "NYJ",
+              "odds": 130,
+              "model_prob": 0.25618,
+              "implied_prob": 0.41701,
+              "edge_pp": -16.083179,
+              "fair_odds": 290,
               "sample": 9.0,
-              "team_sample": 9.0,
+              "team_sample": 10.0,
               "opp_sample": 9.0,
-              "team_games": 5,
+              "team_games": 6,
               "opp_games": 5,
               "prior_credit": 4.0,
               "stale": true,
@@ -57,16 +461,16 @@
               "team_id": "3",
               "team_name": "Chicago Bears",
               "team_abbr": "CHI",
-              "odds": 164,
-              "model_prob": 0.57509,
-              "implied_prob": 0.3631,
-              "edge_pp": 21.199188,
-              "fair_odds": -135,
+              "odds": -155,
+              "model_prob": 0.74382,
+              "implied_prob": 0.58299,
+              "edge_pp": 16.083179,
+              "fair_odds": -290,
               "sample": 9.0,
               "team_sample": 9.0,
-              "opp_sample": 9.0,
+              "opp_sample": 10.0,
               "team_games": 5,
-              "opp_games": 5,
+              "opp_games": 6,
               "prior_credit": 4.0,
               "stale": true,
               "stale_reason": "CHI quarterback out: Caleb Williams (Hamstring)"
@@ -75,7 +479,7 @@
           "context": {
             "injuries": {
               "home": {
-                "count": 3,
+                "count": 7,
                 "long_term": 1,
                 "qb_out": 1,
                 "qbs": [
@@ -87,7 +491,35 @@
                     "position": "QB",
                     "status": "Out",
                     "detail": "Hamstring",
-                    "since": "2026-09-27T12:12Z"
+                    "since": "2026-09-28T22:49Z"
+                  },
+                  {
+                    "player": "Ozzy Trapilo",
+                    "position": "OT",
+                    "status": "Out",
+                    "detail": "Coach's Decision",
+                    "since": "2026-09-28T22:49Z"
+                  },
+                  {
+                    "player": "Jamree Kromah",
+                    "position": "DE",
+                    "status": "Out",
+                    "detail": "Coach's Decision",
+                    "since": "2026-09-28T22:49Z"
+                  },
+                  {
+                    "player": "Jayden Loving",
+                    "position": "DT",
+                    "status": "Out",
+                    "detail": "Coach's Decision",
+                    "since": "2026-09-28T22:49Z"
+                  },
+                  {
+                    "player": "Jordan McFadden",
+                    "position": "G",
+                    "status": "Out",
+                    "detail": "Coach's Decision",
+                    "since": "2026-09-28T22:49Z"
                   },
                   {
                     "player": "Shemar Turner",
@@ -106,60 +538,1730 @@
                 ]
               },
               "away": {
-                "count": 3,
-                "long_term": 0,
+                "count": 5,
+                "long_term": 3,
                 "qb_out": 0,
                 "qbs": [],
                 "players": [
                   {
-                    "player": "Fred Johnson",
-                    "position": "OT",
-                    "status": "Out",
-                    "detail": "Knee",
-                    "since": "2026-09-26T21:21Z"
-                  },
-                  {
-                    "player": "Hollywood Brown",
-                    "position": "WR",
-                    "status": "Out",
-                    "detail": "Ankle",
-                    "since": "2026-09-26T20:25Z"
-                  },
-                  {
-                    "player": "Dallas Goedert",
+                    "player": "Mason Taylor",
                     "position": "TE",
                     "status": "Out",
-                    "detail": "Knee - MCL",
-                    "since": "2026-09-26T20:01Z"
+                    "detail": "Thumb",
+                    "since": "2026-09-28T18:58Z"
+                  },
+                  {
+                    "player": "Kiko Mauigoa",
+                    "position": "LB",
+                    "status": "Out",
+                    "detail": "Quadriceps",
+                    "since": "2026-09-28T18:58Z"
+                  },
+                  {
+                    "player": "Adonai Mitchell",
+                    "position": "WR",
+                    "status": "Out",
+                    "detail": "Finger",
+                    "since": "2026-09-28T18:58Z"
+                  },
+                  {
+                    "player": "Kene Nwangwu",
+                    "position": "RB",
+                    "status": "Out",
+                    "detail": "Back",
+                    "since": "2026-09-28T18:58Z"
+                  },
+                  {
+                    "player": "Minkah Fitzpatrick",
+                    "position": "S",
+                    "status": "Out",
+                    "detail": "Groin",
+                    "since": "2026-09-28T18:58Z"
                   }
                 ]
               },
               "source": "espn",
-              "teams_covered": 2,
-              "teams_playing": 2,
+              "teams_covered": 32,
+              "teams_playing": 32,
               "error": null
             },
-            "venue": {
-              "venue": "Soldier Field",
-              "city": "Chicago",
-              "state": "IL",
-              "indoor": false
-            },
-            "weather": {
-              "temp_f": 62.5,
-              "wind_mph": 3.8,
-              "gust_mph": 8.3,
-              "precip_pct": 1,
-              "snow_in": 0.0
-            },
+            "venue": null,
+            "weather": null,
             "flags": [
               {
                 "kind": "qb_out",
                 "severity": "high",
                 "side": "home",
                 "text": "CHI quarterback out: Caleb Williams (Hamstring). The ratings are built from final scores and do not know this; the price does."
+              },
+              {
+                "kind": "injuries",
+                "severity": "low",
+                "side": "home",
+                "text": "CHI ruled out 7 rotation players this week"
+              },
+              {
+                "kind": "injuries",
+                "severity": "low",
+                "side": "away",
+                "text": "NYJ ruled out 5 rotation players this week"
               }
             ]
+          }
+        },
+        {
+          "event_id": "401872969",
+          "name": "Jacksonville Jaguars at Cincinnati Bengals",
+          "short_name": "JAX @ CIN",
+          "kickoff": "2026-10-04T17:00Z",
+          "status": "Scheduled",
+          "neutral": false,
+          "provider": "DraftKings",
+          "spread": -2.5,
+          "spread_details": "CIN -2.5",
+          "total": 51.5,
+          "home": {
+            "id": "4",
+            "name": "Cincinnati Bengals",
+            "abbr": "CIN",
+            "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/cin.png",
+            "elo": 1549.8,
+            "moneyline": -148
+          },
+          "away": {
+            "id": "30",
+            "name": "Jacksonville Jaguars",
+            "abbr": "JAX",
+            "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/jax.png",
+            "elo": 1600.3,
+            "moneyline": 124
+          },
+          "legs": [
+            {
+              "side": "away",
+              "team_id": "30",
+              "team_name": "Jacksonville Jaguars",
+              "team_abbr": "JAX",
+              "odds": 124,
+              "model_prob": 0.52226,
+              "implied_prob": 0.42794,
+              "edge_pp": 9.432249,
+              "fair_odds": -109,
+              "sample": 10.0,
+              "team_sample": 10.0,
+              "opp_sample": 10.0,
+              "team_games": 6,
+              "opp_games": 6,
+              "prior_credit": 4.0
+            },
+            {
+              "side": "home",
+              "team_id": "4",
+              "team_name": "Cincinnati Bengals",
+              "team_abbr": "CIN",
+              "odds": -148,
+              "model_prob": 0.47774,
+              "implied_prob": 0.57206,
+              "edge_pp": -9.432249,
+              "fair_odds": 109,
+              "sample": 10.0,
+              "team_sample": 10.0,
+              "opp_sample": 10.0,
+              "team_games": 6,
+              "opp_games": 6,
+              "prior_credit": 4.0
+            }
+          ],
+          "context": {
+            "injuries": {
+              "home": {
+                "count": 2,
+                "long_term": 1,
+                "qb_out": 0,
+                "qbs": [],
+                "players": [
+                  {
+                    "player": "Colbie Young",
+                    "position": "WR",
+                    "status": "Out",
+                    "detail": "Knee",
+                    "since": "2026-09-28T23:37Z"
+                  },
+                  {
+                    "player": "B.J. Hill",
+                    "position": "DT",
+                    "status": "Out",
+                    "detail": "Achilles",
+                    "since": "2026-09-28T18:19Z"
+                  }
+                ]
+              },
+              "away": {
+                "count": 1,
+                "long_term": 1,
+                "qb_out": 0,
+                "qbs": [],
+                "players": [
+                  {
+                    "player": "Albert Regis",
+                    "position": "DT",
+                    "status": "Out",
+                    "detail": "Elbow",
+                    "since": "2026-09-28T18:34Z"
+                  }
+                ]
+              },
+              "source": "espn",
+              "teams_covered": 32,
+              "teams_playing": 32,
+              "error": null
+            },
+            "venue": null,
+            "weather": null,
+            "flags": []
+          }
+        },
+        {
+          "event_id": "401872966",
+          "name": "Arizona Cardinals at New York Giants",
+          "short_name": "ARI @ NYG",
+          "kickoff": "2026-10-04T17:00Z",
+          "status": "Scheduled",
+          "neutral": false,
+          "provider": "DraftKings",
+          "spread": 1.5,
+          "spread_details": "ARI -1.5",
+          "total": 44.5,
+          "home": {
+            "id": "19",
+            "name": "New York Giants",
+            "abbr": "NYG",
+            "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/nyg.png",
+            "elo": 1477.2,
+            "moneyline": -105
+          },
+          "away": {
+            "id": "22",
+            "name": "Arizona Cardinals",
+            "abbr": "ARI",
+            "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/ari.png",
+            "elo": 1410.3,
+            "moneyline": -115
+          },
+          "legs": [
+            {
+              "side": "away",
+              "team_id": "22",
+              "team_name": "Arizona Cardinals",
+              "team_abbr": "ARI",
+              "odds": -115,
+              "model_prob": 0.35736,
+              "implied_prob": 0.51083,
+              "edge_pp": -15.347058,
+              "fair_odds": 180,
+              "sample": 10.0,
+              "team_sample": 11.0,
+              "opp_sample": 10.0,
+              "team_games": 7,
+              "opp_games": 6,
+              "prior_credit": 4.0
+            },
+            {
+              "side": "home",
+              "team_id": "19",
+              "team_name": "New York Giants",
+              "team_abbr": "NYG",
+              "odds": -105,
+              "model_prob": 0.64264,
+              "implied_prob": 0.48917,
+              "edge_pp": 15.347058,
+              "fair_odds": -180,
+              "sample": 10.0,
+              "team_sample": 10.0,
+              "opp_sample": 11.0,
+              "team_games": 6,
+              "opp_games": 7,
+              "prior_credit": 4.0
+            }
+          ],
+          "context": {
+            "injuries": {
+              "home": {
+                "count": 3,
+                "long_term": 1,
+                "qb_out": 0,
+                "qbs": [],
+                "players": [
+                  {
+                    "player": "Brian Burns",
+                    "position": "LB",
+                    "status": "Out",
+                    "detail": "Knee - ACL",
+                    "since": "2026-09-28T19:57Z"
+                  },
+                  {
+                    "player": "Tyler Nubin",
+                    "position": "S",
+                    "status": "Out",
+                    "detail": "Calf",
+                    "since": "2026-09-28T18:55Z"
+                  },
+                  {
+                    "player": "Deonte Banks",
+                    "position": "CB",
+                    "status": "Out",
+                    "detail": "Calf",
+                    "since": "2026-09-28T18:55Z"
+                  }
+                ]
+              },
+              "away": {
+                "count": 1,
+                "long_term": 1,
+                "qb_out": 0,
+                "qbs": [],
+                "players": [
+                  {
+                    "player": "Dadrion Taylor-Demerson",
+                    "position": "S",
+                    "status": "Out",
+                    "detail": "Back",
+                    "since": "2026-09-28T18:12Z"
+                  }
+                ]
+              },
+              "source": "espn",
+              "teams_covered": 32,
+              "teams_playing": 32,
+              "error": null
+            },
+            "venue": null,
+            "weather": null,
+            "flags": []
+          }
+        },
+        {
+          "event_id": "401872970",
+          "name": "Los Angeles Rams at Philadelphia Eagles",
+          "short_name": "LAR @ PHI",
+          "kickoff": "2026-10-04T17:00Z",
+          "status": "Scheduled",
+          "neutral": false,
+          "provider": "DraftKings",
+          "spread": 2.5,
+          "spread_details": "LAR -2.5",
+          "total": 46.5,
+          "home": {
+            "id": "21",
+            "name": "Philadelphia Eagles",
+            "abbr": "PHI",
+            "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/phi.png",
+            "elo": 1522.5,
+            "moneyline": 110
+          },
+          "away": {
+            "id": "14",
+            "name": "Los Angeles Rams",
+            "abbr": "LAR",
+            "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/lar.png",
+            "elo": 1574.7,
+            "moneyline": -130
+          },
+          "legs": [
+            {
+              "side": "away",
+              "team_id": "14",
+              "team_name": "Los Angeles Rams",
+              "team_abbr": "LAR",
+              "odds": -130,
+              "model_prob": 0.52471,
+              "implied_prob": 0.54274,
+              "edge_pp": -1.803019,
+              "fair_odds": -110,
+              "sample": 9.0,
+              "team_sample": 10.0,
+              "opp_sample": 9.0,
+              "team_games": 6,
+              "opp_games": 5,
+              "prior_credit": 4.0,
+              "stale": true,
+              "stale_reason": "PHI quarterback out: Tanner McKee (Coach's Decision), Cole Payton (Coach's Decision)"
+            },
+            {
+              "side": "home",
+              "team_id": "21",
+              "team_name": "Philadelphia Eagles",
+              "team_abbr": "PHI",
+              "odds": 110,
+              "model_prob": 0.47529,
+              "implied_prob": 0.45726,
+              "edge_pp": 1.803019,
+              "fair_odds": 110,
+              "sample": 9.0,
+              "team_sample": 9.0,
+              "opp_sample": 10.0,
+              "team_games": 5,
+              "opp_games": 6,
+              "prior_credit": 4.0,
+              "stale": true,
+              "stale_reason": "PHI quarterback out: Tanner McKee (Coach's Decision), Cole Payton (Coach's Decision)"
+            }
+          ],
+          "context": {
+            "injuries": {
+              "home": {
+                "count": 6,
+                "long_term": 0,
+                "qb_out": 2,
+                "qbs": [
+                  "Tanner McKee (Coach's Decision)",
+                  "Cole Payton (Coach's Decision)"
+                ],
+                "players": [
+                  {
+                    "player": "Tanner McKee",
+                    "position": "QB",
+                    "status": "Out",
+                    "detail": "Coach's Decision",
+                    "since": "2026-09-28T23:14Z"
+                  },
+                  {
+                    "player": "Cole Payton",
+                    "position": "QB",
+                    "status": "Out",
+                    "detail": "Coach's Decision",
+                    "since": "2026-09-28T22:47Z"
+                  },
+                  {
+                    "player": "Fred Johnson",
+                    "position": "OT",
+                    "status": "Out",
+                    "detail": "Knee",
+                    "since": "2026-09-28T22:47Z"
+                  },
+                  {
+                    "player": "AJ Epenesa",
+                    "position": "DE",
+                    "status": "Out",
+                    "detail": "Coach's Decision",
+                    "since": "2026-09-28T22:47Z"
+                  },
+                  {
+                    "player": "Dallas Goedert",
+                    "position": "TE",
+                    "status": "Out",
+                    "detail": "Knee - MCL",
+                    "since": "2026-09-28T22:47Z"
+                  },
+                  {
+                    "player": "Hollywood Brown",
+                    "position": "WR",
+                    "status": "Out",
+                    "detail": "Ankle",
+                    "since": "2026-09-28T22:47Z"
+                  }
+                ]
+              },
+              "away": {
+                "count": 4,
+                "long_term": 2,
+                "qb_out": 0,
+                "qbs": [],
+                "players": [
+                  {
+                    "player": "Puka Nacua",
+                    "position": "WR",
+                    "status": "Out",
+                    "detail": "Hip",
+                    "since": "2026-09-28T22:38Z"
+                  },
+                  {
+                    "player": "Kamren Kinchens",
+                    "position": "S",
+                    "status": "Out",
+                    "detail": "Hamstring",
+                    "since": "2026-09-27T23:16Z"
+                  },
+                  {
+                    "player": "Jaylen Watson",
+                    "position": "CB",
+                    "status": "Doubtful",
+                    "detail": "Shoulder",
+                    "since": "2026-09-28T23:53Z"
+                  },
+                  {
+                    "player": "Terrance Ferguson",
+                    "position": "TE",
+                    "status": "Doubtful",
+                    "detail": "Ankle",
+                    "since": "2026-09-28T23:02Z"
+                  }
+                ]
+              },
+              "source": "espn",
+              "teams_covered": 32,
+              "teams_playing": 32,
+              "error": null
+            },
+            "venue": null,
+            "weather": null,
+            "flags": [
+              {
+                "kind": "qb_out",
+                "severity": "high",
+                "side": "home",
+                "text": "PHI quarterback out: Tanner McKee (Coach's Decision), Cole Payton (Coach's Decision). The ratings are built from final scores and do not know this; the price does."
+              },
+              {
+                "kind": "injuries",
+                "severity": "low",
+                "side": "home",
+                "text": "PHI ruled out 6 rotation players this week"
+              }
+            ]
+          }
+        },
+        {
+          "event_id": "401872968",
+          "name": "Green Bay Packers at Tampa Bay Buccaneers",
+          "short_name": "GB @ TB",
+          "kickoff": "2026-10-04T17:00Z",
+          "status": "Scheduled",
+          "neutral": false,
+          "provider": "DraftKings",
+          "spread": 3.5,
+          "spread_details": "GB -3.5",
+          "total": 39.5,
+          "home": {
+            "id": "27",
+            "name": "Tampa Bay Buccaneers",
+            "abbr": "TB",
+            "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/tb.png",
+            "elo": 1415.7,
+            "moneyline": 160
+          },
+          "away": {
+            "id": "9",
+            "name": "Green Bay Packers",
+            "abbr": "GB",
+            "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/gb.png",
+            "elo": 1454.8,
+            "moneyline": -192
+          },
+          "legs": [
+            {
+              "side": "away",
+              "team_id": "9",
+              "team_name": "Green Bay Packers",
+              "team_abbr": "GB",
+              "odds": -192,
+              "model_prob": 0.50598,
+              "implied_prob": 0.63094,
+              "edge_pp": -12.495717,
+              "fair_odds": -102,
+              "sample": 10.0,
+              "team_sample": 10.0,
+              "opp_sample": 10.0,
+              "team_games": 6,
+              "opp_games": 6,
+              "prior_credit": 4.0,
+              "stale": true,
+              "stale_reason": "TB quarterback out: Baker Mayfield (Thumb)"
+            },
+            {
+              "side": "home",
+              "team_id": "27",
+              "team_name": "Tampa Bay Buccaneers",
+              "team_abbr": "TB",
+              "odds": 160,
+              "model_prob": 0.49402,
+              "implied_prob": 0.36906,
+              "edge_pp": 12.495717,
+              "fair_odds": 102,
+              "sample": 10.0,
+              "team_sample": 10.0,
+              "opp_sample": 10.0,
+              "team_games": 6,
+              "opp_games": 6,
+              "prior_credit": 4.0,
+              "stale": true,
+              "stale_reason": "TB quarterback out: Baker Mayfield (Thumb)"
+            }
+          ],
+          "context": {
+            "injuries": {
+              "home": {
+                "count": 4,
+                "long_term": 0,
+                "qb_out": 1,
+                "qbs": [
+                  "Baker Mayfield (Thumb)"
+                ],
+                "players": [
+                  {
+                    "player": "Baker Mayfield",
+                    "position": "QB",
+                    "status": "Out",
+                    "detail": "Thumb",
+                    "since": "2026-09-28T16:41Z"
+                  },
+                  {
+                    "player": "Jalen McMillan",
+                    "position": "WR",
+                    "status": "Out",
+                    "detail": "Knee - PCL",
+                    "since": "2026-09-29T00:03Z"
+                  },
+                  {
+                    "player": "Josiah Trotter",
+                    "position": "LB",
+                    "status": "Out",
+                    "detail": "Shoulder",
+                    "since": "2026-09-28T19:18Z"
+                  },
+                  {
+                    "player": "Rueben Bain Jr.",
+                    "position": "LB",
+                    "status": "Out",
+                    "detail": "Groin",
+                    "since": "2026-09-28T19:18Z"
+                  }
+                ]
+              },
+              "away": {
+                "count": 6,
+                "long_term": 0,
+                "qb_out": 0,
+                "qbs": [],
+                "players": [
+                  {
+                    "player": "Zach Bako-Bewele",
+                    "position": "OT",
+                    "status": "Out",
+                    "detail": "Knee",
+                    "since": "2026-09-29T00:26Z"
+                  },
+                  {
+                    "player": "Jayden Reed",
+                    "position": "WR",
+                    "status": "Out",
+                    "detail": "Neck",
+                    "since": "2026-09-28T19:00Z"
+                  },
+                  {
+                    "player": "Aaron Banks",
+                    "position": "G",
+                    "status": "Out",
+                    "detail": "Toe",
+                    "since": "2026-09-28T18:28Z"
+                  },
+                  {
+                    "player": "Warren Brinson",
+                    "position": "DT",
+                    "status": "Out",
+                    "detail": "Calf",
+                    "since": "2026-09-28T18:28Z"
+                  },
+                  {
+                    "player": "Anthony Campbell",
+                    "position": "DT",
+                    "status": "Out",
+                    "detail": "Ankle",
+                    "since": "2026-09-28T18:28Z"
+                  },
+                  {
+                    "player": "Micah Parsons",
+                    "position": "DE",
+                    "status": "Out",
+                    "detail": "Knee - ACL",
+                    "since": "2026-09-28T18:16Z"
+                  }
+                ]
+              },
+              "source": "espn",
+              "teams_covered": 32,
+              "teams_playing": 32,
+              "error": null
+            },
+            "venue": null,
+            "weather": null,
+            "flags": [
+              {
+                "kind": "qb_out",
+                "severity": "high",
+                "side": "home",
+                "text": "TB quarterback out: Baker Mayfield (Thumb). The ratings are built from final scores and do not know this; the price does."
+              },
+              {
+                "kind": "injuries",
+                "severity": "low",
+                "side": "away",
+                "text": "GB ruled out 6 rotation players this week"
+              }
+            ]
+          }
+        },
+        {
+          "event_id": "401872973",
+          "name": "Tennessee Titans at Baltimore Ravens",
+          "short_name": "TEN @ BAL",
+          "kickoff": "2026-10-04T17:00Z",
+          "status": "Scheduled",
+          "neutral": false,
+          "provider": "DraftKings",
+          "spread": -11.5,
+          "spread_details": "BAL -11.5",
+          "total": 43.5,
+          "home": {
+            "id": "33",
+            "name": "Baltimore Ravens",
+            "abbr": "BAL",
+            "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/bal.png",
+            "elo": 1563.3,
+            "moneyline": -700
+          },
+          "away": {
+            "id": "10",
+            "name": "Tennessee Titans",
+            "abbr": "TEN",
+            "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/ten.png",
+            "elo": 1340.1,
+            "moneyline": 500
+          },
+          "legs": [
+            {
+              "side": "away",
+              "team_id": "10",
+              "team_name": "Tennessee Titans",
+              "team_abbr": "TEN",
+              "odds": 500,
+              "model_prob": 0.18447,
+              "implied_prob": 0.16,
+              "edge_pp": 2.446959,
+              "fair_odds": 442,
+              "sample": 10.0,
+              "team_sample": 10.0,
+              "opp_sample": 10.0,
+              "team_games": 6,
+              "opp_games": 6,
+              "prior_credit": 4.0
+            },
+            {
+              "side": "home",
+              "team_id": "33",
+              "team_name": "Baltimore Ravens",
+              "team_abbr": "BAL",
+              "odds": -700,
+              "model_prob": 0.81553,
+              "implied_prob": 0.84,
+              "edge_pp": -2.446959,
+              "fair_odds": -442,
+              "sample": 10.0,
+              "team_sample": 10.0,
+              "opp_sample": 10.0,
+              "team_games": 6,
+              "opp_games": 6,
+              "prior_credit": 4.0
+            }
+          ],
+          "context": {
+            "injuries": {
+              "home": {
+                "count": 3,
+                "long_term": 0,
+                "qb_out": 0,
+                "qbs": [],
+                "players": [
+                  {
+                    "player": "Ethan Pocic",
+                    "position": "C",
+                    "status": "Out",
+                    "detail": "Knee",
+                    "since": "2026-09-29T01:00Z"
+                  },
+                  {
+                    "player": "Jovaughn Gwyn",
+                    "position": "G",
+                    "status": "Out",
+                    "detail": "Ankle",
+                    "since": "2026-09-29T00:53Z"
+                  },
+                  {
+                    "player": "Ronnie Stanley",
+                    "position": "OT",
+                    "status": "Out",
+                    "detail": "Toe",
+                    "since": "2026-09-28T18:14Z"
+                  }
+                ]
+              },
+              "away": {
+                "count": 1,
+                "long_term": 0,
+                "qb_out": 0,
+                "qbs": [],
+                "players": [
+                  {
+                    "player": "Fernando Carmona",
+                    "position": "G",
+                    "status": "Doubtful",
+                    "detail": "Ankle",
+                    "since": "2026-09-29T00:40Z"
+                  }
+                ]
+              },
+              "source": "espn",
+              "teams_covered": 32,
+              "teams_playing": 32,
+              "error": null
+            },
+            "venue": null,
+            "weather": null,
+            "flags": []
+          }
+        },
+        {
+          "event_id": "401872967",
+          "name": "Dallas Cowboys at Houston Texans",
+          "short_name": "DAL @ HOU",
+          "kickoff": "2026-10-04T17:00Z",
+          "status": "Scheduled",
+          "neutral": false,
+          "provider": "DraftKings",
+          "spread": -2.5,
+          "spread_details": "HOU -2.5",
+          "total": 47.5,
+          "home": {
+            "id": "34",
+            "name": "Houston Texans",
+            "abbr": "HOU",
+            "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/hou.png",
+            "elo": 1482.2,
+            "moneyline": -142
+          },
+          "away": {
+            "id": "6",
+            "name": "Dallas Cowboys",
+            "abbr": "DAL",
+            "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/dal.png",
+            "elo": 1473.1,
+            "moneyline": 120
+          },
+          "legs": [
+            {
+              "side": "away",
+              "team_id": "6",
+              "team_name": "Dallas Cowboys",
+              "team_abbr": "DAL",
+              "odds": 120,
+              "model_prob": 0.43691,
+              "implied_prob": 0.43651,
+              "edge_pp": 0.040314,
+              "fair_odds": 129,
+              "sample": 10.0,
+              "team_sample": 10.0,
+              "opp_sample": 10.0,
+              "team_games": 6,
+              "opp_games": 6,
+              "prior_credit": 4.0
+            },
+            {
+              "side": "home",
+              "team_id": "34",
+              "team_name": "Houston Texans",
+              "team_abbr": "HOU",
+              "odds": -142,
+              "model_prob": 0.56309,
+              "implied_prob": 0.56349,
+              "edge_pp": -0.040314,
+              "fair_odds": -129,
+              "sample": 10.0,
+              "team_sample": 10.0,
+              "opp_sample": 10.0,
+              "team_games": 6,
+              "opp_games": 6,
+              "prior_credit": 4.0
+            }
+          ],
+          "context": {
+            "injuries": {
+              "home": {
+                "count": 4,
+                "long_term": 2,
+                "qb_out": 0,
+                "qbs": [],
+                "players": [
+                  {
+                    "player": "Ed Ingram",
+                    "position": "G",
+                    "status": "Out",
+                    "detail": "Groin",
+                    "since": "2026-09-28T18:30Z"
+                  },
+                  {
+                    "player": "Jadeveon Clowney",
+                    "position": "DE",
+                    "status": "Out",
+                    "detail": "Knee",
+                    "since": "2026-09-28T18:30Z"
+                  },
+                  {
+                    "player": "Nico Collins",
+                    "position": "WR",
+                    "status": "Out",
+                    "detail": "Hamstring",
+                    "since": "2026-09-28T18:30Z"
+                  },
+                  {
+                    "player": "M.J. Stewart",
+                    "position": "S",
+                    "status": "Out",
+                    "detail": "Knee",
+                    "since": "2026-09-24T01:56Z"
+                  }
+                ]
+              },
+              "away": {
+                "count": 4,
+                "long_term": 1,
+                "qb_out": 0,
+                "qbs": [],
+                "players": [
+                  {
+                    "player": "Jalen Thompson",
+                    "position": "S",
+                    "status": "Out",
+                    "detail": "Hamstring",
+                    "since": "2026-09-28T23:13Z"
+                  },
+                  {
+                    "player": "DeMarvion Overshown",
+                    "position": "LB",
+                    "status": "Out",
+                    "detail": "Hamstring",
+                    "since": "2026-09-28T18:21Z"
+                  },
+                  {
+                    "player": "Cobie Durant",
+                    "position": "CB",
+                    "status": "Out",
+                    "detail": "Hamstring",
+                    "since": "2026-09-28T18:21Z"
+                  },
+                  {
+                    "player": "Malik Hooker",
+                    "position": "S",
+                    "status": "Out",
+                    "detail": "Forearm",
+                    "since": "2026-09-28T18:21Z"
+                  }
+                ]
+              },
+              "source": "espn",
+              "teams_covered": 32,
+              "teams_playing": 32,
+              "error": null
+            },
+            "venue": null,
+            "weather": null,
+            "flags": []
+          }
+        },
+        {
+          "event_id": "401872974",
+          "name": "Miami Dolphins at Minnesota Vikings",
+          "short_name": "MIA @ MIN",
+          "kickoff": "2026-10-04T20:05Z",
+          "status": "Scheduled",
+          "neutral": false,
+          "provider": "DraftKings",
+          "spread": -10.5,
+          "spread_details": "MIN -10.5",
+          "total": 38.5,
+          "home": {
+            "id": "16",
+            "name": "Minnesota Vikings",
+            "abbr": "MIN",
+            "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/min.png",
+            "elo": 1597.9,
+            "moneyline": -675
+          },
+          "away": {
+            "id": "15",
+            "name": "Miami Dolphins",
+            "abbr": "MIA",
+            "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/mia.png",
+            "elo": 1352.1,
+            "moneyline": 490
+          },
+          "legs": [
+            {
+              "side": "away",
+              "team_id": "15",
+              "team_name": "Miami Dolphins",
+              "team_abbr": "MIA",
+              "odds": 490,
+              "model_prob": 0.16575,
+              "implied_prob": 0.1629,
+              "edge_pp": 0.284845,
+              "fair_odds": 503,
+              "sample": 10.0,
+              "team_sample": 10.0,
+              "opp_sample": 10.0,
+              "team_games": 6,
+              "opp_games": 6,
+              "prior_credit": 4.0
+            },
+            {
+              "side": "home",
+              "team_id": "16",
+              "team_name": "Minnesota Vikings",
+              "team_abbr": "MIN",
+              "odds": -675,
+              "model_prob": 0.83425,
+              "implied_prob": 0.8371,
+              "edge_pp": -0.284845,
+              "fair_odds": -503,
+              "sample": 10.0,
+              "team_sample": 10.0,
+              "opp_sample": 10.0,
+              "team_games": 6,
+              "opp_games": 6,
+              "prior_credit": 4.0
+            }
+          ],
+          "context": {
+            "injuries": {
+              "home": {
+                "count": 2,
+                "long_term": 1,
+                "qb_out": 0,
+                "qbs": [],
+                "players": [
+                  {
+                    "player": "Charles Demmings",
+                    "position": "CB",
+                    "status": "Out",
+                    "detail": "Hamstring",
+                    "since": "2026-09-29T00:35Z"
+                  },
+                  {
+                    "player": "Josh Oliver",
+                    "position": "TE",
+                    "status": "Out",
+                    "detail": "Biceps",
+                    "since": "2026-09-28T18:21Z"
+                  }
+                ]
+              },
+              "away": {
+                "count": 3,
+                "long_term": 2,
+                "qb_out": 0,
+                "qbs": [],
+                "players": [
+                  {
+                    "player": "Caleb Douglas",
+                    "position": "WR",
+                    "status": "Out",
+                    "detail": "Ankle",
+                    "since": "2026-09-28T19:24Z"
+                  },
+                  {
+                    "player": "Jaylen Wright",
+                    "position": "RB",
+                    "status": "Out",
+                    "detail": "Foot",
+                    "since": "2026-09-28T19:14Z"
+                  },
+                  {
+                    "player": "Robert Beal Jr.",
+                    "position": "DE",
+                    "status": "Out",
+                    "detail": "Hamstring",
+                    "since": "2026-09-28T18:41Z"
+                  }
+                ]
+              },
+              "source": "espn",
+              "teams_covered": 32,
+              "teams_playing": 32,
+              "error": null
+            },
+            "venue": null,
+            "weather": null,
+            "flags": []
+          }
+        },
+        {
+          "event_id": "401872976",
+          "name": "Kansas City Chiefs at Las Vegas Raiders",
+          "short_name": "KC @ LV",
+          "kickoff": "2026-10-04T20:25Z",
+          "status": "Scheduled",
+          "neutral": false,
+          "provider": "DraftKings",
+          "spread": 4.5,
+          "spread_details": "KC -4.5",
+          "total": 47.5,
+          "home": {
+            "id": "13",
+            "name": "Las Vegas Raiders",
+            "abbr": "LV",
+            "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/lv.png",
+            "elo": 1470.4,
+            "moneyline": 190
+          },
+          "away": {
+            "id": "12",
+            "name": "Kansas City Chiefs",
+            "abbr": "KC",
+            "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/kc.png",
+            "elo": 1545.1,
+            "moneyline": -230
+          },
+          "legs": [
+            {
+              "side": "away",
+              "team_id": "12",
+              "team_name": "Kansas City Chiefs",
+              "team_abbr": "KC",
+              "odds": -230,
+              "model_prob": 0.55682,
+              "implied_prob": 0.66901,
+              "edge_pp": -11.21835,
+              "fair_odds": -126,
+              "sample": 10.0,
+              "team_sample": 10.0,
+              "opp_sample": 10.0,
+              "team_games": 6,
+              "opp_games": 6,
+              "prior_credit": 4.0,
+              "stale": true,
+              "stale_reason": "LV quarterback out: Aidan O'Connell (Personal)"
+            },
+            {
+              "side": "home",
+              "team_id": "13",
+              "team_name": "Las Vegas Raiders",
+              "team_abbr": "LV",
+              "odds": 190,
+              "model_prob": 0.44318,
+              "implied_prob": 0.33099,
+              "edge_pp": 11.21835,
+              "fair_odds": 126,
+              "sample": 10.0,
+              "team_sample": 10.0,
+              "opp_sample": 10.0,
+              "team_games": 6,
+              "opp_games": 6,
+              "prior_credit": 4.0,
+              "stale": true,
+              "stale_reason": "LV quarterback out: Aidan O'Connell (Personal)"
+            }
+          ],
+          "context": {
+            "injuries": {
+              "home": {
+                "count": 3,
+                "long_term": 0,
+                "qb_out": 1,
+                "qbs": [
+                  "Aidan O'Connell (Personal)"
+                ],
+                "players": [
+                  {
+                    "player": "Aidan O'Connell",
+                    "position": "QB",
+                    "status": "Out",
+                    "detail": "Personal",
+                    "since": "2026-09-28T18:36Z"
+                  },
+                  {
+                    "player": "Jack Bech",
+                    "position": "WR",
+                    "status": "Out",
+                    "detail": "Forearm",
+                    "since": "2026-09-28T20:36Z"
+                  },
+                  {
+                    "player": "Treydan Stukes",
+                    "position": "S",
+                    "status": "Out",
+                    "detail": "Concussion",
+                    "since": "2026-09-28T18:36Z"
+                  }
+                ]
+              },
+              "away": {
+                "count": 2,
+                "long_term": 0,
+                "qb_out": 0,
+                "qbs": [],
+                "players": [
+                  {
+                    "player": "Chamarri Conner",
+                    "position": "S",
+                    "status": "Out",
+                    "detail": "Knee",
+                    "since": "2026-09-28T23:11Z"
+                  },
+                  {
+                    "player": "Josh Simmons",
+                    "position": "OT",
+                    "status": "Out",
+                    "detail": "Back",
+                    "since": "2026-09-28T18:35Z"
+                  }
+                ]
+              },
+              "source": "espn",
+              "teams_covered": 32,
+              "teams_playing": 32,
+              "error": null
+            },
+            "venue": null,
+            "weather": null,
+            "flags": [
+              {
+                "kind": "qb_out",
+                "severity": "high",
+                "side": "home",
+                "text": "LV quarterback out: Aidan O'Connell (Personal). The ratings are built from final scores and do not know this; the price does."
+              }
+            ]
+          }
+        },
+        {
+          "event_id": "401872975",
+          "name": "Denver Broncos at San Francisco 49ers",
+          "short_name": "DEN @ SF",
+          "kickoff": "2026-10-04T20:25Z",
+          "status": "Scheduled",
+          "neutral": false,
+          "provider": "DraftKings",
+          "spread": -3.0,
+          "spread_details": "SF -3",
+          "total": 46.5,
+          "home": {
+            "id": "25",
+            "name": "San Francisco 49ers",
+            "abbr": "SF",
+            "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/sf.png",
+            "elo": 1623.2,
+            "moneyline": -155
+          },
+          "away": {
+            "id": "7",
+            "name": "Denver Broncos",
+            "abbr": "DEN",
+            "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/den.png",
+            "elo": 1591.6,
+            "moneyline": 130
+          },
+          "legs": [
+            {
+              "side": "away",
+              "team_id": "7",
+              "team_name": "Denver Broncos",
+              "team_abbr": "DEN",
+              "odds": 130,
+              "model_prob": 0.40532,
+              "implied_prob": 0.41701,
+              "edge_pp": -1.168571,
+              "fair_odds": 147,
+              "sample": 10.0,
+              "team_sample": 10.0,
+              "opp_sample": 10.0,
+              "team_games": 6,
+              "opp_games": 6,
+              "prior_credit": 4.0
+            },
+            {
+              "side": "home",
+              "team_id": "25",
+              "team_name": "San Francisco 49ers",
+              "team_abbr": "SF",
+              "odds": -155,
+              "model_prob": 0.59468,
+              "implied_prob": 0.58299,
+              "edge_pp": 1.168571,
+              "fair_odds": -147,
+              "sample": 10.0,
+              "team_sample": 10.0,
+              "opp_sample": 10.0,
+              "team_games": 6,
+              "opp_games": 6,
+              "prior_credit": 4.0
+            }
+          ],
+          "context": {
+            "injuries": {
+              "home": {
+                "count": 3,
+                "long_term": 2,
+                "qb_out": 0,
+                "qbs": [],
+                "players": [
+                  {
+                    "player": "James Thompson Jr.",
+                    "position": "DT",
+                    "status": "Out",
+                    "detail": "Ankle",
+                    "since": "2026-09-29T00:46Z"
+                  },
+                  {
+                    "player": "Nick Bosa",
+                    "position": "DE",
+                    "status": "Out",
+                    "detail": "Calf",
+                    "since": "2026-09-28T21:16Z"
+                  },
+                  {
+                    "player": "Romello Height",
+                    "position": "DE",
+                    "status": "Out",
+                    "detail": "Hand",
+                    "since": "2026-09-28T19:05Z"
+                  }
+                ]
+              },
+              "away": {
+                "count": 1,
+                "long_term": 1,
+                "qb_out": 0,
+                "qbs": [],
+                "players": [
+                  {
+                    "player": "Marvin Mims Jr.",
+                    "position": "WR",
+                    "status": "Out",
+                    "detail": "Foot",
+                    "since": "2026-09-28T18:25Z"
+                  }
+                ]
+              },
+              "source": "espn",
+              "teams_covered": 32,
+              "teams_playing": 32,
+              "error": null
+            },
+            "venue": null,
+            "weather": null,
+            "flags": []
+          }
+        },
+        {
+          "event_id": "401872977",
+          "name": "Los Angeles Chargers at Seattle Seahawks",
+          "short_name": "LAC @ SEA",
+          "kickoff": "2026-10-04T20:25Z",
+          "status": "Scheduled",
+          "neutral": false,
+          "provider": "DraftKings",
+          "spread": -7.0,
+          "spread_details": "SEA -7",
+          "total": 42.5,
+          "home": {
+            "id": "26",
+            "name": "Seattle Seahawks",
+            "abbr": "SEA",
+            "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/sea.png",
+            "elo": 1636.4,
+            "moneyline": -355
+          },
+          "away": {
+            "id": "24",
+            "name": "Los Angeles Chargers",
+            "abbr": "LAC",
+            "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/lac.png",
+            "elo": 1418.8,
+            "moneyline": 280
+          },
+          "legs": [
+            {
+              "side": "away",
+              "team_id": "24",
+              "team_name": "Los Angeles Chargers",
+              "team_abbr": "LAC",
+              "odds": 280,
+              "model_prob": 0.18939,
+              "implied_prob": 0.25222,
+              "edge_pp": -6.282421,
+              "fair_odds": 428,
+              "sample": 10.0,
+              "team_sample": 10.0,
+              "opp_sample": 10.0,
+              "team_games": 6,
+              "opp_games": 6,
+              "prior_credit": 4.0
+            },
+            {
+              "side": "home",
+              "team_id": "26",
+              "team_name": "Seattle Seahawks",
+              "team_abbr": "SEA",
+              "odds": -355,
+              "model_prob": 0.81061,
+              "implied_prob": 0.74778,
+              "edge_pp": 6.282421,
+              "fair_odds": -428,
+              "sample": 10.0,
+              "team_sample": 10.0,
+              "opp_sample": 10.0,
+              "team_games": 6,
+              "opp_games": 6,
+              "prior_credit": 4.0
+            }
+          ],
+          "context": {
+            "injuries": {
+              "home": {
+                "count": 4,
+                "long_term": 1,
+                "qb_out": 0,
+                "qbs": [],
+                "players": [
+                  {
+                    "player": "Julian Love",
+                    "position": "S",
+                    "status": "Out",
+                    "detail": "Calf",
+                    "since": "2026-09-28T19:07Z"
+                  },
+                  {
+                    "player": "Ty Okada",
+                    "position": "S",
+                    "status": "Out",
+                    "detail": "Hamstring",
+                    "since": "2026-09-28T19:07Z"
+                  },
+                  {
+                    "player": "Brandon Pili",
+                    "position": "DT",
+                    "status": "Out",
+                    "detail": "Concussion",
+                    "since": "2026-09-28T19:07Z"
+                  },
+                  {
+                    "player": "Zach Charbonnet",
+                    "position": "RB",
+                    "status": "Out",
+                    "detail": "Knee - ACL",
+                    "since": "2026-09-25T20:50Z"
+                  }
+                ]
+              },
+              "away": {
+                "count": 5,
+                "long_term": 2,
+                "qb_out": 0,
+                "qbs": [],
+                "players": [
+                  {
+                    "player": "Brenen Thompson",
+                    "position": "WR",
+                    "status": "Out",
+                    "detail": "Quadriceps",
+                    "since": "2026-09-28T18:38Z"
+                  },
+                  {
+                    "player": "Dalvin Tomlinson",
+                    "position": "DT",
+                    "status": "Out",
+                    "detail": "Hamstring",
+                    "since": "2026-09-28T18:38Z"
+                  },
+                  {
+                    "player": "Charlie Kolar",
+                    "position": "TE",
+                    "status": "Out",
+                    "detail": "Forearm",
+                    "since": "2026-09-28T18:38Z"
+                  },
+                  {
+                    "player": "Elijah Molden",
+                    "position": "CB",
+                    "status": "Out",
+                    "detail": "Hamstring",
+                    "since": "2026-09-28T18:38Z"
+                  },
+                  {
+                    "player": "Kayode Awosika",
+                    "position": "G",
+                    "status": "Out",
+                    "detail": "Lower Leg",
+                    "since": "2026-09-28T18:38Z"
+                  }
+                ]
+              },
+              "source": "espn",
+              "teams_covered": 32,
+              "teams_playing": 32,
+              "error": null
+            },
+            "venue": null,
+            "weather": null,
+            "flags": [
+              {
+                "kind": "injuries",
+                "severity": "low",
+                "side": "away",
+                "text": "LAC ruled out 5 rotation players this week"
+              }
+            ]
+          }
+        },
+        {
+          "event_id": "401872978",
+          "name": "Detroit Lions at Carolina Panthers",
+          "short_name": "DET @ CAR",
+          "kickoff": "2026-10-05T00:20Z",
+          "status": "Scheduled",
+          "neutral": false,
+          "provider": "DraftKings",
+          "spread": 3.5,
+          "spread_details": "DET -3.5",
+          "total": 50.5,
+          "home": {
+            "id": "29",
+            "name": "Carolina Panthers",
+            "abbr": "CAR",
+            "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/car.png",
+            "elo": 1473.1,
+            "moneyline": 154
+          },
+          "away": {
+            "id": "8",
+            "name": "Detroit Lions",
+            "abbr": "DET",
+            "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/det.png",
+            "elo": 1542.8,
+            "moneyline": -185
+          },
+          "legs": [
+            {
+              "side": "away",
+              "team_id": "8",
+              "team_name": "Detroit Lions",
+              "team_abbr": "DET",
+              "odds": -185,
+              "model_prob": 0.54968,
+              "implied_prob": 0.62247,
+              "edge_pp": -7.278463,
+              "fair_odds": -122,
+              "sample": 10.0,
+              "team_sample": 10.0,
+              "opp_sample": 11.0,
+              "team_games": 6,
+              "opp_games": 7,
+              "prior_credit": 4.0
+            },
+            {
+              "side": "home",
+              "team_id": "29",
+              "team_name": "Carolina Panthers",
+              "team_abbr": "CAR",
+              "odds": 154,
+              "model_prob": 0.45032,
+              "implied_prob": 0.37753,
+              "edge_pp": 7.278463,
+              "fair_odds": 122,
+              "sample": 10.0,
+              "team_sample": 11.0,
+              "opp_sample": 10.0,
+              "team_games": 7,
+              "opp_games": 6,
+              "prior_credit": 4.0
+            }
+          ],
+          "context": {
+            "injuries": {
+              "home": {
+                "count": 4,
+                "long_term": 2,
+                "qb_out": 0,
+                "qbs": [],
+                "players": [
+                  {
+                    "player": "Devin Lloyd",
+                    "position": "LB",
+                    "status": "Out",
+                    "detail": "Calf",
+                    "since": "2026-09-28T23:16Z"
+                  },
+                  {
+                    "player": "Nick Scott",
+                    "position": "S",
+                    "status": "Out",
+                    "detail": "Ribs",
+                    "since": "2026-09-28T18:17Z"
+                  },
+                  {
+                    "player": "Xavier Legette",
+                    "position": "WR",
+                    "status": "Out",
+                    "detail": "Knee",
+                    "since": "2026-09-28T18:17Z"
+                  },
+                  {
+                    "player": "Jaycee Horn",
+                    "position": "CB",
+                    "status": "Out",
+                    "detail": "Quadriceps",
+                    "since": "2026-09-28T17:24Z"
+                  }
+                ]
+              },
+              "away": {
+                "count": 1,
+                "long_term": 3,
+                "qb_out": 0,
+                "qbs": [],
+                "players": [
+                  {
+                    "player": "Ben Bartch",
+                    "position": "G",
+                    "status": "Out",
+                    "detail": "Foot",
+                    "since": "2026-09-28T18:26Z"
+                  }
+                ]
+              },
+              "source": "espn",
+              "teams_covered": 32,
+              "teams_playing": 32,
+              "error": null
+            },
+            "venue": null,
+            "weather": null,
+            "flags": []
+          }
+        },
+        {
+          "event_id": "401872979",
+          "name": "Atlanta Falcons at New Orleans Saints",
+          "short_name": "ATL @ NO",
+          "kickoff": "2026-10-06T00:15Z",
+          "status": "Scheduled",
+          "neutral": false,
+          "provider": "DraftKings",
+          "spread": -3.0,
+          "spread_details": "NO -3",
+          "total": 48.5,
+          "home": {
+            "id": "18",
+            "name": "New Orleans Saints",
+            "abbr": "NO",
+            "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/no.png",
+            "elo": 1449.4,
+            "moneyline": -155
+          },
+          "away": {
+            "id": "1",
+            "name": "Atlanta Falcons",
+            "abbr": "ATL",
+            "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/atl.png",
+            "elo": 1473.9,
+            "moneyline": 130
+          },
+          "legs": [
+            {
+              "side": "away",
+              "team_id": "1",
+              "team_name": "Atlanta Falcons",
+              "team_abbr": "ATL",
+              "odds": 130,
+              "model_prob": 0.48487,
+              "implied_prob": 0.41701,
+              "edge_pp": 6.786411,
+              "fair_odds": 106,
+              "sample": 10.0,
+              "team_sample": 10.0,
+              "opp_sample": 10.0,
+              "team_games": 6,
+              "opp_games": 6,
+              "prior_credit": 4.0
+            },
+            {
+              "side": "home",
+              "team_id": "18",
+              "team_name": "New Orleans Saints",
+              "team_abbr": "NO",
+              "odds": -155,
+              "model_prob": 0.51513,
+              "implied_prob": 0.58299,
+              "edge_pp": -6.786411,
+              "fair_odds": -106,
+              "sample": 10.0,
+              "team_sample": 10.0,
+              "opp_sample": 10.0,
+              "team_games": 6,
+              "opp_games": 6,
+              "prior_credit": 4.0
+            }
+          ],
+          "context": {
+            "injuries": {
+              "home": {
+                "count": 4,
+                "long_term": 1,
+                "qb_out": 0,
+                "qbs": [],
+                "players": [
+                  {
+                    "player": "Travis Etienne Jr.",
+                    "position": "RB",
+                    "status": "Out",
+                    "detail": "Hamstring",
+                    "since": "2026-09-28T19:12Z"
+                  },
+                  {
+                    "player": "Christen Miller",
+                    "position": "DT",
+                    "status": "Out",
+                    "detail": "Toe",
+                    "since": "2026-09-28T18:54Z"
+                  },
+                  {
+                    "player": "Barion Brown",
+                    "position": "WR",
+                    "status": "Out",
+                    "detail": "Hamstring",
+                    "since": "2026-09-28T18:54Z"
+                  },
+                  {
+                    "player": "Martin Emerson Jr.",
+                    "position": "CB",
+                    "status": "Out",
+                    "detail": "Shoulder",
+                    "since": "2026-09-27T19:19Z"
+                  }
+                ]
+              },
+              "away": {
+                "count": 1,
+                "long_term": 0,
+                "qb_out": 0,
+                "qbs": [],
+                "players": [
+                  {
+                    "player": "Samson Ebukam",
+                    "position": "DE",
+                    "status": "Out",
+                    "detail": "Hamstring",
+                    "since": "2026-09-28T18:12Z"
+                  }
+                ]
+              },
+              "source": "espn",
+              "teams_covered": 32,
+              "teams_playing": 32,
+              "error": null
+            },
+            "venue": null,
+            "weather": null,
+            "flags": []
           }
         }
       ],
@@ -173,22 +2275,7 @@
         "captured_at": null,
         "ten": {
           "points": 10.0,
-          "legs": [
-            {
-              "event_id": "401872963",
-              "matchup": "PHI @ CHI",
-              "kickoff": "2026-09-29T00:15Z",
-              "team_abbr": "CHI",
-              "team_name": "Chicago Bears",
-              "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/chi.png",
-              "spread": 3.5,
-              "source": "DraftKings",
-              "teased": 13.5,
-              "band": "dog +1.5..+3.5",
-              "prob": 0.7918,
-              "push_risk": false
-            }
-          ],
+          "legs": [],
           "per_leg_rate": 0.7918,
           "per_leg_stderr": 0.0071,
           "provider": "DraftKings",
@@ -510,7 +2597,7 @@
         "history_seasons": "2021-2025",
         "top_division_teams": 0,
         "completed_games": 96,
-        "upcoming_games": 1,
+        "upcoming_games": 16,
         "rated_teams": 32,
         "elo": {
           "k_factor": 24.0,
@@ -615,9 +2702,9 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 74.2,
-              "wind_mph": 11.1,
-              "gust_mph": 12.5,
+              "temp_f": 76.0,
+              "wind_mph": 6.8,
+              "gust_mph": 6.9,
               "precip_pct": 1,
               "snow_in": 0.0
             },
@@ -715,18 +2802,13 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 72.1,
-              "wind_mph": 6.3,
-              "gust_mph": 15.0,
+              "temp_f": 71.8,
+              "wind_mph": 6.5,
+              "gust_mph": 14.5,
               "precip_pct": 63,
               "snow_in": 0.0
             },
             "flags": [
-              {
-                "kind": "wind",
-                "severity": "low",
-                "text": "Breezy: 6 mph, gusting 15"
-              },
               {
                 "kind": "rain",
                 "severity": "low",
@@ -826,9 +2908,9 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 71.1,
-              "wind_mph": 1.6,
-              "gust_mph": 0.9,
+              "temp_f": 72.7,
+              "wind_mph": 2.0,
+              "gust_mph": 1.8,
               "precip_pct": 9,
               "snow_in": 0.0
             },
@@ -926,17 +3008,17 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 82.4,
-              "wind_mph": 7.8,
-              "gust_mph": 20.8,
+              "temp_f": 79.7,
+              "wind_mph": 10.1,
+              "gust_mph": 17.4,
               "precip_pct": 11,
               "snow_in": 0.0
             },
             "flags": [
               {
                 "kind": "wind",
-                "severity": "high",
-                "text": "Wind 8 mph, gusting 21 \u2014 kicking and the deep ball suffer"
+                "severity": "low",
+                "text": "Breezy: 10 mph, gusting 17"
               }
             ]
           }
@@ -1032,9 +3114,9 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 69.0,
-              "wind_mph": 14.8,
-              "gust_mph": 17.7,
+              "temp_f": 70.3,
+              "wind_mph": 14.5,
+              "gust_mph": 19.5,
               "precip_pct": 0,
               "snow_in": 0.0
             },
@@ -1042,7 +3124,7 @@
               {
                 "kind": "wind",
                 "severity": "low",
-                "text": "Breezy: 15 mph, gusting 18"
+                "text": "Breezy: 14 mph, gusting 20"
               }
             ]
           }
@@ -1138,9 +3220,9 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 68.7,
-              "wind_mph": 3.8,
-              "gust_mph": 13.2,
+              "temp_f": 81.2,
+              "wind_mph": 7.0,
+              "gust_mph": 8.9,
               "precip_pct": 27,
               "snow_in": 0.0
             },
@@ -1238,9 +3320,9 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 72.2,
-              "wind_mph": 5.6,
-              "gust_mph": 14.3,
+              "temp_f": 74.4,
+              "wind_mph": 7.3,
+              "gust_mph": 14.5,
               "precip_pct": 38,
               "snow_in": 0.0
             },
@@ -1338,9 +3420,9 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 85.1,
-              "wind_mph": 6.4,
-              "gust_mph": 6.7,
+              "temp_f": 84.2,
+              "wind_mph": 5.7,
+              "gust_mph": 6.5,
               "precip_pct": 41,
               "snow_in": 0.0
             },
@@ -1438,9 +3520,9 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 74.2,
-              "wind_mph": 6.0,
-              "gust_mph": 7.6,
+              "temp_f": 72.6,
+              "wind_mph": 6.5,
+              "gust_mph": 14.3,
               "precip_pct": 43,
               "snow_in": 0.0
             },
@@ -1538,8 +3620,8 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 60.8,
-              "wind_mph": 6.1,
+              "temp_f": 64.6,
+              "wind_mph": 5.0,
               "gust_mph": 7.8,
               "precip_pct": 7,
               "snow_in": 0.0
@@ -1638,17 +3720,17 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 58.3,
-              "wind_mph": 11.2,
-              "gust_mph": 15.4,
+              "temp_f": 54.3,
+              "wind_mph": 12.3,
+              "gust_mph": 28.0,
               "precip_pct": 4,
               "snow_in": 0.0
             },
             "flags": [
               {
                 "kind": "wind",
-                "severity": "low",
-                "text": "Breezy: 11 mph, gusting 15"
+                "severity": "high",
+                "text": "Wind 12 mph, gusting 28 \u2014 kicking and the deep ball suffer"
               }
             ]
           }
@@ -1744,9 +3826,9 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 68.0,
-              "wind_mph": 3.4,
-              "gust_mph": 6.7,
+              "temp_f": 76.7,
+              "wind_mph": 7.1,
+              "gust_mph": 7.6,
               "precip_pct": 30,
               "snow_in": 0.0
             },
@@ -1844,9 +3926,9 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 68.6,
-              "wind_mph": 9.8,
-              "gust_mph": 13.0,
+              "temp_f": 68.9,
+              "wind_mph": 9.4,
+              "gust_mph": 11.9,
               "precip_pct": 11,
               "snow_in": 0.0
             },
@@ -1943,20 +4025,8 @@
               "state": "MN",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 56.8,
-              "wind_mph": 10.8,
-              "gust_mph": 22.1,
-              "precip_pct": 5,
-              "snow_in": 0.0
-            },
-            "flags": [
-              {
-                "kind": "wind",
-                "severity": "high",
-                "text": "Wind 11 mph, gusting 22 \u2014 kicking and the deep ball suffer"
-              }
-            ]
+            "weather": null,
+            "flags": []
           }
         },
         {
@@ -2049,13 +4119,7 @@
               "state": "CO",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 67.3,
-              "wind_mph": 4.7,
-              "gust_mph": 8.9,
-              "precip_pct": 1,
-              "snow_in": 0.0
-            },
+            "weather": null,
             "flags": []
           }
         },
@@ -2149,20 +4213,8 @@
               "state": "WI",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 58.9,
-              "wind_mph": 11.9,
-              "gust_mph": 16.3,
-              "precip_pct": 5,
-              "snow_in": 0.0
-            },
-            "flags": [
-              {
-                "kind": "wind",
-                "severity": "low",
-                "text": "Breezy: 12 mph, gusting 16"
-              }
-            ]
+            "weather": null,
+            "flags": []
           }
         },
         {
@@ -2238,20 +4290,8 @@
               "state": "GA",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 67.4,
-              "wind_mph": 11.4,
-              "gust_mph": 30.8,
-              "precip_pct": 5,
-              "snow_in": 0.0
-            },
-            "flags": [
-              {
-                "kind": "wind",
-                "severity": "high",
-                "text": "Wind 11 mph, gusting 31 \u2014 kicking and the deep ball suffer"
-              }
-            ]
+            "weather": null,
+            "flags": []
           }
         },
         {
@@ -2344,13 +4384,7 @@
               "state": "NY",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 65.5,
-              "wind_mph": 10.2,
-              "gust_mph": 11.9,
-              "precip_pct": 7,
-              "snow_in": 0.0
-            },
+            "weather": null,
             "flags": []
           }
         },
@@ -2445,19 +4479,13 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 63.1,
-              "wind_mph": 13.8,
-              "gust_mph": 17.0,
+              "temp_f": 67.3,
+              "wind_mph": 11.9,
+              "gust_mph": 14.5,
               "precip_pct": 28,
               "snow_in": 0.0
             },
-            "flags": [
-              {
-                "kind": "wind",
-                "severity": "low",
-                "text": "Breezy: 14 mph, gusting 17"
-              }
-            ]
+            "flags": []
           }
         },
         {
@@ -2551,13 +4579,19 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 65.1,
-              "wind_mph": 9.9,
-              "gust_mph": 12.5,
+              "temp_f": 63.1,
+              "wind_mph": 8.5,
+              "gust_mph": 15.9,
               "precip_pct": 5,
               "snow_in": 0.0
             },
-            "flags": []
+            "flags": [
+              {
+                "kind": "wind",
+                "severity": "low",
+                "text": "Breezy: 8 mph, gusting 16"
+              }
+            ]
           }
         },
         {
@@ -2659,9 +4693,9 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 78.9,
-              "wind_mph": 5.4,
-              "gust_mph": 7.8,
+              "temp_f": 72.9,
+              "wind_mph": 5.1,
+              "gust_mph": 10.5,
               "precip_pct": 48,
               "snow_in": 0.0
             },
@@ -2759,9 +4793,9 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 68.6,
-              "wind_mph": 1.9,
-              "gust_mph": 3.4,
+              "temp_f": 79.4,
+              "wind_mph": 2.5,
+              "gust_mph": 1.8,
               "precip_pct": 48,
               "snow_in": 0.0
             },
@@ -2953,9 +4987,9 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 71.2,
-              "wind_mph": 6.7,
-              "gust_mph": 13.0,
+              "temp_f": 85.5,
+              "wind_mph": 8.0,
+              "gust_mph": 7.8,
               "precip_pct": 37,
               "snow_in": 0.0
             },
@@ -3053,9 +5087,9 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 87.1,
-              "wind_mph": 8.7,
-              "gust_mph": 12.8,
+              "temp_f": 89.1,
+              "wind_mph": 6.3,
+              "gust_mph": 7.2,
               "precip_pct": 45,
               "snow_in": 0.0
             },
@@ -3153,9 +5187,9 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 69.7,
-              "wind_mph": 5.6,
-              "gust_mph": 10.7,
+              "temp_f": 71.7,
+              "wind_mph": 1.3,
+              "gust_mph": 4.0,
               "precip_pct": 46,
               "snow_in": 0.0
             },
@@ -3347,9 +5381,9 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 63.9,
-              "wind_mph": 11.9,
-              "gust_mph": 12.3,
+              "temp_f": 66.3,
+              "wind_mph": 9.6,
+              "gust_mph": 10.5,
               "precip_pct": 6,
               "snow_in": 0.0
             },
@@ -3447,9 +5481,9 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 65.8,
-              "wind_mph": 10.7,
-              "gust_mph": 11.2,
+              "temp_f": 66.0,
+              "wind_mph": 8.3,
+              "gust_mph": 9.2,
               "precip_pct": 11,
               "snow_in": 0.0
             },
@@ -3547,9 +5581,9 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 64.6,
+              "temp_f": 65.4,
               "wind_mph": 6.5,
-              "gust_mph": 9.6,
+              "gust_mph": 10.3,
               "precip_pct": 0,
               "snow_in": 0.0
             },
@@ -3650,7 +5684,7 @@
               "temp_f": 60.0,
               "wind_mph": 3.1,
               "gust_mph": 4.5,
-              "precip_pct": 4,
+              "precip_pct": 7,
               "snow_in": 0.0
             },
             "flags": []
@@ -3747,18 +5781,13 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 71.3,
-              "wind_mph": 5.2,
-              "gust_mph": 18.1,
+              "temp_f": 71.5,
+              "wind_mph": 4.8,
+              "gust_mph": 7.8,
               "precip_pct": 59,
               "snow_in": 0.0
             },
             "flags": [
-              {
-                "kind": "wind",
-                "severity": "low",
-                "text": "Breezy: 5 mph, gusting 18"
-              },
               {
                 "kind": "rain",
                 "severity": "low",
@@ -3858,19 +5887,13 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 55.1,
-              "wind_mph": 10.2,
-              "gust_mph": 16.3,
+              "temp_f": 60.5,
+              "wind_mph": 7.9,
+              "gust_mph": 7.4,
               "precip_pct": 45,
               "snow_in": 0.0
             },
-            "flags": [
-              {
-                "kind": "wind",
-                "severity": "low",
-                "text": "Breezy: 10 mph, gusting 16"
-              }
-            ]
+            "flags": []
           }
         },
         {
@@ -3963,13 +5986,7 @@
               "state": "NE",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 67.4,
-              "wind_mph": 6.0,
-              "gust_mph": 9.8,
-              "precip_pct": 2,
-              "snow_in": 0.0
-            },
+            "weather": null,
             "flags": []
           }
         },
@@ -4046,13 +6063,7 @@
               "state": "NM",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 74.5,
-              "wind_mph": 5.3,
-              "gust_mph": 2.5,
-              "precip_pct": 0,
-              "snow_in": 0.0
-            },
+            "weather": null,
             "flags": []
           }
         },
@@ -4146,13 +6157,7 @@
               "state": "SC",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 80.7,
-              "wind_mph": 5.4,
-              "gust_mph": 7.6,
-              "precip_pct": 48,
-              "snow_in": 0.0
-            },
+            "weather": null,
             "flags": []
           }
         },
@@ -4246,13 +6251,7 @@
               "state": "IL",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 68.6,
-              "wind_mph": 12.6,
-              "gust_mph": 13.9,
-              "precip_pct": 22,
-              "snow_in": 0.0
-            },
+            "weather": null,
             "flags": []
           }
         },
@@ -4346,13 +6345,7 @@
               "state": "CO",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 74.6,
-              "wind_mph": 13.0,
-              "gust_mph": 10.1,
-              "precip_pct": 3,
-              "snow_in": 0.0
-            },
+            "weather": null,
             "flags": []
           }
         },
@@ -4447,9 +6440,9 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 76.7,
-              "wind_mph": 2.5,
-              "gust_mph": 4.5,
+              "temp_f": 71.6,
+              "wind_mph": 5.4,
+              "gust_mph": 8.9,
               "precip_pct": 35,
               "snow_in": 0.0
             },
@@ -4547,19 +6540,13 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 77.5,
-              "wind_mph": 9.6,
-              "gust_mph": 15.4,
+              "temp_f": 81.4,
+              "wind_mph": 6.0,
+              "gust_mph": 7.6,
               "precip_pct": 45,
               "snow_in": 0.0
             },
-            "flags": [
-              {
-                "kind": "wind",
-                "severity": "low",
-                "text": "Breezy: 10 mph, gusting 15"
-              }
-            ]
+            "flags": []
           }
         },
         {
@@ -4653,9 +6640,9 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 86.8,
-              "wind_mph": 7.4,
-              "gust_mph": 9.4,
+              "temp_f": 88.9,
+              "wind_mph": 5.6,
+              "gust_mph": 8.3,
               "precip_pct": 56,
               "snow_in": 0.0
             },
@@ -4759,9 +6746,9 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 76.4,
-              "wind_mph": 4.9,
-              "gust_mph": 6.5,
+              "temp_f": 74.2,
+              "wind_mph": 4.8,
+              "gust_mph": 10.5,
               "precip_pct": 37,
               "snow_in": 0.0
             },
@@ -4859,8 +6846,8 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 77.2,
-              "wind_mph": 8.5,
+              "temp_f": 77.1,
+              "wind_mph": 5.4,
               "gust_mph": 16.3,
               "precip_pct": 71,
               "snow_in": 0.0
@@ -4869,7 +6856,7 @@
               {
                 "kind": "wind",
                 "severity": "low",
-                "text": "Breezy: 8 mph, gusting 16"
+                "text": "Breezy: 5 mph, gusting 16"
               },
               {
                 "kind": "rain",
@@ -4970,9 +6957,9 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 70.6,
-              "wind_mph": 4.0,
-              "gust_mph": 11.0,
+              "temp_f": 69.5,
+              "wind_mph": 4.9,
+              "gust_mph": 12.5,
               "precip_pct": 56,
               "snow_in": 0.0
             },
@@ -5076,9 +7063,9 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 71.9,
-              "wind_mph": 13.5,
-              "gust_mph": 12.1,
+              "temp_f": 70.1,
+              "wind_mph": 12.0,
+              "gust_mph": 10.3,
               "precip_pct": 5,
               "snow_in": 0.0
             },
@@ -5176,9 +7163,9 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 96.9,
-              "wind_mph": 9.5,
-              "gust_mph": 10.3,
+              "temp_f": 97.7,
+              "wind_mph": 9.0,
+              "gust_mph": 9.8,
               "precip_pct": 0,
               "snow_in": 0.0
             },
@@ -5186,7 +7173,7 @@
               {
                 "kind": "heat",
                 "severity": "low",
-                "text": "97\u00b0F at kickoff"
+                "text": "98\u00b0F at kickoff"
               }
             ]
           }
@@ -5282,9 +7269,9 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 80.2,
-              "wind_mph": 2.5,
-              "gust_mph": 3.6,
+              "temp_f": 80.1,
+              "wind_mph": 2.3,
+              "gust_mph": 3.4,
               "precip_pct": 0,
               "snow_in": 0.0
             },
@@ -5382,9 +7369,9 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 86.6,
-              "wind_mph": 9.0,
-              "gust_mph": 13.0,
+              "temp_f": 87.1,
+              "wind_mph": 10.3,
+              "gust_mph": 14.8,
               "precip_pct": 61,
               "snow_in": 0.0
             },
@@ -5488,9 +7475,9 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 76.7,
-              "wind_mph": 5.3,
-              "gust_mph": 10.3,
+              "temp_f": 76.5,
+              "wind_mph": 3.9,
+              "gust_mph": 5.4,
               "precip_pct": 55,
               "snow_in": 0.0
             },
@@ -5577,9 +7564,9 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 65.7,
-              "wind_mph": 6.7,
-              "gust_mph": 11.0,
+              "temp_f": 65.4,
+              "wind_mph": 4.6,
+              "gust_mph": 9.2,
               "precip_pct": 16,
               "snow_in": 0.0
             },
@@ -5676,25 +7663,8 @@
               "state": "LA",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 81.7,
-              "wind_mph": 7.1,
-              "gust_mph": 16.6,
-              "precip_pct": 63,
-              "snow_in": 0.0
-            },
-            "flags": [
-              {
-                "kind": "wind",
-                "severity": "low",
-                "text": "Breezy: 7 mph, gusting 17"
-              },
-              {
-                "kind": "rain",
-                "severity": "low",
-                "text": "63% chance of rain"
-              }
-            ]
+            "weather": null,
+            "flags": []
           }
         },
         {
@@ -5787,13 +7757,7 @@
               "state": "WA",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 66.5,
-              "wind_mph": 2.6,
-              "gust_mph": 2.5,
-              "precip_pct": 0,
-              "snow_in": 0.0
-            },
+            "weather": null,
             "flags": []
           }
         },
@@ -5887,20 +7851,8 @@
               "state": "AZ",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 94.5,
-              "wind_mph": 9.1,
-              "gust_mph": 10.7,
-              "precip_pct": 0,
-              "snow_in": 0.0
-            },
-            "flags": [
-              {
-                "kind": "heat",
-                "severity": "low",
-                "text": "94\u00b0F at kickoff"
-              }
-            ]
+            "weather": null,
+            "flags": []
           }
         },
         {
@@ -5993,13 +7945,7 @@
               "state": "CA",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 87.1,
-              "wind_mph": 8.9,
-              "gust_mph": 6.5,
-              "precip_pct": 0,
-              "snow_in": 0.0
-            },
+            "weather": null,
             "flags": []
           }
         },
@@ -6093,13 +8039,7 @@
               "state": "AZ",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 84.8,
-              "wind_mph": 10.3,
-              "gust_mph": 14.5,
-              "precip_pct": 0,
-              "snow_in": 0.0
-            },
+            "weather": null,
             "flags": []
           }
         },
@@ -6194,17 +8134,17 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 79.8,
-              "wind_mph": 9.1,
-              "gust_mph": 23.3,
-              "precip_pct": 4,
+              "temp_f": 80.2,
+              "wind_mph": 9.2,
+              "gust_mph": 24.8,
+              "precip_pct": 6,
               "snow_in": 0.0
             },
             "flags": [
               {
                 "kind": "wind",
                 "severity": "high",
-                "text": "Wind 9 mph, gusting 23 \u2014 kicking and the deep ball suffer"
+                "text": "Wind 9 mph, gusting 25 \u2014 kicking and the deep ball suffer"
               }
             ]
           }
