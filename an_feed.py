@@ -78,15 +78,29 @@ def games_from_an(gs: List[dict], market: str, min_books: int = 3
             book = BOOKS.get(int(bid))
             if not book or SAME_AS.get(book, book) in prices:
                 continue
-            sides = {}
+            # Group by market_id and keep only complete two-sided markets. Action
+            # Network sometimes carries a lone extra row under its own
+            # market_id (FanDuel, Cowboys @ Texans 2026-10-01: DAL +3 / HOU -3,
+            # plus an orphan DAL -1.5). Read as a line, that orphan tripped a
+            # false TRANSPOSED. A real line has both teams, and on a spread the
+            # two points cancel.
+            by_mkt: Dict[str, Dict[int, dict]] = {}
             for o in (m.get("event") or {}).get(key) or []:
                 if o.get("is_live") or o.get("odds") is None:
                     continue
-                team = names.get(o.get("team_id"))
-                if not team:
+                if o.get("team_id") not in names:
                     continue
-                label = f"{team} {float(o['value']):+g}" if key == "spread" else team
-                sides[label] = int(o["odds"])
+                by_mkt.setdefault(str(o.get("market_id")), {})[o["team_id"]] = o
+            sides = {}
+            for pair in by_mkt.values():
+                if len(pair) != 2:
+                    continue
+                if key == "spread" and abs(sum(float(o["value"]) for o in pair.values())) > 1e-9:
+                    continue
+                for tid, o in pair.items():
+                    team = names[tid]
+                    label = f"{team} {float(o['value']):+g}" if key == "spread" else team
+                    sides[label] = int(o["odds"])
             if len(sides) >= 2:
                 prices[SAME_AS.get(book, book)] = sides
         if len(prices) >= min_books:
