@@ -16,6 +16,9 @@ name: Fault watch
 # Actions cache (cache/faults_alerted.json), so a line that stands for an hour
 # alerts once rather than twelve times.
 
+# The real five-minute clock is netlify/functions/fault-watch-trigger.mjs,
+# which dispatches this workflow. GitHub's own cron below managed only 4-5
+# runs a day; it stays as a backstop in case the Netlify trigger stops.
 on:
   schedule:
     - cron: "*/5 * * * *"
