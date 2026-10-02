@@ -3919,14 +3919,14 @@
       "logged_at": "2026-09-25T18:47:07+00:00",
       "open_odds": 600,
       "open_implied": 0.13699,
-      "close_odds": 575,
-      "close_implied": 0.14206,
+      "close_odds": 550,
+      "close_implied": 0.14754,
       "model_prob": 0.24326,
       "edge_pp": 10.627065,
       "sample": 7.0,
       "status": "open",
       "result": null,
-      "clv_pp": 0.51,
+      "clv_pp": 1.06,
       "graded_at": null
     },
     {
@@ -4087,14 +4087,14 @@
       "logged_at": "2026-09-25T18:47:07+00:00",
       "open_odds": 185,
       "open_implied": 0.33635,
-      "close_odds": 136,
-      "close_implied": 0.40663,
+      "close_odds": 130,
+      "close_implied": 0.41701,
       "model_prob": 0.49768,
       "edge_pp": 16.133001,
       "sample": 7.0,
       "status": "open",
       "result": null,
-      "clv_pp": 7.03,
+      "clv_pp": 8.07,
       "graded_at": null
     },
     {
@@ -4164,10 +4164,15 @@
       "model_prob": 0.64069,
       "edge_pp": 14.501901,
       "sample": 8.0,
-      "status": "open",
-      "result": null,
+      "status": "lost",
+      "result": {
+        "home_abbr": "NMSU",
+        "away_abbr": "WKU",
+        "home_score": 34,
+        "away_score": 13
+      },
       "clv_pp": -2.81,
-      "graded_at": null
+      "graded_at": "2026-10-02T05:53:15+00:00"
     },
     {
       "id": "NCAAF:401862786:249",
@@ -4188,10 +4193,15 @@
       "model_prob": 0.73838,
       "edge_pp": 28.982151,
       "sample": 8.0,
-      "status": "open",
-      "result": null,
+      "status": "won",
+      "result": {
+        "home_abbr": "TLSA",
+        "away_abbr": "UNT",
+        "home_score": 44,
+        "away_score": 45
+      },
       "clv_pp": 11.49,
-      "graded_at": null
+      "graded_at": "2026-10-02T05:53:15+00:00"
     },
     {
       "id": "NCAAF:401871050:48",
@@ -4716,10 +4726,15 @@
       "model_prob": 0.48125,
       "edge_pp": 5.331305,
       "sample": 10.0,
-      "status": "open",
-      "result": null,
+      "status": "won",
+      "result": {
+        "home_abbr": "CLE",
+        "away_abbr": "PIT",
+        "home_score": 27,
+        "away_score": 24
+      },
       "clv_pp": 0.0,
-      "graded_at": null
+      "graded_at": "2026-10-02T05:53:15+00:00"
     },
     {
       "id": "NFL:401872965:28",
@@ -5080,32 +5095,56 @@
       "result": null,
       "clv_pp": 0.0,
       "graded_at": null
+    },
+    {
+      "id": "NFL:401872970:21",
+      "league": "NFL",
+      "event_id": "401872970",
+      "matchup": "LAR @ PHI",
+      "kickoff": "2026-10-04T17:00Z",
+      "team_id": "21",
+      "team_abbr": "PHI",
+      "team_name": "Philadelphia Eagles",
+      "opp_abbr": "LAR",
+      "side": "home",
+      "logged_at": "2026-10-02T05:44:45+00:00",
+      "open_odds": 154,
+      "open_implied": 0.37753,
+      "close_odds": 154,
+      "close_implied": 0.37753,
+      "model_prob": 0.43205,
+      "edge_pp": 5.451762,
+      "sample": 10.0,
+      "status": "open",
+      "result": null,
+      "clv_pp": 0.0,
+      "graded_at": null
     }
   ],
   "summary": {
-    "open": 51,
-    "won": 51,
-    "lost": 82,
+    "open": 49,
+    "won": 53,
+    "lost": 83,
     "pushed": 0,
-    "units": -15.86,
-    "roi_pct": -11.9,
-    "win_pct": 38.3,
-    "avg_clv_pp": -0.14,
-    "beat_close_pct": 41.4,
+    "units": -14.48,
+    "roi_pct": -10.6,
+    "win_pct": 39.0,
+    "avg_clv_pp": -0.07,
+    "beat_close_pct": 41.2,
     "by_league": {
       "NFL": {
-        "won": 16,
+        "won": 17,
         "lost": 21,
-        "units": 2.13,
-        "roi_pct": 5.7
+        "units": 3.37,
+        "roi_pct": 8.9
       },
       "NCAAF": {
-        "won": 35,
-        "lost": 61,
-        "units": -17.98,
-        "roi_pct": -18.7
+        "won": 36,
+        "lost": 62,
+        "units": -17.84,
+        "roi_pct": -18.2
       }
     }
   },
-  "updated_at": "2026-10-02T00:09:40+00:00"
+  "updated_at": "2026-10-02T05:53:15+00:00"
 }
