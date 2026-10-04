@@ -54,6 +54,11 @@ def main():
     r.append(check("brand avoids predictor", "predictor" in R.INTRO_LINE.lower(), False))
 
     # The record travels with the ticket. Without this a clip is a tout.
+    # The placed ledger is stubbed: the real one holds real bets now, and a
+    # test that reads it starts failing the day the first one is logged.
+    real_placed = R.placed_record
+    empty = {"settled": 0, "won": 0, "lost": 0, "units": 0.0, "by_kind": {}}
+    R.placed_record = lambda season=None: dict(empty)
     t = R.ticket_scene(R.best_route(board(), "NFL", 265), "NFL", history())
     r.append(check("ticket names its legs", t.count("class='leg'"), 4))
 
@@ -66,6 +71,12 @@ def main():
                    "15-30" in t, False))
     r.append(check("zero state says the system starts here",
                    "STARTS HERE" in R.record_line({}), True))
+    R.placed_record = lambda season=None: {
+        "settled": 1, "won": 0, "lost": 1, "units": -1.0,
+        "by_kind": {"spread": {"won": 0, "lost": 1, "units": -1.0}}}
+    r.append(check("a real loss is shown, not hidden",
+                   "PLACED RECORD  0-1" in R.record_line({}), True))
+    R.placed_record = real_placed
 
     # A route the board cannot fill must not reach a scene: the video would be
     # naming legs that do not exist.
