@@ -52,6 +52,8 @@ on:
       - "placements.py"
       - "deploy_alert.py"
       - "placements_test.py"
+      - "windtest.py"
+      - "windtest_test.py"
       - "package.json"
       - "package-lock.json"
       - ".github/workflows/build-board.yml"
@@ -375,6 +377,16 @@ jobs:
           python ranked.py --log
           python ranked.py --record
 
+      - name: Run the wind-under test, on paper
+        # A FORWARD TEST, not a bet. Unders at >= 15 mph went 57.0% over
+        # 1999-2025 and held in both halves, but that wind was MEASURED at
+        # kickoff; a bet is made on a forecast. This snapshots every outdoor
+        # NFL game's forecast and total inside 24h so the forecast's share of
+        # the edge can be measured.
+        continue-on-error: true
+        run: |
+          python windtest.py --settle --log --record
+
       - name: Build board
         run: |
           python build_board.py \
@@ -393,6 +405,7 @@ jobs:
         run: |
           python shop_close_test.py
           python ranked_test.py
+          python windtest_test.py
           python teaser_test.py
           python target_test.py
           python reel_test.py
