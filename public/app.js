@@ -484,6 +484,12 @@ function betLabel(league, legs, kind, points) {
     return `${+(points || 6)}-pt teaser: `
       + legs.map((l) => `${l.team_abbr} ${fmtLine(l.teased)}`).join(" + ");
   }
+  // Logged by hand, not from the board: a straight spread or an over/under.
+  if (kind === "spread") return `${legs[0].team_abbr} ${fmtLine(legs[0].line)}`;
+  if (kind === "total") {
+    const p = legs[0].pick || "";
+    return `${p.charAt(0).toUpperCase()}${p.slice(1)} ${legs[0].total} (${legs[0].matchup || ""})`;
+  }
   if (legs.length === 1) return `${legs[0].team_abbr} ML`;
   return `${legs.length}-leg: ${legs.map((l) => l.team_abbr).join(" + ")}`;
 }

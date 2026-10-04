@@ -120,8 +120,34 @@ def _leg_outcome(leg: dict, finals: Dict[str, object],
                  kind: str = "single") -> Optional[str]:
     """'won' | 'lost' | 'push', or None while the game is unfinished."""
     g = finals.get(str(leg.get("event_id")))
-    if g is None or leg.get("side") not in ("home", "away"):
+    if g is None:
         return None
+
+    if kind == "total":
+        # Over/under: the leg carries the number and which way it was bet. Not
+        # tagged from the board -- the board shows no totals -- but written by
+        # hand for bets placed off an alert, so the record holds every bet.
+        line, pick = leg.get("total"), leg.get("pick")
+        if line is None or pick not in ("over", "under"):
+            return None
+        diff = (g.home_score + g.away_score) - float(line)
+        if diff == 0:
+            return "push"
+        return "won" if (diff > 0) == (pick == "over") else "lost"
+
+    if leg.get("side") not in ("home", "away"):
+        return None
+
+    if kind == "spread":
+        # A straight point-spread bet, `line` signed from this side's point of
+        # view (+2.5 is the dog getting 2.5). A push refunds, unlike a teaser.
+        line = leg.get("line")
+        if line is None:
+            return None
+        result = _margin(g, leg["side"]) + float(line)
+        if result == 0:
+            return "push"
+        return "won" if result > 0 else "lost"
 
     if kind == "teaser":
         # A teased leg is graded against the line it was teased TO, which is
@@ -363,6 +389,12 @@ def bet_label(bet: dict) -> str:
         return (f"{pts:g}-pt teaser: "
                 + " + ".join(f"{l.get('team_abbr') or '?'} "
                              f"{float(l.get('teased') or 0):+g}" for l in legs))
+    if (bet.get("kind") or "") == "spread" and len(legs) == 1:
+        return (f"{legs[0].get('team_abbr') or '?'} {float(legs[0].get('line') or 0):+g}"
+                f"  ({legs[0].get('matchup') or ''})")
+    if (bet.get("kind") or "") == "total" and len(legs) == 1:
+        return (f"{(legs[0].get('pick') or '?').capitalize()} {legs[0].get('total')}"
+                f"  ({legs[0].get('matchup') or ''})")
     if len(legs) == 1:
         return f"{legs[0].get('team_abbr') or '?'} ML  ({legs[0].get('matchup') or ''})"
     return f"{len(legs)}-leg: " + " + ".join(l.get("team_abbr") or "?" for l in legs)

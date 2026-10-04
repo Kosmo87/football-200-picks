@@ -165,6 +165,41 @@ def main():
                                           odds=-110)),
                          "6-pt teaser: ATL +8.5 + PHI -1"))
 
+    # A straight spread: the dog +2.5 losing by 8 loses; a push refunds.
+    def sbet(line, odds=-110):
+        return {"league": "NCAAF", "kind": "spread", "odds": odds, "stake": 1.0,
+                "status": "open", "legs": [dict(leg("1", "away", "CAL", odds),
+                                                line=line)]}
+    b = sbet(2.5)
+    settle(b, finals(Final("UNLV", "CAL", 39, 31)))
+    results.append(check("spread +2.5 losing by 8", b["status"], "lost"))
+    results.append(check("spread loss units", b["units"], -1.0))
+    b = sbet(8.5)
+    settle(b, finals(Final("UNLV", "CAL", 39, 31)))
+    results.append(check("spread +8.5 losing by 8", b["status"], "won"))
+    results.append(check("spread win units", b["units"], round(100 / 110, 4)))
+    b = sbet(8.0)
+    settle(b, finals(Final("UNLV", "CAL", 39, 31)))
+    results.append(check("spread push refunds", (b["status"], b["units"]), ("push", 0.0)))
+    results.append(check("spread label", bet_label(sbet(2.5)), "CAL +2.5  (CAL game)"))
+
+    # A total: graded on the combined score, side-agnostic.
+    def tot(pick, line):
+        return {"league": "NFL", "kind": "total", "odds": -110, "stake": 1.0,
+                "status": "open", "legs": [{"event_id": "1", "total": line,
+                                            "pick": pick, "matchup": "BUF @ CHI"}]}
+    b = tot("under", 41.5)
+    settle(b, finals(Final("CHI", "BUF", 20, 17)))
+    results.append(check("under 41.5 on 37", b["status"], "won"))
+    b = tot("over", 41.5)
+    settle(b, finals(Final("CHI", "BUF", 20, 17)))
+    results.append(check("over 41.5 on 37", b["status"], "lost"))
+    b = tot("under", 37.0)
+    settle(b, finals(Final("CHI", "BUF", 20, 17)))
+    results.append(check("total push", b["status"], "push"))
+    results.append(check("total label", bet_label(tot("under", 41.5)),
+                         "Under 41.5  (BUF @ CHI)"))
+
     print(f"\n  {sum(results)} passed, {len(results) - sum(results)} failed")
     return 0 if all(results) else 1
 
