@@ -31,6 +31,13 @@ def test_edge_multiplies_upward():
 def test_single_leg_is_not_a_parlay():
     assert P.build([leg("dk","A @ B",.03,1.03)])=={}
 
+def test_half_odds_round_like_the_browser():
+    # Math.round sends .5 up; Python's round() sent +612.5 to +612 and failed parity.
+    import odds
+    assert odds.decimal_to_american(7.125)==613
+    assert odds.decimal_to_american(5.125)==413
+    assert odds.decimal_to_american(1+100/112.5)==-112
+
 if __name__=="__main__":
     f=0
     for n,fn in sorted(globals().items()):

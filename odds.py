@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 from typing import List, Optional, Tuple
 
 
@@ -23,12 +24,22 @@ def american_to_decimal(odds: int) -> float:
     return 1 + 100.0 / abs(odds)
 
 
+def js_round(x: float) -> int:
+    """Math.round: halves go toward +infinity.
+
+    Python's round() sends halves to the even neighbour, so a parlay priced at
+    exactly +612.5 came out +612 here and +613 in the browser, and the parity
+    gate failed the build (2026-10-09/10, three times, all NCAAF parlays).
+    """
+    return math.floor(x + 0.5)
+
+
 def decimal_to_american(dec: float) -> int:
     if dec <= 1.0:
         return -10000
     if dec >= 2.0:
-        return int(round((dec - 1) * 100))
-    return int(round(-100 / (dec - 1)))
+        return js_round((dec - 1) * 100)
+    return js_round(-100 / (dec - 1))
 
 
 def combine_odds(odds_list: List[int]) -> int:
