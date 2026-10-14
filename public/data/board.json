@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-14T01:16:05+00:00",
+  "generated_at": "2026-10-14T06:14:41+00:00",
   "season": 2026,
   "leagues": {
     "NFL": {
@@ -12,7 +12,7 @@
           "kickoff": "2026-10-16T00:15Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": 2.5,
           "spread_details": "SEA -2.5",
           "total": 40.5,
@@ -22,7 +22,7 @@
             "abbr": "DEN",
             "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/den.png",
             "elo": 1583.5,
-            "moneyline": 124
+            "moneyline": 120
           },
           "away": {
             "id": "26",
@@ -30,7 +30,7 @@
             "abbr": "SEA",
             "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/sea.png",
             "elo": 1626.3,
-            "moneyline": -148
+            "moneyline": -142
           },
           "legs": [
             {
@@ -38,10 +38,10 @@
               "team_id": "26",
               "team_name": "Seattle Seahawks",
               "team_abbr": "SEA",
-              "odds": -148,
+              "odds": -142,
               "model_prob": 0.51121,
-              "implied_prob": 0.57206,
-              "edge_pp": -6.085165,
+              "implied_prob": 0.56349,
+              "edge_pp": -5.228408,
               "fair_odds": -105,
               "sample": 12.0,
               "team_sample": 12.0,
@@ -55,10 +55,10 @@
               "team_id": "7",
               "team_name": "Denver Broncos",
               "team_abbr": "DEN",
-              "odds": 124,
+              "odds": 120,
               "model_prob": 0.48879,
-              "implied_prob": 0.42794,
-              "edge_pp": 6.085165,
+              "implied_prob": 0.43651,
+              "edge_pp": 5.228408,
               "fair_odds": 105,
               "sample": 12.0,
               "team_sample": 12.0,
@@ -105,8 +105,19 @@
               "teams_playing": 28,
               "error": null
             },
-            "venue": null,
-            "weather": null,
+            "venue": {
+              "venue": "Empower Field at Mile High",
+              "city": "Denver",
+              "state": "CO",
+              "indoor": false
+            },
+            "weather": {
+              "temp_f": 49.2,
+              "wind_mph": 9.7,
+              "gust_mph": 14.7,
+              "precip_pct": 39,
+              "snow_in": 0.0
+            },
             "flags": []
           }
         },
@@ -117,7 +128,7 @@
           "kickoff": "2026-10-18T13:30Z",
           "status": "Scheduled",
           "neutral": true,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -3.0,
           "spread_details": "JAX -3",
           "total": 42.5,
@@ -209,9 +220,26 @@
               "teams_playing": 28,
               "error": null
             },
-            "venue": null,
-            "weather": null,
-            "flags": []
+            "venue": {
+              "venue": "Wembley Stadium",
+              "city": "London",
+              "state": "",
+              "indoor": false
+            },
+            "weather": {
+              "temp_f": 56.2,
+              "wind_mph": 11.2,
+              "gust_mph": 23.3,
+              "precip_pct": 10,
+              "snow_in": 0.0
+            },
+            "flags": [
+              {
+                "kind": "wind",
+                "severity": "high",
+                "text": "Wind 11 mph, gusting 23 \u2014 kicking and the deep ball suffer"
+              }
+            ]
           }
         },
         {
@@ -221,7 +249,7 @@
           "kickoff": "2026-10-18T17:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": 3.0,
           "spread_details": "CHI -3",
           "total": 49.5,
@@ -287,18 +315,11 @@
                 "players": []
               },
               "away": {
-                "count": 3,
-                "long_term": 0,
+                "count": 2,
+                "long_term": 1,
                 "qb_out": 0,
                 "qbs": [],
                 "players": [
-                  {
-                    "player": "Anthony Johnson Jr.",
-                    "position": "S",
-                    "status": "Out",
-                    "detail": "Undisclosed",
-                    "since": "2026-10-14T01:01Z"
-                  },
                   {
                     "player": "Kyler Gordon",
                     "position": "CB",
@@ -320,7 +341,12 @@
               "teams_playing": 28,
               "error": null
             },
-            "venue": null,
+            "venue": {
+              "venue": "Mercedes-Benz Stadium",
+              "city": "Atlanta",
+              "state": "GA",
+              "indoor": true
+            },
             "weather": null,
             "flags": []
           }
@@ -332,7 +358,7 @@
           "kickoff": "2026-10-18T17:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": 4.5,
           "spread_details": "BAL -4.5",
           "total": 41.5,
@@ -409,8 +435,19 @@
               "teams_playing": 28,
               "error": null
             },
-            "venue": null,
-            "weather": null,
+            "venue": {
+              "venue": "Huntington Bank Field",
+              "city": "Cleveland",
+              "state": "OH",
+              "indoor": false
+            },
+            "weather": {
+              "temp_f": 58.9,
+              "wind_mph": 11.1,
+              "gust_mph": 14.5,
+              "precip_pct": 0,
+              "snow_in": 0.0
+            },
             "flags": []
           }
         },
@@ -421,7 +458,7 @@
           "kickoff": "2026-10-18T17:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -7.0,
           "spread_details": "IND -7",
           "total": 44.5,
@@ -498,7 +535,12 @@
               "teams_playing": 28,
               "error": null
             },
-            "venue": null,
+            "venue": {
+              "venue": "Lucas Oil Stadium",
+              "city": "Indianapolis",
+              "state": "IN",
+              "indoor": true
+            },
             "weather": null,
             "flags": []
           }
@@ -510,7 +552,7 @@
           "kickoff": "2026-10-18T17:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -7.5,
           "spread_details": "NE -7.5",
           "total": 43.5,
@@ -579,7 +621,7 @@
                     "position": "OT",
                     "status": "Doubtful",
                     "detail": "Knee - MCL",
-                    "since": "2026-10-13T16:15Z"
+                    "since": "2026-10-14T01:23Z"
                   },
                   {
                     "player": "TreVeyon Henderson",
@@ -602,9 +644,26 @@
               "teams_playing": 28,
               "error": null
             },
-            "venue": null,
-            "weather": null,
-            "flags": []
+            "venue": {
+              "venue": "Gillette Stadium",
+              "city": "Foxborough",
+              "state": "MA",
+              "indoor": false
+            },
+            "weather": {
+              "temp_f": 56.2,
+              "wind_mph": 9.7,
+              "gust_mph": 19.9,
+              "precip_pct": 0,
+              "snow_in": 0.0
+            },
+            "flags": [
+              {
+                "kind": "wind",
+                "severity": "low",
+                "text": "Breezy: 10 mph, gusting 20"
+              }
+            ]
           }
         },
         {
@@ -614,7 +673,7 @@
           "kickoff": "2026-10-18T17:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": 1.5,
           "spread_details": "NO -1.5",
           "total": 45.5,
@@ -691,9 +750,26 @@
               "teams_playing": 28,
               "error": null
             },
-            "venue": null,
-            "weather": null,
-            "flags": []
+            "venue": {
+              "venue": "MetLife Stadium",
+              "city": "East Rutherford",
+              "state": "NJ",
+              "indoor": false
+            },
+            "weather": {
+              "temp_f": 60.3,
+              "wind_mph": 8.3,
+              "gust_mph": 15.4,
+              "precip_pct": 0,
+              "snow_in": 0.0
+            },
+            "flags": [
+              {
+                "kind": "wind",
+                "severity": "low",
+                "text": "Breezy: 8 mph, gusting 15"
+              }
+            ]
           }
         },
         {
@@ -703,7 +779,7 @@
           "kickoff": "2026-10-18T17:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -1.5,
           "spread_details": "PHI -1.5",
           "total": 40.5,
@@ -790,18 +866,18 @@
                 "qbs": [],
                 "players": [
                   {
+                    "player": "Taylor Moton",
+                    "position": "OT",
+                    "status": "Out",
+                    "detail": "Illness",
+                    "since": "2026-10-14T01:24Z"
+                  },
+                  {
                     "player": "Tershawn Wharton",
                     "position": "DT",
                     "status": "Out",
                     "detail": "Neck",
                     "since": "2026-10-13T21:01Z"
-                  },
-                  {
-                    "player": "Taylor Moton",
-                    "position": "OT",
-                    "status": "Out",
-                    "detail": "Illness",
-                    "since": "2026-10-12T18:43Z"
                   },
                   {
                     "player": "Ikem Ekwonu",
@@ -817,8 +893,19 @@
               "teams_playing": 28,
               "error": null
             },
-            "venue": null,
-            "weather": null,
+            "venue": {
+              "venue": "Lincoln Financial Field",
+              "city": "Philadelphia",
+              "state": "PA",
+              "indoor": false
+            },
+            "weather": {
+              "temp_f": 60.1,
+              "wind_mph": 7.7,
+              "gust_mph": 13.0,
+              "precip_pct": 0,
+              "snow_in": 0.0
+            },
             "flags": []
           }
         },
@@ -829,7 +916,7 @@
           "kickoff": "2026-10-18T17:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": 2.5,
           "spread_details": "PIT -2.5",
           "total": 39.5,
@@ -839,7 +926,7 @@
             "abbr": "TB",
             "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/tb.png",
             "elo": 1437.4,
-            "moneyline": 114
+            "moneyline": 120
           },
           "away": {
             "id": "23",
@@ -847,7 +934,7 @@
             "abbr": "PIT",
             "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/pit.png",
             "elo": 1516.5,
-            "moneyline": -135
+            "moneyline": -142
           },
           "legs": [
             {
@@ -855,10 +942,10 @@
               "team_id": "23",
               "team_name": "Pittsburgh Steelers",
               "team_abbr": "PIT",
-              "odds": -135,
+              "odds": -142,
               "model_prob": 0.56317,
-              "implied_prob": 0.55144,
-              "edge_pp": 1.172997,
+              "implied_prob": 0.56349,
+              "edge_pp": -0.032098,
               "fair_odds": -129,
               "sample": 12.0,
               "team_sample": 12.0,
@@ -874,10 +961,10 @@
               "team_id": "27",
               "team_name": "Tampa Bay Buccaneers",
               "team_abbr": "TB",
-              "odds": 114,
+              "odds": 120,
               "model_prob": 0.43683,
-              "implied_prob": 0.44856,
-              "edge_pp": -1.172997,
+              "implied_prob": 0.43651,
+              "edge_pp": 0.032098,
               "fair_odds": 129,
               "sample": 12.0,
               "team_sample": 12.0,
@@ -942,14 +1029,30 @@
               "teams_playing": 28,
               "error": null
             },
-            "venue": null,
-            "weather": null,
+            "venue": {
+              "venue": "Raymond James Stadium",
+              "city": "Tampa",
+              "state": "FL",
+              "indoor": false
+            },
+            "weather": {
+              "temp_f": 79.5,
+              "wind_mph": 20.6,
+              "gust_mph": 31.3,
+              "precip_pct": 3,
+              "snow_in": 0.0
+            },
             "flags": [
               {
                 "kind": "qb_out",
                 "severity": "high",
                 "side": "home",
                 "text": "TB quarterback out: Baker Mayfield (Thumb). The ratings are built from final scores and do not know this; the price does."
+              },
+              {
+                "kind": "wind",
+                "severity": "high",
+                "text": "Wind 21 mph, gusting 31 \u2014 kicking and the deep ball suffer"
               }
             ]
           }
@@ -961,7 +1064,7 @@
           "kickoff": "2026-10-18T20:05Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -12.5,
           "spread_details": "LAR -12.5",
           "total": 51.5,
@@ -971,7 +1074,7 @@
             "abbr": "LAR",
             "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/lar.png",
             "elo": 1574.4,
-            "moneyline": -850
+            "moneyline": -900
           },
           "away": {
             "id": "22",
@@ -979,7 +1082,7 @@
             "abbr": "ARI",
             "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/ari.png",
             "elo": 1361.8,
-            "moneyline": 575
+            "moneyline": 600
           },
           "legs": [
             {
@@ -987,10 +1090,10 @@
               "team_id": "22",
               "team_name": "Arizona Cardinals",
               "team_abbr": "ARI",
-              "odds": 575,
+              "odds": 600,
               "model_prob": 0.19389,
-              "implied_prob": 0.14206,
-              "edge_pp": 5.183243,
+              "implied_prob": 0.13699,
+              "edge_pp": 5.690221,
               "fair_odds": 416,
               "sample": 12.0,
               "team_sample": 13.0,
@@ -1004,10 +1107,10 @@
               "team_id": "14",
               "team_name": "Los Angeles Rams",
               "team_abbr": "LAR",
-              "odds": -850,
+              "odds": -900,
               "model_prob": 0.80611,
-              "implied_prob": 0.85794,
-              "edge_pp": -5.183243,
+              "implied_prob": 0.86301,
+              "edge_pp": -5.690221,
               "fair_odds": -416,
               "sample": 12.0,
               "team_sample": 12.0,
@@ -1030,7 +1133,7 @@
                     "position": "OT",
                     "status": "Suspension",
                     "detail": "Suspension",
-                    "since": "2026-10-13T23:05Z"
+                    "since": "2026-10-14T02:29Z"
                   }
                 ]
               },
@@ -1046,8 +1149,19 @@
               "teams_playing": 28,
               "error": null
             },
-            "venue": null,
-            "weather": null,
+            "venue": {
+              "venue": "SoFi Stadium",
+              "city": "Inglewood",
+              "state": "CA",
+              "indoor": false
+            },
+            "weather": {
+              "temp_f": 82.0,
+              "wind_mph": 8.4,
+              "gust_mph": 4.7,
+              "precip_pct": 0,
+              "snow_in": 0.0
+            },
             "flags": []
           }
         },
@@ -1058,7 +1172,7 @@
           "kickoff": "2026-10-18T20:25Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -8.5,
           "spread_details": "KC -8.5",
           "total": 42.5,
@@ -1143,9 +1257,26 @@
               "teams_playing": 28,
               "error": null
             },
-            "venue": null,
-            "weather": null,
-            "flags": []
+            "venue": {
+              "venue": "Arrowhead Stadium",
+              "city": "Kansas City",
+              "state": "MO",
+              "indoor": false
+            },
+            "weather": {
+              "temp_f": 63.5,
+              "wind_mph": 13.0,
+              "gust_mph": 21.5,
+              "precip_pct": 3,
+              "snow_in": 0.0
+            },
+            "flags": [
+              {
+                "kind": "wind",
+                "severity": "high",
+                "text": "Wind 13 mph, gusting 22 \u2014 kicking and the deep ball suffer"
+              }
+            ]
           }
         },
         {
@@ -1155,7 +1286,7 @@
           "kickoff": "2026-10-18T20:25Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": 5.5,
           "spread_details": "BUF -5.5",
           "total": 53.5,
@@ -1165,7 +1296,7 @@
             "abbr": "LV",
             "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/lv.png",
             "elo": 1433.8,
-            "moneyline": 220
+            "moneyline": 210
           },
           "away": {
             "id": "2",
@@ -1173,7 +1304,7 @@
             "abbr": "BUF",
             "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/buf.png",
             "elo": 1642.7,
-            "moneyline": -270
+            "moneyline": -258
           },
           "legs": [
             {
@@ -1181,10 +1312,10 @@
               "team_id": "2",
               "team_name": "Buffalo Bills",
               "team_abbr": "BUF",
-              "odds": -270,
+              "odds": -258,
               "model_prob": 0.73136,
-              "implied_prob": 0.70016,
-              "edge_pp": 3.119534,
+              "implied_prob": 0.69079,
+              "edge_pp": 4.056453,
               "fair_odds": -272,
               "sample": 12.0,
               "team_sample": 12.0,
@@ -1198,10 +1329,10 @@
               "team_id": "13",
               "team_name": "Las Vegas Raiders",
               "team_abbr": "LV",
-              "odds": 220,
+              "odds": 210,
               "model_prob": 0.26864,
-              "implied_prob": 0.29984,
-              "edge_pp": -3.119534,
+              "implied_prob": 0.30921,
+              "edge_pp": -4.056453,
               "fair_odds": 272,
               "sample": 12.0,
               "team_sample": 12.0,
@@ -1232,7 +1363,12 @@
               "teams_playing": 28,
               "error": null
             },
-            "venue": null,
+            "venue": {
+              "venue": "Allegiant Stadium",
+              "city": "Las Vegas",
+              "state": "NV",
+              "indoor": true
+            },
             "weather": null,
             "flags": []
           }
@@ -1244,7 +1380,7 @@
           "kickoff": "2026-10-19T00:20Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -1.5,
           "spread_details": "GB -1.5",
           "total": 52.5,
@@ -1336,9 +1472,26 @@
               "teams_playing": 28,
               "error": null
             },
-            "venue": null,
-            "weather": null,
-            "flags": []
+            "venue": {
+              "venue": "Lambeau Field",
+              "city": "Green Bay",
+              "state": "WI",
+              "indoor": false
+            },
+            "weather": {
+              "temp_f": 56.4,
+              "wind_mph": 17.6,
+              "gust_mph": 34.2,
+              "precip_pct": 1,
+              "snow_in": 0.0
+            },
+            "flags": [
+              {
+                "kind": "wind",
+                "severity": "high",
+                "text": "Wind 18 mph, gusting 34 \u2014 kicking and the deep ball suffer"
+              }
+            ]
           }
         },
         {
@@ -1348,7 +1501,7 @@
           "kickoff": "2026-10-20T00:15Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -7.5,
           "spread_details": "SF -7.5",
           "total": 50.5,
@@ -1431,18 +1584,18 @@
                     "since": "2026-10-12T19:45Z"
                   },
                   {
+                    "player": "Dre Greenlaw",
+                    "position": "LB",
+                    "status": "Suspension",
+                    "detail": "Suspension",
+                    "since": "2026-10-14T01:22Z"
+                  },
+                  {
                     "player": "Marques Sigle",
                     "position": "S",
                     "status": "Doubtful",
                     "detail": "Ankle",
                     "since": "2026-10-13T17:10Z"
-                  },
-                  {
-                    "player": "Dre Greenlaw",
-                    "position": "LB",
-                    "status": "Suspension",
-                    "detail": "Suspension",
-                    "since": "2026-10-12T18:25Z"
                   }
                 ]
               },
@@ -1468,7 +1621,12 @@
               "teams_playing": 28,
               "error": null
             },
-            "venue": null,
+            "venue": {
+              "venue": "Levi's Stadium",
+              "city": "Santa Clara",
+              "state": "CA",
+              "indoor": false
+            },
             "weather": null,
             "flags": [
               {
@@ -1492,7 +1650,7 @@
             "team_name": "Denver Broncos",
             "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/den.png",
             "spread": 2.5,
-            "source": "DraftKings",
+            "source": "Draft Kings",
             "teased": 8.5,
             "band": "dog +1.5..+2.5",
             "prob": 0.7409,
@@ -1506,7 +1664,7 @@
             "team_name": "Tampa Bay Buccaneers",
             "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/tb.png",
             "spread": 2.5,
-            "source": "DraftKings",
+            "source": "Draft Kings",
             "teased": 8.5,
             "band": "dog +1.5..+2.5",
             "prob": 0.7409,
@@ -1520,7 +1678,7 @@
             "team_name": "New England Patriots",
             "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/ne.png",
             "spread": -7.5,
-            "source": "DraftKings",
+            "source": "Draft Kings",
             "teased": -1.5,
             "band": "fav -8.5..-7.5",
             "prob": 0.7238,
@@ -1534,7 +1692,7 @@
             "team_name": "San Francisco 49ers",
             "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/sf.png",
             "spread": -7.5,
-            "source": "DraftKings",
+            "source": "Draft Kings",
             "teased": -1.5,
             "band": "fav -8.5..-7.5",
             "prob": 0.7238,
@@ -1548,7 +1706,7 @@
             "team_name": "Indianapolis Colts",
             "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/ind.png",
             "spread": -7.0,
-            "source": "DraftKings",
+            "source": "Draft Kings",
             "teased": -1.0,
             "band": "fav -7.5..-6.5",
             "prob": 0.7194,
@@ -1557,7 +1715,7 @@
         ],
         "per_leg_rate": 0.7362,
         "per_leg_stderr": 0.0104,
-        "provider": "DraftKings",
+        "provider": "Draft Kings",
         "provider_is_mine": false,
         "captured_at": null,
         "max_price_best": -121,
@@ -1605,7 +1763,7 @@
               "team_name": "Denver Broncos",
               "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/den.png",
               "spread": 2.5,
-              "source": "DraftKings",
+              "source": "Draft Kings",
               "teased": 12.5,
               "band": "dog +1.5..+3.5",
               "prob": 0.7918,
@@ -1619,7 +1777,7 @@
               "team_name": "Tampa Bay Buccaneers",
               "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/tb.png",
               "spread": 2.5,
-              "source": "DraftKings",
+              "source": "Draft Kings",
               "teased": 12.5,
               "band": "dog +1.5..+3.5",
               "prob": 0.7918,
@@ -1633,7 +1791,7 @@
               "team_name": "Kansas City Chiefs",
               "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/kc.png",
               "spread": -8.5,
-              "source": "DraftKings",
+              "source": "Draft Kings",
               "teased": 1.5,
               "band": "fav -12.5..-8.5",
               "prob": 0.7918,
@@ -1647,7 +1805,7 @@
               "team_name": "Houston Texans",
               "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/hou.png",
               "spread": 3.0,
-              "source": "DraftKings",
+              "source": "Draft Kings",
               "teased": 13.0,
               "band": "dog +1.5..+3.5",
               "prob": 0.7719,
@@ -1661,7 +1819,7 @@
               "team_name": "Atlanta Falcons",
               "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/atl.png",
               "spread": 3.0,
-              "source": "DraftKings",
+              "source": "Draft Kings",
               "teased": 13.0,
               "band": "dog +1.5..+3.5",
               "prob": 0.7719,
@@ -1670,7 +1828,7 @@
           ],
           "per_leg_rate": 0.7918,
           "per_leg_stderr": 0.0071,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "provider_is_mine": false,
           "captured_at": null,
           "max_price_best": -168,
@@ -2044,7 +2202,7 @@
           "kickoff": "2026-10-14T23:30Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": 3.0,
           "spread_details": "KENN -3",
           "total": 52.5,
@@ -2127,13 +2285,7 @@
               "state": "MO",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 73.4,
-              "wind_mph": 1.9,
-              "gust_mph": 5.8,
-              "precip_pct": 20,
-              "snow_in": 0.0
-            },
+            "weather": null,
             "flags": []
           }
         },
@@ -2144,7 +2296,7 @@
           "kickoff": "2026-10-15T00:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": 1.5,
           "spread_details": "WKU -1.5",
           "total": 52.5,
@@ -2227,13 +2379,7 @@
               "state": "TX",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 83.0,
-              "wind_mph": 5.6,
-              "gust_mph": 7.6,
-              "precip_pct": 2,
-              "snow_in": 0.0
-            },
+            "weather": null,
             "flags": []
           }
         },
@@ -2244,7 +2390,7 @@
           "kickoff": "2026-10-15T23:30Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": 4.5,
           "spread_details": "ECU -4.5",
           "total": 47.5,
@@ -2327,20 +2473,8 @@
               "state": "AL",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 53.7,
-              "wind_mph": 10.2,
-              "gust_mph": 20.9,
-              "precip_pct": 34,
-              "snow_in": 0.0
-            },
-            "flags": [
-              {
-                "kind": "wind",
-                "severity": "high",
-                "text": "Wind 10 mph, gusting 21 \u2014 kicking and the deep ball suffer"
-              }
-            ]
+            "weather": null,
+            "flags": []
           }
         },
         {
@@ -2350,7 +2484,7 @@
           "kickoff": "2026-10-15T23:30Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": 3.5,
           "spread_details": "GASO -3.5",
           "total": 47.5,
@@ -2433,13 +2567,7 @@
               "state": "VA",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 68.6,
-              "wind_mph": 8.6,
-              "gust_mph": 13.2,
-              "precip_pct": 0,
-              "snow_in": 0.0
-            },
+            "weather": null,
             "flags": []
           }
         },
@@ -2450,7 +2578,7 @@
           "kickoff": "2026-10-16T00:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -14.0,
           "spread_details": "TXST -14",
           "total": 69.5,
@@ -2534,9 +2662,9 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 80.8,
-              "wind_mph": 8.7,
-              "gust_mph": 13.6,
+              "temp_f": 82.3,
+              "wind_mph": 10.7,
+              "gust_mph": 12.1,
               "precip_pct": 0,
               "snow_in": 0.0
             },
@@ -2550,7 +2678,7 @@
           "kickoff": "2026-10-16T23:30Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": 7.0,
           "spread_details": "MEM -7",
           "total": 55.5,
@@ -2634,10 +2762,10 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 87.6,
-              "wind_mph": 4.1,
+              "temp_f": 85.7,
+              "wind_mph": 5.3,
               "gust_mph": 4.7,
-              "precip_pct": 4,
+              "precip_pct": 9,
               "snow_in": 0.0
             },
             "flags": []
@@ -2650,7 +2778,7 @@
           "kickoff": "2026-10-17T00:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -3.5,
           "spread_details": "PUR -3.5",
           "total": 51.5,
@@ -2734,17 +2862,17 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 49.4,
-              "wind_mph": 19.5,
+              "temp_f": 46.8,
+              "wind_mph": 16.6,
               "gust_mph": 32.2,
-              "precip_pct": 15,
+              "precip_pct": 12,
               "snow_in": 0.0
             },
             "flags": [
               {
                 "kind": "wind",
                 "severity": "high",
-                "text": "Wind 20 mph, gusting 32 \u2014 kicking and the deep ball suffer"
+                "text": "Wind 17 mph, gusting 32 \u2014 kicking and the deep ball suffer"
               }
             ]
           }
@@ -2756,7 +2884,7 @@
           "kickoff": "2026-10-17T00:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": 1.5,
           "spread_details": "APP -1.5",
           "total": 49.5,
@@ -2840,17 +2968,17 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 59.3,
-              "wind_mph": 8.6,
+              "temp_f": 59.7,
+              "wind_mph": 9.9,
               "gust_mph": 21.3,
-              "precip_pct": 1,
+              "precip_pct": 0,
               "snow_in": 0.0
             },
             "flags": [
               {
                 "kind": "wind",
                 "severity": "high",
-                "text": "Wind 9 mph, gusting 21 \u2014 kicking and the deep ball suffer"
+                "text": "Wind 10 mph, gusting 21 \u2014 kicking and the deep ball suffer"
               }
             ]
           }
@@ -2862,7 +2990,7 @@
           "kickoff": "2026-10-17T16:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": 3.5,
           "spread_details": "OSU -3.5",
           "total": 51.5,
@@ -2946,8 +3074,8 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 52.8,
-              "wind_mph": 5.2,
+              "temp_f": 51.9,
+              "wind_mph": 7.5,
               "gust_mph": 6.7,
               "precip_pct": 0,
               "snow_in": 0.0
@@ -2962,7 +3090,7 @@
           "kickoff": "2026-10-17T16:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -10.5,
           "spread_details": "TEX -10.5",
           "total": 52.5,
@@ -3054,8 +3182,8 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 61.7,
-              "wind_mph": 12.2,
+              "temp_f": 60.8,
+              "wind_mph": 12.8,
               "gust_mph": 16.6,
               "precip_pct": 0,
               "snow_in": 0.0
@@ -3064,7 +3192,7 @@
               {
                 "kind": "wind",
                 "severity": "low",
-                "text": "Breezy: 12 mph, gusting 17"
+                "text": "Breezy: 13 mph, gusting 17"
               }
             ]
           }
@@ -3076,7 +3204,7 @@
           "kickoff": "2026-10-17T16:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -14.0,
           "spread_details": "LSU -14",
           "total": 58.5,
@@ -3160,8 +3288,8 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 65.3,
-              "wind_mph": 10.8,
+              "temp_f": 64.8,
+              "wind_mph": 11.3,
               "gust_mph": 16.1,
               "precip_pct": 0,
               "snow_in": 0.0
@@ -3182,7 +3310,7 @@
           "kickoff": "2026-10-17T16:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -9.5,
           "spread_details": "SMU -9.5",
           "total": 51.5,
@@ -3266,8 +3394,8 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 59.0,
-              "wind_mph": 7.6,
+              "temp_f": 57.7,
+              "wind_mph": 7.3,
               "gust_mph": 10.1,
               "precip_pct": 0,
               "snow_in": 0.0
@@ -3282,7 +3410,7 @@
           "kickoff": "2026-10-17T16:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": 7.5,
           "spread_details": "NU -7.5",
           "total": 48.5,
@@ -3366,8 +3494,8 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 47.6,
-              "wind_mph": 6.8,
+              "temp_f": 46.5,
+              "wind_mph": 6.0,
               "gust_mph": 8.7,
               "precip_pct": 0,
               "snow_in": 0.0
@@ -3382,7 +3510,7 @@
           "kickoff": "2026-10-17T16:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -1.5,
           "spread_details": "WVU -1.5",
           "total": 63.5,
@@ -3466,10 +3594,10 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 49.1,
-              "wind_mph": 9.6,
+              "temp_f": 48.4,
+              "wind_mph": 10.2,
               "gust_mph": 17.9,
-              "precip_pct": 1,
+              "precip_pct": 2,
               "snow_in": 0.0
             },
             "flags": [
@@ -3488,7 +3616,7 @@
           "kickoff": "2026-10-17T16:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -4.5,
           "spread_details": "KSU -4.5",
           "total": 55.5,
@@ -3571,20 +3699,8 @@
               "state": "KS",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 49.1,
-              "wind_mph": 20.0,
-              "gust_mph": 33.6,
-              "precip_pct": 2,
-              "snow_in": 0.0
-            },
-            "flags": [
-              {
-                "kind": "wind",
-                "severity": "high",
-                "text": "Wind 20 mph, gusting 34 \u2014 kicking and the deep ball suffer"
-              }
-            ]
+            "weather": null,
+            "flags": []
           }
         },
         {
@@ -3594,7 +3710,7 @@
           "kickoff": "2026-10-17T16:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": 6.5,
           "spread_details": "PITT -6.5",
           "total": 42.5,
@@ -3677,20 +3793,8 @@
               "state": "MA",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 46.6,
-              "wind_mph": 17.5,
-              "gust_mph": 30.9,
-              "precip_pct": 3,
-              "snow_in": 0.0
-            },
-            "flags": [
-              {
-                "kind": "wind",
-                "severity": "high",
-                "text": "Wind 18 mph, gusting 31 \u2014 kicking and the deep ball suffer"
-              }
-            ]
+            "weather": null,
+            "flags": []
           }
         },
         {
@@ -3700,7 +3804,7 @@
           "kickoff": "2026-10-17T16:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -2.5,
           "spread_details": "ARMY -2.5",
           "total": 55.5,
@@ -3783,20 +3887,8 @@
               "state": "NY",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 61.7,
-              "wind_mph": 11.7,
-              "gust_mph": 16.6,
-              "precip_pct": 0,
-              "snow_in": 0.0
-            },
-            "flags": [
-              {
-                "kind": "wind",
-                "severity": "low",
-                "text": "Breezy: 12 mph, gusting 17"
-              }
-            ]
+            "weather": null,
+            "flags": []
           }
         },
         {
@@ -3806,7 +3898,7 @@
           "kickoff": "2026-10-17T16:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -6.5,
           "spread_details": "BGSU -6.5",
           "total": 47.5,
@@ -3889,13 +3981,7 @@
               "state": "OH",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 56.6,
-              "wind_mph": 11.7,
-              "gust_mph": 14.5,
-              "precip_pct": 0,
-              "snow_in": 0.0
-            },
+            "weather": null,
             "flags": []
           }
         },
@@ -3906,7 +3992,7 @@
           "kickoff": "2026-10-17T16:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -12.5,
           "spread_details": "JMU -12.5",
           "total": 58.5,
@@ -3989,20 +4075,8 @@
               "state": "VA",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 50.2,
-              "wind_mph": 18.0,
-              "gust_mph": 26.6,
-              "precip_pct": 1,
-              "snow_in": 0.0
-            },
-            "flags": [
-              {
-                "kind": "wind",
-                "severity": "high",
-                "text": "Wind 18 mph, gusting 27 \u2014 kicking and the deep ball suffer"
-              }
-            ]
+            "weather": null,
+            "flags": []
           }
         },
         {
@@ -4012,7 +4086,7 @@
           "kickoff": "2026-10-17T16:30Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -4.5,
           "spread_details": "MD -4.5",
           "total": 57.5,
@@ -4096,10 +4170,10 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 54.0,
-              "wind_mph": 14.1,
+              "temp_f": 54.5,
+              "wind_mph": 14.4,
               "gust_mph": 26.6,
-              "precip_pct": 2,
+              "precip_pct": 1,
               "snow_in": 0.0
             },
             "flags": [
@@ -4118,7 +4192,7 @@
           "kickoff": "2026-10-17T17:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -21.5,
           "spread_details": "TEM -21.5",
           "total": 47.5,
@@ -4202,8 +4276,8 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 52.0,
-              "wind_mph": 16.0,
+              "temp_f": 53.1,
+              "wind_mph": 15.5,
               "gust_mph": 31.3,
               "precip_pct": 1,
               "snow_in": 0.0
@@ -4224,7 +4298,7 @@
           "kickoff": "2026-10-17T17:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -6.5,
           "spread_details": "BUF -6.5",
           "total": 41.5,
@@ -4308,8 +4382,8 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 46.9,
-              "wind_mph": 9.8,
+              "temp_f": 46.2,
+              "wind_mph": 8.9,
               "gust_mph": 17.7,
               "precip_pct": 2,
               "snow_in": 0.0
@@ -4318,7 +4392,7 @@
               {
                 "kind": "wind",
                 "severity": "low",
-                "text": "Breezy: 10 mph, gusting 18"
+                "text": "Breezy: 9 mph, gusting 18"
               }
             ]
           }
@@ -4330,7 +4404,7 @@
           "kickoff": "2026-10-17T17:30Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": 6.5,
           "spread_details": "WMU -6.5",
           "total": 42.5,
@@ -4414,8 +4488,8 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 51.5,
-              "wind_mph": 12.0,
+              "temp_f": 50.6,
+              "wind_mph": 10.4,
               "gust_mph": 15.0,
               "precip_pct": 0,
               "snow_in": 0.0
@@ -4424,7 +4498,7 @@
               {
                 "kind": "wind",
                 "severity": "low",
-                "text": "Breezy: 12 mph, gusting 15"
+                "text": "Breezy: 10 mph, gusting 15"
               }
             ]
           }
@@ -4436,7 +4510,7 @@
           "kickoff": "2026-10-17T19:30Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -20.5,
           "spread_details": "UGA -20.5",
           "total": 49.5,
@@ -4520,9 +4594,9 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 52.7,
-              "wind_mph": 3.1,
-              "gust_mph": 4.3,
+              "temp_f": 53.4,
+              "wind_mph": 4.1,
+              "gust_mph": 7.2,
               "precip_pct": 0,
               "snow_in": 0.0
             },
@@ -4536,7 +4610,7 @@
           "kickoff": "2026-10-17T19:30Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": 8.5,
           "spread_details": "ALA -8.5",
           "total": 51.5,
@@ -4620,8 +4694,8 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 62.7,
-              "wind_mph": 10.6,
+              "temp_f": 61.8,
+              "wind_mph": 9.6,
               "gust_mph": 13.4,
               "precip_pct": 0,
               "snow_in": 0.0
@@ -4636,7 +4710,7 @@
           "kickoff": "2026-10-17T19:30Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -6.0,
           "spread_details": "MISS -6",
           "total": 59.5,
@@ -4723,7 +4797,7 @@
               "temp_f": 48.5,
               "wind_mph": 9.6,
               "gust_mph": 17.4,
-              "precip_pct": 3,
+              "precip_pct": 0,
               "snow_in": 0.0
             },
             "flags": [
@@ -4742,7 +4816,7 @@
           "kickoff": "2026-10-17T19:30Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -14.5,
           "spread_details": "TTU -14.5",
           "total": 48.5,
@@ -4826,10 +4900,10 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 57.5,
-              "wind_mph": 3.1,
+              "temp_f": 57.8,
+              "wind_mph": 2.4,
               "gust_mph": 2.7,
-              "precip_pct": 1,
+              "precip_pct": 0,
               "snow_in": 0.0
             },
             "flags": []
@@ -4842,7 +4916,7 @@
           "kickoff": "2026-10-17T19:30Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -10.0,
           "spread_details": "VT -10",
           "total": 56.5,
@@ -4926,8 +5000,8 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 55.4,
-              "wind_mph": 9.4,
+              "temp_f": 55.8,
+              "wind_mph": 10.1,
               "gust_mph": 13.9,
               "precip_pct": 1,
               "snow_in": 0.0
@@ -4942,7 +5016,7 @@
           "kickoff": "2026-10-17T19:30Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -3.0,
           "spread_details": "DUKE -3",
           "total": 47.5,
@@ -5026,10 +5100,10 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 64.9,
-              "wind_mph": 10.9,
+              "temp_f": 64.2,
+              "wind_mph": 12.8,
               "gust_mph": 14.3,
-              "precip_pct": 1,
+              "precip_pct": 2,
               "snow_in": 0.0
             },
             "flags": []
@@ -5042,7 +5116,7 @@
           "kickoff": "2026-10-17T19:30Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -6.5,
           "spread_details": "MICH -6.5",
           "total": 42.5,
@@ -5125,13 +5199,7 @@
               "state": "MI",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 53.1,
-              "wind_mph": 9.0,
-              "gust_mph": 11.4,
-              "precip_pct": 0,
-              "snow_in": 0.0
-            },
+            "weather": null,
             "flags": []
           }
         },
@@ -5142,7 +5210,7 @@
           "kickoff": "2026-10-17T19:30Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -7.5,
           "spread_details": "WYO -7.5",
           "total": 40.5,
@@ -5225,13 +5293,7 @@
               "state": "WY",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 45.6,
-              "wind_mph": 9.3,
-              "gust_mph": 14.8,
-              "precip_pct": 0,
-              "snow_in": 0.0
-            },
+            "weather": null,
             "flags": []
           }
         },
@@ -5242,7 +5304,7 @@
           "kickoff": "2026-10-17T19:30Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": 1.5,
           "spread_details": "UNLV -1.5",
           "total": 48.5,
@@ -5336,7 +5398,7 @@
           "kickoff": "2026-10-17T19:30Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": 6.5,
           "spread_details": "TOL -6.5",
           "total": 53.5,
@@ -5346,7 +5408,7 @@
             "abbr": "EMU",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2199.png",
             "elo": 1383.6,
-            "moneyline": 195
+            "moneyline": 200
           },
           "away": {
             "id": "2649",
@@ -5354,7 +5416,7 @@
             "abbr": "TOL",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2649.png",
             "elo": 1466.3,
-            "moneyline": -238
+            "moneyline": -245
           },
           "legs": [
             {
@@ -5362,10 +5424,10 @@
               "team_id": "2649",
               "team_name": "Toledo Rockets",
               "team_abbr": "TOL",
-              "odds": -238,
+              "odds": -245,
               "model_prob": 0.53974,
-              "implied_prob": 0.67503,
-              "edge_pp": -13.528834,
+              "implied_prob": 0.68056,
+              "edge_pp": -14.081265,
               "fair_odds": -117,
               "sample": 10.0,
               "team_sample": 10.0,
@@ -5379,10 +5441,10 @@
               "team_id": "2199",
               "team_name": "Eastern Michigan Eagles",
               "team_abbr": "EMU",
-              "odds": 195,
+              "odds": 200,
               "model_prob": 0.46026,
-              "implied_prob": 0.32497,
-              "edge_pp": 13.528834,
+              "implied_prob": 0.31944,
+              "edge_pp": 14.081265,
               "fair_odds": 117,
               "sample": 10.0,
               "team_sample": 10.0,
@@ -5430,7 +5492,7 @@
           "kickoff": "2026-10-17T19:30Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -9.5,
           "spread_details": "M-OH -9.5",
           "total": 46.5,
@@ -5524,7 +5586,7 @@
           "kickoff": "2026-10-17T20:30Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": 4.5,
           "spread_details": "TLSA -4.5",
           "total": 46.5,
@@ -5607,7 +5669,13 @@
               "state": "TX",
               "indoor": false
             },
-            "weather": null,
+            "weather": {
+              "temp_f": 73.6,
+              "wind_mph": 8.4,
+              "gust_mph": 9.4,
+              "precip_pct": 0,
+              "snow_in": 0.0
+            },
             "flags": []
           }
         },
@@ -5618,7 +5686,7 @@
           "kickoff": "2026-10-17T21:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -4.5,
           "spread_details": "UL -4.5",
           "total": 49.5,
@@ -5701,7 +5769,13 @@
               "state": "LA",
               "indoor": false
             },
-            "weather": null,
+            "weather": {
+              "temp_f": 73.6,
+              "wind_mph": 12.0,
+              "gust_mph": 12.3,
+              "precip_pct": 0,
+              "snow_in": 0.0
+            },
             "flags": []
           }
         },
@@ -5712,7 +5786,7 @@
           "kickoff": "2026-10-17T22:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -17.5,
           "spread_details": "ORST -17.5",
           "total": 52.5,
@@ -5796,13 +5870,19 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 91.8,
-              "wind_mph": 2.9,
+              "temp_f": 92.0,
+              "wind_mph": 4.4,
               "gust_mph": 5.6,
               "precip_pct": 0,
               "snow_in": 0.0
             },
-            "flags": []
+            "flags": [
+              {
+                "kind": "heat",
+                "severity": "low",
+                "text": "92\u00b0F at kickoff"
+              }
+            ]
           }
         },
         {
@@ -5812,9 +5892,9 @@
           "kickoff": "2026-10-17T23:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
-          "spread": -21.0,
-          "spread_details": "MIA -21",
+          "provider": "Draft Kings",
+          "spread": -21.5,
+          "spread_details": "MIA -21.5",
           "total": 55.5,
           "home": {
             "id": "2390",
@@ -5896,8 +5976,8 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 84.9,
-              "wind_mph": 13.3,
+              "temp_f": 84.3,
+              "wind_mph": 14.8,
               "gust_mph": 15.0,
               "precip_pct": 74,
               "snow_in": 0.0
@@ -5906,7 +5986,7 @@
               {
                 "kind": "wind",
                 "severity": "low",
-                "text": "Breezy: 13 mph, gusting 15"
+                "text": "Breezy: 15 mph, gusting 15"
               },
               {
                 "kind": "rain",
@@ -5923,7 +6003,7 @@
           "kickoff": "2026-10-17T23:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -6.0,
           "spread_details": "VAN -6",
           "total": 50.5,
@@ -6007,8 +6087,8 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 62.1,
-              "wind_mph": 5.7,
+              "temp_f": 61.0,
+              "wind_mph": 6.9,
               "gust_mph": 13.2,
               "precip_pct": 0,
               "snow_in": 0.0
@@ -6023,7 +6103,7 @@
           "kickoff": "2026-10-17T23:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -6.0,
           "spread_details": "BAY -6",
           "total": 48.5,
@@ -6107,8 +6187,8 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 66.9,
-              "wind_mph": 7.4,
+              "temp_f": 66.0,
+              "wind_mph": 8.4,
               "gust_mph": 10.3,
               "precip_pct": 0,
               "snow_in": 0.0
@@ -6123,7 +6203,7 @@
           "kickoff": "2026-10-17T23:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -20.5,
           "spread_details": "USF -20.5",
           "total": 45.5,
@@ -6207,10 +6287,10 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 76.4,
-              "wind_mph": 17.6,
+              "temp_f": 73.2,
+              "wind_mph": 18.0,
               "gust_mph": 27.3,
-              "precip_pct": 21,
+              "precip_pct": 6,
               "snow_in": 0.0
             },
             "flags": [
@@ -6229,7 +6309,7 @@
           "kickoff": "2026-10-17T23:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -14.5,
           "spread_details": "NDSU -14.5",
           "total": 42.5,
@@ -6323,7 +6403,7 @@
           "kickoff": "2026-10-17T23:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": 7.0,
           "spread_details": "ARST -7",
           "total": 62.5,
@@ -6408,7 +6488,7 @@
             },
             "weather": {
               "temp_f": 66.2,
-              "wind_mph": 6.2,
+              "wind_mph": 6.8,
               "gust_mph": 13.0,
               "precip_pct": 0,
               "snow_in": 0.0
@@ -6423,7 +6503,7 @@
           "kickoff": "2026-10-17T23:30Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": 10.5,
           "spread_details": "ND -10.5",
           "total": 46.5,
@@ -6507,10 +6587,10 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 67.8,
-              "wind_mph": 1.9,
+              "temp_f": 68.6,
+              "wind_mph": 2.1,
               "gust_mph": 3.6,
-              "precip_pct": 1,
+              "precip_pct": 0,
               "snow_in": 0.0
             },
             "flags": []
@@ -6523,7 +6603,7 @@
           "kickoff": "2026-10-17T23:30Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -2.5,
           "spread_details": "UCLA -2.5",
           "total": 43.5,
@@ -6607,8 +6687,8 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 73.3,
-              "wind_mph": 7.7,
+              "temp_f": 72.4,
+              "wind_mph": 8.1,
               "gust_mph": 9.2,
               "precip_pct": 0,
               "snow_in": 0.0
@@ -6623,7 +6703,7 @@
           "kickoff": "2026-10-17T23:30Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -7.0,
           "spread_details": "OU -7",
           "total": 43.5,
@@ -6706,13 +6786,7 @@
               "state": "OK",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 59.6,
-              "wind_mph": 3.3,
-              "gust_mph": 4.9,
-              "precip_pct": 0,
-              "snow_in": 0.0
-            },
+            "weather": null,
             "flags": []
           }
         },
@@ -6723,7 +6797,7 @@
           "kickoff": "2026-10-17T23:30Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -4.5,
           "spread_details": "HOU -4.5",
           "total": 62.5,
@@ -6807,8 +6881,8 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 73.6,
-              "wind_mph": 7.8,
+              "temp_f": 72.7,
+              "wind_mph": 8.3,
               "gust_mph": 9.2,
               "precip_pct": 0,
               "snow_in": 0.0
@@ -6823,7 +6897,7 @@
           "kickoff": "2026-10-17T23:30Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": 14.5,
           "spread_details": "LOU -14.5",
           "total": 55.5,
@@ -6917,7 +6991,7 @@
           "kickoff": "2026-10-18T00:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -6.5,
           "spread_details": "UTSA -6.5",
           "total": 55.5,
@@ -7011,7 +7085,7 @@
           "kickoff": "2026-10-18T00:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": 15.5,
           "spread_details": "LT -15.5",
           "total": 57.5,
@@ -7094,13 +7168,7 @@
               "state": "LA",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 61.0,
-              "wind_mph": 7.2,
-              "gust_mph": 10.5,
-              "precip_pct": 0,
-              "snow_in": 0.0
-            },
+            "weather": null,
             "flags": []
           }
         },
@@ -7111,7 +7179,7 @@
           "kickoff": "2026-10-18T01:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": 7.5,
           "spread_details": "SJSU -7.5",
           "total": 46.5,
@@ -7194,13 +7262,7 @@
               "state": "TX",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 56.6,
-              "wind_mph": 6.4,
-              "gust_mph": 11.4,
-              "precip_pct": 11,
-              "snow_in": 0.0
-            },
+            "weather": null,
             "flags": []
           }
         },
@@ -7211,7 +7273,7 @@
           "kickoff": "2026-10-18T02:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": 15.5,
           "spread_details": "OHIO -15.5",
           "total": 48.5,
@@ -7295,8 +7357,8 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 80.0,
-              "wind_mph": 5.2,
+              "temp_f": 79.2,
+              "wind_mph": 4.5,
               "gust_mph": 5.4,
               "precip_pct": 0,
               "snow_in": 0.0
@@ -7311,7 +7373,7 @@
           "kickoff": "2026-10-18T02:15Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": 15.5,
           "spread_details": "UTAH -15.5",
           "total": 49.5,
@@ -7394,13 +7456,7 @@
               "state": "CO",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 55.5,
-              "wind_mph": 7.4,
-              "gust_mph": 6.3,
-              "precip_pct": 1,
-              "snow_in": 0.0
-            },
+            "weather": null,
             "flags": []
           }
         },
@@ -7411,7 +7467,7 @@
           "kickoff": "2026-10-18T02:30Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": 9.5,
           "spread_details": "WAKE -9.5",
           "total": 53.5,
@@ -7494,13 +7550,7 @@
               "state": "CA",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 69.9,
-              "wind_mph": 5.0,
-              "gust_mph": 4.9,
-              "precip_pct": 0,
-              "snow_in": 0.0
-            },
+            "weather": null,
             "flags": []
           }
         },
@@ -7511,7 +7561,7 @@
           "kickoff": "2026-10-18T02:30Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": 7.5,
           "spread_details": "FRES -7.5",
           "total": 46.5,
@@ -7595,8 +7645,8 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 81.6,
-              "wind_mph": 5.0,
+              "temp_f": 83.1,
+              "wind_mph": 2.6,
               "gust_mph": 3.1,
               "precip_pct": 0,
               "snow_in": 0.0
@@ -7611,10 +7661,10 @@
           "kickoff": "2026-10-18T02:30Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": 14.5,
           "spread_details": "UNM -14.5",
-          "total": 45.5,
+          "total": 44.5,
           "home": {
             "id": "62",
             "name": "Hawai'i Rainbow Warriors",
@@ -7695,17 +7745,17 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 78.4,
-              "wind_mph": 13.0,
-              "gust_mph": 32.2,
-              "precip_pct": 2,
+              "temp_f": 77.8,
+              "wind_mph": 13.1,
+              "gust_mph": 33.1,
+              "precip_pct": 8,
               "snow_in": 0.0
             },
             "flags": [
               {
                 "kind": "wind",
                 "severity": "high",
-                "text": "Wind 13 mph, gusting 32 \u2014 kicking and the deep ball suffer"
+                "text": "Wind 13 mph, gusting 33 \u2014 kicking and the deep ball suffer"
               }
             ]
           }
@@ -7717,7 +7767,7 @@
           "kickoff": "2026-10-18T03:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -7.5,
           "spread_details": "ORE -7.5",
           "total": 52.5,
@@ -7801,8 +7851,8 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 50.6,
-              "wind_mph": 3.5,
+              "temp_f": 51.7,
+              "wind_mph": 2.7,
               "gust_mph": 2.9,
               "precip_pct": 1,
               "snow_in": 0.0
@@ -7822,7 +7872,7 @@
             "team_name": "Northwestern Wildcats",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/77.png",
             "spread": -7.5,
-            "source": "DraftKings",
+            "source": "Draft Kings",
             "teased": -1.5,
             "band": "fav -8.5..-7.5",
             "prob": 0.7063,
@@ -7836,7 +7886,7 @@
             "team_name": "Pittsburgh Panthers",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/221.png",
             "spread": -6.5,
-            "source": "DraftKings",
+            "source": "Draft Kings",
             "teased": -0.5,
             "band": "fav -7.5..-6.5",
             "prob": 0.7063,
@@ -7850,7 +7900,7 @@
             "team_name": "Florida Atlantic Owls",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2226.png",
             "spread": 2.5,
-            "source": "DraftKings",
+            "source": "Draft Kings",
             "teased": 8.5,
             "band": "dog +1.5..+2.5",
             "prob": 0.7063,
@@ -7864,7 +7914,7 @@
             "team_name": "Bowling Green Falcons",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/189.png",
             "spread": -6.5,
-            "source": "DraftKings",
+            "source": "Draft Kings",
             "teased": -0.5,
             "band": "fav -7.5..-6.5",
             "prob": 0.7063,
@@ -7878,7 +7928,7 @@
             "team_name": "Buffalo Bulls",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2084.png",
             "spread": -6.5,
-            "source": "DraftKings",
+            "source": "Draft Kings",
             "teased": -0.5,
             "band": "fav -7.5..-6.5",
             "prob": 0.7063,
@@ -7892,7 +7942,7 @@
             "team_name": "Western Michigan Broncos",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2711.png",
             "spread": -6.5,
-            "source": "DraftKings",
+            "source": "Draft Kings",
             "teased": -0.5,
             "band": "fav -7.5..-6.5",
             "prob": 0.7063,
@@ -7906,7 +7956,7 @@
             "team_name": "Michigan Wolverines",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/130.png",
             "spread": -6.5,
-            "source": "DraftKings",
+            "source": "Draft Kings",
             "teased": -0.5,
             "band": "fav -7.5..-6.5",
             "prob": 0.7063,
@@ -7920,7 +7970,7 @@
             "team_name": "Wyoming Cowboys",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2751.png",
             "spread": -7.5,
-            "source": "DraftKings",
+            "source": "Draft Kings",
             "teased": -1.5,
             "band": "fav -8.5..-7.5",
             "prob": 0.7063,
@@ -7934,7 +7984,7 @@
             "team_name": "Toledo Rockets",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2649.png",
             "spread": -6.5,
-            "source": "DraftKings",
+            "source": "Draft Kings",
             "teased": -0.5,
             "band": "fav -7.5..-6.5",
             "prob": 0.7063,
@@ -7948,7 +7998,7 @@
             "team_name": "Wisconsin Badgers",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/275.png",
             "spread": 2.5,
-            "source": "DraftKings",
+            "source": "Draft Kings",
             "teased": 8.5,
             "band": "dog +1.5..+2.5",
             "prob": 0.7063,
@@ -7962,7 +8012,7 @@
             "team_name": "UTSA Roadrunners",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2636.png",
             "spread": -6.5,
-            "source": "DraftKings",
+            "source": "Draft Kings",
             "teased": -0.5,
             "band": "fav -7.5..-6.5",
             "prob": 0.7063,
@@ -7976,7 +8026,7 @@
             "team_name": "San Jos\u00e9 State Spartans",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/23.png",
             "spread": -7.5,
-            "source": "DraftKings",
+            "source": "Draft Kings",
             "teased": -1.5,
             "band": "fav -8.5..-7.5",
             "prob": 0.7063,
@@ -7990,7 +8040,7 @@
             "team_name": "Fresno State Bulldogs",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/278.png",
             "spread": -7.5,
-            "source": "DraftKings",
+            "source": "Draft Kings",
             "teased": -1.5,
             "band": "fav -8.5..-7.5",
             "prob": 0.7063,
@@ -8004,7 +8054,7 @@
             "team_name": "Oregon Ducks",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2483.png",
             "spread": -7.5,
-            "source": "DraftKings",
+            "source": "Draft Kings",
             "teased": -1.5,
             "band": "fav -8.5..-7.5",
             "prob": 0.7063,
@@ -8013,7 +8063,7 @@
         ],
         "per_leg_rate": 0.7063,
         "per_leg_stderr": 0.0196,
-        "provider": "DraftKings",
+        "provider": "Draft Kings",
         "provider_is_mine": false,
         "captured_at": null,
         "max_price_best": 101,
@@ -8061,7 +8111,7 @@
               "team_name": "Old Dominion Monarchs",
               "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/295.png",
               "spread": 3.5,
-              "source": "DraftKings",
+              "source": "Draft Kings",
               "teased": 13.5,
               "band": "dog +1.5..+3.5",
               "prob": 0.7723,
@@ -8075,7 +8125,7 @@
               "team_name": "Washington Huskies",
               "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/264.png",
               "spread": 3.5,
-              "source": "DraftKings",
+              "source": "Draft Kings",
               "teased": 13.5,
               "band": "dog +1.5..+3.5",
               "prob": 0.7723,
@@ -8089,7 +8139,7 @@
               "team_name": "Indiana Hoosiers",
               "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/84.png",
               "spread": 3.5,
-              "source": "DraftKings",
+              "source": "Draft Kings",
               "teased": 13.5,
               "band": "dog +1.5..+3.5",
               "prob": 0.7723,
@@ -8103,7 +8153,7 @@
               "team_name": "Texas Longhorns",
               "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/251.png",
               "spread": -10.5,
-              "source": "DraftKings",
+              "source": "Draft Kings",
               "teased": -0.5,
               "band": "fav -12.5..-8.5",
               "prob": 0.7723,
@@ -8117,7 +8167,7 @@
               "team_name": "SMU Mustangs",
               "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2567.png",
               "spread": -9.5,
-              "source": "DraftKings",
+              "source": "Draft Kings",
               "teased": 0.5,
               "band": "fav -12.5..-8.5",
               "prob": 0.7723,
@@ -8131,7 +8181,7 @@
               "team_name": "Florida Atlantic Owls",
               "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2226.png",
               "spread": 2.5,
-              "source": "DraftKings",
+              "source": "Draft Kings",
               "teased": 12.5,
               "band": "dog +1.5..+3.5",
               "prob": 0.7723,
@@ -8145,7 +8195,7 @@
               "team_name": "Alabama Crimson Tide",
               "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/333.png",
               "spread": -8.5,
-              "source": "DraftKings",
+              "source": "Draft Kings",
               "teased": 1.5,
               "band": "fav -12.5..-8.5",
               "prob": 0.7723,
@@ -8159,7 +8209,7 @@
               "team_name": "Miami (OH) RedHawks",
               "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/193.png",
               "spread": -9.5,
-              "source": "DraftKings",
+              "source": "Draft Kings",
               "teased": 0.5,
               "band": "fav -12.5..-8.5",
               "prob": 0.7723,
@@ -8173,7 +8223,7 @@
               "team_name": "Notre Dame Fighting Irish",
               "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/87.png",
               "spread": -10.5,
-              "source": "DraftKings",
+              "source": "Draft Kings",
               "teased": -0.5,
               "band": "fav -12.5..-8.5",
               "prob": 0.7723,
@@ -8187,7 +8237,7 @@
               "team_name": "Wisconsin Badgers",
               "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/275.png",
               "spread": 2.5,
-              "source": "DraftKings",
+              "source": "Draft Kings",
               "teased": 12.5,
               "band": "dog +1.5..+3.5",
               "prob": 0.7723,
@@ -8201,7 +8251,7 @@
               "team_name": "Wake Forest Demon Deacons",
               "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/154.png",
               "spread": -9.5,
-              "source": "DraftKings",
+              "source": "Draft Kings",
               "teased": 0.5,
               "band": "fav -12.5..-8.5",
               "prob": 0.7723,
@@ -8215,7 +8265,7 @@
               "team_name": "Missouri State Bears",
               "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2623.png",
               "spread": 3.0,
-              "source": "DraftKings",
+              "source": "Draft Kings",
               "teased": 13.0,
               "band": "dog +1.5..+3.5",
               "prob": 0.7529,
@@ -8229,7 +8279,7 @@
               "team_name": "Virginia Tech Hokies",
               "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/259.png",
               "spread": -10.0,
-              "source": "DraftKings",
+              "source": "Draft Kings",
               "teased": 0.0,
               "band": "fav -12.5..-8.5",
               "prob": 0.7529,
@@ -8243,7 +8293,7 @@
               "team_name": "North Carolina Tar Heels",
               "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/153.png",
               "spread": 3.0,
-              "source": "DraftKings",
+              "source": "Draft Kings",
               "teased": 13.0,
               "band": "dog +1.5..+3.5",
               "prob": 0.7529,
@@ -8252,7 +8302,7 @@
           ],
           "per_leg_rate": 0.7723,
           "per_leg_stderr": 0.0147,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "provider_is_mine": false,
           "captured_at": null,
           "max_price_best": -147,
@@ -8717,6 +8767,14 @@
           "prior_games": 13
         },
         {
+          "team_id": "55",
+          "name": "Jacksonville State Gamecocks",
+          "abbr": "JXST",
+          "elo": 1559.9,
+          "games": 6,
+          "prior_games": 14
+        },
+        {
           "team_id": "213",
           "name": "Penn State Nittany Lions",
           "abbr": "PSU",
@@ -8779,14 +8837,6 @@
           "elo": 1546.4,
           "games": 6,
           "prior_games": 12
-        },
-        {
-          "team_id": "55",
-          "name": "Jacksonville State Gamecocks",
-          "abbr": "JXST",
-          "elo": 1545.4,
-          "games": 5,
-          "prior_games": 14
         },
         {
           "team_id": "235",
@@ -8989,14 +9039,6 @@
           "prior_games": 13
         },
         {
-          "team_id": "2229",
-          "name": "Florida International Panthers",
-          "abbr": "FIU",
-          "elo": 1460.6,
-          "games": 5,
-          "prior_games": 13
-        },
-        {
           "team_id": "2247",
           "name": "Georgia State Panthers",
           "abbr": "GAST",
@@ -9009,6 +9051,14 @@
           "name": "Old Dominion Monarchs",
           "abbr": "ODU",
           "elo": 1451.6,
+          "games": 6,
+          "prior_games": 13
+        },
+        {
+          "team_id": "2229",
+          "name": "Florida International Panthers",
+          "abbr": "FIU",
+          "elo": 1446.1,
           "games": 6,
           "prior_games": 13
         },
@@ -9189,14 +9239,6 @@
           "prior_games": 12
         },
         {
-          "team_id": "48",
-          "name": "Delaware Blue Hens",
-          "abbr": "DEL",
-          "elo": 1372.7,
-          "games": 5,
-          "prior_games": 13
-        },
-        {
           "team_id": "338",
           "name": "Kennesaw State Owls",
           "abbr": "KENN",
@@ -9250,6 +9292,14 @@
           "abbr": "HAW",
           "elo": 1346.9,
           "games": 5,
+          "prior_games": 13
+        },
+        {
+          "team_id": "48",
+          "name": "Delaware Blue Hens",
+          "abbr": "DEL",
+          "elo": 1344.5,
+          "games": 6,
           "prior_games": 13
         },
         {
@@ -9325,6 +9375,14 @@
           "prior_games": 12
         },
         {
+          "team_id": "2393",
+          "name": "Middle Tennessee Blue Raiders",
+          "abbr": "MTSU",
+          "elo": 1307.5,
+          "games": 6,
+          "prior_games": 12
+        },
+        {
           "team_id": "2623",
           "name": "Missouri State Bears",
           "abbr": "MOST",
@@ -9339,14 +9397,6 @@
           "elo": 1299.4,
           "games": 6,
           "prior_games": 13
-        },
-        {
-          "team_id": "2393",
-          "name": "Middle Tennessee Blue Raiders",
-          "abbr": "MTSU",
-          "elo": 1279.3,
-          "games": 5,
-          "prior_games": 12
         },
         {
           "team_id": "2572",
@@ -10316,7 +10366,7 @@
         "prior_games_used": 4495,
         "history_seasons": "2021-2025",
         "top_division_teams": 150,
-        "completed_games": 434,
+        "completed_games": 436,
         "upcoming_games": 57,
         "rated_teams": 246,
         "elo": {
