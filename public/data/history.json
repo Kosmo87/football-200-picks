@@ -8052,10 +8052,15 @@
       "model_prob": 0.69266,
       "edge_pp": 12.059633,
       "sample": 12.0,
-      "status": "open",
-      "result": null,
+      "status": "lost",
+      "result": {
+        "home_abbr": "JAX",
+        "away_abbr": "HOU",
+        "home_score": 31,
+        "away_score": 34
+      },
       "clv_pp": -0.86,
-      "graded_at": null
+      "graded_at": "2026-10-18T18:14:34+00:00"
     },
     {
       "id": "NFL:401872999:1",
@@ -8316,14 +8321,14 @@
       "logged_at": "2026-10-16T01:31:27+00:00",
       "open_odds": -185,
       "open_implied": 0.62247,
-      "close_odds": -185,
-      "close_implied": 0.62247,
+      "close_odds": -205,
+      "close_implied": 0.64473,
       "model_prob": 0.72484,
       "edge_pp": 10.237794,
       "sample": 10.0,
       "status": "open",
       "result": null,
-      "clv_pp": 0.0,
+      "clv_pp": 2.23,
       "graded_at": null
     },
     {
@@ -8412,14 +8417,14 @@
       "logged_at": "2026-10-16T01:31:27+00:00",
       "open_odds": 190,
       "open_implied": 0.33099,
-      "close_odds": 130,
-      "close_implied": 0.41701,
+      "close_odds": 136,
+      "close_implied": 0.40663,
       "model_prob": 0.41557,
       "edge_pp": 8.45794,
       "sample": 9.0,
       "status": "open",
       "result": null,
-      "clv_pp": 8.6,
+      "clv_pp": 7.56,
       "graded_at": null
     },
     {
@@ -8561,14 +8566,14 @@
       "logged_at": "2026-10-18T06:05:28+00:00",
       "open_odds": 275,
       "open_implied": 0.25593,
-      "close_odds": 275,
-      "close_implied": 0.25593,
+      "close_odds": 330,
+      "close_implied": 0.22317,
       "model_prob": 0.30784,
       "edge_pp": 5.19091,
       "sample": 10.0,
       "status": "open",
       "result": null,
-      "clv_pp": 0.0,
+      "clv_pp": -3.28,
       "graded_at": null
     },
     {
@@ -8729,11 +8734,35 @@
       "logged_at": "2026-10-18T14:45:14+00:00",
       "open_odds": 245,
       "open_implied": 0.27792,
-      "close_odds": 245,
-      "close_implied": 0.27792,
+      "close_odds": 215,
+      "close_implied": 0.30423,
       "model_prob": 0.37286,
       "edge_pp": 9.4944,
       "sample": 10.0,
+      "status": "open",
+      "result": null,
+      "clv_pp": 2.63,
+      "graded_at": null
+    },
+    {
+      "id": "NCAAF:401856728:2",
+      "league": "NCAAF",
+      "event_id": "401856728",
+      "matchup": "LSU @ AUB",
+      "kickoff": "2026-10-24T16:00Z",
+      "team_id": "2",
+      "team_abbr": "AUB",
+      "team_name": "Auburn Tigers",
+      "opp_abbr": "LSU",
+      "side": "home",
+      "logged_at": "2026-10-18T18:14:33+00:00",
+      "open_odds": 200,
+      "open_implied": 0.31944,
+      "close_odds": 200,
+      "close_implied": 0.31944,
+      "model_prob": 0.39233,
+      "edge_pp": 7.288588,
+      "sample": 9.85,
       "status": "open",
       "result": null,
       "clv_pp": 0.0,
@@ -8743,19 +8772,19 @@
   "summary": {
     "open": 27,
     "won": 124,
-    "lost": 154,
+    "lost": 155,
     "pushed": 1,
-    "units": -3.01,
-    "roi_pct": -1.1,
-    "win_pct": 44.6,
-    "avg_clv_pp": -0.09,
-    "beat_close_pct": 38.7,
+    "units": -4.01,
+    "roi_pct": -1.4,
+    "win_pct": 44.4,
+    "avg_clv_pp": -0.1,
+    "beat_close_pct": 38.6,
     "by_league": {
       "NFL": {
         "won": 31,
-        "lost": 30,
-        "units": 11.28,
-        "roi_pct": 18.5
+        "lost": 31,
+        "units": 10.28,
+        "roi_pct": 16.6
       },
       "NCAAF": {
         "won": 93,
@@ -8765,5 +8794,5 @@
       }
     }
   },
-  "updated_at": "2026-10-18T14:45:16+00:00"
+  "updated_at": "2026-10-18T18:14:34+00:00"
 }
