@@ -1,131 +1,10 @@
 {
-  "generated_at": "2026-10-25T11:42:25+00:00",
+  "generated_at": "2026-10-25T16:28:46+00:00",
   "season": 2026,
   "leagues": {
     "NFL": {
       "league": "NFL",
       "games": [
-        {
-          "event_id": "401873011",
-          "name": "Pittsburgh Steelers at New Orleans Saints",
-          "short_name": "PIT VS NO",
-          "kickoff": "2026-10-25T13:30Z",
-          "status": "Scheduled",
-          "neutral": true,
-          "provider": "DraftKings",
-          "spread": 3.0,
-          "spread_details": "PIT -3",
-          "total": 43.5,
-          "home": {
-            "id": "18",
-            "name": "New Orleans Saints",
-            "abbr": "NO",
-            "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/no.png",
-            "elo": 1432.1,
-            "moneyline": 136
-          },
-          "away": {
-            "id": "23",
-            "name": "Pittsburgh Steelers",
-            "abbr": "PIT",
-            "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/pit.png",
-            "elo": 1537.9,
-            "moneyline": -162
-          },
-          "legs": [
-            {
-              "side": "away",
-              "team_id": "23",
-              "team_name": "Pittsburgh Steelers",
-              "team_abbr": "PIT",
-              "odds": -162,
-              "model_prob": 0.64772,
-              "implied_prob": 0.59337,
-              "edge_pp": 5.43506,
-              "fair_odds": -184,
-              "sample": 13.0,
-              "team_sample": 13.0,
-              "opp_sample": 13.0,
-              "team_games": 9,
-              "opp_games": 9,
-              "prior_credit": 4.0
-            },
-            {
-              "side": "home",
-              "team_id": "18",
-              "team_name": "New Orleans Saints",
-              "team_abbr": "NO",
-              "odds": 136,
-              "model_prob": 0.35228,
-              "implied_prob": 0.40663,
-              "edge_pp": -5.43506,
-              "fair_odds": 184,
-              "sample": 13.0,
-              "team_sample": 13.0,
-              "opp_sample": 13.0,
-              "team_games": 9,
-              "opp_games": 9,
-              "prior_credit": 4.0
-            }
-          ],
-          "context": {
-            "injuries": {
-              "home": {
-                "count": 0,
-                "long_term": 1,
-                "qb_out": 0,
-                "qbs": [],
-                "players": []
-              },
-              "away": {
-                "count": 2,
-                "long_term": 1,
-                "qb_out": 0,
-                "qbs": [],
-                "players": [
-                  {
-                    "player": "Brandin Echols",
-                    "position": "CB",
-                    "status": "Out",
-                    "detail": "Hamstring",
-                    "since": "2026-10-23T01:28Z"
-                  },
-                  {
-                    "player": "Ben Skowronek",
-                    "position": "WR",
-                    "status": "Out",
-                    "detail": "Calf",
-                    "since": "2026-10-22T21:48Z"
-                  }
-                ]
-              },
-              "source": "espn",
-              "teams_covered": 26,
-              "teams_playing": 26,
-              "error": null
-            },
-            "venue": {
-              "venue": "Stade de France",
-              "city": "Saint-Denis",
-              "state": "",
-              "indoor": false
-            },
-            "weather": {
-              "temp_f": 78.4,
-              "wind_mph": 2.7,
-              "gust_mph": 13.6,
-              "precip_pct": 100,
-              "snow_in": 0.0
-            },
-            "flags": [
-              {
-                "kind": "rain",
-                "severity": "low",
-                "text": "100% chance of rain"
-              }
-            ]
-          }
-        },
         {
           "event_id": "401873017",
           "name": "San Francisco 49ers at Atlanta Falcons",
@@ -133,17 +12,17 @@
           "kickoff": "2026-10-25T17:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": 2.5,
           "spread_details": "SF -2.5",
-          "total": 50.5,
+          "total": 49.5,
           "home": {
             "id": "1",
             "name": "Atlanta Falcons",
             "abbr": "ATL",
             "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/atl.png",
             "elo": 1463.8,
-            "moneyline": 120
+            "moneyline": 130
           },
           "away": {
             "id": "25",
@@ -151,7 +30,7 @@
             "abbr": "SF",
             "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/sf.png",
             "elo": 1670.7,
-            "moneyline": -142
+            "moneyline": -155
           },
           "legs": [
             {
@@ -159,120 +38,164 @@
               "team_id": "25",
               "team_name": "San Francisco 49ers",
               "team_abbr": "SF",
-              "odds": -142,
+              "odds": -155,
               "model_prob": 0.72904,
-              "implied_prob": 0.56349,
-              "edge_pp": 16.554596,
+              "implied_prob": 0.58299,
+              "edge_pp": 14.604538,
               "fair_odds": -269,
               "sample": 13.0,
               "team_sample": 13.0,
               "opp_sample": 13.0,
               "team_games": 9,
               "opp_games": 9,
-              "prior_credit": 4.0
+              "prior_credit": 4.0,
+              "stale": true,
+              "stale_reason": "ATL quarterback out: Jack Strand (Coach's Decision), Andy Dalton (Coach's Decision); SF quarterback out: Kurtis Rourke (Coach's Decision)"
             },
             {
               "side": "home",
               "team_id": "1",
               "team_name": "Atlanta Falcons",
               "team_abbr": "ATL",
-              "odds": 120,
+              "odds": 130,
               "model_prob": 0.27096,
-              "implied_prob": 0.43651,
-              "edge_pp": -16.554596,
+              "implied_prob": 0.41701,
+              "edge_pp": -14.604538,
               "fair_odds": 269,
               "sample": 13.0,
               "team_sample": 13.0,
               "opp_sample": 13.0,
               "team_games": 9,
               "opp_games": 9,
-              "prior_credit": 4.0
+              "prior_credit": 4.0,
+              "stale": true,
+              "stale_reason": "ATL quarterback out: Jack Strand (Coach's Decision), Andy Dalton (Coach's Decision); SF quarterback out: Kurtis Rourke (Coach's Decision)"
             }
           ],
           "context": {
             "injuries": {
               "home": {
-                "count": 3,
+                "count": 7,
                 "long_term": 3,
-                "qb_out": 0,
-                "qbs": [],
+                "qb_out": 2,
+                "qbs": [
+                  "Jack Strand (Coach's Decision)",
+                  "Andy Dalton (Coach's Decision)"
+                ],
                 "players": [
                   {
-                    "player": "Billy Bowman Jr.",
-                    "position": "CB",
+                    "player": "Jack Strand",
+                    "position": "QB",
                     "status": "Out",
-                    "detail": "Hamstring",
-                    "since": "2026-10-23T23:26Z"
+                    "detail": "Coach's Decision",
+                    "since": "2026-10-25T15:56Z"
                   },
                   {
-                    "player": "Divine Deablo",
-                    "position": "LB",
+                    "player": "Andy Dalton",
+                    "position": "QB",
                     "status": "Out",
-                    "detail": "Forearm",
-                    "since": "2026-10-23T23:08Z"
+                    "detail": "Coach's Decision",
+                    "since": "2026-10-25T15:54Z"
+                  },
+                  {
+                    "player": "Avieon Terrell",
+                    "position": "CB",
+                    "status": "Out",
+                    "detail": "Back",
+                    "since": "2026-10-25T16:11Z"
+                  },
+                  {
+                    "player": "Olamide Zaccheaus",
+                    "position": "WR",
+                    "status": "Out",
+                    "detail": "Shoulder",
+                    "since": "2026-10-25T15:52Z"
                   },
                   {
                     "player": "Brian Robinson Jr.",
                     "position": "RB",
                     "status": "Out",
                     "detail": "Hamstring",
-                    "since": "2026-10-23T17:15Z"
+                    "since": "2026-10-25T15:41Z"
+                  },
+                  {
+                    "player": "Billy Bowman Jr.",
+                    "position": "CB",
+                    "status": "Out",
+                    "detail": "Hamstring",
+                    "since": "2026-10-25T15:41Z"
+                  },
+                  {
+                    "player": "Divine Deablo",
+                    "position": "LB",
+                    "status": "Out",
+                    "detail": "Forearm",
+                    "since": "2026-10-25T15:41Z"
                   }
                 ]
               },
               "away": {
-                "count": 6,
+                "count": 7,
                 "long_term": 0,
-                "qb_out": 0,
-                "qbs": [],
+                "qb_out": 1,
+                "qbs": [
+                  "Kurtis Rourke (Coach's Decision)"
+                ],
                 "players": [
                   {
-                    "player": "Garret Wallow",
-                    "position": "LB",
+                    "player": "Kurtis Rourke",
+                    "position": "QB",
                     "status": "Out",
-                    "detail": "Hamstring",
-                    "since": "2026-10-24T02:27Z"
-                  },
-                  {
-                    "player": "Luke Gifford",
-                    "position": "LB",
-                    "status": "Out",
-                    "detail": "Groin",
-                    "since": "2026-10-24T02:20Z"
-                  },
-                  {
-                    "player": "Marques Sigle",
-                    "position": "S",
-                    "status": "Out",
-                    "detail": "Ankle",
-                    "since": "2026-10-24T01:11Z"
-                  },
-                  {
-                    "player": "Nick Bosa",
-                    "position": "DE",
-                    "status": "Out",
-                    "detail": "Knee",
-                    "since": "2026-10-24T01:03Z"
+                    "detail": "Coach's Decision",
+                    "since": "2026-10-25T15:45Z"
                   },
                   {
                     "player": "Deebo Samuel Sr.",
                     "position": "WR",
                     "status": "Out",
                     "detail": "Hamstring",
-                    "since": "2026-10-23T21:35Z"
+                    "since": "2026-10-25T15:45Z"
+                  },
+                  {
+                    "player": "Marques Sigle",
+                    "position": "S",
+                    "status": "Out",
+                    "detail": "Ankle",
+                    "since": "2026-10-25T15:45Z"
+                  },
+                  {
+                    "player": "Garret Wallow",
+                    "position": "LB",
+                    "status": "Out",
+                    "detail": "Hamstring",
+                    "since": "2026-10-25T15:45Z"
+                  },
+                  {
+                    "player": "Luke Gifford",
+                    "position": "LB",
+                    "status": "Out",
+                    "detail": "Groin",
+                    "since": "2026-10-25T15:45Z"
+                  },
+                  {
+                    "player": "Nick Bosa",
+                    "position": "DE",
+                    "status": "Out",
+                    "detail": "Knee",
+                    "since": "2026-10-25T15:45Z"
                   },
                   {
                     "player": "Mike Evans",
                     "position": "WR",
                     "status": "Out",
                     "detail": "Achilles",
-                    "since": "2026-10-23T20:37Z"
+                    "since": "2026-10-25T15:45Z"
                   }
                 ]
               },
               "source": "espn",
-              "teams_covered": 26,
-              "teams_playing": 26,
+              "teams_covered": 24,
+              "teams_playing": 24,
               "error": null
             },
             "venue": {
@@ -284,10 +207,28 @@
             "weather": null,
             "flags": [
               {
+                "kind": "qb_out",
+                "severity": "high",
+                "side": "home",
+                "text": "ATL quarterback out: Jack Strand (Coach's Decision), Andy Dalton (Coach's Decision). The ratings are built from final scores and do not know this; the price does."
+              },
+              {
+                "kind": "injuries",
+                "severity": "low",
+                "side": "home",
+                "text": "ATL ruled out 7 rotation players this week"
+              },
+              {
+                "kind": "qb_out",
+                "severity": "high",
+                "side": "away",
+                "text": "SF quarterback out: Kurtis Rourke (Coach's Decision). The ratings are built from final scores and do not know this; the price does."
+              },
+              {
                 "kind": "injuries",
                 "severity": "low",
                 "side": "away",
-                "text": "SF ruled out 6 rotation players this week"
+                "text": "SF ruled out 7 rotation players this week"
               }
             ]
           }
@@ -299,7 +240,7 @@
           "kickoff": "2026-10-25T17:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": 1.5,
           "spread_details": "CLE -1.5",
           "total": 36.5,
@@ -335,7 +276,9 @@
               "opp_sample": 13.0,
               "team_games": 9,
               "opp_games": 9,
-              "prior_credit": 4.0
+              "prior_credit": 4.0,
+              "stale": true,
+              "stale_reason": "CLE quarterback out: Taylen Green (Coach's Decision)"
             },
             {
               "side": "home",
@@ -352,36 +295,125 @@
               "opp_sample": 13.0,
               "team_games": 9,
               "opp_games": 9,
-              "prior_credit": 4.0
+              "prior_credit": 4.0,
+              "stale": true,
+              "stale_reason": "CLE quarterback out: Taylen Green (Coach's Decision)"
             }
           ],
           "context": {
             "injuries": {
               "home": {
-                "count": 0,
+                "count": 7,
                 "long_term": 1,
                 "qb_out": 0,
                 "qbs": [],
-                "players": []
+                "players": [
+                  {
+                    "player": "Nicholas Singleton",
+                    "position": "RB",
+                    "status": "Out",
+                    "detail": "Coach's Decision",
+                    "since": "2026-10-25T15:58Z"
+                  },
+                  {
+                    "player": "Calvin Ridley",
+                    "position": "WR",
+                    "status": "Out",
+                    "detail": "Hip",
+                    "since": "2026-10-25T15:38Z"
+                  },
+                  {
+                    "player": "Tyjae Spears",
+                    "position": "RB",
+                    "status": "Out",
+                    "detail": "Knee",
+                    "since": "2026-10-25T15:36Z"
+                  },
+                  {
+                    "player": "Jaylon Jones",
+                    "position": "CB",
+                    "status": "Out",
+                    "detail": "Coach's Decision",
+                    "since": "2026-10-25T15:32Z"
+                  },
+                  {
+                    "player": "Jackie Marshall",
+                    "position": "DT",
+                    "status": "Out",
+                    "detail": "Coach's Decision",
+                    "since": "2026-10-25T15:32Z"
+                  },
+                  {
+                    "player": "Kylen Granson",
+                    "position": "TE",
+                    "status": "Out",
+                    "detail": "Coach's Decision",
+                    "since": "2026-10-25T15:32Z"
+                  },
+                  {
+                    "player": "Brandon Crenshaw-Dickson",
+                    "position": "OT",
+                    "status": "Out",
+                    "detail": "Coach's Decision",
+                    "since": "2026-10-25T15:32Z"
+                  }
+                ]
               },
               "away": {
-                "count": 1,
+                "count": 6,
                 "long_term": 3,
-                "qb_out": 0,
-                "qbs": [],
+                "qb_out": 1,
+                "qbs": [
+                  "Taylen Green (Coach's Decision)"
+                ],
                 "players": [
+                  {
+                    "player": "Taylen Green",
+                    "position": "QB",
+                    "status": "Out",
+                    "detail": "Coach's Decision",
+                    "since": "2026-10-25T16:13Z"
+                  },
+                  {
+                    "player": "Audric Estime",
+                    "position": "RB",
+                    "status": "Out",
+                    "detail": "Coach's Decision",
+                    "since": "2026-10-25T15:52Z"
+                  },
                   {
                     "player": "Mike Hall Jr.",
                     "position": "DT",
                     "status": "Out",
                     "detail": "Ankle",
-                    "since": "2026-10-23T23:33Z"
+                    "since": "2026-10-25T15:32Z"
+                  },
+                  {
+                    "player": "Noah Igbinoghene",
+                    "position": "CB",
+                    "status": "Out",
+                    "detail": "Coach's Decision",
+                    "since": "2026-10-25T15:32Z"
+                  },
+                  {
+                    "player": "Justin Jefferson",
+                    "position": "LB",
+                    "status": "Out",
+                    "detail": "Coach's Decision",
+                    "since": "2026-10-25T15:32Z"
+                  },
+                  {
+                    "player": "Parker Brailsford",
+                    "position": "C",
+                    "status": "Out",
+                    "detail": "Coach's Decision",
+                    "since": "2026-10-25T15:32Z"
                   }
                 ]
               },
               "source": "espn",
-              "teams_covered": 26,
-              "teams_playing": 26,
+              "teams_covered": 24,
+              "teams_playing": 24,
               "error": null
             },
             "venue": {
@@ -391,13 +423,32 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 70.9,
-              "wind_mph": 3.4,
-              "gust_mph": 4.9,
+              "temp_f": 70.4,
+              "wind_mph": 1.2,
+              "gust_mph": 2.7,
               "precip_pct": 0,
               "snow_in": 0.0
             },
-            "flags": []
+            "flags": [
+              {
+                "kind": "injuries",
+                "severity": "low",
+                "side": "home",
+                "text": "TEN ruled out 7 rotation players this week"
+              },
+              {
+                "kind": "qb_out",
+                "severity": "high",
+                "side": "away",
+                "text": "CLE quarterback out: Taylen Green (Coach's Decision). The ratings are built from final scores and do not know this; the price does."
+              },
+              {
+                "kind": "injuries",
+                "severity": "low",
+                "side": "away",
+                "text": "CLE ruled out 6 rotation players this week"
+              }
+            ]
           }
         },
         {
@@ -407,7 +458,7 @@
           "kickoff": "2026-10-25T17:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -6.5,
           "spread_details": "MIN -6.5",
           "total": 41.5,
@@ -443,7 +494,9 @@
               "opp_sample": 12.0,
               "team_games": 9,
               "opp_games": 8,
-              "prior_credit": 4.0
+              "prior_credit": 4.0,
+              "stale": true,
+              "stale_reason": "MIN quarterback out: Max Brosmer (Coach's Decision); IND quarterback out: Riley Leonard (Coach's Decision)"
             },
             {
               "side": "home",
@@ -460,57 +513,127 @@
               "opp_sample": 13.0,
               "team_games": 8,
               "opp_games": 9,
-              "prior_credit": 4.0
+              "prior_credit": 4.0,
+              "stale": true,
+              "stale_reason": "MIN quarterback out: Max Brosmer (Coach's Decision); IND quarterback out: Riley Leonard (Coach's Decision)"
             }
           ],
           "context": {
             "injuries": {
               "home": {
-                "count": 0,
+                "count": 6,
                 "long_term": 1,
-                "qb_out": 0,
-                "qbs": [],
-                "players": []
-              },
-              "away": {
-                "count": 4,
-                "long_term": 1,
-                "qb_out": 0,
-                "qbs": [],
+                "qb_out": 1,
+                "qbs": [
+                  "Max Brosmer (Coach's Decision)"
+                ],
                 "players": [
                   {
-                    "player": "CJ Allen",
+                    "player": "Max Brosmer",
+                    "position": "QB",
+                    "status": "Out",
+                    "detail": "Coach's Decision",
+                    "since": "2026-10-25T15:38Z"
+                  },
+                  {
+                    "player": "Demond Claiborne",
+                    "position": "RB",
+                    "status": "Out",
+                    "detail": "Coach's Decision",
+                    "since": "2026-10-25T15:37Z"
+                  },
+                  {
+                    "player": "Elijah Williams",
+                    "position": "DE",
+                    "status": "Out",
+                    "detail": "Coach's Decision",
+                    "since": "2026-10-25T15:34Z"
+                  },
+                  {
+                    "player": "Jakobe Thomas",
+                    "position": "S",
+                    "status": "Out",
+                    "detail": "Coach's Decision",
+                    "since": "2026-10-25T15:34Z"
+                  },
+                  {
+                    "player": "Caleb Tiernan",
+                    "position": "OT",
+                    "status": "Out",
+                    "detail": "Coach's Decision",
+                    "since": "2026-10-25T15:34Z"
+                  },
+                  {
+                    "player": "Charles Demmings",
+                    "position": "CB",
+                    "status": "Out",
+                    "detail": "Coach's Decision",
+                    "since": "2026-10-25T15:34Z"
+                  }
+                ]
+              },
+              "away": {
+                "count": 7,
+                "long_term": 1,
+                "qb_out": 1,
+                "qbs": [
+                  "Riley Leonard (Coach's Decision)"
+                ],
+                "players": [
+                  {
+                    "player": "Riley Leonard",
+                    "position": "QB",
+                    "status": "Out",
+                    "detail": "Coach's Decision",
+                    "since": "2026-10-25T15:41Z"
+                  },
+                  {
+                    "player": "Bryce Boettcher",
                     "position": "LB",
                     "status": "Out",
-                    "detail": "Ankle",
-                    "since": "2026-10-24T18:30Z"
+                    "detail": "Groin",
+                    "since": "2026-10-25T15:43Z"
                   },
                   {
                     "player": "Sauce Gardner",
                     "position": "CB",
                     "status": "Out",
                     "detail": "Calf",
-                    "since": "2026-10-23T19:21Z"
+                    "since": "2026-10-25T15:40Z"
+                  },
+                  {
+                    "player": "Dalton Tucker",
+                    "position": "G",
+                    "status": "Out",
+                    "detail": "Coach's Decision",
+                    "since": "2026-10-25T15:38Z"
                   },
                   {
                     "player": "Tyler Warren",
                     "position": "TE",
                     "status": "Out",
                     "detail": "Groin",
-                    "since": "2026-10-23T16:52Z"
+                    "since": "2026-10-25T15:38Z"
                   },
                   {
                     "player": "Anthony Gould",
                     "position": "WR",
                     "status": "Out",
                     "detail": "Concussion",
-                    "since": "2026-10-22T23:26Z"
+                    "since": "2026-10-25T15:38Z"
+                  },
+                  {
+                    "player": "CJ Allen",
+                    "position": "LB",
+                    "status": "Out",
+                    "detail": "Ankle",
+                    "since": "2026-10-24T18:30Z"
                   }
                 ]
               },
               "source": "espn",
-              "teams_covered": 26,
-              "teams_playing": 26,
+              "teams_covered": 24,
+              "teams_playing": 24,
               "error": null
             },
             "venue": {
@@ -520,7 +643,32 @@
               "indoor": true
             },
             "weather": null,
-            "flags": []
+            "flags": [
+              {
+                "kind": "qb_out",
+                "severity": "high",
+                "side": "home",
+                "text": "MIN quarterback out: Max Brosmer (Coach's Decision). The ratings are built from final scores and do not know this; the price does."
+              },
+              {
+                "kind": "injuries",
+                "severity": "low",
+                "side": "home",
+                "text": "MIN ruled out 6 rotation players this week"
+              },
+              {
+                "kind": "qb_out",
+                "severity": "high",
+                "side": "away",
+                "text": "IND quarterback out: Riley Leonard (Coach's Decision). The ratings are built from final scores and do not know this; the price does."
+              },
+              {
+                "kind": "injuries",
+                "severity": "low",
+                "side": "away",
+                "text": "IND ruled out 7 rotation players this week"
+              }
+            ]
           }
         },
         {
@@ -530,9 +678,9 @@
           "kickoff": "2026-10-25T17:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
-          "spread": -4.5,
-          "spread_details": "NYJ -4.5",
+          "provider": "Draft Kings",
+          "spread": -3.5,
+          "spread_details": "NYJ -3.5",
           "total": 39.5,
           "home": {
             "id": "20",
@@ -540,7 +688,7 @@
             "abbr": "NYJ",
             "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/nyj.png",
             "elo": 1394.4,
-            "moneyline": -225
+            "moneyline": -218
           },
           "away": {
             "id": "15",
@@ -548,7 +696,7 @@
             "abbr": "MIA",
             "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/mia.png",
             "elo": 1331.9,
-            "moneyline": 185
+            "moneyline": 180
           },
           "legs": [
             {
@@ -556,10 +704,10 @@
               "team_id": "15",
               "team_name": "Miami Dolphins",
               "team_abbr": "MIA",
-              "odds": 185,
+              "odds": 180,
               "model_prob": 0.36325,
-              "implied_prob": 0.33635,
-              "edge_pp": 2.690092,
+              "implied_prob": 0.34252,
+              "edge_pp": 2.072802,
               "fair_odds": 175,
               "sample": 12.0,
               "team_sample": 12.0,
@@ -573,10 +721,10 @@
               "team_id": "20",
               "team_name": "New York Jets",
               "team_abbr": "NYJ",
-              "odds": -225,
+              "odds": -218,
               "model_prob": 0.63675,
-              "implied_prob": 0.66365,
-              "edge_pp": -2.690092,
+              "implied_prob": 0.65748,
+              "edge_pp": -2.072802,
               "fair_odds": -175,
               "sample": 12.0,
               "team_sample": 13.0,
@@ -589,52 +737,122 @@
           "context": {
             "injuries": {
               "home": {
-                "count": 2,
+                "count": 7,
                 "long_term": 1,
                 "qb_out": 0,
                 "qbs": [],
                 "players": [
                   {
+                    "player": "Dylan Parham",
+                    "position": "G",
+                    "status": "Out",
+                    "detail": "Knee",
+                    "since": "2026-10-25T16:03Z"
+                  },
+                  {
+                    "player": "Kene Nwangwu",
+                    "position": "RB",
+                    "status": "Out",
+                    "detail": "Knee",
+                    "since": "2026-10-25T15:45Z"
+                  },
+                  {
+                    "player": "Breece Hall",
+                    "position": "RB",
+                    "status": "Out",
+                    "detail": "Quadriceps",
+                    "since": "2026-10-25T15:37Z"
+                  },
+                  {
                     "player": "Max Mitchell",
                     "position": "OT",
                     "status": "Out",
                     "detail": "Concussion",
-                    "since": "2026-10-24T01:28Z"
+                    "since": "2026-10-25T15:33Z"
                   },
                   {
                     "player": "Joseph Ossai",
                     "position": "DE",
                     "status": "Out",
                     "detail": "Ankle",
-                    "since": "2026-10-23T22:04Z"
+                    "since": "2026-10-25T15:33Z"
+                  },
+                  {
+                    "player": "Jack Heflin",
+                    "position": "DT",
+                    "status": "Out",
+                    "detail": "Coach's Decision",
+                    "since": "2026-10-25T15:33Z"
+                  },
+                  {
+                    "player": "Jarvis Brownlee Jr.",
+                    "position": "CB",
+                    "status": "Out",
+                    "detail": "Coach's Decision",
+                    "since": "2026-10-25T15:33Z"
                   }
                 ]
               },
               "away": {
-                "count": 2,
+                "count": 7,
                 "long_term": 0,
                 "qb_out": 0,
                 "qbs": [],
                 "players": [
                   {
+                    "player": "Robert Beal Jr.",
+                    "position": "DE",
+                    "status": "Out",
+                    "detail": "Hamstring",
+                    "since": "2026-10-25T16:12Z"
+                  },
+                  {
+                    "player": "Willie Gay Jr.",
+                    "position": "LB",
+                    "status": "Out",
+                    "detail": "Illness",
+                    "since": "2026-10-25T15:52Z"
+                  },
+                  {
                     "player": "Reese Taylor",
                     "position": "CB",
                     "status": "Out",
                     "detail": "Quadriceps",
-                    "since": "2026-10-24T02:00Z"
+                    "since": "2026-10-25T15:34Z"
                   },
                   {
-                    "player": "Robert Beal Jr.",
-                    "position": "DE",
-                    "status": "Doubtful",
-                    "detail": "Hamstring",
-                    "since": "2026-10-23T20:18Z"
+                    "player": "Jalen Tolbert",
+                    "position": "WR",
+                    "status": "Out",
+                    "detail": "Coach's Decision",
+                    "since": "2026-10-25T15:34Z"
+                  },
+                  {
+                    "player": "Chukwuebuka Godrick",
+                    "position": "OT",
+                    "status": "Out",
+                    "detail": "Coach's Decision",
+                    "since": "2026-10-25T15:34Z"
+                  },
+                  {
+                    "player": "DJ Campbell",
+                    "position": "G",
+                    "status": "Out",
+                    "detail": "Coach's Decision",
+                    "since": "2026-10-25T15:34Z"
+                  },
+                  {
+                    "player": "Marcellas Dial Jr.",
+                    "position": "CB",
+                    "status": "Out",
+                    "detail": "Coach's Decision",
+                    "since": "2026-10-25T15:34Z"
                   }
                 ]
               },
               "source": "espn",
-              "teams_covered": 26,
-              "teams_playing": 26,
+              "teams_covered": 24,
+              "teams_playing": 24,
               "error": null
             },
             "venue": {
@@ -643,14 +861,21 @@
               "state": "NJ",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 64.2,
-              "wind_mph": 3.6,
-              "gust_mph": 7.2,
-              "precip_pct": 0,
-              "snow_in": 0.0
-            },
-            "flags": []
+            "weather": null,
+            "flags": [
+              {
+                "kind": "injuries",
+                "severity": "low",
+                "side": "home",
+                "text": "NYJ ruled out 7 rotation players this week"
+              },
+              {
+                "kind": "injuries",
+                "severity": "low",
+                "side": "away",
+                "text": "MIA ruled out 7 rotation players this week"
+              }
+            ]
           }
         },
         {
@@ -660,7 +885,7 @@
           "kickoff": "2026-10-25T17:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -3.0,
           "spread_details": "CAR -3",
           "total": 44.5,
@@ -670,7 +895,7 @@
             "abbr": "CAR",
             "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/car.png",
             "elo": 1529.4,
-            "moneyline": -155
+            "moneyline": -166
           },
           "away": {
             "id": "27",
@@ -678,7 +903,7 @@
             "abbr": "TB",
             "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/tb.png",
             "elo": 1416.0,
-            "moneyline": 130
+            "moneyline": 140
           },
           "legs": [
             {
@@ -686,85 +911,154 @@
               "team_id": "27",
               "team_name": "Tampa Bay Buccaneers",
               "team_abbr": "TB",
-              "odds": 130,
+              "odds": 140,
               "model_prob": 0.2985,
-              "implied_prob": 0.41701,
-              "edge_pp": -11.850273,
+              "implied_prob": 0.40036,
+              "edge_pp": -10.18566,
               "fair_odds": 235,
               "sample": 13.0,
               "team_sample": 13.0,
               "opp_sample": 13.0,
               "team_games": 9,
               "opp_games": 9,
-              "prior_credit": 4.0
+              "prior_credit": 4.0,
+              "stale": true,
+              "stale_reason": "CAR quarterback out: Haynes King (Coach's Decision)"
             },
             {
               "side": "home",
               "team_id": "29",
               "team_name": "Carolina Panthers",
               "team_abbr": "CAR",
-              "odds": -155,
+              "odds": -166,
               "model_prob": 0.7015,
-              "implied_prob": 0.58299,
-              "edge_pp": 11.850273,
+              "implied_prob": 0.59964,
+              "edge_pp": 10.18566,
               "fair_odds": -235,
               "sample": 13.0,
               "team_sample": 13.0,
               "opp_sample": 13.0,
               "team_games": 9,
               "opp_games": 9,
-              "prior_credit": 4.0
+              "prior_credit": 4.0,
+              "stale": true,
+              "stale_reason": "CAR quarterback out: Haynes King (Coach's Decision)"
             }
           ],
           "context": {
             "injuries": {
               "home": {
-                "count": 1,
-                "long_term": 3,
-                "qb_out": 0,
-                "qbs": [],
+                "count": 7,
+                "long_term": 1,
+                "qb_out": 1,
+                "qbs": [
+                  "Haynes King (Coach's Decision)"
+                ],
                 "players": [
+                  {
+                    "player": "Haynes King",
+                    "position": "QB",
+                    "status": "Out",
+                    "detail": "Coach's Decision",
+                    "since": "2026-10-25T16:00Z"
+                  },
+                  {
+                    "player": "AJ Dillon",
+                    "position": "RB",
+                    "status": "Out",
+                    "detail": "Coach's Decision",
+                    "since": "2026-10-25T15:47Z"
+                  },
+                  {
+                    "player": "Ja'Tavion Sanders",
+                    "position": "TE",
+                    "status": "Out",
+                    "detail": "Coach's Decision",
+                    "since": "2026-10-25T15:37Z"
+                  },
                   {
                     "player": "Jaelan Phillips",
                     "position": "LB",
                     "status": "Out",
                     "detail": "Hamstring",
-                    "since": "2026-10-23T22:14Z"
+                    "since": "2026-10-25T15:37Z"
+                  },
+                  {
+                    "player": "Stone Forsythe",
+                    "position": "OT",
+                    "status": "Out",
+                    "detail": "Coach's Decision",
+                    "since": "2026-10-25T15:37Z"
+                  },
+                  {
+                    "player": "Sam Hecht",
+                    "position": "C",
+                    "status": "Out",
+                    "detail": "Coach's Decision",
+                    "since": "2026-10-25T15:37Z"
+                  },
+                  {
+                    "player": "TeRah Edwards",
+                    "position": "DT",
+                    "status": "Out",
+                    "detail": "Coach's Decision",
+                    "since": "2026-10-25T15:37Z"
                   }
                 ]
               },
               "away": {
-                "count": 3,
+                "count": 6,
                 "long_term": 1,
                 "qb_out": 0,
                 "qbs": [],
                 "players": [
                   {
-                    "player": "Luke Goedeke",
-                    "position": "OT",
-                    "status": "Out",
-                    "detail": "Calf",
-                    "since": "2026-10-24T01:40Z"
-                  },
-                  {
                     "player": "Antoine Winfield Jr.",
                     "position": "S",
                     "status": "Out",
                     "detail": "Ribs",
-                    "since": "2026-10-23T22:34Z"
+                    "since": "2026-10-25T15:34Z"
+                  },
+                  {
+                    "player": "Billy Schrauth",
+                    "position": "G",
+                    "status": "Out",
+                    "detail": "Coach's Decision",
+                    "since": "2026-10-25T15:34Z"
+                  },
+                  {
+                    "player": "Ayden Garnes",
+                    "position": "CB",
+                    "status": "Out",
+                    "detail": "Coach's Decision",
+                    "since": "2026-10-25T15:34Z"
+                  },
+                  {
+                    "player": "Luke Goedeke",
+                    "position": "OT",
+                    "status": "Out",
+                    "detail": "Calf",
+                    "since": "2026-10-25T15:34Z"
+                  },
+                  {
+                    "player": "DeMonte Capehart",
+                    "position": "DT",
+                    "status": "Out",
+                    "detail": "Coach's Decision",
+                    "since": "2026-10-25T15:34Z"
                   },
                   {
                     "player": "Emeka Egbuka",
                     "position": "WR",
                     "status": "Out",
                     "detail": "Concussion",
-                    "since": "2026-10-23T16:56Z"
+                    "since": "2026-10-25T15:34Z"
                   }
                 ]
               },
               "source": "espn",
-              "teams_covered": 26,
-              "teams_playing": 26,
+              "teams_covered": 24,
+              "teams_playing": 24,
               "error": null
             },
             "venue": {
@@ -773,18 +1067,25 @@
               "state": "NC",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 63.6,
-              "wind_mph": 10.9,
-              "gust_mph": 15.2,
-              "precip_pct": 0,
-              "snow_in": 0.0
-            },
+            "weather": null,
             "flags": [
               {
-                "kind": "wind",
+                "kind": "qb_out",
+                "severity": "high",
+                "side": "home",
+                "text": "CAR quarterback out: Haynes King (Coach's Decision). The ratings are built from final scores and do not know this; the price does."
+              },
+              {
+                "kind": "injuries",
                 "severity": "low",
-                "text": "Breezy: 11 mph, gusting 15"
+                "side": "home",
+                "text": "CAR ruled out 7 rotation players this week"
+              },
+              {
+                "kind": "injuries",
+                "severity": "low",
+                "side": "away",
+                "text": "TB ruled out 6 rotation players this week"
               }
             ]
           }
@@ -796,7 +1097,7 @@
           "kickoff": "2026-10-25T17:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": 3.0,
           "spread_details": "CIN -3",
           "total": 46.5,
@@ -806,7 +1107,7 @@
             "abbr": "BAL",
             "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/bal.png",
             "elo": 1571.3,
-            "moneyline": 124
+            "moneyline": 130
           },
           "away": {
             "id": "4",
@@ -814,7 +1115,7 @@
             "abbr": "CIN",
             "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/cin.png",
             "elo": 1543.4,
-            "moneyline": -148
+            "moneyline": -155
           },
           "legs": [
             {
@@ -822,10 +1123,10 @@
               "team_id": "4",
               "team_name": "Cincinnati Bengals",
               "team_abbr": "CIN",
-              "odds": -148,
+              "odds": -155,
               "model_prob": 0.41041,
-              "implied_prob": 0.57206,
-              "edge_pp": -16.164641,
+              "implied_prob": 0.58299,
+              "edge_pp": -17.257941,
               "fair_odds": 144,
               "sample": 12.0,
               "team_sample": 12.0,
@@ -841,10 +1142,10 @@
               "team_id": "33",
               "team_name": "Baltimore Ravens",
               "team_abbr": "BAL",
-              "odds": 124,
+              "odds": 130,
               "model_prob": 0.58959,
-              "implied_prob": 0.42794,
-              "edge_pp": 16.164641,
+              "implied_prob": 0.41701,
+              "edge_pp": 17.257941,
               "fair_odds": -144,
               "sample": 12.0,
               "team_sample": 13.0,
@@ -859,7 +1160,7 @@
           "context": {
             "injuries": {
               "home": {
-                "count": 2,
+                "count": 5,
                 "long_term": 2,
                 "qb_out": 1,
                 "qbs": [
@@ -871,27 +1172,84 @@
                     "position": "QB",
                     "status": "Out",
                     "detail": "Ankle",
-                    "since": "2026-10-24T19:35Z"
+                    "since": "2026-10-25T12:53Z"
+                  },
+                  {
+                    "player": "Broderick Washington Jr.",
+                    "position": "DT",
+                    "status": "Out",
+                    "detail": "Ankle",
+                    "since": "2026-10-25T15:37Z"
+                  },
+                  {
+                    "player": "Elijah Sarratt",
+                    "position": "WR",
+                    "status": "Out",
+                    "detail": "Coach's Decision",
+                    "since": "2026-10-25T15:35Z"
+                  },
+                  {
+                    "player": "Andrew Vorhees",
+                    "position": "G",
+                    "status": "Out",
+                    "detail": "Coach's Decision",
+                    "since": "2026-10-25T15:31Z"
                   },
                   {
                     "player": "Jaylinn Hawkins",
                     "position": "S",
                     "status": "Out",
                     "detail": "Knee",
-                    "since": "2026-10-23T22:51Z"
+                    "since": "2026-10-25T15:31Z"
                   }
                 ]
               },
               "away": {
-                "count": 0,
+                "count": 5,
                 "long_term": 2,
                 "qb_out": 0,
                 "qbs": [],
-                "players": []
+                "players": [
+                  {
+                    "player": "Shemar Stewart",
+                    "position": "DE",
+                    "status": "Out",
+                    "detail": "Coach's Decision",
+                    "since": "2026-10-25T15:42Z"
+                  },
+                  {
+                    "player": "Russ Yeast",
+                    "position": "S",
+                    "status": "Out",
+                    "detail": "Coach's Decision",
+                    "since": "2026-10-25T15:34Z"
+                  },
+                  {
+                    "player": "Landon Robinson",
+                    "position": "DT",
+                    "status": "Out",
+                    "detail": "Coach's Decision",
+                    "since": "2026-10-25T15:34Z"
+                  },
+                  {
+                    "player": "Connor Lew",
+                    "position": "C",
+                    "status": "Out",
+                    "detail": "Coach's Decision",
+                    "since": "2026-10-25T15:34Z"
+                  },
+                  {
+                    "player": "Myles Hinton",
+                    "position": "OT",
+                    "status": "Out",
+                    "detail": "Coach's Decision",
+                    "since": "2026-10-25T15:34Z"
+                  }
+                ]
               },
               "source": "espn",
-              "teams_covered": 26,
-              "teams_playing": 26,
+              "teams_covered": 24,
+              "teams_playing": 24,
               "error": null
             },
             "venue": {
@@ -900,19 +1258,25 @@
               "state": "MD",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 61.0,
-              "wind_mph": 3.5,
-              "gust_mph": 3.8,
-              "precip_pct": 0,
-              "snow_in": 0.0
-            },
+            "weather": null,
             "flags": [
               {
                 "kind": "qb_out",
                 "severity": "high",
                 "side": "home",
                 "text": "BAL quarterback out: Lamar Jackson (Ankle). The ratings are built from final scores and do not know this; the price does."
+              },
+              {
+                "kind": "injuries",
+                "severity": "low",
+                "side": "home",
+                "text": "BAL ruled out 5 rotation players this week"
+              },
+              {
+                "kind": "injuries",
+                "severity": "low",
+                "side": "away",
+                "text": "CIN ruled out 5 rotation players this week"
               }
             ]
           }
@@ -924,9 +1288,9 @@
           "kickoff": "2026-10-25T17:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
-          "spread": -10.5,
-          "spread_details": "HOU -10.5",
+          "provider": "Draft Kings",
+          "spread": -10.0,
+          "spread_details": "HOU -10",
           "total": 42.5,
           "home": {
             "id": "34",
@@ -934,7 +1298,7 @@
             "abbr": "HOU",
             "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/hou.png",
             "elo": 1511.7,
-            "moneyline": -535
+            "moneyline": -520
           },
           "away": {
             "id": "19",
@@ -942,7 +1306,7 @@
             "abbr": "NYG",
             "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/nyg.png",
             "elo": 1459.6,
-            "moneyline": 400
+            "moneyline": 390
           },
           "legs": [
             {
@@ -950,80 +1314,142 @@
               "team_id": "19",
               "team_name": "New York Giants",
               "team_abbr": "NYG",
-              "odds": 400,
+              "odds": 390,
               "model_prob": 0.3773,
-              "implied_prob": 0.19184,
-              "edge_pp": 18.545239,
+              "implied_prob": 0.19571,
+              "edge_pp": 18.158822,
               "fair_odds": 165,
               "sample": 13.0,
               "team_sample": 13.0,
               "opp_sample": 13.0,
               "team_games": 9,
               "opp_games": 9,
-              "prior_credit": 4.0
+              "prior_credit": 4.0,
+              "stale": true,
+              "stale_reason": "NYG quarterback out: Jake Haener (Coach's Decision)"
             },
             {
               "side": "home",
               "team_id": "34",
               "team_name": "Houston Texans",
               "team_abbr": "HOU",
-              "odds": -535,
+              "odds": -520,
               "model_prob": 0.6227,
-              "implied_prob": 0.80816,
-              "edge_pp": -18.545239,
+              "implied_prob": 0.80429,
+              "edge_pp": -18.158822,
               "fair_odds": -165,
               "sample": 13.0,
               "team_sample": 13.0,
               "opp_sample": 13.0,
               "team_games": 9,
               "opp_games": 9,
-              "prior_credit": 4.0
+              "prior_credit": 4.0,
+              "stale": true,
+              "stale_reason": "NYG quarterback out: Jake Haener (Coach's Decision)"
             }
           ],
           "context": {
             "injuries": {
               "home": {
-                "count": 4,
+                "count": 7,
                 "long_term": 1,
                 "qb_out": 0,
                 "qbs": [],
                 "players": [
                   {
-                    "player": "Blake Fisher",
+                    "player": "Nate Thomas",
                     "position": "OT",
                     "status": "Out",
-                    "detail": "Thumb",
-                    "since": "2026-10-24T02:01Z"
+                    "detail": "Coach's Decision",
+                    "since": "2026-10-25T15:31Z"
                   },
                   {
-                    "player": "Jalen Pitre",
-                    "position": "S",
+                    "player": "Marlin Klein",
+                    "position": "TE",
                     "status": "Out",
-                    "detail": "Shoulder - AC Joint",
-                    "since": "2026-10-24T00:23Z"
-                  },
-                  {
-                    "player": "Reed Blankenship",
-                    "position": "S",
-                    "status": "Out",
-                    "detail": "Concussion",
-                    "since": "2026-10-24T00:19Z"
+                    "detail": "Coach's Decision",
+                    "since": "2026-10-25T15:31Z"
                   },
                   {
                     "player": "David Montgomery",
                     "position": "RB",
                     "status": "Out",
                     "detail": "Groin",
-                    "since": "2026-10-23T20:32Z"
+                    "since": "2026-10-25T15:31Z"
+                  },
+                  {
+                    "player": "Febechi Nwaiwu",
+                    "position": "G",
+                    "status": "Out",
+                    "detail": "Coach's Decision",
+                    "since": "2026-10-25T15:31Z"
+                  },
+                  {
+                    "player": "Jalen Pitre",
+                    "position": "S",
+                    "status": "Out",
+                    "detail": "Shoulder - AC Joint",
+                    "since": "2026-10-25T15:31Z"
+                  },
+                  {
+                    "player": "Reed Blankenship",
+                    "position": "S",
+                    "status": "Out",
+                    "detail": "Concussion",
+                    "since": "2026-10-25T15:31Z"
+                  },
+                  {
+                    "player": "Blake Fisher",
+                    "position": "OT",
+                    "status": "Out",
+                    "detail": "Thumb",
+                    "since": "2026-10-25T15:31Z"
                   }
                 ]
               },
               "away": {
-                "count": 3,
+                "count": 7,
                 "long_term": 1,
-                "qb_out": 0,
-                "qbs": [],
+                "qb_out": 1,
+                "qbs": [
+                  "Jake Haener (Coach's Decision)"
+                ],
                 "players": [
+                  {
+                    "player": "Jake Haener",
+                    "position": "QB",
+                    "status": "Out",
+                    "detail": "Coach's Decision",
+                    "since": "2026-10-25T15:45Z"
+                  },
+                  {
+                    "player": "Nikko Reed",
+                    "position": "CB",
+                    "status": "Out",
+                    "detail": "Coach's Decision",
+                    "since": "2026-10-25T15:34Z"
+                  },
+                  {
+                    "player": "Josh Sills",
+                    "position": "G",
+                    "status": "Out",
+                    "detail": "Coach's Decision",
+                    "since": "2026-10-25T15:34Z"
+                  },
+                  {
+                    "player": "Marcus Mbow",
+                    "position": "OT",
+                    "status": "Out",
+                    "detail": "Knee",
+                    "since": "2026-10-25T15:34Z"
+                  },
+                  {
+                    "player": "Greg Newsome II",
+                    "position": "CB",
+                    "status": "Out",
+                    "detail": "Concussion",
+                    "since": "2026-10-25T15:34Z"
+                  },
                   {
                     "player": "Theo Johnson",
                     "position": "TE",
@@ -1037,19 +1463,12 @@
                     "status": "Out",
                     "detail": "Concussion",
                     "since": "2026-10-24T17:31Z"
-                  },
-                  {
-                    "player": "Greg Newsome II",
-                    "position": "CB",
-                    "status": "Out",
-                    "detail": "Concussion",
-                    "since": "2026-10-24T00:25Z"
                   }
                 ]
               },
               "source": "espn",
-              "teams_covered": 26,
-              "teams_playing": 26,
+              "teams_covered": 24,
+              "teams_playing": 24,
               "error": null
             },
             "venue": {
@@ -1059,7 +1478,26 @@
               "indoor": true
             },
             "weather": null,
-            "flags": []
+            "flags": [
+              {
+                "kind": "injuries",
+                "severity": "low",
+                "side": "home",
+                "text": "HOU ruled out 7 rotation players this week"
+              },
+              {
+                "kind": "qb_out",
+                "severity": "high",
+                "side": "away",
+                "text": "NYG quarterback out: Jake Haener (Coach's Decision). The ratings are built from final scores and do not know this; the price does."
+              },
+              {
+                "kind": "injuries",
+                "severity": "low",
+                "side": "away",
+                "text": "NYG ruled out 7 rotation players this week"
+              }
+            ]
           }
         },
         {
@@ -1069,7 +1507,7 @@
           "kickoff": "2026-10-25T20:05Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": 4.5,
           "spread_details": "DEN -4.5",
           "total": 43.5,
@@ -1079,7 +1517,7 @@
             "abbr": "ARI",
             "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/ari.png",
             "elo": 1385.8,
-            "moneyline": 185
+            "moneyline": 195
           },
           "away": {
             "id": "7",
@@ -1087,7 +1525,7 @@
             "abbr": "DEN",
             "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/den.png",
             "elo": 1600.6,
-            "moneyline": -225
+            "moneyline": -238
           },
           "legs": [
             {
@@ -1095,10 +1533,10 @@
               "team_id": "7",
               "team_name": "Denver Broncos",
               "team_abbr": "DEN",
-              "odds": -225,
+              "odds": -238,
               "model_prob": 0.73792,
-              "implied_prob": 0.66365,
-              "edge_pp": 7.427591,
+              "implied_prob": 0.67503,
+              "edge_pp": 6.289279,
               "fair_odds": -282,
               "sample": 13.0,
               "team_sample": 13.0,
@@ -1112,10 +1550,10 @@
               "team_id": "22",
               "team_name": "Arizona Cardinals",
               "team_abbr": "ARI",
-              "odds": 185,
+              "odds": 195,
               "model_prob": 0.26208,
-              "implied_prob": 0.33635,
-              "edge_pp": -7.427591,
+              "implied_prob": 0.32497,
+              "edge_pp": -6.289279,
               "fair_odds": 282,
               "sample": 13.0,
               "team_sample": 14.0,
@@ -1179,8 +1617,8 @@
                 ]
               },
               "source": "espn",
-              "teams_covered": 26,
-              "teams_playing": 26,
+              "teams_covered": 24,
+              "teams_playing": 24,
               "error": null
             },
             "venue": {
@@ -1200,7 +1638,7 @@
           "kickoff": "2026-10-25T20:25Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -3.5,
           "spread_details": "DET -3.5",
           "total": 55.5,
@@ -1210,7 +1648,7 @@
             "abbr": "DET",
             "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/det.png",
             "elo": 1544.1,
-            "moneyline": -185
+            "moneyline": -180
           },
           "away": {
             "id": "9",
@@ -1218,7 +1656,7 @@
             "abbr": "GB",
             "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/gb.png",
             "elo": 1539.9,
-            "moneyline": 154
+            "moneyline": 150
           },
           "legs": [
             {
@@ -1226,10 +1664,10 @@
               "team_id": "9",
               "team_name": "Green Bay Packers",
               "team_abbr": "GB",
-              "odds": 154,
+              "odds": 150,
               "model_prob": 0.44377,
-              "implied_prob": 0.37753,
-              "edge_pp": 6.62386,
+              "implied_prob": 0.38356,
+              "edge_pp": 6.021041,
               "fair_odds": 125,
               "sample": 12.0,
               "team_sample": 13.0,
@@ -1243,10 +1681,10 @@
               "team_id": "8",
               "team_name": "Detroit Lions",
               "team_abbr": "DET",
-              "odds": -185,
+              "odds": -180,
               "model_prob": 0.55623,
-              "implied_prob": 0.62247,
-              "edge_pp": -6.62386,
+              "implied_prob": 0.61644,
+              "edge_pp": -6.021041,
               "fair_odds": -125,
               "sample": 12.0,
               "team_sample": 12.0,
@@ -1303,8 +1741,8 @@
                 ]
               },
               "source": "espn",
-              "teams_covered": 26,
-              "teams_playing": 26,
+              "teams_covered": 24,
+              "teams_playing": 24,
               "error": null
             },
             "venue": {
@@ -1324,9 +1762,9 @@
           "kickoff": "2026-10-25T20:25Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
-          "spread": 3.0,
-          "spread_details": "LAR -3",
+          "provider": "Draft Kings",
+          "spread": 3.5,
+          "spread_details": "LAR -3.5",
           "total": 48.5,
           "home": {
             "id": "13",
@@ -1334,7 +1772,7 @@
             "abbr": "LV",
             "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/lv.png",
             "elo": 1425.5,
-            "moneyline": 145
+            "moneyline": 154
           },
           "away": {
             "id": "14",
@@ -1342,7 +1780,7 @@
             "abbr": "LAR",
             "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/lar.png",
             "elo": 1550.4,
-            "moneyline": -175
+            "moneyline": -185
           },
           "legs": [
             {
@@ -1350,10 +1788,10 @@
               "team_id": "14",
               "team_name": "Los Angeles Rams",
               "team_abbr": "LAR",
-              "odds": -175,
+              "odds": -185,
               "model_prob": 0.62664,
-              "implied_prob": 0.60924,
-              "edge_pp": 1.739893,
+              "implied_prob": 0.62247,
+              "edge_pp": 0.416861,
               "fair_odds": -168,
               "sample": 13.0,
               "team_sample": 13.0,
@@ -1367,10 +1805,10 @@
               "team_id": "13",
               "team_name": "Las Vegas Raiders",
               "team_abbr": "LV",
-              "odds": 145,
+              "odds": 154,
               "model_prob": 0.37336,
-              "implied_prob": 0.39076,
-              "edge_pp": -1.739893,
+              "implied_prob": 0.37753,
+              "edge_pp": -0.416861,
               "fair_odds": 168,
               "sample": 13.0,
               "team_sample": 13.0,
@@ -1405,8 +1843,8 @@
                 ]
               },
               "source": "espn",
-              "teams_covered": 26,
-              "teams_playing": 26,
+              "teams_covered": 24,
+              "teams_playing": 24,
               "error": null
             },
             "venue": {
@@ -1426,7 +1864,7 @@
           "kickoff": "2026-10-26T00:20Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -3.0,
           "spread_details": "SEA -3",
           "total": 42.5,
@@ -1436,7 +1874,7 @@
             "abbr": "SEA",
             "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/sea.png",
             "elo": 1609.3,
-            "moneyline": -148
+            "moneyline": -142
           },
           "away": {
             "id": "12",
@@ -1444,7 +1882,7 @@
             "abbr": "KC",
             "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/kc.png",
             "elo": 1574.6,
-            "moneyline": 124
+            "moneyline": 120
           },
           "legs": [
             {
@@ -1452,10 +1890,10 @@
               "team_id": "12",
               "team_name": "Kansas City Chiefs",
               "team_abbr": "KC",
-              "odds": 124,
+              "odds": 120,
               "model_prob": 0.40113,
-              "implied_prob": 0.42794,
-              "edge_pp": -2.68148,
+              "implied_prob": 0.43651,
+              "edge_pp": -3.538238,
               "fair_odds": 149,
               "sample": 12.0,
               "team_sample": 12.0,
@@ -1469,10 +1907,10 @@
               "team_id": "26",
               "team_name": "Seattle Seahawks",
               "team_abbr": "SEA",
-              "odds": -148,
+              "odds": -142,
               "model_prob": 0.59887,
-              "implied_prob": 0.57206,
-              "edge_pp": 2.68148,
+              "implied_prob": 0.56349,
+              "edge_pp": 3.538238,
               "fair_odds": -149,
               "sample": 12.0,
               "team_sample": 13.0,
@@ -1524,7 +1962,7 @@
                     "position": "OT",
                     "status": "Out",
                     "detail": "Concussion",
-                    "since": "2026-10-23T19:32Z"
+                    "since": "2026-10-25T14:24Z"
                   },
                   {
                     "player": "Rashee Rice",
@@ -1536,8 +1974,8 @@
                 ]
               },
               "source": "espn",
-              "teams_covered": 26,
-              "teams_playing": 26,
+              "teams_covered": 24,
+              "teams_playing": 24,
               "error": null
             },
             "venue": {
@@ -1547,13 +1985,19 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 51.7,
-              "wind_mph": 6.6,
-              "gust_mph": 13.2,
-              "precip_pct": 40,
+              "temp_f": 51.4,
+              "wind_mph": 7.9,
+              "gust_mph": 25.3,
+              "precip_pct": 12,
               "snow_in": 0.0
             },
-            "flags": []
+            "flags": [
+              {
+                "kind": "wind",
+                "severity": "high",
+                "text": "Wind 8 mph, gusting 25 \u2014 kicking and the deep ball suffer"
+              }
+            ]
           }
         },
         {
@@ -1563,7 +2007,7 @@
           "kickoff": "2026-10-27T00:15Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": 4.5,
           "spread_details": "DAL -4.5",
           "total": 43.5,
@@ -1573,7 +2017,7 @@
             "abbr": "PHI",
             "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/phi.png",
             "elo": 1438.1,
-            "moneyline": 180
+            "moneyline": 170
           },
           "away": {
             "id": "6",
@@ -1581,7 +2025,7 @@
             "abbr": "DAL",
             "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/dal.png",
             "elo": 1437.2,
-            "moneyline": -218
+            "moneyline": -205
           },
           "legs": [
             {
@@ -1589,10 +2033,10 @@
               "team_id": "6",
               "team_name": "Dallas Cowboys",
               "team_abbr": "DAL",
-              "odds": -218,
+              "odds": -205,
               "model_prob": 0.44847,
-              "implied_prob": 0.65748,
-              "edge_pp": -20.900592,
+              "implied_prob": 0.64473,
+              "edge_pp": -19.625987,
               "fair_odds": 123,
               "sample": 13.0,
               "team_sample": 13.0,
@@ -1606,10 +2050,10 @@
               "team_id": "21",
               "team_name": "Philadelphia Eagles",
               "team_abbr": "PHI",
-              "odds": 180,
+              "odds": 170,
               "model_prob": 0.55153,
-              "implied_prob": 0.34252,
-              "edge_pp": 20.900592,
+              "implied_prob": 0.35527,
+              "edge_pp": 19.625987,
               "fair_odds": -123,
               "sample": 13.0,
               "team_sample": 13.0,
@@ -1687,8 +2131,8 @@
                 ]
               },
               "source": "espn",
-              "teams_covered": 26,
-              "teams_playing": 26,
+              "teams_covered": 24,
+              "teams_playing": 24,
               "error": null
             },
             "venue": {
@@ -1698,10 +2142,10 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 57.2,
+              "temp_f": 57.0,
               "wind_mph": 5.0,
-              "gust_mph": 11.6,
-              "precip_pct": 0,
+              "gust_mph": 11.0,
+              "precip_pct": 1,
               "snow_in": 0.0
             },
             "flags": []
@@ -1719,7 +2163,35 @@
             "team_name": "Atlanta Falcons",
             "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/atl.png",
             "spread": 2.5,
-            "source": "DraftKings",
+            "source": "FanDuel",
+            "teased": 8.5,
+            "band": "dog +1.5..+2.5",
+            "prob": 0.7409,
+            "push_risk": false
+          },
+          {
+            "event_id": "401873013",
+            "matchup": "CLE @ TEN",
+            "kickoff": "2026-10-25T17:00Z",
+            "team_abbr": "TEN",
+            "team_name": "Tennessee Titans",
+            "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/ten.png",
+            "spread": 2.5,
+            "source": "FanDuel",
+            "teased": 8.5,
+            "band": "dog +1.5..+2.5",
+            "prob": 0.7409,
+            "push_risk": false
+          },
+          {
+            "event_id": "401873012",
+            "matchup": "CIN @ BAL",
+            "kickoff": "2026-10-25T17:00Z",
+            "team_abbr": "BAL",
+            "team_name": "Baltimore Ravens",
+            "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/bal.png",
+            "spread": 2.5,
+            "source": "FanDuel",
             "teased": 8.5,
             "band": "dog +1.5..+2.5",
             "prob": 0.7409,
@@ -1733,7 +2205,7 @@
             "team_name": "Minnesota Vikings",
             "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/min.png",
             "spread": -6.5,
-            "source": "DraftKings",
+            "source": "FanDuel",
             "teased": -0.5,
             "band": "fav -7.5..-6.5",
             "prob": 0.7379,
@@ -1742,12 +2214,12 @@
         ],
         "per_leg_rate": 0.7362,
         "per_leg_stderr": 0.0104,
-        "provider": "DraftKings",
-        "provider_is_mine": false,
-        "captured_at": null,
-        "max_price_best": -120,
+        "provider": "FanDuel",
+        "provider_is_mine": true,
+        "captured_at": "2026-10-25T16:28:08+00:00",
+        "max_price_best": -121,
         "max_price_worst": -120,
-        "max_price_best_se": -113,
+        "max_price_best_se": -114,
         "at_my_books": [
           {
             "book": "BetMGM",
@@ -1758,11 +2230,27 @@
           {
             "book": "FanDuel",
             "playable": false,
-            "reason": "FanDuel quotes -134 on 2 legs, needs -113 \u2014 refused",
+            "reason": "FanDuel quotes -134 on 2 legs, needs -114 \u2014 refused",
             "quoted": -134
           }
         ],
         "playable": false,
+        "max_price_3": 146,
+        "max_price_3_se": 157,
+        "at_my_books_3": [
+          {
+            "book": "BetMGM",
+            "playable": false,
+            "reason": "BetMGM does not offer teasers (2026-09-13)",
+            "quoted": null
+          },
+          {
+            "book": "FanDuel",
+            "playable": true,
+            "reason": "FanDuel 3-leg price unverified \u2014 need +157 or better",
+            "quoted": null
+          }
+        ],
         "ten": {
           "points": 10.0,
           "legs": [
@@ -1774,7 +2262,49 @@
               "team_name": "Atlanta Falcons",
               "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/atl.png",
               "spread": 2.5,
-              "source": "DraftKings",
+              "source": "FanDuel",
+              "teased": 12.5,
+              "band": "dog +1.5..+3.5",
+              "prob": 0.7918,
+              "push_risk": false
+            },
+            {
+              "event_id": "401873013",
+              "matchup": "CLE @ TEN",
+              "kickoff": "2026-10-25T17:00Z",
+              "team_abbr": "TEN",
+              "team_name": "Tennessee Titans",
+              "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/ten.png",
+              "spread": 2.5,
+              "source": "FanDuel",
+              "teased": 12.5,
+              "band": "dog +1.5..+3.5",
+              "prob": 0.7918,
+              "push_risk": false
+            },
+            {
+              "event_id": "401873015",
+              "matchup": "MIA @ NYJ",
+              "kickoff": "2026-10-25T17:00Z",
+              "team_abbr": "MIA",
+              "team_name": "Miami Dolphins",
+              "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/mia.png",
+              "spread": 3.5,
+              "source": "FanDuel",
+              "teased": 13.5,
+              "band": "dog +1.5..+3.5",
+              "prob": 0.7918,
+              "push_risk": false
+            },
+            {
+              "event_id": "401873012",
+              "matchup": "CIN @ BAL",
+              "kickoff": "2026-10-25T17:00Z",
+              "team_abbr": "BAL",
+              "team_name": "Baltimore Ravens",
+              "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/bal.png",
+              "spread": 2.5,
+              "source": "FanDuel",
               "teased": 12.5,
               "band": "dog +1.5..+3.5",
               "prob": 0.7918,
@@ -1788,7 +2318,7 @@
               "team_name": "Houston Texans",
               "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/hou.png",
               "spread": -10.5,
-              "source": "DraftKings",
+              "source": "FanDuel",
               "teased": -0.5,
               "band": "fav -12.5..-8.5",
               "prob": 0.7918,
@@ -1802,25 +2332,25 @@
               "team_name": "Green Bay Packers",
               "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/gb.png",
               "spread": 3.5,
-              "source": "DraftKings",
+              "source": "FanDuel",
               "teased": 13.5,
               "band": "dog +1.5..+3.5",
               "prob": 0.7918,
               "push_risk": false
             },
             {
-              "event_id": "401873011",
-              "matchup": "PIT VS NO",
-              "kickoff": "2026-10-25T13:30Z",
-              "team_abbr": "NO",
-              "team_name": "New Orleans Saints",
-              "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/no.png",
-              "spread": 3.0,
-              "source": "DraftKings",
-              "teased": 13.0,
+              "event_id": "401873021",
+              "matchup": "LAR @ LV",
+              "kickoff": "2026-10-25T20:25Z",
+              "team_abbr": "LV",
+              "team_name": "Las Vegas Raiders",
+              "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/lv.png",
+              "spread": 3.5,
+              "source": "FanDuel",
+              "teased": 13.5,
               "band": "dog +1.5..+3.5",
-              "prob": 0.7719,
-              "push_risk": true
+              "prob": 0.7918,
+              "push_risk": false
             },
             {
               "event_id": "401873018",
@@ -1830,35 +2360,7 @@
               "team_name": "Tampa Bay Buccaneers",
               "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/tb.png",
               "spread": 3.0,
-              "source": "DraftKings",
-              "teased": 13.0,
-              "band": "dog +1.5..+3.5",
-              "prob": 0.7719,
-              "push_risk": true
-            },
-            {
-              "event_id": "401873012",
-              "matchup": "CIN @ BAL",
-              "kickoff": "2026-10-25T17:00Z",
-              "team_abbr": "BAL",
-              "team_name": "Baltimore Ravens",
-              "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/bal.png",
-              "spread": 3.0,
-              "source": "DraftKings",
-              "teased": 13.0,
-              "band": "dog +1.5..+3.5",
-              "prob": 0.7719,
-              "push_risk": true
-            },
-            {
-              "event_id": "401873021",
-              "matchup": "LAR @ LV",
-              "kickoff": "2026-10-25T20:25Z",
-              "team_abbr": "LV",
-              "team_name": "Las Vegas Raiders",
-              "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/lv.png",
-              "spread": 3.0,
-              "source": "DraftKings",
+              "source": "FanDuel",
               "teased": 13.0,
               "band": "dog +1.5..+3.5",
               "prob": 0.7719,
@@ -1872,7 +2374,7 @@
               "team_name": "Kansas City Chiefs",
               "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/kc.png",
               "spread": 3.0,
-              "source": "DraftKings",
+              "source": "FanDuel",
               "teased": 13.0,
               "band": "dog +1.5..+3.5",
               "prob": 0.7719,
@@ -1881,9 +2383,9 @@
           ],
           "per_leg_rate": 0.7918,
           "per_leg_stderr": 0.0071,
-          "provider": "DraftKings",
-          "provider_is_mine": false,
-          "captured_at": null,
+          "provider": "FanDuel",
+          "provider_is_mine": true,
+          "captured_at": "2026-10-25T16:28:08+00:00",
           "max_price_best": -168,
           "max_price_worst": -147,
           "max_price_best_se": -160,
@@ -2234,7 +2736,7 @@
         "history_seasons": "2021-2025",
         "top_division_teams": 0,
         "completed_games": 143,
-        "upcoming_games": 13,
+        "upcoming_games": 12,
         "rated_teams": 32,
         "elo": {
           "k_factor": 24.0,
@@ -2255,7 +2757,7 @@
           "kickoff": "2026-10-27T23:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": 2.5,
           "spread_details": "DEL -2.5",
           "total": 58.5,
@@ -2349,7 +2851,7 @@
           "kickoff": "2026-10-28T00:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -6.5,
           "spread_details": "MOST -6.5",
           "total": 51.5,
@@ -2443,7 +2945,7 @@
           "kickoff": "2026-10-28T23:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -2.5,
           "spread_details": "MTSU -2.5",
           "total": 48.5,
@@ -2537,7 +3039,7 @@
           "kickoff": "2026-10-29T00:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": 3.0,
           "spread_details": "JXST -3",
           "total": 50.5,
@@ -2631,7 +3133,7 @@
           "kickoff": "2026-10-29T23:30Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -12.5,
           "spread_details": "UNT -12.5",
           "total": 70.5,
@@ -2714,7 +3216,13 @@
               "state": "TX",
               "indoor": false
             },
-            "weather": null,
+            "weather": {
+              "temp_f": 78.4,
+              "wind_mph": 7.4,
+              "gust_mph": 12.5,
+              "precip_pct": 8,
+              "snow_in": 0.0
+            },
             "flags": []
           }
         },
@@ -2725,7 +3233,7 @@
           "kickoff": "2026-10-29T23:30Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -17.5,
           "spread_details": "JMU -17.5",
           "total": 52.5,
@@ -2825,10 +3333,10 @@
           "kickoff": "2026-10-30T23:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": 13.5,
           "spread_details": "TULN -13.5",
-          "total": 45.5,
+          "total": 46.5,
           "home": {
             "id": "2429",
             "name": "Charlotte 49ers",
@@ -2912,7 +3420,7 @@
               "temp_f": 69.0,
               "wind_mph": 2.6,
               "gust_mph": 3.4,
-              "precip_pct": 2,
+              "precip_pct": 1,
               "snow_in": 0.0
             },
             "flags": []
@@ -2925,7 +3433,7 @@
           "kickoff": "2026-10-30T23:30Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -2.5,
           "spread_details": "UCF -2.5",
           "total": 48.5,
@@ -3011,15 +3519,15 @@
             "weather": {
               "temp_f": 79.2,
               "wind_mph": 11.3,
-              "gust_mph": 23.0,
-              "precip_pct": 14,
+              "gust_mph": 19.7,
+              "precip_pct": 11,
               "snow_in": 0.0
             },
             "flags": [
               {
                 "kind": "wind",
-                "severity": "high",
-                "text": "Wind 11 mph, gusting 23 \u2014 kicking and the deep ball suffer"
+                "severity": "low",
+                "text": "Breezy: 11 mph, gusting 20"
               }
             ]
           }
@@ -3031,7 +3539,7 @@
           "kickoff": "2026-10-31T02:30Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": 10.0,
           "spread_details": "KENT -10",
           "total": 46.5,
@@ -3118,7 +3626,7 @@
               "temp_f": 59.4,
               "wind_mph": 6.5,
               "gust_mph": 13.6,
-              "precip_pct": 13,
+              "precip_pct": 7,
               "snow_in": 0.0
             },
             "flags": []
@@ -3131,7 +3639,7 @@
           "kickoff": "2026-10-31T16:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -4.5,
           "spread_details": "TTU -4.5",
           "total": 55.5,
@@ -3218,7 +3726,7 @@
               "temp_f": 66.2,
               "wind_mph": 7.5,
               "gust_mph": 13.4,
-              "precip_pct": 17,
+              "precip_pct": 18,
               "snow_in": 0.0
             },
             "flags": []
@@ -3231,7 +3739,7 @@
           "kickoff": "2026-10-31T16:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -3.5,
           "spread_details": "IOWA -3.5",
           "total": 39.5,
@@ -3317,8 +3825,8 @@
             "weather": {
               "temp_f": 61.8,
               "wind_mph": 2.9,
-              "gust_mph": 8.9,
-              "precip_pct": 31,
+              "gust_mph": 5.8,
+              "precip_pct": 48,
               "snow_in": 0.0
             },
             "flags": []
@@ -3331,7 +3839,7 @@
           "kickoff": "2026-10-31T16:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": 9.5,
           "spread_details": "SMU -9.5",
           "total": 56.5,
@@ -3425,7 +3933,7 @@
           "kickoff": "2026-10-31T16:30Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": 14.0,
           "spread_details": "MICH -14",
           "total": 47.5,
@@ -3525,7 +4033,7 @@
           "kickoff": "2026-10-31T16:45Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -11.5,
           "spread_details": "MISS -11.5",
           "total": 55.5,
@@ -3625,7 +4133,7 @@
           "kickoff": "2026-10-31T19:30Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -14.5,
           "spread_details": "BYU -14.5",
           "total": 51.5,
@@ -3711,17 +4219,11 @@
             "weather": {
               "temp_f": 60.2,
               "wind_mph": 1.8,
-              "gust_mph": 7.2,
-              "precip_pct": 50,
+              "gust_mph": 9.6,
+              "precip_pct": 37,
               "snow_in": 0.0
             },
-            "flags": [
-              {
-                "kind": "rain",
-                "severity": "low",
-                "text": "50% chance of rain"
-              }
-            ]
+            "flags": []
           }
         },
         {
@@ -3731,7 +4233,7 @@
           "kickoff": "2026-10-31T19:30Z",
           "status": "Scheduled",
           "neutral": true,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -10.5,
           "spread_details": "UGA -10.5",
           "total": 56.5,
@@ -3833,7 +4335,7 @@
           "kickoff": "2026-10-31T19:30Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -20.5,
           "spread_details": "IU -20.5",
           "total": 43.5,
@@ -3919,8 +4421,8 @@
             "weather": {
               "temp_f": 74.3,
               "wind_mph": 5.6,
-              "gust_mph": 9.6,
-              "precip_pct": 11,
+              "gust_mph": 9.4,
+              "precip_pct": 18,
               "snow_in": 0.0
             },
             "flags": []
@@ -3933,7 +4435,7 @@
           "kickoff": "2026-10-31T19:30Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -4.5,
           "spread_details": "ORE -4.5",
           "total": 51.5,
@@ -4020,7 +4522,7 @@
               "temp_f": 52.3,
               "wind_mph": 1.6,
               "gust_mph": 1.1,
-              "precip_pct": 15,
+              "precip_pct": 10,
               "snow_in": 0.0
             },
             "flags": []
@@ -4033,7 +4535,7 @@
           "kickoff": "2026-10-31T19:45Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": 6.5,
           "spread_details": "UTAH -6.5",
           "total": 55.5,
@@ -4120,7 +4622,7 @@
               "temp_f": 71.5,
               "wind_mph": 3.7,
               "gust_mph": 6.7,
-              "precip_pct": 11,
+              "precip_pct": 14,
               "snow_in": 0.0
             },
             "flags": []
@@ -4133,7 +4635,7 @@
           "kickoff": "2026-10-31T19:45Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -13.5,
           "spread_details": "WAKE -13.5",
           "total": 49.5,
@@ -4219,8 +4721,8 @@
             "weather": {
               "temp_f": 72.6,
               "wind_mph": 2.5,
-              "gust_mph": 7.4,
-              "precip_pct": 2,
+              "gust_mph": 4.3,
+              "precip_pct": 4,
               "snow_in": 0.0
             },
             "flags": []
@@ -4233,7 +4735,7 @@
           "kickoff": "2026-10-31T20:15Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -23.5,
           "spread_details": "UCLA -23.5",
           "total": 48.5,
@@ -4302,8 +4804,8 @@
             "weather": {
               "temp_f": 85.5,
               "wind_mph": 8.8,
-              "gust_mph": 8.9,
-              "precip_pct": 21,
+              "gust_mph": 6.0,
+              "precip_pct": 16,
               "snow_in": 0.0
             },
             "flags": []
@@ -4316,7 +4818,7 @@
           "kickoff": "2026-10-31T20:15Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -5.5,
           "spread_details": "OU -5.5",
           "total": 43.5,
@@ -4399,13 +4901,7 @@
               "state": "OK",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 62.0,
-              "wind_mph": 5.8,
-              "gust_mph": 11.4,
-              "precip_pct": 22,
-              "snow_in": 0.0
-            },
+            "weather": null,
             "flags": []
           }
         },
@@ -4416,7 +4912,7 @@
           "kickoff": "2026-10-31T23:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -5.5,
           "spread_details": "FSU -5.5",
           "total": 50.5,
@@ -4499,20 +4995,8 @@
               "state": "FL",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 75.0,
-              "wind_mph": 5.9,
-              "gust_mph": 16.1,
-              "precip_pct": 10,
-              "snow_in": 0.0
-            },
-            "flags": [
-              {
-                "kind": "wind",
-                "severity": "low",
-                "text": "Breezy: 6 mph, gusting 16"
-              }
-            ]
+            "weather": null,
+            "flags": []
           }
         },
         {
@@ -4522,10 +5006,10 @@
           "kickoff": "2026-10-31T23:30Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": 16.5,
           "spread_details": "MIA -16.5",
-          "total": 50.5,
+          "total": 51.5,
           "home": {
             "id": "153",
             "name": "North Carolina Tar Heels",
@@ -4605,13 +5089,7 @@
               "state": "NC",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 66.1,
-              "wind_mph": 1.9,
-              "gust_mph": 2.5,
-              "precip_pct": 1,
-              "snow_in": 0.0
-            },
+            "weather": null,
             "flags": []
           }
         },
@@ -4622,7 +5100,7 @@
           "kickoff": "2026-10-31T23:30Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": 7.0,
           "spread_details": "OSU -7",
           "total": 52.5,
@@ -4709,7 +5187,7 @@
               "temp_f": 70.7,
               "wind_mph": 6.6,
               "gust_mph": 6.5,
-              "precip_pct": 27,
+              "precip_pct": 14,
               "snow_in": 0.0
             },
             "flags": []
@@ -4722,7 +5200,7 @@
           "kickoff": "2026-10-31T23:30Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -20.5,
           "spread_details": "TEX -20.5",
           "total": 50.5,
@@ -4805,13 +5283,7 @@
               "state": "TX",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 79.9,
-              "wind_mph": 4.2,
-              "gust_mph": 13.4,
-              "precip_pct": 4,
-              "snow_in": 0.0
-            },
+            "weather": null,
             "flags": []
           }
         },
@@ -4822,7 +5294,7 @@
           "kickoff": "2026-10-31T23:45Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": 10.5,
           "spread_details": "MIZ -10.5",
           "total": 47.5,
@@ -4916,7 +5388,7 @@
           "kickoff": "2026-11-01T00:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -9.5,
           "spread_details": "NEB -9.5",
           "total": 49.5,
@@ -4999,8 +5471,20 @@
               "state": "NE",
               "indoor": false
             },
-            "weather": null,
-            "flags": []
+            "weather": {
+              "temp_f": 58.6,
+              "wind_mph": 5.1,
+              "gust_mph": 5.1,
+              "precip_pct": 50,
+              "snow_in": 0.0
+            },
+            "flags": [
+              {
+                "kind": "rain",
+                "severity": "low",
+                "text": "50% chance of rain"
+              }
+            ]
           }
         },
         {
@@ -5010,7 +5494,7 @@
           "kickoff": "2026-11-01T03:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": 7.0,
           "spread_details": "ORST -7",
           "total": 56.5,
@@ -5102,20 +5586,6 @@
         "points": 6.0,
         "legs": [
           {
-            "event_id": "401871071",
-            "matchup": "DEL @ WKU",
-            "kickoff": "2026-10-27T23:00Z",
-            "team_abbr": "WKU",
-            "team_name": "Western Kentucky Hilltoppers",
-            "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/98.png",
-            "spread": 2.5,
-            "source": "DraftKings",
-            "teased": 8.5,
-            "band": "dog +1.5..+2.5",
-            "prob": 0.7063,
-            "push_risk": false
-          },
-          {
             "event_id": "401871072",
             "matchup": "SHSU @ MOST",
             "kickoff": "2026-10-28T00:00Z",
@@ -5123,7 +5593,7 @@
             "team_name": "Missouri State Bears",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2623.png",
             "spread": -6.5,
-            "source": "DraftKings",
+            "source": "FanDuel",
             "teased": -0.5,
             "band": "fav -7.5..-6.5",
             "prob": 0.7063,
@@ -5137,7 +5607,21 @@
             "team_name": "Kennesaw State Owls",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/338.png",
             "spread": 2.5,
-            "source": "DraftKings",
+            "source": "FanDuel",
+            "teased": 8.5,
+            "band": "dog +1.5..+2.5",
+            "prob": 0.7063,
+            "push_risk": false
+          },
+          {
+            "event_id": "401871057",
+            "matchup": "JXST @ NMSU",
+            "kickoff": "2026-10-29T00:00Z",
+            "team_abbr": "NMSU",
+            "team_name": "New Mexico State Aggies",
+            "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/166.png",
+            "spread": 2.5,
+            "source": "FanDuel",
             "teased": 8.5,
             "band": "dog +1.5..+2.5",
             "prob": 0.7063,
@@ -5151,7 +5635,7 @@
             "team_name": "Baylor Bears",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/239.png",
             "spread": 2.5,
-            "source": "DraftKings",
+            "source": "FanDuel",
             "teased": 8.5,
             "band": "dog +1.5..+2.5",
             "prob": 0.7063,
@@ -5164,8 +5648,36 @@
             "team_abbr": "UTAH",
             "team_name": "Utah Utes",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/254.png",
+            "spread": -7.5,
+            "source": "FanDuel",
+            "teased": -1.5,
+            "band": "fav -8.5..-7.5",
+            "prob": 0.7063,
+            "push_risk": false
+          },
+          {
+            "event_id": "401858509",
+            "matchup": "OSU @ USC",
+            "kickoff": "2026-10-31T23:30Z",
+            "team_abbr": "OSU",
+            "team_name": "Ohio State Buckeyes",
+            "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/194.png",
             "spread": -6.5,
-            "source": "DraftKings",
+            "source": "FanDuel",
+            "teased": -0.5,
+            "band": "fav -7.5..-6.5",
+            "prob": 0.7063,
+            "push_risk": false
+          },
+          {
+            "event_id": "401860924",
+            "matchup": "ORST @ FRES",
+            "kickoff": "2026-11-01T03:00Z",
+            "team_abbr": "ORST",
+            "team_name": "Oregon State Beavers",
+            "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/204.png",
+            "spread": -6.5,
+            "source": "FanDuel",
             "teased": -0.5,
             "band": "fav -7.5..-6.5",
             "prob": 0.7063,
@@ -5174,9 +5686,9 @@
         ],
         "per_leg_rate": 0.7063,
         "per_leg_stderr": 0.0196,
-        "provider": "DraftKings",
-        "provider_is_mine": false,
-        "captured_at": null,
+        "provider": "FanDuel",
+        "provider_is_mine": true,
+        "captured_at": "2026-10-25T16:28:08+00:00",
         "max_price_best": 101,
         "max_price_worst": 101,
         "max_price_best_se": 113,
@@ -5215,20 +5727,6 @@
           "points": 10.0,
           "legs": [
             {
-              "event_id": "401871071",
-              "matchup": "DEL @ WKU",
-              "kickoff": "2026-10-27T23:00Z",
-              "team_abbr": "WKU",
-              "team_name": "Western Kentucky Hilltoppers",
-              "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/98.png",
-              "spread": 2.5,
-              "source": "DraftKings",
-              "teased": 12.5,
-              "band": "dog +1.5..+3.5",
-              "prob": 0.7723,
-              "push_risk": false
-            },
-            {
               "event_id": "401871058",
               "matchup": "KENN @ MTSU",
               "kickoff": "2026-10-28T23:00Z",
@@ -5236,9 +5734,51 @@
               "team_name": "Kennesaw State Owls",
               "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/338.png",
               "spread": 2.5,
-              "source": "DraftKings",
+              "source": "FanDuel",
               "teased": 12.5,
               "band": "dog +1.5..+3.5",
+              "prob": 0.7723,
+              "push_risk": false
+            },
+            {
+              "event_id": "401871057",
+              "matchup": "JXST @ NMSU",
+              "kickoff": "2026-10-29T00:00Z",
+              "team_abbr": "NMSU",
+              "team_name": "New Mexico State Aggies",
+              "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/166.png",
+              "spread": 2.5,
+              "source": "FanDuel",
+              "teased": 12.5,
+              "band": "dog +1.5..+3.5",
+              "prob": 0.7723,
+              "push_risk": false
+            },
+            {
+              "event_id": "401862812",
+              "matchup": "FAU @ UNT",
+              "kickoff": "2026-10-29T23:30Z",
+              "team_abbr": "UNT",
+              "team_name": "North Texas Mean Green",
+              "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/249.png",
+              "spread": -10.5,
+              "source": "FanDuel",
+              "teased": -0.5,
+              "band": "fav -12.5..-8.5",
+              "prob": 0.7723,
+              "push_risk": false
+            },
+            {
+              "event_id": "401862813",
+              "matchup": "TULN @ CLT",
+              "kickoff": "2026-10-30T23:00Z",
+              "team_abbr": "TULN",
+              "team_name": "Tulane Green Wave",
+              "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2655.png",
+              "spread": -11.5,
+              "source": "FanDuel",
+              "teased": -1.5,
+              "band": "fav -12.5..-8.5",
               "prob": 0.7723,
               "push_risk": false
             },
@@ -5250,9 +5790,23 @@
               "team_name": "Baylor Bears",
               "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/239.png",
               "spread": 2.5,
-              "source": "DraftKings",
+              "source": "FanDuel",
               "teased": 12.5,
               "band": "dog +1.5..+3.5",
+              "prob": 0.7723,
+              "push_risk": false
+            },
+            {
+              "event_id": "401866451",
+              "matchup": "KENT @ SAC",
+              "kickoff": "2026-10-31T02:30Z",
+              "team_abbr": "KENT",
+              "team_name": "Kent State Golden Flashes",
+              "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2309.png",
+              "spread": -10.5,
+              "source": "FanDuel",
+              "teased": -0.5,
+              "band": "fav -12.5..-8.5",
               "prob": 0.7723,
               "push_risk": false
             },
@@ -5264,7 +5818,7 @@
               "team_name": "Wisconsin Badgers",
               "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/275.png",
               "spread": 3.5,
-              "source": "DraftKings",
+              "source": "FanDuel",
               "teased": 13.5,
               "band": "dog +1.5..+3.5",
               "prob": 0.7723,
@@ -5278,22 +5832,8 @@
               "team_name": "SMU Mustangs",
               "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2567.png",
               "spread": -9.5,
-              "source": "DraftKings",
+              "source": "FanDuel",
               "teased": 0.5,
-              "band": "fav -12.5..-8.5",
-              "prob": 0.7723,
-              "push_risk": false
-            },
-            {
-              "event_id": "401856735",
-              "matchup": "AUB @ MISS",
-              "kickoff": "2026-10-31T16:45Z",
-              "team_abbr": "MISS",
-              "team_name": "Ole Miss Rebels",
-              "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/145.png",
-              "spread": -11.5,
-              "source": "DraftKings",
-              "teased": -1.5,
               "band": "fav -12.5..-8.5",
               "prob": 0.7723,
               "push_risk": false
@@ -5306,9 +5846,37 @@
               "team_name": "Georgia Bulldogs",
               "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/61.png",
               "spread": -10.5,
-              "source": "DraftKings",
+              "source": "FanDuel",
               "teased": -0.5,
               "band": "fav -12.5..-8.5",
+              "prob": 0.7723,
+              "push_risk": false
+            },
+            {
+              "event_id": "401858505",
+              "matchup": "NU @ ORE",
+              "kickoff": "2026-10-31T19:30Z",
+              "team_abbr": "NU",
+              "team_name": "Northwestern Wildcats",
+              "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/77.png",
+              "spread": 3.5,
+              "source": "FanDuel",
+              "teased": 13.5,
+              "band": "dog +1.5..+3.5",
+              "prob": 0.7723,
+              "push_risk": false
+            },
+            {
+              "event_id": "401856736",
+              "matchup": "SC @ OU",
+              "kickoff": "2026-10-31T20:15Z",
+              "team_abbr": "SC",
+              "team_name": "South Carolina Gamecocks",
+              "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2579.png",
+              "spread": 3.5,
+              "source": "FanDuel",
+              "teased": 13.5,
+              "band": "dog +1.5..+3.5",
               "prob": 0.7723,
               "push_risk": false
             },
@@ -5319,9 +5887,9 @@
               "team_abbr": "MIZ",
               "team_name": "Missouri Tigers",
               "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/142.png",
-              "spread": -10.5,
-              "source": "DraftKings",
-              "teased": -0.5,
+              "spread": -9.5,
+              "source": "FanDuel",
+              "teased": 0.5,
               "band": "fav -12.5..-8.5",
               "prob": 0.7723,
               "push_risk": false
@@ -5334,48 +5902,20 @@
               "team_name": "Nebraska Cornhuskers",
               "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/158.png",
               "spread": -9.5,
-              "source": "DraftKings",
+              "source": "FanDuel",
               "teased": 0.5,
               "band": "fav -12.5..-8.5",
               "prob": 0.7723,
               "push_risk": false
-            },
-            {
-              "event_id": "401871057",
-              "matchup": "JXST @ NMSU",
-              "kickoff": "2026-10-29T00:00Z",
-              "team_abbr": "NMSU",
-              "team_name": "New Mexico State Aggies",
-              "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/166.png",
-              "spread": 3.0,
-              "source": "DraftKings",
-              "teased": 13.0,
-              "band": "dog +1.5..+3.5",
-              "prob": 0.7529,
-              "push_risk": true
-            },
-            {
-              "event_id": "401866451",
-              "matchup": "KENT @ SAC",
-              "kickoff": "2026-10-31T02:30Z",
-              "team_abbr": "KENT",
-              "team_name": "Kent State Golden Flashes",
-              "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2309.png",
-              "spread": -10.0,
-              "source": "DraftKings",
-              "teased": 0.0,
-              "band": "fav -12.5..-8.5",
-              "prob": 0.7529,
-              "push_risk": true
             }
           ],
           "per_leg_rate": 0.7723,
           "per_leg_stderr": 0.0147,
-          "provider": "DraftKings",
-          "provider_is_mine": false,
-          "captured_at": null,
+          "provider": "FanDuel",
+          "provider_is_mine": true,
+          "captured_at": "2026-10-25T16:28:08+00:00",
           "max_price_best": -147,
-          "max_price_worst": -130,
+          "max_price_worst": -147,
           "max_price_best_se": -134,
           "at_my_books": [
             {
