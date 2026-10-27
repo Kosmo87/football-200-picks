@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-27T00:30:10+00:00",
+  "generated_at": "2026-10-27T06:20:53+00:00",
   "season": 2026,
   "leagues": {
     "NFL": {
@@ -94,7 +94,7 @@
               },
               "away": {
                 "count": 1,
-                "long_term": 2,
+                "long_term": 1,
                 "qb_out": 0,
                 "qbs": [],
                 "players": [
@@ -108,8 +108,8 @@
                 ]
               },
               "source": "espn",
-              "teams_covered": 24,
-              "teams_playing": 24,
+              "teams_covered": 28,
+              "teams_playing": 28,
               "error": null
             },
             "venue": null,
@@ -197,7 +197,7 @@
                     "position": "S",
                     "status": "Suspension",
                     "detail": "Suspension",
-                    "since": "2026-10-27T00:00Z"
+                    "since": "2026-10-27T06:01Z"
                   }
                 ]
               },
@@ -233,8 +233,8 @@
                 ]
               },
               "source": "espn",
-              "teams_covered": 24,
-              "teams_playing": 24,
+              "teams_covered": 28,
+              "teams_playing": 28,
               "error": null
             },
             "venue": null,
@@ -352,13 +352,220 @@
                 ]
               },
               "source": "espn",
-              "teams_covered": 24,
-              "teams_playing": 24,
+              "teams_covered": 28,
+              "teams_playing": 28,
               "error": null
             },
             "venue": null,
             "weather": null,
             "flags": []
+          }
+        },
+        {
+          "event_id": "401873024",
+          "name": "Arizona Cardinals at Dallas Cowboys",
+          "short_name": "ARI @ DAL",
+          "kickoff": "2026-11-01T18:00Z",
+          "status": "Scheduled",
+          "neutral": false,
+          "provider": "Draft Kings",
+          "spread": -6.5,
+          "spread_details": "DAL -6.5",
+          "total": 54.5,
+          "home": {
+            "id": "6",
+            "name": "Dallas Cowboys",
+            "abbr": "DAL",
+            "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/dal.png",
+            "elo": 1476.1,
+            "moneyline": -298
+          },
+          "away": {
+            "id": "22",
+            "name": "Arizona Cardinals",
+            "abbr": "ARI",
+            "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/ari.png",
+            "elo": 1370.0,
+            "moneyline": 240
+          },
+          "legs": [
+            {
+              "side": "away",
+              "team_id": "22",
+              "team_name": "Arizona Cardinals",
+              "team_abbr": "ARI",
+              "odds": 240,
+              "model_prob": 0.30751,
+              "implied_prob": 0.28203,
+              "edge_pp": 2.547847,
+              "fair_odds": 225,
+              "sample": 14.0,
+              "team_sample": 15.0,
+              "opp_sample": 14.0,
+              "team_games": 11,
+              "opp_games": 10,
+              "prior_credit": 4.0,
+              "stale": true,
+              "stale_reason": "ARI quarterback out: Carson Beck (Back)"
+            },
+            {
+              "side": "home",
+              "team_id": "6",
+              "team_name": "Dallas Cowboys",
+              "team_abbr": "DAL",
+              "odds": -298,
+              "model_prob": 0.69249,
+              "implied_prob": 0.71797,
+              "edge_pp": -2.547847,
+              "fair_odds": -225,
+              "sample": 14.0,
+              "team_sample": 14.0,
+              "opp_sample": 15.0,
+              "team_games": 10,
+              "opp_games": 11,
+              "prior_credit": 4.0,
+              "stale": true,
+              "stale_reason": "ARI quarterback out: Carson Beck (Back)"
+            }
+          ],
+          "context": {
+            "injuries": {
+              "home": {
+                "count": 5,
+                "long_term": 2,
+                "qb_out": 0,
+                "qbs": [],
+                "players": [
+                  {
+                    "player": "Emari Demercado",
+                    "position": "RB",
+                    "status": "Out",
+                    "detail": "Coach's Decision",
+                    "since": "2026-10-26T22:55Z"
+                  },
+                  {
+                    "player": "Dee Winters",
+                    "position": "LB",
+                    "status": "Out",
+                    "detail": "Calf",
+                    "since": "2026-10-26T22:53Z"
+                  },
+                  {
+                    "player": "Drew Shelton",
+                    "position": "OT",
+                    "status": "Out",
+                    "detail": "Hamstring",
+                    "since": "2026-10-26T22:53Z"
+                  },
+                  {
+                    "player": "KaVontae Turpin",
+                    "position": "WR",
+                    "status": "Out",
+                    "detail": "Ribs",
+                    "since": "2026-10-26T22:53Z"
+                  },
+                  {
+                    "player": "Tyrus Wheat",
+                    "position": "LB",
+                    "status": "Out",
+                    "detail": "Coach's Decision",
+                    "since": "2026-10-26T22:53Z"
+                  }
+                ]
+              },
+              "away": {
+                "count": 8,
+                "long_term": 1,
+                "qb_out": 1,
+                "qbs": [
+                  "Carson Beck (Back)"
+                ],
+                "players": [
+                  {
+                    "player": "Carson Beck",
+                    "position": "QB",
+                    "status": "Out",
+                    "detail": "Back",
+                    "since": "2026-10-25T18:44Z"
+                  },
+                  {
+                    "player": "Tip Reiman",
+                    "position": "TE",
+                    "status": "Out",
+                    "detail": "Ankle",
+                    "since": "2026-10-26T22:29Z"
+                  },
+                  {
+                    "player": "Jeremiyah Love",
+                    "position": "RB",
+                    "status": "Out",
+                    "detail": "Ankle",
+                    "since": "2026-10-26T21:39Z"
+                  },
+                  {
+                    "player": "Jalen Brooks",
+                    "position": "WR",
+                    "status": "Out",
+                    "detail": "Wrist",
+                    "since": "2026-10-26T18:18Z"
+                  },
+                  {
+                    "player": "Andrew Wingard",
+                    "position": "S",
+                    "status": "Out",
+                    "detail": "Knee",
+                    "since": "2026-10-26T17:23Z"
+                  },
+                  {
+                    "player": "Walter Nolen III",
+                    "position": "DT",
+                    "status": "Out",
+                    "detail": "Ankle",
+                    "since": "2026-10-26T17:23Z"
+                  },
+                  {
+                    "player": "Jon Gaines II",
+                    "position": "G",
+                    "status": "Out",
+                    "detail": "Knee",
+                    "since": "2026-10-26T17:23Z"
+                  },
+                  {
+                    "player": "Max Melton",
+                    "position": "CB",
+                    "status": "Out",
+                    "detail": "Knee",
+                    "since": "2026-10-25T18:48Z"
+                  }
+                ]
+              },
+              "source": "espn",
+              "teams_covered": 28,
+              "teams_playing": 28,
+              "error": null
+            },
+            "venue": null,
+            "weather": null,
+            "flags": [
+              {
+                "kind": "injuries",
+                "severity": "low",
+                "side": "home",
+                "text": "DAL ruled out 5 rotation players this week"
+              },
+              {
+                "kind": "qb_out",
+                "severity": "high",
+                "side": "away",
+                "text": "ARI quarterback out: Carson Beck (Back). The ratings are built from final scores and do not know this; the price does."
+              },
+              {
+                "kind": "injuries",
+                "severity": "low",
+                "side": "away",
+                "text": "ARI ruled out 8 rotation players this week"
+              }
+            ]
           }
         },
         {
@@ -449,8 +656,8 @@
                 "players": []
               },
               "source": "espn",
-              "teams_covered": 24,
-              "teams_playing": 24,
+              "teams_covered": 28,
+              "teams_playing": 28,
               "error": null
             },
             "venue": null,
@@ -574,8 +781,8 @@
                 "players": []
               },
               "source": "espn",
-              "teams_covered": 24,
-              "teams_playing": 24,
+              "teams_covered": 28,
+              "teams_playing": 28,
               "error": null
             },
             "venue": null,
@@ -679,7 +886,7 @@
               },
               "away": {
                 "count": 1,
-                "long_term": 2,
+                "long_term": 1,
                 "qb_out": 0,
                 "qbs": [],
                 "players": [
@@ -693,8 +900,8 @@
                 ]
               },
               "source": "espn",
-              "teams_covered": 24,
-              "teams_playing": 24,
+              "teams_covered": 28,
+              "teams_playing": 28,
               "error": null
             },
             "venue": null,
@@ -840,8 +1047,8 @@
                 ]
               },
               "source": "espn",
-              "teams_covered": 24,
-              "teams_playing": 24,
+              "teams_covered": 28,
+              "teams_playing": 28,
               "error": null
             },
             "venue": null,
@@ -972,8 +1179,8 @@
                 ]
               },
               "source": "espn",
-              "teams_covered": 24,
-              "teams_playing": 24,
+              "teams_covered": 28,
+              "teams_playing": 28,
               "error": null
             },
             "venue": null,
@@ -1055,7 +1262,7 @@
             "injuries": {
               "home": {
                 "count": 2,
-                "long_term": 5,
+                "long_term": 4,
                 "qb_out": 0,
                 "qbs": [],
                 "players": [
@@ -1083,8 +1290,8 @@
                 "players": []
               },
               "source": "espn",
-              "teams_covered": 24,
-              "teams_playing": 24,
+              "teams_covered": 28,
+              "teams_playing": 28,
               "error": null
             },
             "venue": null,
@@ -1202,8 +1409,8 @@
                 ]
               },
               "source": "espn",
-              "teams_covered": 24,
-              "teams_playing": 24,
+              "teams_covered": 28,
+              "teams_playing": 28,
               "error": null
             },
             "venue": null,
@@ -1342,13 +1549,186 @@
                 ]
               },
               "source": "espn",
-              "teams_covered": 24,
-              "teams_playing": 24,
+              "teams_covered": 28,
+              "teams_playing": 28,
               "error": null
             },
             "venue": null,
             "weather": null,
             "flags": []
+          }
+        },
+        {
+          "event_id": "401873035",
+          "name": "Philadelphia Eagles at Washington Commanders",
+          "short_name": "PHI @ WSH",
+          "kickoff": "2026-11-02T01:20Z",
+          "status": "Scheduled",
+          "neutral": false,
+          "provider": "Draft Kings",
+          "spread": -4.5,
+          "spread_details": "WSH -4.5",
+          "total": 40.5,
+          "home": {
+            "id": "28",
+            "name": "Washington Commanders",
+            "abbr": "WSH",
+            "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/wsh.png",
+            "elo": 1395.9,
+            "moneyline": -205
+          },
+          "away": {
+            "id": "21",
+            "name": "Philadelphia Eagles",
+            "abbr": "PHI",
+            "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/phi.png",
+            "elo": 1399.2,
+            "moneyline": 170
+          },
+          "legs": [
+            {
+              "side": "away",
+              "team_id": "21",
+              "team_name": "Philadelphia Eagles",
+              "team_abbr": "PHI",
+              "odds": 170,
+              "model_prob": 0.45453,
+              "implied_prob": 0.35527,
+              "edge_pp": 9.926078,
+              "fair_odds": 120,
+              "sample": 13.0,
+              "team_sample": 14.0,
+              "opp_sample": 13.0,
+              "team_games": 10,
+              "opp_games": 9,
+              "prior_credit": 4.0,
+              "stale": true,
+              "stale_reason": "PHI quarterback out: Cole Payton (Coach's Decision)"
+            },
+            {
+              "side": "home",
+              "team_id": "28",
+              "team_name": "Washington Commanders",
+              "team_abbr": "WSH",
+              "odds": -205,
+              "model_prob": 0.54547,
+              "implied_prob": 0.64473,
+              "edge_pp": -9.926078,
+              "fair_odds": -120,
+              "sample": 13.0,
+              "team_sample": 13.0,
+              "opp_sample": 14.0,
+              "team_games": 9,
+              "opp_games": 10,
+              "prior_credit": 4.0,
+              "stale": true,
+              "stale_reason": "PHI quarterback out: Cole Payton (Coach's Decision)"
+            }
+          ],
+          "context": {
+            "injuries": {
+              "home": {
+                "count": 1,
+                "long_term": 2,
+                "qb_out": 0,
+                "qbs": [],
+                "players": [
+                  {
+                    "player": "Terry McLaurin",
+                    "position": "WR",
+                    "status": "Out",
+                    "detail": "Knee",
+                    "since": "2026-10-20T19:18Z"
+                  }
+                ]
+              },
+              "away": {
+                "count": 8,
+                "long_term": 1,
+                "qb_out": 1,
+                "qbs": [
+                  "Cole Payton (Coach's Decision)"
+                ],
+                "players": [
+                  {
+                    "player": "Cole Payton",
+                    "position": "QB",
+                    "status": "Out",
+                    "detail": "Coach's Decision",
+                    "since": "2026-10-26T23:00Z"
+                  },
+                  {
+                    "player": "Britain Covey",
+                    "position": "WR",
+                    "status": "Out",
+                    "detail": "Knee",
+                    "since": "2026-10-27T00:59Z"
+                  },
+                  {
+                    "player": "Lane Johnson",
+                    "position": "OT",
+                    "status": "Out",
+                    "detail": "Personal",
+                    "since": "2026-10-26T22:53Z"
+                  },
+                  {
+                    "player": "Dontayvion Wicks",
+                    "position": "WR",
+                    "status": "Out",
+                    "detail": "Ankle",
+                    "since": "2026-10-26T22:50Z"
+                  },
+                  {
+                    "player": "DeVonta Smith",
+                    "position": "WR",
+                    "status": "Out",
+                    "detail": "Hamstring",
+                    "since": "2026-10-26T22:50Z"
+                  },
+                  {
+                    "player": "Nolan Smith Jr.",
+                    "position": "LB",
+                    "status": "Out",
+                    "detail": "Concussion",
+                    "since": "2026-10-26T22:50Z"
+                  },
+                  {
+                    "player": "Jake Majors",
+                    "position": "C",
+                    "status": "Out",
+                    "detail": "Coach's Decision",
+                    "since": "2026-10-26T22:50Z"
+                  },
+                  {
+                    "player": "Michael Carter II",
+                    "position": "CB",
+                    "status": "Out",
+                    "detail": "Abdomen",
+                    "since": "2026-10-26T22:50Z"
+                  }
+                ]
+              },
+              "source": "espn",
+              "teams_covered": 28,
+              "teams_playing": 28,
+              "error": null
+            },
+            "venue": null,
+            "weather": null,
+            "flags": [
+              {
+                "kind": "qb_out",
+                "severity": "high",
+                "side": "away",
+                "text": "PHI quarterback out: Cole Payton (Coach's Decision). The ratings are built from final scores and do not know this; the price does."
+              },
+              {
+                "kind": "injuries",
+                "severity": "low",
+                "side": "away",
+                "text": "PHI ruled out 8 rotation players this week"
+              }
+            ]
           }
         },
         {
@@ -1422,7 +1802,7 @@
             "injuries": {
               "home": {
                 "count": 6,
-                "long_term": 2,
+                "long_term": 1,
                 "qb_out": 1,
                 "qbs": [
                   "Drew Lock (Elbow)"
@@ -1473,11 +1853,18 @@
                 ]
               },
               "away": {
-                "count": 3,
-                "long_term": 2,
+                "count": 4,
+                "long_term": 1,
                 "qb_out": 0,
                 "qbs": [],
                 "players": [
+                  {
+                    "player": "Anthony Johnson Jr.",
+                    "position": "S",
+                    "status": "Out",
+                    "detail": "Undisclosed",
+                    "since": "2026-10-27T06:01Z"
+                  },
                   {
                     "player": "Jack Sanborn",
                     "position": "LB",
@@ -1502,8 +1889,8 @@
                 ]
               },
               "source": "espn",
-              "teams_covered": 24,
-              "teams_playing": 24,
+              "teams_covered": 28,
+              "teams_playing": 28,
               "error": null
             },
             "venue": null,
@@ -1527,20 +1914,258 @@
       ],
       "teasers": {
         "points": 6.0,
-        "legs": [],
+        "legs": [
+          {
+            "event_id": "401873025",
+            "matchup": "ATL @ TB",
+            "kickoff": "2026-11-01T18:00Z",
+            "team_abbr": "ATL",
+            "team_name": "Atlanta Falcons",
+            "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/atl.png",
+            "spread": 2.5,
+            "source": "Draft Kings",
+            "teased": 8.5,
+            "band": "dog +1.5..+2.5",
+            "prob": 0.7409,
+            "push_risk": false
+          },
+          {
+            "event_id": "401873024",
+            "matchup": "ARI @ DAL",
+            "kickoff": "2026-11-01T18:00Z",
+            "team_abbr": "DAL",
+            "team_name": "Dallas Cowboys",
+            "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/dal.png",
+            "spread": -6.5,
+            "source": "Draft Kings",
+            "teased": -0.5,
+            "band": "fav -7.5..-6.5",
+            "prob": 0.7379,
+            "push_risk": false
+          },
+          {
+            "event_id": "401873032",
+            "matchup": "LAC @ LAR",
+            "kickoff": "2026-11-01T21:05Z",
+            "team_abbr": "LAR",
+            "team_name": "Los Angeles Rams",
+            "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/lar.png",
+            "spread": -6.5,
+            "source": "Draft Kings",
+            "teased": -0.5,
+            "band": "fav -7.5..-6.5",
+            "prob": 0.7379,
+            "push_risk": false
+          },
+          {
+            "event_id": "401873028",
+            "matchup": "IND @ JAX",
+            "kickoff": "2026-11-01T18:00Z",
+            "team_abbr": "JAX",
+            "team_name": "Jacksonville Jaguars",
+            "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/jax.png",
+            "spread": -7.5,
+            "source": "Draft Kings",
+            "teased": -1.5,
+            "band": "fav -8.5..-7.5",
+            "prob": 0.7238,
+            "push_risk": false
+          },
+          {
+            "event_id": "401873034",
+            "matchup": "NE @ MIA",
+            "kickoff": "2026-11-01T21:25Z",
+            "team_abbr": "NE",
+            "team_name": "New England Patriots",
+            "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/ne.png",
+            "spread": -7.5,
+            "source": "Draft Kings",
+            "teased": -1.5,
+            "band": "fav -8.5..-7.5",
+            "prob": 0.7238,
+            "push_risk": false
+          }
+        ],
         "per_leg_rate": 0.7362,
         "per_leg_stderr": 0.0104,
         "provider": "Draft Kings",
         "provider_is_mine": false,
         "captured_at": null,
+        "max_price_best": -120,
+        "max_price_worst": -110,
+        "max_price_best_se": -113,
+        "at_my_books": [
+          {
+            "book": "BetMGM",
+            "playable": false,
+            "reason": "BetMGM does not offer teasers (2026-09-13)",
+            "quoted": null
+          },
+          {
+            "book": "FanDuel",
+            "playable": false,
+            "reason": "FanDuel quotes -134 on 2 legs, needs -113 \u2014 refused",
+            "quoted": -134
+          }
+        ],
+        "playable": false,
+        "max_price_3": 148,
+        "max_price_3_se": 159,
+        "at_my_books_3": [
+          {
+            "book": "BetMGM",
+            "playable": false,
+            "reason": "BetMGM does not offer teasers (2026-09-13)",
+            "quoted": null
+          },
+          {
+            "book": "FanDuel",
+            "playable": true,
+            "reason": "FanDuel 3-leg price unverified \u2014 need +159 or better",
+            "quoted": null
+          }
+        ],
         "ten": {
           "points": 10.0,
-          "legs": [],
+          "legs": [
+            {
+              "event_id": "401873023",
+              "matchup": "CAR @ GB",
+              "kickoff": "2026-10-30T00:15Z",
+              "team_abbr": "CAR",
+              "team_name": "Carolina Panthers",
+              "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/car.png",
+              "spread": 3.5,
+              "source": "Draft Kings",
+              "teased": 13.5,
+              "band": "dog +1.5..+3.5",
+              "prob": 0.7918,
+              "push_risk": false
+            },
+            {
+              "event_id": "401873026",
+              "matchup": "BAL @ BUF",
+              "kickoff": "2026-11-01T18:00Z",
+              "team_abbr": "BAL",
+              "team_name": "Baltimore Ravens",
+              "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/bal.png",
+              "spread": 3.5,
+              "source": "Draft Kings",
+              "teased": 13.5,
+              "band": "dog +1.5..+3.5",
+              "prob": 0.7918,
+              "push_risk": false
+            },
+            {
+              "event_id": "401873027",
+              "matchup": "CLE @ PIT",
+              "kickoff": "2026-11-01T18:00Z",
+              "team_abbr": "CLE",
+              "team_name": "Cleveland Browns",
+              "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/cle.png",
+              "spread": 3.5,
+              "source": "Draft Kings",
+              "teased": 13.5,
+              "band": "dog +1.5..+3.5",
+              "prob": 0.7918,
+              "push_risk": false
+            },
+            {
+              "event_id": "401873025",
+              "matchup": "ATL @ TB",
+              "kickoff": "2026-11-01T18:00Z",
+              "team_abbr": "ATL",
+              "team_name": "Atlanta Falcons",
+              "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/atl.png",
+              "spread": 2.5,
+              "source": "Draft Kings",
+              "teased": 12.5,
+              "band": "dog +1.5..+3.5",
+              "prob": 0.7918,
+              "push_risk": false
+            },
+            {
+              "event_id": "401873031",
+              "matchup": "TEN @ CIN",
+              "kickoff": "2026-11-01T18:00Z",
+              "team_abbr": "CIN",
+              "team_name": "Cincinnati Bengals",
+              "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/cin.png",
+              "spread": -10.0,
+              "source": "Draft Kings",
+              "teased": 0.0,
+              "band": "fav -12.5..-8.5",
+              "prob": 0.7719,
+              "push_risk": true
+            },
+            {
+              "event_id": "401873030",
+              "matchup": "MIN @ DET",
+              "kickoff": "2026-11-01T18:00Z",
+              "team_abbr": "MIN",
+              "team_name": "Minnesota Vikings",
+              "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/min.png",
+              "spread": 3.0,
+              "source": "Draft Kings",
+              "teased": 13.0,
+              "band": "dog +1.5..+3.5",
+              "prob": 0.7719,
+              "push_risk": true
+            },
+            {
+              "event_id": "401873036",
+              "matchup": "CHI @ SEA",
+              "kickoff": "2026-11-03T01:15Z",
+              "team_abbr": "CHI",
+              "team_name": "Chicago Bears",
+              "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/chi.png",
+              "spread": 3.0,
+              "source": "Draft Kings",
+              "teased": 13.0,
+              "band": "dog +1.5..+3.5",
+              "prob": 0.7719,
+              "push_risk": true
+            }
+          ],
           "per_leg_rate": 0.7918,
           "per_leg_stderr": 0.0071,
           "provider": "Draft Kings",
           "provider_is_mine": false,
-          "captured_at": null
+          "captured_at": null,
+          "max_price_best": -168,
+          "max_price_worst": -147,
+          "max_price_best_se": -160,
+          "at_my_books": [
+            {
+              "book": "BetMGM",
+              "playable": false,
+              "reason": "BetMGM does not offer teasers (2026-09-13)",
+              "quoted": null
+            },
+            {
+              "book": "FanDuel",
+              "playable": true,
+              "reason": "FanDuel quotes -134, clears -160",
+              "quoted": -134
+            }
+          ],
+          "playable": true,
+          "max_price_3": 102,
+          "max_price_3_se": 107,
+          "at_my_books_3": [
+            {
+              "book": "BetMGM",
+              "playable": false,
+              "reason": "BetMGM does not offer teasers (2026-09-13)",
+              "quoted": null
+            },
+            {
+              "book": "FanDuel",
+              "playable": true,
+              "reason": "FanDuel 3-leg price unverified \u2014 need +107 or better",
+              "quoted": null
+            }
+          ]
         },
         "ladder": {
           "6": {
@@ -1753,28 +2378,20 @@
           "prior_games": 17
         },
         {
+          "team_id": "6",
+          "name": "Dallas Cowboys",
+          "abbr": "DAL",
+          "elo": 1476.1,
+          "games": 10,
+          "prior_games": 17
+        },
+        {
           "team_id": "29",
           "name": "Carolina Panthers",
           "abbr": "CAR",
           "elo": 1467.4,
           "games": 10,
           "prior_games": 18
-        },
-        {
-          "team_id": "21",
-          "name": "Philadelphia Eagles",
-          "abbr": "PHI",
-          "elo": 1438.1,
-          "games": 9,
-          "prior_games": 18
-        },
-        {
-          "team_id": "6",
-          "name": "Dallas Cowboys",
-          "abbr": "DAL",
-          "elo": 1437.2,
-          "games": 9,
-          "prior_games": 17
         },
         {
           "team_id": "18",
@@ -1791,6 +2408,14 @@
           "elo": 1402.2,
           "games": 10,
           "prior_games": 17
+        },
+        {
+          "team_id": "21",
+          "name": "Philadelphia Eagles",
+          "abbr": "PHI",
+          "elo": 1399.2,
+          "games": 10,
+          "prior_games": 18
         },
         {
           "team_id": "28",
@@ -1856,8 +2481,8 @@
         "prior_games_used": 1425,
         "history_seasons": "2021-2025",
         "top_division_teams": 0,
-        "completed_games": 155,
-        "upcoming_games": 12,
+        "completed_games": 156,
+        "upcoming_games": 14,
         "rated_teams": 32,
         "elo": {
           "k_factor": 24.0,
@@ -1879,8 +2504,8 @@
           "status": "Scheduled",
           "neutral": false,
           "provider": "Draft Kings",
-          "spread": -1.5,
-          "spread_details": "WKU -1.5",
+          "spread": 1.5,
+          "spread_details": "DEL -1.5",
           "total": 57.5,
           "home": {
             "id": "98",
@@ -1888,7 +2513,7 @@
             "abbr": "WKU",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/98.png",
             "elo": 1458.9,
-            "moneyline": -112
+            "moneyline": -102
           },
           "away": {
             "id": "48",
@@ -1896,7 +2521,7 @@
             "abbr": "DEL",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/48.png",
             "elo": 1392.0,
-            "moneyline": -108
+            "moneyline": -118
           },
           "legs": [
             {
@@ -1904,10 +2529,10 @@
               "team_id": "48",
               "team_name": "Delaware Blue Hens",
               "team_abbr": "DEL",
-              "odds": -108,
+              "odds": -118,
               "model_prob": 0.33135,
-              "implied_prob": 0.49567,
-              "edge_pp": -16.431973,
+              "implied_prob": 0.51736,
+              "edge_pp": -18.601361,
               "fair_odds": 202,
               "sample": 10.0,
               "team_sample": 10.0,
@@ -1921,10 +2546,10 @@
               "team_id": "98",
               "team_name": "Western Kentucky Hilltoppers",
               "team_abbr": "WKU",
-              "odds": -112,
+              "odds": -102,
               "model_prob": 0.66865,
-              "implied_prob": 0.50433,
-              "edge_pp": 16.431973,
+              "implied_prob": 0.48264,
+              "edge_pp": 18.601361,
               "fair_odds": -202,
               "sample": 10.0,
               "team_sample": 10.0,
@@ -1962,9 +2587,9 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 69.2,
-              "wind_mph": 5.3,
-              "gust_mph": 6.7,
+              "temp_f": 67.9,
+              "wind_mph": 4.9,
+              "gust_mph": 6.3,
               "precip_pct": 0,
               "snow_in": 0.0
             },
@@ -2062,9 +2687,9 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 65.1,
-              "wind_mph": 3.6,
-              "gust_mph": 6.3,
+              "temp_f": 63.2,
+              "wind_mph": 5.5,
+              "gust_mph": 8.7,
               "precip_pct": 2,
               "snow_in": 0.0
             },
@@ -2162,9 +2787,9 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 63.9,
-              "wind_mph": 5.1,
-              "gust_mph": 5.6,
+              "temp_f": 66.6,
+              "wind_mph": 5.4,
+              "gust_mph": 7.0,
               "precip_pct": 0,
               "snow_in": 0.0
             },
@@ -2179,8 +2804,8 @@
           "status": "Scheduled",
           "neutral": false,
           "provider": "Draft Kings",
-          "spread": 3.0,
-          "spread_details": "JXST -3",
+          "spread": 3.5,
+          "spread_details": "JXST -3.5",
           "total": 49.5,
           "home": {
             "id": "166",
@@ -2262,9 +2887,9 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 76.1,
-              "wind_mph": 6.5,
-              "gust_mph": 4.9,
+              "temp_f": 76.5,
+              "wind_mph": 5.9,
+              "gust_mph": 7.7,
               "precip_pct": 0,
               "snow_in": 0.0
             },
@@ -2281,7 +2906,7 @@
           "provider": "Draft Kings",
           "spread": -13.5,
           "spread_details": "UNT -13.5",
-          "total": 76.5,
+          "total": 77.5,
           "home": {
             "id": "249",
             "name": "North Texas Mean Green",
@@ -2362,19 +2987,13 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 77.1,
-              "wind_mph": 10.9,
-              "gust_mph": 16.6,
-              "precip_pct": 4,
+              "temp_f": 75.9,
+              "wind_mph": 7.6,
+              "gust_mph": 14.1,
+              "precip_pct": 3,
               "snow_in": 0.0
             },
-            "flags": [
-              {
-                "kind": "wind",
-                "severity": "low",
-                "text": "Breezy: 11 mph, gusting 17"
-              }
-            ]
+            "flags": []
           }
         },
         {
@@ -2468,8 +3087,8 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 59.0,
-              "wind_mph": 2.1,
+              "temp_f": 59.7,
+              "wind_mph": 3.0,
               "gust_mph": 1.8,
               "precip_pct": 0,
               "snow_in": 0.0
@@ -2568,9 +3187,9 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 70.7,
-              "wind_mph": 4.3,
-              "gust_mph": 4.5,
+              "temp_f": 70.6,
+              "wind_mph": 3.6,
+              "gust_mph": 6.0,
               "precip_pct": 0,
               "snow_in": 0.0
             },
@@ -2668,17 +3287,17 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 77.6,
-              "wind_mph": 9.2,
-              "gust_mph": 19.5,
-              "precip_pct": 16,
+              "temp_f": 78.8,
+              "wind_mph": 9.7,
+              "gust_mph": 17.4,
+              "precip_pct": 10,
               "snow_in": 0.0
             },
             "flags": [
               {
                 "kind": "wind",
                 "severity": "low",
-                "text": "Breezy: 9 mph, gusting 20"
+                "text": "Breezy: 10 mph, gusting 17"
               }
             ]
           }
@@ -2774,19 +3393,13 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 60.8,
-              "wind_mph": 9.2,
-              "gust_mph": 15.9,
-              "precip_pct": 0,
+              "temp_f": 62.9,
+              "wind_mph": 7.1,
+              "gust_mph": 14.8,
+              "precip_pct": 1,
               "snow_in": 0.0
             },
-            "flags": [
-              {
-                "kind": "wind",
-                "severity": "low",
-                "text": "Breezy: 9 mph, gusting 16"
-              }
-            ]
+            "flags": []
           }
         },
         {
@@ -2880,19 +3493,13 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 65.9,
-              "wind_mph": 7.9,
-              "gust_mph": 15.4,
-              "precip_pct": 7,
+              "temp_f": 60.5,
+              "wind_mph": 8.7,
+              "gust_mph": 13.0,
+              "precip_pct": 6,
               "snow_in": 0.0
             },
-            "flags": [
-              {
-                "kind": "wind",
-                "severity": "low",
-                "text": "Breezy: 8 mph, gusting 15"
-              }
-            ]
+            "flags": []
           }
         },
         {
@@ -2903,8 +3510,8 @@
           "status": "Scheduled",
           "neutral": false,
           "provider": "Draft Kings",
-          "spread": 9.5,
-          "spread_details": "SMU -9.5",
+          "spread": 10.0,
+          "spread_details": "SMU -10",
           "total": 58.5,
           "home": {
             "id": "183",
@@ -2912,7 +3519,7 @@
             "abbr": "SYR",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/183.png",
             "elo": 1328.5,
-            "moneyline": 270
+            "moneyline": 285
           },
           "away": {
             "id": "2567",
@@ -2920,7 +3527,7 @@
             "abbr": "SMU",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2567.png",
             "elo": 1690.7,
-            "moneyline": -340
+            "moneyline": -360
           },
           "legs": [
             {
@@ -2928,10 +3535,10 @@
               "team_id": "2567",
               "team_name": "SMU Mustangs",
               "team_abbr": "SMU",
-              "odds": -340,
+              "odds": -360,
               "model_prob": 0.85423,
-              "implied_prob": 0.74087,
-              "edge_pp": 11.335876,
+              "implied_prob": 0.75081,
+              "edge_pp": 10.341781,
               "fair_odds": -586,
               "sample": 10.0,
               "team_sample": 10.0,
@@ -2945,10 +3552,10 @@
               "team_id": "183",
               "team_name": "Syracuse Orange",
               "team_abbr": "SYR",
-              "odds": 270,
+              "odds": 285,
               "model_prob": 0.14577,
-              "implied_prob": 0.25913,
-              "edge_pp": -11.335876,
+              "implied_prob": 0.24919,
+              "edge_pp": -10.341781,
               "fair_odds": 586,
               "sample": 10.0,
               "team_sample": 10.0,
@@ -3080,13 +3687,19 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 52.4,
-              "wind_mph": 9.3,
-              "gust_mph": 6.3,
+              "temp_f": 53.6,
+              "wind_mph": 10.4,
+              "gust_mph": 19.0,
               "precip_pct": 36,
               "snow_in": 0.0
             },
-            "flags": []
+            "flags": [
+              {
+                "kind": "wind",
+                "severity": "low",
+                "text": "Breezy: 10 mph, gusting 19"
+              }
+            ]
           }
         },
         {
@@ -3180,9 +3793,9 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 66.9,
-              "wind_mph": 9.2,
-              "gust_mph": 13.4,
+              "temp_f": 67.6,
+              "wind_mph": 9.8,
+              "gust_mph": 12.8,
               "precip_pct": 1,
               "snow_in": 0.0
             },
@@ -3280,9 +3893,9 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 66.9,
-              "wind_mph": 8.5,
-              "gust_mph": 14.1,
+              "temp_f": 66.7,
+              "wind_mph": 8.1,
+              "gust_mph": 11.6,
               "precip_pct": 1,
               "snow_in": 0.0
             },
@@ -3380,8 +3993,8 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 61.2,
-              "wind_mph": 5.3,
+              "temp_f": 60.8,
+              "wind_mph": 4.3,
               "gust_mph": 6.9,
               "precip_pct": 0,
               "snow_in": 0.0
@@ -3480,13 +4093,19 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 83.8,
-              "wind_mph": 11.8,
-              "gust_mph": 14.3,
-              "precip_pct": 2,
+              "temp_f": 84.5,
+              "wind_mph": 15.2,
+              "gust_mph": 20.1,
+              "precip_pct": 1,
               "snow_in": 0.0
             },
-            "flags": []
+            "flags": [
+              {
+                "kind": "wind",
+                "severity": "high",
+                "text": "Wind 15 mph, gusting 20 \u2014 kicking and the deep ball suffer"
+              }
+            ]
           }
         },
         {
@@ -3580,17 +4199,17 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 54.7,
-              "wind_mph": 8.7,
-              "gust_mph": 23.3,
-              "precip_pct": 15,
+              "temp_f": 55.6,
+              "wind_mph": 11.1,
+              "gust_mph": 17.4,
+              "precip_pct": 18,
               "snow_in": 0.0
             },
             "flags": [
               {
                 "kind": "wind",
-                "severity": "high",
-                "text": "Wind 9 mph, gusting 23 \u2014 kicking and the deep ball suffer"
+                "severity": "low",
+                "text": "Breezy: 11 mph, gusting 17"
               }
             ]
           }
@@ -3685,13 +4304,7 @@
               "state": "NJ",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 58.9,
-              "wind_mph": 4.6,
-              "gust_mph": 7.8,
-              "precip_pct": 0,
-              "snow_in": 0.0
-            },
+            "weather": null,
             "flags": []
           }
         },
@@ -4162,8 +4775,8 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 58.3,
-              "wind_mph": 2.5,
+              "temp_f": 58.4,
+              "wind_mph": 2.6,
               "gust_mph": 2.2,
               "precip_pct": 1,
               "snow_in": 0.0
@@ -4261,7 +4874,13 @@
               "state": "NC",
               "indoor": false
             },
-            "weather": null,
+            "weather": {
+              "temp_f": 70.4,
+              "wind_mph": 11.5,
+              "gust_mph": 12.8,
+              "precip_pct": 2,
+              "snow_in": 0.0
+            },
             "flags": []
           }
         },
@@ -4356,13 +4975,19 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 76.4,
-              "wind_mph": 8.1,
-              "gust_mph": 14.1,
-              "precip_pct": 31,
+              "temp_f": 77.2,
+              "wind_mph": 10.1,
+              "gust_mph": 17.9,
+              "precip_pct": 36,
               "snow_in": 0.0
             },
-            "flags": []
+            "flags": [
+              {
+                "kind": "wind",
+                "severity": "low",
+                "text": "Breezy: 10 mph, gusting 18"
+              }
+            ]
           }
         },
         {
@@ -4382,7 +5007,7 @@
             "abbr": "LOU",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/97.png",
             "elo": 1647.7,
-            "moneyline": -1800
+            "moneyline": -2100
           },
           "away": {
             "id": "24",
@@ -4390,35 +5015,18 @@
             "abbr": "STAN",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/24.png",
             "elo": 1445.1,
-            "moneyline": 1000
+            "moneyline": 1100
           },
           "legs": [
-            {
-              "side": "away",
-              "team_id": "24",
-              "team_name": "Stanford Cardinal",
-              "team_abbr": "STAN",
-              "odds": 1000,
-              "model_prob": 0.185,
-              "implied_prob": 0.08756,
-              "edge_pp": 9.744587,
-              "fair_odds": 441,
-              "sample": 9.0,
-              "team_sample": 10.0,
-              "opp_sample": 9.0,
-              "team_games": 6,
-              "opp_games": 5,
-              "prior_credit": 4.0
-            },
             {
               "side": "home",
               "team_id": "97",
               "team_name": "Louisville Cardinals",
               "team_abbr": "LOU",
-              "odds": -1800,
+              "odds": -2100,
               "model_prob": 0.815,
-              "implied_prob": 0.91244,
-              "edge_pp": -9.744587,
+              "implied_prob": 0.91971,
+              "edge_pp": -10.47115,
               "fair_odds": -441,
               "sample": 9.0,
               "team_sample": 9.0,
@@ -4456,10 +5064,10 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 75.2,
-              "wind_mph": 4.5,
+              "temp_f": 69.5,
+              "wind_mph": 5.4,
               "gust_mph": 9.8,
-              "precip_pct": 23,
+              "precip_pct": 22,
               "snow_in": 0.0
             },
             "flags": []
@@ -4658,10 +5266,10 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 69.5,
-              "wind_mph": 6.4,
+              "temp_f": 66.7,
+              "wind_mph": 9.4,
               "gust_mph": 11.4,
-              "precip_pct": 28,
+              "precip_pct": 27,
               "snow_in": 0.0
             },
             "flags": []
@@ -4758,13 +5366,19 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 57.0,
-              "wind_mph": 12.1,
-              "gust_mph": 13.0,
-              "precip_pct": 46,
+              "temp_f": 60.1,
+              "wind_mph": 5.2,
+              "gust_mph": 12.8,
+              "precip_pct": 50,
               "snow_in": 0.0
             },
-            "flags": []
+            "flags": [
+              {
+                "kind": "rain",
+                "severity": "low",
+                "text": "50% chance of rain"
+              }
+            ]
           }
         },
         {
@@ -4858,10 +5472,10 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 48.6,
-              "wind_mph": 3.0,
-              "gust_mph": 5.8,
-              "precip_pct": 14,
+              "temp_f": 53.5,
+              "wind_mph": 2.7,
+              "gust_mph": 4.7,
+              "precip_pct": 24,
               "snow_in": 0.0
             },
             "flags": []
@@ -4958,10 +5572,10 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 77.7,
-              "wind_mph": 1.1,
+              "temp_f": 74.2,
+              "wind_mph": 7.6,
               "gust_mph": 2.2,
-              "precip_pct": 22,
+              "precip_pct": 13,
               "snow_in": 0.0
             },
             "flags": []
@@ -5058,17 +5672,17 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 49.1,
-              "wind_mph": 5.8,
-              "gust_mph": 5.4,
-              "precip_pct": 64,
+              "temp_f": 52.5,
+              "wind_mph": 1.7,
+              "gust_mph": 4.3,
+              "precip_pct": 74,
               "snow_in": 0.0
             },
             "flags": [
               {
                 "kind": "rain",
                 "severity": "low",
-                "text": "64% chance of rain"
+                "text": "74% chance of rain"
               }
             ]
           }
@@ -5241,10 +5855,10 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 65.7,
-              "wind_mph": 7.1,
-              "gust_mph": 8.9,
-              "precip_pct": 2,
+              "temp_f": 64.2,
+              "wind_mph": 6.1,
+              "gust_mph": 6.9,
+              "precip_pct": 1,
               "snow_in": 0.0
             },
             "flags": []
@@ -5341,10 +5955,10 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 71.6,
-              "wind_mph": 3.5,
-              "gust_mph": 6.0,
-              "precip_pct": 32,
+              "temp_f": 70.9,
+              "wind_mph": 7.8,
+              "gust_mph": 11.4,
+              "precip_pct": 44,
               "snow_in": 0.0
             },
             "flags": []
@@ -5441,10 +6055,10 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 69.3,
+              "temp_f": 65.8,
               "wind_mph": 6.8,
-              "gust_mph": 11.9,
-              "precip_pct": 9,
+              "gust_mph": 9.6,
+              "precip_pct": 8,
               "snow_in": 0.0
             },
             "flags": []
@@ -5541,8 +6155,8 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 69.7,
-              "wind_mph": 9.2,
+              "temp_f": 68.9,
+              "wind_mph": 8.4,
               "gust_mph": 12.5,
               "precip_pct": 4,
               "snow_in": 0.0
@@ -5641,10 +6255,10 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 61.7,
-              "wind_mph": 7.0,
-              "gust_mph": 6.9,
-              "precip_pct": 11,
+              "temp_f": 63.2,
+              "wind_mph": 4.3,
+              "gust_mph": 2.2,
+              "precip_pct": 6,
               "snow_in": 0.0
             },
             "flags": []
@@ -5741,10 +6355,10 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 84.4,
-              "wind_mph": 3.5,
-              "gust_mph": 3.6,
-              "precip_pct": 18,
+              "temp_f": 87.2,
+              "wind_mph": 6.0,
+              "gust_mph": 4.9,
+              "precip_pct": 28,
               "snow_in": 0.0
             },
             "flags": []
@@ -5841,10 +6455,10 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 68.8,
-              "wind_mph": 7.4,
+              "temp_f": 67.3,
+              "wind_mph": 9.1,
               "gust_mph": 8.9,
-              "precip_pct": 10,
+              "precip_pct": 4,
               "snow_in": 0.0
             },
             "flags": []
@@ -5940,13 +6554,7 @@
               "state": "PA",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 61.6,
-              "wind_mph": 7.4,
-              "gust_mph": 9.6,
-              "precip_pct": 12,
-              "snow_in": 0.0
-            },
+            "weather": null,
             "flags": []
           }
         },
@@ -6041,17 +6649,17 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 74.3,
-              "wind_mph": 12.5,
-              "gust_mph": 21.0,
-              "precip_pct": 15,
+              "temp_f": 72.1,
+              "wind_mph": 13.4,
+              "gust_mph": 18.8,
+              "precip_pct": 28,
               "snow_in": 0.0
             },
             "flags": [
               {
                 "kind": "wind",
-                "severity": "high",
-                "text": "Wind 12 mph, gusting 21 \u2014 kicking and the deep ball suffer"
+                "severity": "low",
+                "text": "Breezy: 13 mph, gusting 19"
               }
             ]
           }
@@ -6146,20 +6754,8 @@
               "state": "IA",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 53.4,
-              "wind_mph": 10.6,
-              "gust_mph": 25.1,
-              "precip_pct": 24,
-              "snow_in": 0.0
-            },
-            "flags": [
-              {
-                "kind": "wind",
-                "severity": "high",
-                "text": "Wind 11 mph, gusting 25 \u2014 kicking and the deep ball suffer"
-              }
-            ]
+            "weather": null,
+            "flags": []
           }
         },
         {
@@ -6252,13 +6848,7 @@
               "state": "FL",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 73.6,
-              "wind_mph": 3.6,
-              "gust_mph": 9.8,
-              "precip_pct": 8,
-              "snow_in": 0.0
-            },
+            "weather": null,
             "flags": []
           }
         },
@@ -6352,13 +6942,7 @@
               "state": "CA",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 68.2,
-              "wind_mph": 8.1,
-              "gust_mph": 5.6,
-              "precip_pct": 38,
-              "snow_in": 0.0
-            },
+            "weather": null,
             "flags": []
           }
         },
@@ -6452,20 +7036,8 @@
               "state": "NC",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 66.5,
-              "wind_mph": 9.0,
-              "gust_mph": 19.7,
-              "precip_pct": 4,
-              "snow_in": 0.0
-            },
-            "flags": [
-              {
-                "kind": "wind",
-                "severity": "low",
-                "text": "Breezy: 9 mph, gusting 20"
-              }
-            ]
+            "weather": null,
+            "flags": []
           }
         },
         {
@@ -6559,10 +7131,10 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 68.2,
-              "wind_mph": 6.9,
-              "gust_mph": 6.9,
-              "precip_pct": 34,
+              "temp_f": 67.6,
+              "wind_mph": 8.1,
+              "gust_mph": 5.8,
+              "precip_pct": 28,
               "snow_in": 0.0
             },
             "flags": []
@@ -6659,10 +7231,10 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 82.5,
-              "wind_mph": 3.2,
-              "gust_mph": 7.4,
-              "precip_pct": 4,
+              "temp_f": 80.7,
+              "wind_mph": 2.2,
+              "gust_mph": 3.4,
+              "precip_pct": 7,
               "snow_in": 0.0
             },
             "flags": []
@@ -6759,9 +7331,9 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 57.2,
-              "wind_mph": 8.3,
-              "gust_mph": 15.9,
+              "temp_f": 57.7,
+              "wind_mph": 6.9,
+              "gust_mph": 19.7,
               "precip_pct": 1,
               "snow_in": 0.0
             },
@@ -6769,7 +7341,7 @@
               {
                 "kind": "wind",
                 "severity": "low",
-                "text": "Breezy: 8 mph, gusting 16"
+                "text": "Breezy: 7 mph, gusting 20"
               }
             ]
           }
@@ -6864,8 +7436,20 @@
               "state": "AR",
               "indoor": false
             },
-            "weather": null,
-            "flags": []
+            "weather": {
+              "temp_f": 65.4,
+              "wind_mph": 7.6,
+              "gust_mph": 18.1,
+              "precip_pct": 7,
+              "snow_in": 0.0
+            },
+            "flags": [
+              {
+                "kind": "wind",
+                "severity": "low",
+                "text": "Breezy: 8 mph, gusting 18"
+              }
+            ]
           }
         },
         {
@@ -6958,7 +7542,13 @@
               "state": "NE",
               "indoor": false
             },
-            "weather": null,
+            "weather": {
+              "temp_f": 55.5,
+              "wind_mph": 4.2,
+              "gust_mph": 6.5,
+              "precip_pct": 25,
+              "snow_in": 0.0
+            },
             "flags": []
           }
         },
@@ -7052,8 +7642,20 @@
               "state": "TN",
               "indoor": false
             },
-            "weather": null,
-            "flags": []
+            "weather": {
+              "temp_f": 66.3,
+              "wind_mph": 8.4,
+              "gust_mph": 22.1,
+              "precip_pct": 40,
+              "snow_in": 0.0
+            },
+            "flags": [
+              {
+                "kind": "wind",
+                "severity": "high",
+                "text": "Wind 8 mph, gusting 22 \u2014 kicking and the deep ball suffer"
+              }
+            ]
           }
         },
         {
@@ -7146,8 +7748,20 @@
               "state": "ID",
               "indoor": false
             },
-            "weather": null,
-            "flags": []
+            "weather": {
+              "temp_f": 54.8,
+              "wind_mph": 13.0,
+              "gust_mph": 15.4,
+              "precip_pct": 17,
+              "snow_in": 0.0
+            },
+            "flags": [
+              {
+                "kind": "wind",
+                "severity": "low",
+                "text": "Breezy: 13 mph, gusting 15"
+              }
+            ]
           }
         },
         {
@@ -7317,7 +7931,13 @@
               "state": "CA",
               "indoor": false
             },
-            "weather": null,
+            "weather": {
+              "temp_f": 67.1,
+              "wind_mph": 6.5,
+              "gust_mph": 6.3,
+              "precip_pct": 14,
+              "snow_in": 0.0
+            },
             "flags": []
           }
         }
@@ -7565,6 +8185,20 @@
               "push_risk": false
             },
             {
+              "event_id": "401871057",
+              "matchup": "JXST @ NMSU",
+              "kickoff": "2026-10-29T00:00Z",
+              "team_abbr": "NMSU",
+              "team_name": "New Mexico State Aggies",
+              "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/166.png",
+              "spread": 3.5,
+              "source": "Draft Kings",
+              "teased": 13.5,
+              "band": "dog +1.5..+3.5",
+              "prob": 0.7723,
+              "push_risk": false
+            },
+            {
               "event_id": "401856842",
               "matchup": "ARIZ @ TTU",
               "kickoff": "2026-10-31T16:00Z",
@@ -7575,20 +8209,6 @@
               "source": "Draft Kings",
               "teased": 13.5,
               "band": "dog +1.5..+3.5",
-              "prob": 0.7723,
-              "push_risk": false
-            },
-            {
-              "event_id": "401858278",
-              "matchup": "SMU @ SYR",
-              "kickoff": "2026-10-31T16:00Z",
-              "team_abbr": "SMU",
-              "team_name": "SMU Mustangs",
-              "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2567.png",
-              "spread": -9.5,
-              "source": "Draft Kings",
-              "teased": 0.5,
-              "band": "fav -12.5..-8.5",
               "prob": 0.7723,
               "push_risk": false
             },
@@ -7761,20 +8381,6 @@
               "push_risk": false
             },
             {
-              "event_id": "401871057",
-              "matchup": "JXST @ NMSU",
-              "kickoff": "2026-10-29T00:00Z",
-              "team_abbr": "NMSU",
-              "team_name": "New Mexico State Aggies",
-              "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/166.png",
-              "spread": 3.0,
-              "source": "Draft Kings",
-              "teased": 13.0,
-              "band": "dog +1.5..+3.5",
-              "prob": 0.7529,
-              "push_risk": true
-            },
-            {
               "event_id": "401862813",
               "matchup": "TULN @ CLT",
               "kickoff": "2026-10-30T23:00Z",
@@ -7795,6 +8401,20 @@
               "team_abbr": "KENT",
               "team_name": "Kent State Golden Flashes",
               "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2309.png",
+              "spread": -10.0,
+              "source": "Draft Kings",
+              "teased": 0.0,
+              "band": "fav -12.5..-8.5",
+              "prob": 0.7529,
+              "push_risk": true
+            },
+            {
+              "event_id": "401858278",
+              "matchup": "SMU @ SYR",
+              "kickoff": "2026-10-31T16:00Z",
+              "team_abbr": "SMU",
+              "team_name": "SMU Mustangs",
+              "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2567.png",
               "spread": -10.0,
               "source": "Draft Kings",
               "teased": 0.0,

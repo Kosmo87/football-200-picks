@@ -9705,10 +9705,15 @@
       "model_prob": 0.55153,
       "edge_pp": 21.517881,
       "sample": 13.0,
-      "status": "open",
-      "result": null,
+      "status": "lost",
+      "result": {
+        "home_abbr": "PHI",
+        "away_abbr": "DAL",
+        "home_score": 21,
+        "away_score": 38
+      },
       "clv_pp": 1.89,
-      "graded_at": null
+      "graded_at": "2026-10-27T06:25:38+00:00"
     },
     {
       "id": "NCAAF:401860906:328",
@@ -10023,14 +10028,14 @@
       "logged_at": "2026-10-25T06:17:28+00:00",
       "open_odds": 114,
       "open_implied": 0.44856,
-      "close_odds": -112,
-      "close_implied": 0.50433,
+      "close_odds": -102,
+      "close_implied": 0.48264,
       "model_prob": 0.66894,
       "edge_pp": 22.03844,
       "sample": 10.0,
       "status": "open",
       "result": null,
-      "clv_pp": 5.58,
+      "clv_pp": 3.41,
       "graded_at": null
     },
     {
@@ -10191,14 +10196,14 @@
       "logged_at": "2026-10-25T06:17:28+00:00",
       "open_odds": -340,
       "open_implied": 0.74087,
-      "close_odds": -340,
-      "close_implied": 0.74087,
+      "close_odds": -360,
+      "close_implied": 0.75081,
       "model_prob": 0.85558,
       "edge_pp": 11.470717,
       "sample": 10.0,
       "status": "open",
       "result": null,
-      "clv_pp": 0.0,
+      "clv_pp": 0.99,
       "graded_at": null
     },
     {
@@ -10704,24 +10709,48 @@
       "result": null,
       "clv_pp": 0.0,
       "graded_at": null
+    },
+    {
+      "id": "NFL:401873035:21",
+      "league": "NFL",
+      "event_id": "401873035",
+      "matchup": "PHI @ WSH",
+      "kickoff": "2026-11-02T01:20Z",
+      "team_id": "21",
+      "team_abbr": "PHI",
+      "team_name": "Philadelphia Eagles",
+      "opp_abbr": "WSH",
+      "side": "away",
+      "logged_at": "2026-10-27T06:20:56+00:00",
+      "open_odds": 170,
+      "open_implied": 0.35527,
+      "close_odds": 170,
+      "close_implied": 0.35527,
+      "model_prob": 0.45453,
+      "edge_pp": 9.926078,
+      "sample": 13.0,
+      "status": "open",
+      "result": null,
+      "clv_pp": 0.0,
+      "graded_at": null
     }
   ],
   "summary": {
     "open": 34,
     "won": 150,
-    "lost": 190,
+    "lost": 191,
     "pushed": 1,
-    "units": -11.0,
-    "roi_pct": -3.2,
-    "win_pct": 44.1,
-    "avg_clv_pp": -0.19,
-    "beat_close_pct": 38.4,
+    "units": -12.0,
+    "roi_pct": -3.5,
+    "win_pct": 44.0,
+    "avg_clv_pp": -0.18,
+    "beat_close_pct": 38.6,
     "by_league": {
       "NFL": {
         "won": 41,
-        "lost": 40,
-        "units": 15.18,
-        "roi_pct": 18.7
+        "lost": 41,
+        "units": 14.18,
+        "roi_pct": 17.3
       },
       "NCAAF": {
         "won": 109,
@@ -10731,5 +10760,5 @@
       }
     }
   },
-  "updated_at": "2026-10-27T00:34:54+00:00"
+  "updated_at": "2026-10-27T06:25:38+00:00"
 }
