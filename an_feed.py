@@ -26,6 +26,7 @@ a book you can bet, so neither is a peer.
 from __future__ import annotations
 
 import argparse
+import time
 from collections import Counter
 from datetime import datetime, timedelta, timezone
 from typing import Dict, Iterator, List, Tuple
@@ -44,12 +45,23 @@ PATHS = {"NFL": "nfl", "NCAAF": "ncaaf"}
 SAME_AS = {"betrivers_ny": "betrivers", "ballybet": "betrivers", "unibet": "betrivers"}
 
 
-def _fetch(league: str, day: str) -> List[dict]:
-    r = requests.get(URL.format(league=PATHS[league]),
-                     params={"bookIds": ",".join(map(str, BOOKS)), "date": day},
-                     headers={"User-Agent": "Mozilla/5.0"}, timeout=30)
-    r.raise_for_status()
-    return r.json().get("games") or []
+def _fetch(league: str, day: str, tries: int = 3) -> List[dict]:
+    # A scan is 14 of these calls, and Action Network drops one now and then
+    # (504s, resets, truncated bodies -- 4 failed fault-watch runs on
+    # 2026-10-28, each a GitHub email). Retry the blip; a real outage still
+    # raises after the last try.
+    for attempt in range(tries):
+        try:
+            r = requests.get(URL.format(league=PATHS[league]),
+                             params={"bookIds": ",".join(map(str, BOOKS)), "date": day},
+                             headers={"User-Agent": "Mozilla/5.0"}, timeout=30)
+            r.raise_for_status()
+            return r.json().get("games") or []
+        except (requests.RequestException, ValueError):
+            if attempt == tries - 1:
+                raise
+            time.sleep(2 * (attempt + 1))
+    return []
 
 
 def games(league: str, days: int = 7) -> List[dict]:
