@@ -348,6 +348,39 @@ def test_draw_alert_reads_as_a_draw():
     assert "Draw: buy YES TIE at 40c" in body, body
 
 
+def test_per_sport_bar_is_higher_where_books_disagree():
+    import kalshi_feed as K
+    from datetime import datetime, timezone
+    real = K.gaps
+    K.gaps = lambda league, an: [_kalshi(league=league, edge=0.035)]
+    try:
+        now = datetime(2026, 10, 30, tzinfo=timezone.utc)
+        assert len(F.kalshi_hits("NFL", [], now, 10, "t")) == 1
+        assert F.kalshi_hits("ATP", [], now, 10, "t") == []
+    finally:
+        K.gaps = real
+
+
+def test_gap_log_keeps_first_and_best_and_grades_once():
+    import os, json, tempfile, kalshi_gaps as G
+    d = tempfile.mkdtemp()
+    live, arch = os.path.join(d, "g.json"), os.path.join(d, "a.ndjson")
+    G.observe([_kalshi(edge=0.01, kalshi_price=0.44, kickoff="2026-01-01T00:00:00Z")], "t1", live)
+    # observe() drops rows 3 days past kickoff, so use a recent kickoff
+    from datetime import datetime, timedelta, timezone
+    kick = (datetime.now(timezone.utc) - timedelta(hours=5)).isoformat()
+    G.observe([_kalshi(edge=0.01, kalshi_price=0.44, kickoff=kick)], "t1", live)
+    G.observe([_kalshi(edge=0.05, kalshi_price=0.40, kickoff=kick)], "t2", live)
+    G.observe([_kalshi(edge=0.02, kalshi_price=0.43, kickoff=kick)], "t3", live)
+    e = list(json.load(open(live)).values())
+    assert len(e) == 1 and e[0]["first"]["at"] == "t1" and e[0]["best"]["at"] == "t2"
+    assert G.grade(live, arch, result=lambda t: "yes") == 1
+    assert G.grade(live, arch, result=lambda t: "yes") == 0, "graded once"
+    row = json.loads(open(arch).read())
+    assert row["won"] and abs(row["pnl"] - 0.58) < 1e-9     # 1 - (40c + 2c)
+    assert "return/$" in G.report(arch)
+
+
 def test_kalshi_names_match_feed_names():
     import kalshi_feed as K
     assert K._same("Los Angeles R", "Los Angeles Rams")

@@ -72,6 +72,15 @@ jobs:
           key: faults-alerted-${{ github.run_id }}
           restore-keys: faults-alerted-
 
+      # Every Kalshi gap seen (kalshi_gaps.py). The board build restores the
+      # same cache, grades finished games and commits them to data/archive.
+      - name: Restore the Kalshi gap log
+        uses: actions/cache/restore@v4
+        with:
+          path: cache/kalshi_gaps.json
+          key: kalshi-gaps-${{ github.run_id }}
+          restore-keys: kalshi-gaps-
+
       - name: Send a test alert
         if: inputs.test
         run: python faults.py --test-alert
@@ -86,3 +95,10 @@ jobs:
         with:
           path: cache/faults_alerted.json
           key: faults-alerted-${{ github.run_id }}
+
+      - name: Keep the Kalshi gap log
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: cache/kalshi_gaps.json
+          key: kalshi-gaps-${{ github.run_id }}

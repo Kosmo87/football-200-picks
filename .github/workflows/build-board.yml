@@ -36,6 +36,7 @@ on:
       - "faults_test.py"
       - "kalshi_feed.py"
       - "kalshi_trade.py"
+      - "kalshi_gaps.py"
       - "an_feed.py"
       - "tripwire.py"
       - "futures.py"
@@ -203,6 +204,22 @@ jobs:
           [ "$MOVED" = "10" ] && echo "Lines moved — scanning." \
                               || echo "Floor scan (day $DOW hour $HOUR)."
           python faults.py --scan --alert --markets spreads,h2h
+
+      # The fast watch logs every Kalshi gap to its cache; grade the finished
+      # ones from Kalshi's own results into the committed archive.
+      - name: Restore the Kalshi gap log
+        uses: actions/cache/restore@v4
+        with:
+          path: cache/kalshi_gaps.json
+          key: kalshi-gaps-board-${{ github.run_id }}
+          restore-keys: kalshi-gaps-
+
+      - name: Grade Kalshi gaps
+        run: |
+          python kalshi_gaps.py --grade || true
+          python kalshi_gaps.py --report || true
+          # The live log belongs to the watch; never commit it from here.
+          rm -f cache/kalshi_gaps.json
 
       - name: Log and grade board calibration
         # The only question that decides whether the board is worth reading:

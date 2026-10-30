@@ -318,6 +318,14 @@ def scan(leagues=("NFL", "NCAAF"), min_lead_min: int = 10,
 # first look (2026-10-30, 61 matched games): the widest gap was +1.0pp and
 # most sat at -1 to -2pp, so three points is a real dislocation, not noise.
 KALSHI_MIN_EDGE = 0.03
+# Where the books disagree more, the bar goes up. Measured 2026-10-30: the
+# 90th-percentile gap between one book and the rest was ~1.1-1.3pp in NFL,
+# NCAAF, NBA and soccer (6-7 books) but 2.0 in ATP (4 books) and 2.3 in NHL
+# (3 games -- unsettled). College hoops was unpriced and is assumed thin.
+# kalshi_gaps.py grades every gap seen, so these get revisited on results.
+# Set by --fast only, so a test or a local scan never writes the live log.
+GAP_LOG: Optional[str] = None
+KALSHI_MIN_EDGE_BY = {"ATP": 0.04, "WTA": 0.04, "NHL": 0.04, "NCAAB": 0.04}
 # Outside 10-90c the books' de-vig (proportional) is the weak part of the
 # comparison: it hands longshots too much of the margin, and every Kalshi
 # longshot then looks a cent or two cheap. Those gaps are the method's.
@@ -343,13 +351,20 @@ def kalshi_hits(league: str, an_games: List[dict], now: datetime,
     except Exception as e:
         print(f"[faults] Kalshi {league} unavailable: {e}")
         return []
+    try:
+        if GAP_LOG:
+            import kalshi_gaps
+            kalshi_gaps.observe(rows, stamp, GAP_LOG)
+    except Exception as e:
+        print(f"[faults] gap log: {type(e).__name__}: {e}")
     lo, hi = KALSHI_PRICE_RANGE
+    bar = KALSHI_MIN_EDGE_BY.get(league, KALSHI_MIN_EDGE)
     out = []
     for r in rows:
         k = datetime.fromisoformat(r["kickoff"].replace("Z", "+00:00"))
         if (k - now).total_seconds() < min_lead_min * 60:
             continue
-        if r["edge"] < KALSHI_MIN_EDGE or not (lo <= r["kalshi_price"] <= hi):
+        if r["edge"] < bar or not (lo <= r["kalshi_price"] <= hi):
             continue
         if r["size"] * r["kalshi_price"] < KALSHI_MIN_DEPTH:
             continue
@@ -964,6 +979,8 @@ def main() -> int:
     if a.fast:
         # Logs to cache/, not data/archive/: CI commits the archive, and a
         # local job appending to it every two minutes would collide with that.
+        global GAP_LOG
+        GAP_LOG = os.path.join(ROOT, "cache", "kalshi_gaps.json")
         hits = scan(source="an", archive=os.path.join(ROOT, "cache", "faults_fast.ndjson"))
         fresh = new_only(hits, os.path.join(ROOT, "cache", "faults_alerted.json"))
         stamp = datetime.now(timezone.utc).strftime("%H:%M:%S")
