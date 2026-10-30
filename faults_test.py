@@ -132,6 +132,78 @@ def test_alert_fits_one_sms_segment():
     assert len(body) <= 320, f"{len(body)} chars is more than two segments"
 
 
+# ---------------------------------------------------------------- kalshi
+
+def _kalshi(**kw):
+    row = {"kind": "KALSHI", "market": "kalshi", "book": "kalshi", "league": "NFL",
+           "side": "Miami Dolphins", "kalshi_price": 0.40, "fee": 0.02,
+           "size": 5000.0, "ticker": "KXNFLGAME-26NOV01MIABAL-MIA", "how": "YES",
+           "consensus": 0.47, "edge": 0.05, "game": "Miami Dolphins @ Baltimore Ravens",
+           "kickoff": "2026-11-01T17:00:00Z"}
+    row.update(kw)
+    return row
+
+
+def test_kalshi_fee_is_seven_percent_of_variance_rounded_up():
+    import kalshi_feed as K
+    assert K.fee(0.50) == 0.02      # 1.75c -> 2c
+    assert K.fee(0.10) == 0.01      # 0.63c -> 1c
+    assert K.fee(0.99) == 0.01
+
+
+def test_kalshi_alerts_even_with_mine_only():
+    body = F.alert_text([_kalshi()])
+    assert body and body.startswith("BET NOW at KALSHI"), body
+    assert "buy YES MIA at 40c" in body
+    assert len(body) <= 320, f"{len(body)} chars is more than two segments"
+
+
+def test_kalshi_stake_is_whole_contracts_at_cost_with_fee():
+    bet = F.kalshi_bet(_kalshi())
+    # (0.47 - 0.42) / 0.58 = 8.6% Kelly -> quarter is 2.2% -> 2U
+    assert bet["units"] == 2.0
+    body = F.alert_text([_kalshi()])
+    assert "476 contracts $200" in body, body
+
+
+def test_kalshi_filters_thin_tails_and_small_gaps():
+    import kalshi_feed as K
+    from datetime import datetime, timezone
+    rows = [_kalshi(side="ok"),
+            _kalshi(side="small", edge=0.02),
+            _kalshi(side="longshot", kalshi_price=0.06),
+            _kalshi(side="thin", size=10.0)]
+    real = K.gaps
+    K.gaps = lambda league, an: rows
+    try:
+        got = F.kalshi_hits("NFL", [], datetime(2026, 10, 30, tzinfo=timezone.utc), 10, "t")
+    finally:
+        K.gaps = real
+    assert [h["side"] for h in got] == ["ok"]
+
+
+def test_kalshi_names_match_feed_names():
+    import kalshi_feed as K
+    assert K._same("Los Angeles R", "Los Angeles Rams")
+    assert not K._same("Los Angeles R", "Los Angeles Chargers")
+    assert K._same("Ohio St.", "Ohio State Buckeyes")
+    assert not K._same("Ohio", "Ohio State Buckeyes"), "Ohio is the Bobcats"
+    assert not K._same("Miami (OH)", "Miami (FL) Hurricanes")
+
+
+def test_kalshi_event_needs_both_teams_and_a_close_date():
+    import kalshi_feed as K
+    ev = {"ends": "2026-10-31T03:00:00Z",
+          "teams": {"Wisconsin": {}, "Iowa": {}}}
+    g = "Wisconsin Badgers @ Iowa Hawkeyes"
+    # Kalshi's placeholder end time is 13h BEFORE this kickoff; still the game.
+    assert K.match(ev, g, "2026-10-31T16:00:00Z") == {
+        "Wisconsin": "Wisconsin Badgers", "Iowa": "Iowa Hawkeyes"}
+    assert K.match(ev, g, "2026-11-07T16:00:00Z") is None, "a week later is another game"
+    assert K.match(ev, "Wisconsin Badgers @ Rutgers Scarlet Knights",
+                   "2026-10-31T16:00:00Z") is None
+
+
 # ---------------------------------------------------------------- ml mirroring
 
 def test_ml_logs_both_sides_not_just_the_dear_one():

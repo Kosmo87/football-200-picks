@@ -252,6 +252,7 @@ def scan(leagues=("NFL", "NCAAF"), min_lead_min: int = 10,
         if source == "an":
             import an_feed
             an_games = an_feed.games(league)
+            hits.extend(kalshi_hits(league, an_games, now, min_lead_min, stamp))
         for market, finder in (("spreads", spread_faults), ("h2h", ml_faults)):
             if market not in markets:
                 continue
@@ -297,16 +298,65 @@ def scan(leagues=("NFL", "NCAAF"), min_lead_min: int = 10,
     return hits
 
 
+# Kalshi, after its fee, against the books' de-vigged chance. Measured on the
+# first look (2026-10-30, 61 matched games): the widest gap was +1.0pp and
+# most sat at -1 to -2pp, so three points is a real dislocation, not noise.
+KALSHI_MIN_EDGE = 0.03
+# Outside 10-90c the books' de-vig (proportional) is the weak part of the
+# comparison: it hands longshots too much of the margin, and every Kalshi
+# longshot then looks a cent or two cheap. Those gaps are the method's.
+KALSHI_PRICE_RANGE = (0.10, 0.90)
+# Contracts sitting at the price, in dollars. Less than this and the "price"
+# is one stray order that a real stake would walk straight through.
+KALSHI_MIN_DEPTH = 50.0
+
+
+def kalshi_hits(league: str, an_games: List[dict], now: datetime,
+                min_lead_min: int, stamp: str) -> List[dict]:
+    """
+    Kalshi contracts cheaper than the books say they should be.
+
+    Kept apart from the book finders because it is a different shape: Kalshi
+    is the one venue being judged and is never a peer in the consensus, so a
+    bad Kalshi print cannot drag the standard it is measured against. A failure
+    here must not cost the book scan its run, so it is caught and reported.
+    """
+    import kalshi_feed
+    try:
+        rows = kalshi_feed.gaps(league, an_games)
+    except Exception as e:
+        print(f"[faults] Kalshi {league} unavailable: {e}")
+        return []
+    lo, hi = KALSHI_PRICE_RANGE
+    out = []
+    for r in rows:
+        k = datetime.fromisoformat(r["kickoff"].replace("Z", "+00:00"))
+        if (k - now).total_seconds() < min_lead_min * 60:
+            continue
+        if r["edge"] < KALSHI_MIN_EDGE or not (lo <= r["kalshi_price"] <= hi):
+            continue
+        if r["size"] * r["kalshi_price"] < KALSHI_MIN_DEPTH:
+            continue
+        out.append(dict(r, captured_at=stamp, kind="KALSHI", source="kalshi"))
+    return out
+
+
 def report(hits: List[dict]) -> None:
     if not hits:
         print("No book is more than "
               f"{SPREAD_FAULT_PTS:g} pts / {ML_FAULT_PP*100:.0f}pp from consensus.")
         return
-    stale = [h for h in hits if h.get("kind") == "STALE"]
-    print(f"\n{len(hits)} fault(s): {len(stale)} STALE, "
-          f"{len(hits)-len(stale)} TRANSPOSED — LOGGED, NOT RECOMMENDED\n")
+    n = defaultdict(int)
     for h in hits:
-        if h["market"] == "spreads":
+        n[h.get("kind")] += 1
+    print(f"\n{len(hits)} fault(s): {n['STALE']} STALE, {n['TRANSPOSED']} TRANSPOSED"
+          + (f", {n['KALSHI']} KALSHI" if n["KALSHI"] else "")
+          + " — LOGGED, NOT RECOMMENDED\n")
+    for h in hits:
+        if h["market"] == "kalshi":
+            detail = (f"{h['kalshi_price']*100:.0f}c+{h['fee']*100:.0f}c vs "
+                      f"{h['consensus']*100:.1f}%  ({h['edge']*100:+.1f}pp)")
+        elif h["market"] == "spreads":
             detail = (f"{h['book_point']:+g} vs consensus "
                       f"{h['consensus_point']:+g}  ({h['delta']:+.1f} pts)")
         else:
@@ -610,6 +660,39 @@ def bet_from(f: dict) -> Optional[dict]:
             "units": min(units, 3.0), "game": f["game"], "kickoff": f["kickoff"]}
 
 
+def kalshi_bet(f: dict) -> Optional[dict]:
+    """
+    A Kalshi gap as a bet. Same quarter-Kelly and 3U cap as bet_from.
+
+    A contract costs `c` (price + fee) and pays $1, so it is a bet at odds
+    (1-c)/c and Kelly's fraction reduces to (p - c) / (1 - c).
+    """
+    if f.get("market") != "kalshi" or f.get("edge", 0) <= 0:
+        return None
+    p, c = f["consensus"], f["kalshi_price"] + f["fee"]
+    kelly = (p - c) / (1 - c)
+    units = max(0.5, round(kelly / 4 / 0.01 * 2) / 2)
+    return {"kind": "KALSHI", "book": "kalshi", "side": f["side"],
+            "kalshi_price": f["kalshi_price"], "cost": c, "how": f["how"],
+            "ticker": f["ticker"], "size": f["size"], "chance": p,
+            "edge": f["edge"], "units": min(units, 3.0),
+            "game": f["game"], "kickoff": f["kickoff"]}
+
+
+def _kalshi_text(t: dict, unit_dollars: float) -> str:
+    risk = t["units"] * unit_dollars
+    n = int(risk // t["cost"])
+    side = t["ticker"].rsplit("-", 1)[-1]
+    return (f"BET NOW at KALSHI\n"
+            f"{t['side']} to win: buy {t['how']} {side} at {t['kalshi_price']*100:.0f}c\n"
+            f"books {t['chance']*100:.1f}% vs {t['cost']*100:.0f}c with fee — "
+            f"{t['edge']*100:.1f}pp\n"
+            f"{n} contracts ${n * t['cost']:.0f} to win ${n * (1 - t['cost']):.0f}"
+            f"  ({t['units']:g}U)\n"
+            f"{t['size']:,.0f} at that price\n"
+            f"{t['game'][:40]} {t['kickoff'][5:16].replace('T', ' ')}Z")
+
+
 def alert_text(hits: List[dict], mine_only: bool = True,
                unit_dollars: float = 100.0) -> Optional[str]:
     """
@@ -633,6 +716,12 @@ def alert_text(hits: List[dict], mine_only: bool = True,
     """
     bets = []
     for h in hits:
+        if h.get("kind") == "KALSHI":
+            # Kalshi is an account the user holds, so mine_only lets it through.
+            bet = kalshi_bet(h)
+            if bet:
+                bets.append(bet)
+            continue
         if h.get("kind") not in ("STALE", "TRANSPOSED"):
             continue
         if mine_only and not any(b in h["book"].lower() for b in MY_BOOKS):
@@ -646,11 +735,13 @@ def alert_text(hits: List[dict], mine_only: bool = True,
     # two, so it leads whenever one is present.
     bets.sort(key=lambda b: (b.get("kind") != "TRANSPOSED", -b["edge"]))
     t = bets[0]
+    more = f"\n(+{len(bets)-1} more)" if len(bets) > 1 else ""
+    if t["kind"] == "KALSHI":
+        return _kalshi_text(t, unit_dollars) + more
     risk = t["units"] * unit_dollars
     profit = risk * (t["price"] / 100 if t["price"] > 0 else 100 / abs(t["price"]))
     when = t["kickoff"][5:16].replace("T", " ")
     price_s = f"+{t['price']}" if t["price"] > 0 else str(t["price"])
-    more = f"\n(+{len(bets)-1} more)" if len(bets) > 1 else ""
     head = "WRONG TEAM FAVOURED" if t.get("kind") == "TRANSPOSED" else "BET NOW"
     tail = ("\nmay be voided as an obvious error — a void returns the stake"
             if t.get("kind") == "TRANSPOSED" else "")
@@ -664,6 +755,8 @@ def alert_text(hits: List[dict], mine_only: bool = True,
 
 def _alert_key(h: dict) -> str:
     """One fault = one book's number on one side of one game. A new number is a new fault."""
+    # Kalshi rows carry neither: its ask ticks a cent every few minutes, and a
+    # new alert per cent would be the same gap pushed all afternoon.
     num = h.get("book_point", h.get("book_price"))
     return f"{h['league']}|{h['game']}|{h['market']}|{h['book']}|{h['side']}|{num}"
 
