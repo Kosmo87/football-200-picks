@@ -48,6 +48,11 @@ jobs:
       TWILIO_API_KEY_SID: ${{ secrets.TWILIO_API_KEY_SID }}
       TWILIO_API_KEY_SECRET: ${{ secrets.TWILIO_API_KEY_SECRET }}
       TWILIO_FROM: ${{ vars.TWILIO_FROM }}
+      # Kalshi auto-placing (kalshi_trade.py). AUTOTRADE=1 turns it on; unset
+      # or anything else and Kalshi gaps still alert but nothing is bought.
+      KALSHI_KEY_ID: ${{ secrets.KALSHI_KEY_ID }}
+      KALSHI_PRIVATE_KEY: ${{ secrets.KALSHI_PRIVATE_KEY }}
+      KALSHI_AUTOTRADE: ${{ vars.KALSHI_AUTOTRADE }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -58,7 +63,7 @@ jobs:
           python-version: "3.12"
           cache: pip
 
-      - run: pip install -q requests
+      - run: pip install -q requests cryptography
 
       - name: Restore what has already been alerted
         uses: actions/cache/restore@v4

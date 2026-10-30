@@ -37,7 +37,7 @@ import argparse
 import json
 import os
 from collections import defaultdict
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from statistics import median
 from typing import Dict, List, Optional
 
@@ -232,6 +232,11 @@ def snapshot_book_spreads(payload: List[dict], league: str, stamp: str) -> int:
     return len(rows)
 
 
+# Kalshi is compared on these too. Daily sports, so two days of schedule is
+# the whole board; football's week needs seven.
+KALSHI_ONLY = ("NBA", "NHL", "NCAAB")
+
+
 def scan(leagues=("NFL", "NCAAF"), min_lead_min: int = 10,
          markets=("spreads", "h2h"), source: str = "odds-api",
          archive: Optional[str] = None) -> List[dict]:
@@ -289,6 +294,15 @@ def scan(leagues=("NFL", "NCAAF"), min_lead_min: int = 10,
                 for f in finder(prices):
                     hits.append(dict(f, game=game, kickoff=kick, league=league,
                                      captured_at=stamp, kind=classify(f)))
+    if source == "an":
+        import an_feed
+        for league in KALSHI_ONLY:
+            try:
+                an_games = an_feed.games(league, 2)
+            except Exception as e:
+                print(f"[faults] {league} lines unavailable: {e}")
+                continue
+            hits.extend(kalshi_hits(league, an_games, now, min_lead_min, stamp))
     if hits:
         archive = archive or ARCHIVE
         os.makedirs(os.path.dirname(archive), exist_ok=True)
@@ -676,18 +690,43 @@ def kalshi_bet(f: dict) -> Optional[dict]:
             "kalshi_price": f["kalshi_price"], "cost": c, "how": f["how"],
             "ticker": f["ticker"], "size": f["size"], "chance": p,
             "edge": f["edge"], "units": min(units, 3.0),
-            "game": f["game"], "kickoff": f["kickoff"]}
+            "game": f["game"], "kickoff": f["kickoff"], "placed": f.get("placed")}
+
+
+def place_kalshi(hits: List[dict]) -> None:
+    """
+    Order every new Kalshi bet, writing the result onto its hit for the push.
+
+    Each one goes in edge order, so if the daily cap runs out it is the
+    smallest gap that misses.
+    """
+    import kalshi_trade
+    ks = [h for h in hits if h.get("kind") == "KALSHI"]
+    for h in sorted(ks, key=lambda h: -h["edge"]):
+        bet = kalshi_bet(h)
+        if not bet:
+            continue
+        h["placed"] = kalshi_trade.place(bet)
+        print(f"  kalshi {h['league']} {h['side']}: {h['placed']}")
+        if h["placed"].startswith("PLACED"):
+            # Its own push, so a placed bet is never folded into another
+            # alert's "(+N more)" -- and then left out of that alert.
+            bet["placed"] = h["placed"]
+            _deliver(_kalshi_text(bet, kalshi_trade.UNIT_DOLLARS))
+            h["pushed"] = True
 
 
 def _kalshi_text(t: dict, unit_dollars: float) -> str:
     risk = t["units"] * unit_dollars
-    n = int(risk // t["cost"])
+    n = round(risk / t["cost"], 2)        # Kalshi trades hundredths of a contract
     side = t["ticker"].rsplit("-", 1)[-1]
-    return (f"BET NOW at KALSHI\n"
+    placed = t.get("placed") or ""
+    head = "BET PLACED at KALSHI" if placed.startswith("PLACED") else "BET NOW at KALSHI"
+    return (f"{head}\n" + (f"{placed}\n" if placed else "") +
             f"{t['side']} to win: buy {t['how']} {side} at {t['kalshi_price']*100:.0f}c\n"
             f"books {t['chance']*100:.1f}% vs {t['cost']*100:.0f}c with fee — "
             f"{t['edge']*100:.1f}pp\n"
-            f"{n} contracts ${n * t['cost']:.0f} to win ${n * (1 - t['cost']):.0f}"
+            f"{n:g} contracts ${n * t['cost']:.2f} to win ${n * (1 - t['cost']):.2f}"
             f"  ({t['units']:g}U)\n"
             f"{t['size']:,.0f} at that price\n"
             f"{t['game'][:40]} {t['kickoff'][5:16].replace('T', ' ')}Z")
@@ -717,6 +756,8 @@ def alert_text(hits: List[dict], mine_only: bool = True,
     bets = []
     for h in hits:
         if h.get("kind") == "KALSHI":
+            if h.get("pushed"):
+                continue
             # Kalshi is an account the user holds, so mine_only lets it through.
             bet = kalshi_bet(h)
             if bet:
@@ -737,7 +778,8 @@ def alert_text(hits: List[dict], mine_only: bool = True,
     t = bets[0]
     more = f"\n(+{len(bets)-1} more)" if len(bets) > 1 else ""
     if t["kind"] == "KALSHI":
-        return _kalshi_text(t, unit_dollars) + more
+        import kalshi_trade
+        return _kalshi_text(t, kalshi_trade.UNIT_DOLLARS) + more
     risk = t["units"] * unit_dollars
     profit = risk * (t["price"] / 100 if t["price"] > 0 else 100 / abs(t["price"]))
     when = t["kickoff"][5:16].replace("T", " ")
@@ -783,6 +825,40 @@ def new_only(hits: List[dict], state_path: str) -> List[dict]:
     return fresh
 
 
+def maybe_recap(state_path: str, now: Optional[datetime] = None) -> bool:
+    """
+    The Monday Kalshi recap, sent by the first fast scan after 9am ET Monday.
+
+    Riding the five-minute watch rather than a weekly cron of its own: GitHub
+    managed 4-5 of 288 scheduled runs a day here, and a once-a-week schedule
+    has nothing to fall back on. The sent marker lives in the alerted-set the
+    watch already caches, keyed by the Monday and expiring a week on, so
+    new_only's pruning keeps it exactly as long as it is needed.
+    """
+    now = now or datetime.now(timezone.utc)
+    import kalshi_trade
+    et = kalshi_trade._et(now)
+    if et.weekday() != 0 or et.hour < 9:
+        return False
+    key = f"recap|{et:%Y-%m-%d}"
+    try:
+        seen = json.load(open(state_path))
+    except Exception:
+        seen = {}
+    if key in seen:
+        return False
+    try:
+        text = kalshi_trade.recap(now)
+    except Exception as e:
+        print(f"[faults] recap failed: {type(e).__name__}")
+        return False
+    _deliver(text)
+    seen[key] = (now + timedelta(days=7)).isoformat()
+    os.makedirs(os.path.dirname(state_path), exist_ok=True)
+    json.dump(seen, open(state_path, "w"))
+    return True
+
+
 def send_push(topic: str, body: str) -> bool:
     """
     ntfy.sh push: lands on the lock screen in seconds, free, no account.
@@ -795,11 +871,13 @@ def send_push(topic: str, body: str) -> bool:
     """
     title, _, rest = body.partition("\n")
     transposed = title.startswith("WRONG TEAM")
+    placed = title.startswith("BET PLACED") or title.startswith("KALSHI WEEK")
     try:
         r = requests.post(f"https://ntfy.sh/{topic}", data=rest.encode("utf-8"),
                           headers={"Title": title,
                                    "Priority": "urgent" if transposed else "high",
-                                   "Tags": "rotating_light" if transposed else "moneybag"},
+                                   "Tags": ("rotating_light" if transposed else
+                                            "white_check_mark" if placed else "moneybag")},
                           timeout=20)
     except requests.RequestException as e:
         print(f"  push failed: {e}")
@@ -813,6 +891,11 @@ def send_alert(hits: List[dict]) -> bool:
     body = alert_text(hits)
     if not body:
         return False
+    return _deliver(body)
+
+
+def _deliver(body: str) -> bool:
+    """One message through the configured route: push, else SMS, else email."""
     print("\n--- ALERT ---\n" + body)
     topic = os.environ.get("NTFY_TOPIC", "").strip()
     if topic:
@@ -883,7 +966,9 @@ def main() -> int:
         print(f"{stamp} {len(hits)} fault(s), {len(fresh)} new")
         if fresh:
             report(fresh)
+            place_kalshi(fresh)
             send_alert(fresh)
+        maybe_recap(os.path.join(ROOT, "cache", "faults_alerted.json"))
         return 0
     if a.scan:
         mk = tuple(m.strip() for m in a.markets.split(",") if m.strip())

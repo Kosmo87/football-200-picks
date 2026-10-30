@@ -163,7 +163,7 @@ def test_kalshi_stake_is_whole_contracts_at_cost_with_fee():
     # (0.47 - 0.42) / 0.58 = 8.6% Kelly -> quarter is 2.2% -> 2U
     assert bet["units"] == 2.0
     body = F.alert_text([_kalshi()])
-    assert "476 contracts $200" in body, body
+    assert "4.76 contracts $2.00 to win $2.76" in body, body
 
 
 def test_kalshi_filters_thin_tails_and_small_gaps():
@@ -180,6 +180,108 @@ def test_kalshi_filters_thin_tails_and_small_gaps():
     finally:
         K.gaps = real
     assert [h["side"] for h in got] == ["ok"]
+
+
+class _Resp:
+    def __init__(self, code, body):
+        self.status_code, self._b, self.ok = code, body, 200 <= code < 300
+    def json(self):
+        return self._b
+
+
+def _trade_with(resp, spent=0.0, on=True):
+    import kalshi_trade as T
+    sent = []
+    real = (T._call, T.spent_today, T.enabled)
+    T._call = lambda m, p, **kw: (sent.append(kw.get("json")), resp)[1]
+    T.spent_today = lambda: spent
+    T.enabled = lambda: on
+    return T, sent, real
+
+
+def _restore(T, real):
+    T._call, T.spent_today, T.enabled = real
+
+
+def test_kalshi_order_is_ioc_bid_at_the_seen_price_sized_in_dollar_units():
+    T, sent, real = _trade_with(_Resp(201, {"fill_count": "4.76",
+                                            "average_fill_price": "0.4000"}))
+    try:
+        out = T.place(F.kalshi_bet(_kalshi()))
+    finally:
+        _restore(T, real)
+    o = sent[0]
+    assert (o["side"], o["price"], o["time_in_force"]) == ("bid", "0.4000", "immediate_or_cancel")
+    assert o["count"] == "4.76", o["count"]     # 2U x $1 / 42c with fee
+    assert out == "PLACED 4.76 @ 40c", out
+
+
+def test_kalshi_respects_cap_switch_and_no_route():
+    T, sent, real = _trade_with(_Resp(201, {}), spent=9.0)
+    try:
+        assert "cap" in T.place(F.kalshi_bet(_kalshi()))
+        T.spent_today = lambda: 0.0
+        assert "NO route" in T.place(F.kalshi_bet(_kalshi(how="NO")))
+        T.enabled = lambda: False
+        assert "off" in T.place(F.kalshi_bet(_kalshi()))
+    finally:
+        _restore(T, real)
+    assert sent == [], "nothing may be sent when declining"
+
+
+def test_kalshi_unfilled_and_shard_errors_read_plainly():
+    T, _, real = _trade_with(_Resp(201, {"fill_count": "0.00"}))
+    try:
+        assert T.place(F.kalshi_bet(_kalshi())) == "not filled: price moved"
+        T._call = lambda m, p, **kw: _Resp(404, {"error": {"code": "insufficient_shard_balance"}})
+        assert "shard" in T.place(F.kalshi_bet(_kalshi()))
+    finally:
+        _restore(T, real)
+
+
+def test_placed_bet_gets_its_own_push_and_leaves_the_alert():
+    sent = []
+    real = F._deliver
+    F._deliver = lambda body: sent.append(body) or True
+    import kalshi_trade as T
+    rp = T.place
+    T.place = lambda bet, cap=10.0: "PLACED 4.76 @ 40c"
+    try:
+        hits = [_kalshi()]
+        F.place_kalshi(hits)
+    finally:
+        F._deliver, T.place = real, rp
+    assert sent and sent[0].startswith("BET PLACED at KALSHI\nPLACED 4.76 @ 40c"), sent
+    assert F.alert_text(hits) is None, "already pushed as placed"
+
+
+def test_recap_once_per_monday_after_nine():
+    import os, tempfile, kalshi_trade as T
+    from datetime import datetime, timezone
+    sent, real = [], (F._deliver, T.recap)
+    F._deliver = lambda b: sent.append(b) or True
+    T.recap = lambda now=None: "KALSHI WEEK x"
+    path = os.path.join(tempfile.mkdtemp(), "a.json")
+    try:
+        assert not F.maybe_recap(path, datetime(2026, 11, 2, 13, 0, tzinfo=timezone.utc))  # 8am ET
+        assert F.maybe_recap(path, datetime(2026, 11, 2, 14, 5, tzinfo=timezone.utc))
+        assert not F.maybe_recap(path, datetime(2026, 11, 2, 14, 10, tzinfo=timezone.utc))
+        assert not F.maybe_recap(path, datetime(2026, 11, 3, 14, 0, tzinfo=timezone.utc))  # Tue
+        assert F.new_only([], path) == [] and F.maybe_recap(
+            path, datetime(2026, 11, 2, 15, 0, tzinfo=timezone.utc)) is False, "survives pruning"
+    finally:
+        F._deliver, T.recap = real
+    assert sent == ["KALSHI WEEK x"]
+
+
+def test_eastern_time_edges():
+    import kalshi_trade as T
+    from datetime import datetime, timezone
+    u = lambda *a: datetime(*a, tzinfo=timezone.utc)
+    assert T._midnight_et(u(2026, 10, 30, 15)) == u(2026, 10, 30, 4)    # EDT
+    assert T._midnight_et(u(2026, 11, 3, 15)) == u(2026, 11, 3, 5)      # EST
+    assert T._midnight_et(u(2026, 10, 31, 2)) == u(2026, 10, 30, 4), "10pm ET is still the 30th"
+    assert T._et(u(2026, 11, 2, 14)).hour == 9                         # Monday 9am EST
 
 
 def test_kalshi_names_match_feed_names():

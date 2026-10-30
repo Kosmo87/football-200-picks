@@ -37,7 +37,10 @@ URL = "https://api.actionnetwork.com/web/v2/scoreboard/{league}"
 BOOKS = {68: "draftkings", 69: "fanduel", 75: "betmgm", 123: "caesars",
          79: "bet365", 71: "betrivers", 972: "betrivers_ny", 2988: "fanatics",
          247: "unibet", 1903: "ballybet"}
-PATHS = {"NFL": "nfl", "NCAAF": "ncaaf"}
+PATHS = {"NFL": "nfl", "NCAAF": "ncaaf",
+         # Read only for the Kalshi comparison (faults.KALSHI_ONLY); the book
+         # spread finders and their cover model are football's.
+         "NBA": "nba", "NHL": "nhl", "NCAAB": "ncaab"}
 # Books on the same odds engine post the same number, so counting each would
 # let one trader vote three times on the consensus. BetRivers, Bally Bet and
 # Unibet are all Kambi -- first run (2026-09-27) had them moving in lockstep on

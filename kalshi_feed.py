@@ -9,7 +9,8 @@ number faults.py hunts at FanDuel and BetMGM -- with no palpable-error clause,
 because nobody at an exchange decides to void a trade they merely regret.
 
 WHAT IT READS. The public market endpoints (no key, no quota) for the
-KXNFLGAME / KXNCAAFGAME series: one binary market per team per game, "Team
+KXNFLGAME / KXNCAAFGAME / KXNBAGAME / KXNHLGAME / KXNCAAMBGAME series (NHL
+includes overtime and shootouts, as the books' moneylines do): one binary market per team per game, "Team
 wins". Buying YES on one team and buying NO on the other are the same bet, so
 each team's price is the cheaper of the two.
 
@@ -33,7 +34,8 @@ from typing import Dict, List, Optional
 import requests
 
 URL = "https://api.elections.kalshi.com/trade-api/v2/markets"
-SERIES = {"NFL": "KXNFLGAME", "NCAAF": "KXNCAAFGAME"}
+SERIES = {"NFL": "KXNFLGAME", "NCAAF": "KXNCAAFGAME", "NBA": "KXNBAGAME",
+          "NHL": "KXNHLGAME", "NCAAB": "KXNCAAMBGAME"}
 FEE_RATE = 0.07
 # Kalshi's occurrence_datetime is meant as the expected END of the game, about
 # three hours after kickoff (BUF @ MIN, 2026-11-09: kick 01:15Z, occurrence
@@ -213,7 +215,7 @@ def main() -> int:
     ap.add_argument("--days", type=int, default=7)
     a = ap.parse_args()
     for league in SERIES:
-        an = an_feed.games(league, a.days)
+        an = an_feed.games(league, a.days if league in ("NFL", "NCAAF") else 2)
         rows = gaps(league, an)
         kev = events(league)
         print(f"\n{league}: {len(kev)} Kalshi games, {len(rows)//2} matched to the books")
