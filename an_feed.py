@@ -29,7 +29,7 @@ import argparse
 import time
 from collections import Counter
 from datetime import datetime, timedelta, timezone
-from typing import Dict, Iterator, List, Tuple
+from typing import Dict, Iterator, List, Optional, Tuple
 
 import requests
 
@@ -40,7 +40,11 @@ BOOKS = {68: "draftkings", 69: "fanduel", 75: "betmgm", 123: "caesars",
 PATHS = {"NFL": "nfl", "NCAAF": "ncaaf",
          # Read only for the Kalshi comparison (faults.KALSHI_ONLY); the book
          # spread finders and their cover model are football's.
-         "NBA": "nba", "NHL": "nhl", "NCAAB": "ncaab"}
+         "NBA": "nba", "NHL": "nhl", "NCAAB": "ncaab",
+         # Every soccer league in one call; Kalshi's per-league series are
+         # matched against it by team names (kalshi_feed.SERIES["SOCCER"]).
+         "SOCCER": "soccer", "ATP": "atp", "WTA": "wta"}
+DRAW = "Draw"
 # Books on the same odds engine post the same number, so counting each would
 # let one trader vote three times on the consensus. BetRivers, Bally Bet and
 # Unibet are all Kambi -- first run (2026-09-27) had them moving in lockstep on
@@ -59,7 +63,9 @@ def _fetch(league: str, day: str, tries: int = 3) -> List[dict]:
                              params={"bookIds": ",".join(map(str, BOOKS)), "date": day},
                              headers={"User-Agent": "Mozilla/5.0"}, timeout=30)
             r.raise_for_status()
-            return r.json().get("games") or []
+            d = r.json()
+            # Tennis comes back as "competitions" of player "competitors".
+            return d.get("games") or d.get("competitions") or []
         except (requests.RequestException, ValueError):
             if attempt == tries - 1:
                 raise
@@ -79,13 +85,39 @@ def games(league: str, days: int = 7) -> List[dict]:
     return list(seen.values())
 
 
+def _sides(g: dict) -> Tuple[dict, Optional[str], Optional[str]]:
+    """
+    ({outcome id: name}, home, away) for a team game or a tennis match.
+
+    Soccer adds DRAW as its own outcome. A game whose league can draw is
+    known from the feed's own moneyline (a 'draw' side), not from a list.
+    """
+    if g.get("competitors"):
+        names, home, away = {}, None, None
+        for c in g["competitors"]:
+            nm = (c.get("player") or {}).get("full_name") or (c.get("team") or {}).get("full_name")
+            if not nm:
+                continue
+            names[c["id"]] = nm
+            if c.get("side") == "home":
+                home = nm
+            elif c.get("side") == "away":
+                away = nm
+        return names, home, away
+    names = {t["id"]: t["full_name"] for t in g.get("teams") or []}
+    for m in (g.get("markets") or {}).values():
+        if any(o.get("side") == "draw" for o in (m.get("event") or {}).get("moneyline") or []):
+            names[DRAW] = DRAW
+            break
+    return names, names.get(g.get("home_team_id")), names.get(g.get("away_team_id"))
+
+
 def games_from_an(gs: List[dict], market: str, min_books: int = 3
                   ) -> Iterator[Tuple[str, str, Dict[str, Dict[str, int]]]]:
     """(game, kickoff, {book: {label: price}}) for 'spreads' or 'h2h'."""
     key = {"spreads": "spread", "h2h": "moneyline"}[market]
     for g in gs:
-        names = {t["id"]: t["full_name"] for t in g.get("teams") or []}
-        home, away = names.get(g["home_team_id"]), names.get(g["away_team_id"])
+        names, home, away = _sides(g)
         if not home or not away:
             continue
         prices: Dict[str, Dict[str, int]] = {}
@@ -103,12 +135,18 @@ def games_from_an(gs: List[dict], market: str, min_books: int = 3
             for o in (m.get("event") or {}).get(key) or []:
                 if o.get("is_live") or o.get("odds") is None:
                     continue
-                if o.get("team_id") not in names:
+                # A soccer draw has no team; tennis keys on the competitor.
+                tid = (DRAW if o.get("side") == "draw" and key == "moneyline"
+                       else o.get("competitor_id") or o.get("team_id"))
+                if tid not in names:
                     continue
-                by_mkt.setdefault(str(o.get("market_id")), {})[o["team_id"]] = o
+                by_mkt.setdefault(str(o.get("market_id")), {})[tid] = o
             sides = {}
+            three_way = DRAW in names
             for pair in by_mkt.values():
-                if len(pair) != 2:
+                # Two sides, or three where the game can be drawn. A soccer
+                # moneyline missing its draw is not a price for either team.
+                if len(pair) != (3 if three_way and key == "moneyline" else 2):
                     continue
                 if key == "spread" and abs(sum(float(o["value"]) for o in pair.values())) > 1e-9:
                     continue

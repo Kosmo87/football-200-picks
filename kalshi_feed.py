@@ -28,6 +28,7 @@ import argparse
 import math
 import re
 import time
+import unicodedata
 from datetime import datetime, timedelta, timezone
 from typing import Dict, List, Optional
 
@@ -35,7 +36,21 @@ import requests
 
 URL = "https://api.elections.kalshi.com/trade-api/v2/markets"
 SERIES = {"NFL": "KXNFLGAME", "NCAAF": "KXNCAAFGAME", "NBA": "KXNBAGAME",
-          "NHL": "KXNHLGAME", "NCAAB": "KXNCAAMBGAME"}
+          "NHL": "KXNHLGAME", "NCAAB": "KXNCAAMBGAME",
+          # Soccer is three markets per game -- each side and "Tie" -- settled
+          # on 90 minutes plus stoppage, the same as the books' 3-way line.
+          "SOCCER": ("KXEPLGAME", "KXLALIGAGAME", "KXSERIEAGAME", "KXBUNDESLIGAGAME",
+                     "KXLIGUE1GAME", "KXMLSGAME", "KXUCLGAME", "KXUELGAME"),
+          # Tennis pays the winner once a ball is played, so a mid-match
+          # retirement pays the opponent. Books differ on retirements; that
+          # is a rules gap, not an edge, and a rare one.
+          "ATP": "KXATPMATCH", "WTA": "KXWTAMATCH"}
+TIE = "Tie"
+
+
+def series(league: str) -> tuple:
+    v = SERIES[league]
+    return v if isinstance(v, tuple) else (v,)
 FEE_RATE = 0.07
 # Kalshi's occurrence_datetime is meant as the expected END of the game, about
 # three hours after kickoff (BUF @ MIN, 2026-11-09: kick 01:15Z, occurrence
@@ -66,16 +81,19 @@ def _get(params: dict, tries: int = 3) -> dict:
 
 def markets(league: str) -> List[dict]:
     """Every open game-winner market in the league, all pages."""
-    out, cursor = [], None
-    while True:
-        params = {"series_ticker": SERIES[league], "status": "open", "limit": 1000}
-        if cursor:
-            params["cursor"] = cursor
-        d = _get(params)
-        out.extend(d.get("markets") or [])
-        cursor = d.get("cursor")
-        if not cursor or not d.get("markets"):
-            return out
+    out = []
+    for st in series(league):
+        cursor = None
+        while True:
+            params = {"series_ticker": st, "status": "open", "limit": 1000}
+            if cursor:
+                params["cursor"] = cursor
+            d = _get(params)
+            out.extend(d.get("markets") or [])
+            cursor = d.get("cursor")
+            if not cursor or not d.get("markets"):
+                break
+    return out
 
 
 def _f(v) -> Optional[float]:
@@ -98,16 +116,21 @@ def events(league: str) -> List[dict]:
         by_event.setdefault(m["event_ticker"], []).append(m)
     out = []
     for ev, ms in by_event.items():
-        if len(ms) != 2:
+        three_way = len(ms) == 3 and any(m.get("yes_sub_title") == TIE for m in ms)
+        if len(ms) != 2 and not three_way:
             continue
-        a, b = ms
+        a, b = ms[0], ms[1]
         teams = {}
-        for mine, other in ((a, b), (b, a)):
+        # NO on the opponent only means "this team wins" when there are two
+        # outcomes. With a draw it means "win OR draw", a different bet.
+        pairs = ((a, b), (b, a)) if not three_way else ((m, None) for m in ms)
+        for mine, other in pairs:
             name = mine.get("yes_sub_title") or ""
             yes, yes_n = _f(mine.get("yes_ask_dollars")), _f(mine.get("yes_ask_size_fp"))
             # NO on the opponent's market. Its size at the ask is the YES bid
             # size on that market, since a NO ask is a YES bid seen backwards.
-            no, no_n = _f(other.get("no_ask_dollars")), _f(other.get("yes_bid_size_fp"))
+            no, no_n = ((_f(other.get("no_ask_dollars")), _f(other.get("yes_bid_size_fp")))
+                        if other else (None, None))
             opts = [(p, n, mine["ticker"], "YES") for p, n in ((yes, yes_n),)
                     if p and 0 < p < 1]
             opts += [(p, n, other["ticker"], "NO") for p, n in ((no, no_n),)
@@ -118,10 +141,16 @@ def events(league: str) -> List[dict]:
             teams[name] = {"price": p, "size": n or 0.0, "ticker": ticker, "how": how,
                            # the balance shard an order here must be paid from
                            "exchange_index": mine.get("exchange_index")}
-        if len(teams) == 2:
+        if len(teams) == len(ms):
             out.append({"event": ev, "ends": a.get("occurrence_datetime") or "",
                         "teams": teams})
     return out
+
+
+# Kalshi short names no token rule can reach (measured 2026-10-30).
+ALIASES = {"M´gladbach": "Moenchengladbach", "Saint Louis": "St. Louis City",
+           "New York RB": "New York Red Bulls", "Los Angeles G": "LA Galaxy",
+           "Hamburg": "Hamburger SV"}
 
 
 def _same(kname: str, feed_name: str) -> bool:
@@ -133,7 +162,13 @@ def _same(kname: str, feed_name: str) -> bool:
     the letter has to match the start of the feed's mascot (Rams, Jets).
     """
     from teamnames import same_team, tokens
-    name = re.sub(r"\bSt\.?$", "State", kname.strip())
+    name = ALIASES.get(kname.strip(), kname.strip())
+    # German umlauts the way English feeds spell them: Köln -> Koeln.
+    for a, b in (("ö", "oe"), ("ü", "ue"), ("ä", "ae"), ("Ö", "Oe"), ("Ü", "Ue"), ("Ä", "Ae")):
+        name = name.replace(a, b)
+    name = unicodedata.normalize("NFKD", name).encode("ascii", "ignore").decode()
+    feed_name = unicodedata.normalize("NFKD", feed_name).encode("ascii", "ignore").decode()
+    name = re.sub(r"\bSt\.?$", "State", name)
     m = re.match(r"^(.*\S)\s+([A-Z])$", name)
     if m:
         city, letter = m.groups()
@@ -168,11 +203,14 @@ def match(ev: dict, game: str, kick: str) -> Optional[Dict[str, str]]:
         return None
     pairs = {}
     for kname in ev["teams"]:
+        if kname == TIE:
+            pairs[kname] = "Draw"           # an_feed.DRAW
+            continue
         hits = [s for s in sides if _same(kname, s)]
         if len(hits) != 1:
             return None
         pairs[kname] = hits[0]
-    if len(set(pairs.values())) != 2:
+    if len(set(pairs.values())) != len(pairs):
         return None
     return pairs
 
@@ -218,7 +256,8 @@ def main() -> int:
     ap.add_argument("--days", type=int, default=7)
     a = ap.parse_args()
     for league in SERIES:
-        an = an_feed.games(league, a.days if league in ("NFL", "NCAAF") else 2)
+        an = an_feed.games(league, a.days if league in ("NFL", "NCAAF") else
+                           3 if league == "SOCCER" else 2)
         rows = gaps(league, an)
         kev = events(league)
         print(f"\n{league}: {len(kev)} Kalshi games, {len(rows)//2} matched to the books")

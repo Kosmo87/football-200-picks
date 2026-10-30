@@ -322,6 +322,32 @@ def test_fund_does_nothing_when_shard_already_holds_it():
         T.shard_balances, T.transfer = real
 
 
+def test_soccer_three_way_is_yes_only_and_maps_the_tie():
+    import kalshi_feed as K
+    mk = lambda team, ask, t: {"event_ticker": "KXEPLGAME-26NOV08BRIBRE",
+                               "ticker": f"KXEPLGAME-26NOV08BRIBRE-{t}",
+                               "yes_sub_title": team, "yes_ask_dollars": ask,
+                               "yes_ask_size_fp": "500", "no_ask_dollars": "0.10",
+                               "yes_bid_size_fp": "500", "exchange_index": 0,
+                               "occurrence_datetime": "2026-11-08T17:00:00Z"}
+    real = K.markets
+    K.markets = lambda lg: [mk("Brighton", "0.45", "BRI"), mk("Tie", "0.27", "TIE"),
+                            mk("Brentford", "0.30", "BRE")]
+    try:
+        ev = K.events("SOCCER")[0]
+    finally:
+        K.markets = real
+    # NO at 10c on an opponent is "win OR draw" here, so it must not be used.
+    assert {t["how"] for t in ev["teams"].values()} == {"YES"}
+    assert K.match(ev, "Brentford @ Brighton & Hove Albion", "2026-11-08T15:00:00Z") == {
+        "Brighton": "Brighton & Hove Albion", "Tie": "Draw", "Brentford": "Brentford"}
+
+
+def test_draw_alert_reads_as_a_draw():
+    body = F.alert_text([_kalshi(side="Draw", ticker="KXEPLGAME-26NOV08BRIBRE-TIE")])
+    assert "Draw: buy YES TIE at 40c" in body, body
+
+
 def test_kalshi_names_match_feed_names():
     import kalshi_feed as K
     assert K._same("Los Angeles R", "Los Angeles Rams")
@@ -329,6 +355,8 @@ def test_kalshi_names_match_feed_names():
     assert K._same("Ohio St.", "Ohio State Buckeyes")
     assert not K._same("Ohio", "Ohio State Buckeyes"), "Ohio is the Bobcats"
     assert not K._same("Miami (OH)", "Miami (FL) Hurricanes")
+    assert K._same("FC Köln", "FC Koeln") and K._same("Hamburg", "Hamburger SV")
+    assert not K._same("Paris FC", "Paris Saint-Germain")
 
 
 def test_kalshi_event_needs_both_teams_and_a_close_date():

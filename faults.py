@@ -234,7 +234,9 @@ def snapshot_book_spreads(payload: List[dict], league: str, stamp: str) -> int:
 
 # Kalshi is compared on these too. Daily sports, so two days of schedule is
 # the whole board; football's week needs seven.
-KALSHI_ONLY = ("NBA", "NHL", "NCAAB")
+KALSHI_ONLY = ("NBA", "NHL", "NCAAB", "SOCCER", "ATP", "WTA")
+# Soccer leagues mostly play weekends; three days reaches the next round.
+KALSHI_DAYS = {"SOCCER": 3}
 
 
 def scan(leagues=("NFL", "NCAAF"), min_lead_min: int = 10,
@@ -298,7 +300,7 @@ def scan(leagues=("NFL", "NCAAF"), min_lead_min: int = 10,
         import an_feed
         for league in KALSHI_ONLY:
             try:
-                an_games = an_feed.games(league, 2)
+                an_games = an_feed.games(league, KALSHI_DAYS.get(league, 2))
             except Exception as e:
                 print(f"[faults] {league} lines unavailable: {e}")
                 continue
@@ -724,7 +726,8 @@ def _kalshi_text(t: dict, unit_dollars: float) -> str:
     placed = t.get("placed") or ""
     head = "BET PLACED at KALSHI" if placed.startswith("PLACED") else "BET NOW at KALSHI"
     return (f"{head}\n" + (f"{placed}\n" if placed else "") +
-            f"{t['side']} to win: buy {t['how']} {side} at {t['kalshi_price']*100:.0f}c\n"
+            f"{'Draw' if t['side'] == 'Draw' else t['side'] + ' to win'}: "
+            f"buy {t['how']} {side} at {t['kalshi_price']*100:.0f}c\n"
             f"books {t['chance']*100:.1f}% vs {t['cost']*100:.0f}c with fee — "
             f"{t['edge']*100:.1f}pp\n"
             f"{n:g} contracts ${n * t['cost']:.2f} to win ${n * (1 - t['cost']):.2f}"
