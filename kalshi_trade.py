@@ -25,6 +25,8 @@ nothing filled, nothing resting).
 
 SHARDS. The balance is split per exchange shard and an order can only spend
 the shard its market lives on: NFL / NCAAF / NHL on 0, NBA / NCAAB on 3.
+The app moves cash between shards for you; the API does not, so fund() moves
+the shortfall from the richest shard right before each order.
 
     python kalshi_trade.py --balance      # signed read-only check
     python kalshi_trade.py --today        # spent today against the cap
@@ -35,6 +37,7 @@ from __future__ import annotations
 
 import argparse
 import base64
+import math
 import os
 import re
 import textwrap
@@ -190,6 +193,59 @@ def spent_today() -> float:
                      fills_between(start, start + timedelta(days=1))), 2)
 
 
+def shard_balances() -> dict:
+    """{exchange_index: dollars} from the balance breakdown."""
+    r = _call("GET", "/portfolio/balance")
+    r.raise_for_status()
+    return {int(b["exchange_index"]): float(b["balance"])
+            for b in r.json().get("balance_breakdown") or []}
+
+
+def transfer(src: int, dst: int, dollars: float) -> bool:
+    """Move cash between this account's own shards. Asynchronous at Kalshi."""
+    body = {"source": "event_contract", "destination": "event_contract",
+            "amount": int(round(dollars * 10000)),          # centicents
+            "source_exchange_shard": src, "destination_exchange_shard": dst,
+            "client_transfer_id": str(uuid.uuid4())}
+    r = _call("POST", "/portfolio/intra_exchange_instance_transfer", json=body)
+    print(f"  kalshi transfer ${dollars:.2f} shard {src}->{dst}: HTTP {r.status_code}")
+    return r.ok
+
+
+def fund(shard: int, need: float, wait_s: float = 6.0) -> Optional[str]:
+    """
+    Make sure `shard` holds `need` dollars, moving only the shortfall.
+
+    The Kalshi app does this itself before an order; the API does not ("fund
+    the relevant exchange shard before placing an order"), so the bot does
+    what the app would. Takes from the richest other shard -- one transfer,
+    not a sweep -- and waits for it to land, because transfers are async.
+    Returns None when funded, else the reason for the push.
+    """
+    try:
+        bal = shard_balances()
+    except Exception as e:
+        return f"balance unreadable ({type(e).__name__})"
+    short = math.ceil((need - bal.get(shard, 0.0)) * 100 - 1e-9) / 100   # to the cent, up
+    if short <= 0:
+        return None
+    others = {k: v for k, v in bal.items() if k != shard}
+    if not others or max(others.values()) < short:
+        return f"account short (${sum(bal.values()):.2f} total)"
+    src = max(others, key=others.get)
+    if not transfer(src, shard, short):
+        return "transfer refused"
+    deadline = time.time() + wait_s
+    while time.time() < deadline:
+        time.sleep(1.5)
+        try:
+            if shard_balances().get(shard, 0.0) >= need:
+                return None
+        except Exception:
+            pass
+    return "transfer still pending"
+
+
 def enabled() -> bool:
     return os.environ.get("KALSHI_AUTOTRADE", "").strip() == "1"
 
@@ -219,6 +275,11 @@ def place(bet: dict, cap: float = DAILY_CAP_DOLLARS) -> str:
         # is, only YES buys go through; the push says to place it by hand.
         return "not placed: NO route, place by hand"
     side, price = "bid", bet["kalshi_price"]
+    shard = bet.get("exchange_index")
+    if shard is not None:
+        why = fund(int(shard), round(count * bet["cost"], 2) + 0.01)
+        if why:
+            return f"not placed: {why}"
     body = {"ticker": bet["ticker"], "side": side, "count": f"{count:.2f}",
             "price": f"{price:.4f}", "time_in_force": "immediate_or_cancel",
             "self_trade_prevention_type": "taker_at_cross",
@@ -306,7 +367,21 @@ def main() -> int:
     ap.add_argument("--recap", action="store_true",
                     help="last week's bets and settlements; --send pushes it")
     ap.add_argument("--send", action="store_true")
+    ap.add_argument("--test-transfer", action="store_true",
+                    help="move 1c from the richest shard to shard 0 and back")
     a = ap.parse_args()
+    if a.test_transfer:
+        bal = shard_balances()
+        print("before", {k: f"${v:.2f}" for k, v in sorted(bal.items())})
+        src = max((k for k in bal if k != 0), key=bal.get)
+        ok = transfer(src, 0, 0.01)
+        time.sleep(5)
+        print("after ", {k: f"${v:.2f}" for k, v in sorted(shard_balances().items())})
+        if ok:
+            transfer(0, src, 0.01)
+            time.sleep(5)
+            print("back  ", {k: f"${v:.2f}" for k, v in sorted(shard_balances().items())})
+        return 0 if ok else 1
     if a.recap:
         text = recap()
         print(text)

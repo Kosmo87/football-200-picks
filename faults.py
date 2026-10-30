@@ -689,6 +689,7 @@ def kalshi_bet(f: dict) -> Optional[dict]:
     return {"kind": "KALSHI", "book": "kalshi", "side": f["side"],
             "kalshi_price": f["kalshi_price"], "cost": c, "how": f["how"],
             "ticker": f["ticker"], "size": f["size"], "chance": p,
+            "exchange_index": f.get("exchange_index"),
             "edge": f["edge"], "units": min(units, 3.0),
             "game": f["game"], "kickoff": f["kickoff"], "placed": f.get("placed")}
 

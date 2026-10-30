@@ -216,6 +216,18 @@ def test_kalshi_order_is_ioc_bid_at_the_seen_price_sized_in_dollar_units():
     assert out == "PLACED 4.76 @ 40c", out
 
 
+def test_order_waits_on_funding_and_reports_why_not():
+    T, sent, real = _trade_with(_Resp(201, {"fill_count": "1"}))
+    rf = T.fund
+    T.fund = lambda shard, need: "account short ($1.00 total)"
+    try:
+        out = T.place(F.kalshi_bet(_kalshi(exchange_index=3)))
+    finally:
+        T.fund = rf
+        _restore(T, real)
+    assert out == "not placed: account short ($1.00 total)" and sent == []
+
+
 def test_kalshi_respects_cap_switch_and_no_route():
     T, sent, real = _trade_with(_Resp(201, {}), spent=9.0)
     try:
@@ -282,6 +294,32 @@ def test_eastern_time_edges():
     assert T._midnight_et(u(2026, 11, 3, 15)) == u(2026, 11, 3, 5)      # EST
     assert T._midnight_et(u(2026, 10, 31, 2)) == u(2026, 10, 30, 4), "10pm ET is still the 30th"
     assert T._et(u(2026, 11, 2, 14)).hour == 9                         # Monday 9am EST
+
+
+def test_fund_moves_only_the_shortfall_from_the_richest_shard():
+    import kalshi_trade as T
+    moves, bals = [], [{0: 0.50, 2: 7.88, 3: 5.00}, {0: 2.11, 2: 6.27, 3: 5.00}]
+    real = (T.shard_balances, T.transfer, T.time.sleep)
+    T.shard_balances = lambda: bals.pop(0) if len(bals) > 1 else bals[0]
+    T.transfer = lambda a, b, d: moves.append((a, b, d)) or True
+    T.time.sleep = lambda s: None
+    try:
+        assert T.fund(0, 2.11) is None
+    finally:
+        T.shard_balances, T.transfer, T.time.sleep = real
+    assert moves == [(2, 0, 1.61)], moves
+
+
+def test_fund_does_nothing_when_shard_already_holds_it():
+    import kalshi_trade as T
+    real = (T.shard_balances, T.transfer)
+    T.shard_balances = lambda: {0: 9.0, 3: 0.0}
+    T.transfer = lambda *a: (_ for _ in ()).throw(AssertionError("no transfer"))
+    try:
+        assert T.fund(0, 2.11) is None
+        assert "short" in T.fund(3, 20.0)
+    finally:
+        T.shard_balances, T.transfer = real
 
 
 def test_kalshi_names_match_feed_names():

@@ -115,7 +115,9 @@ def events(league: str) -> List[dict]:
             if not opts:
                 continue
             p, n, ticker, how = min(opts, key=lambda o: o[0])
-            teams[name] = {"price": p, "size": n or 0.0, "ticker": ticker, "how": how}
+            teams[name] = {"price": p, "size": n or 0.0, "ticker": ticker, "how": how,
+                           # the balance shard an order here must be paid from
+                           "exchange_index": mine.get("exchange_index")}
         if len(teams) == 2:
             out.append({"event": ev, "ends": a.get("occurrence_datetime") or "",
                         "teams": teams})
@@ -203,6 +205,7 @@ def gaps(league: str, an_games: List[dict]) -> List[dict]:
                             "game": game, "kickoff": kick, "side": feed_name,
                             "kalshi_price": t["price"], "fee": fee(t["price"]),
                             "size": t["size"], "ticker": t["ticker"], "how": t["how"],
+                            "exchange_index": t.get("exchange_index"),
                             "consensus": round(p, 4), "peers": len(prices),
                             "edge": round(p - cost, 4)})
             break
