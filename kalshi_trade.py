@@ -253,14 +253,15 @@ def enabled() -> bool:
     return os.environ.get("KALSHI_AUTOTRADE", "").strip() == "1"
 
 
-def place(bet: dict, cap: float = DAILY_CAP_DOLLARS) -> str:
+def place(bet: dict, cap: float = DAILY_CAP_DOLLARS, force: bool = False) -> str:
     """
     Send one bet from faults.kalshi_bet. Returns a one-line result for the push.
 
     Every way this can decline returns a reason rather than raising: the alert
     still has to go out, and "not placed: cap" is the line you most need to see.
+    `force` is for a bet asked for by hand, where the off switch does not apply.
     """
-    if not enabled():
+    if not force and not enabled():
         return "not placed: autotrade off"
     risk = bet["units"] * UNIT_DOLLARS
     try:
@@ -362,6 +363,47 @@ def recap(now: Optional[datetime] = None) -> str:
     return "\n".join(body)
 
 
+def settlement_text(x: dict) -> str:
+    """One settled bet as a push. P&L is what actually landed in the account."""
+    cost = (float(x.get("yes_total_cost_dollars") or 0)
+            + float(x.get("no_total_cost_dollars") or 0)
+            + float(x.get("fee_cost") or 0))
+    pnl = (x.get("revenue") or 0) / 100 - cost
+    head = "BET WON" if pnl > 0.004 else "BET LOST" if pnl < -0.004 else "BET PUSHED"
+    team = x["ticker"].rsplit("-", 1)[-1]
+    held = "YES" if float(x.get("yes_count_fp") or 0) else "NO"
+    return (f"{head} at KALSHI {pnl:+.2f}\n{held} {team}, risked ${cost:.2f}, "
+            f"paid ${(x.get('revenue') or 0) / 100:.2f}\n{x['ticker']}")
+
+
+def recent_settlements(now: Optional[datetime] = None, days: int = 14) -> list:
+    """This bot's game markets settled in the last `days`, newest first."""
+    now = now or datetime.now(timezone.utc)
+    return [x for x in _paged("/portfolio/settlements", "settlements", max_pages=2)
+            if ours(x.get("ticker"))
+            and (t := _when(x, "settled_time")) and t >= now - timedelta(days=days)]
+
+
+def buy(ticker: str, dollars: float, why: str = "") -> str:
+    """
+    A bet asked for by hand, at the current ask, with the same placed push as
+    the watch's own bets. The daily cap and YES-only limits in place() apply.
+    """
+    r = _call("GET", f"/markets/{ticker}")
+    r.raise_for_status()
+    m = r.json()["market"]
+    import kalshi_feed
+    px = float(m["yes_ask_dollars"])
+    result = place({"units": dollars / UNIT_DOLLARS, "cost": px + kalshi_feed.fee(px),
+                    "how": "YES", "kalshi_price": px, "ticker": ticker,
+                    "exchange_index": m.get("exchange_index")}, force=True)
+    if result.startswith("PLACED"):
+        import faults
+        faults._deliver(f"BET PLACED at KALSHI\n{result}\n{ticker}, about ${dollars:.2f}"
+                        + (f"\n{why}" if why else ""))
+    return result
+
+
 def main() -> int:
     import keys  # noqa: F401  (local env file)
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[1])
@@ -370,9 +412,16 @@ def main() -> int:
     ap.add_argument("--recap", action="store_true",
                     help="last week's bets and settlements; --send pushes it")
     ap.add_argument("--send", action="store_true")
+    ap.add_argument("--buy", metavar="TICKER", help="buy YES at the ask and push it")
+    ap.add_argument("--dollars", type=float, default=1.0)
+    ap.add_argument("--why", default="", help="a line for the push")
     ap.add_argument("--test-transfer", action="store_true",
                     help="move 1c from the richest shard to shard 0 and back")
     a = ap.parse_args()
+    if a.buy:
+        result = buy(a.buy, a.dollars, a.why)
+        print(result)
+        return 0 if result.startswith("PLACED") else 1
     if a.test_transfer:
         bal = shard_balances()
         print("before", {k: f"${v:.2f}" for k, v in sorted(bal.items())})

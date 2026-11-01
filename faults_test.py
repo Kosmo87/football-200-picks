@@ -476,6 +476,84 @@ def test_ours_reads_every_series_shape():
     assert not T.ours(None)
 
 
+def _settled(ticker="KXNFLGAME-26NOV08ARISEA-SEA", revenue=119):
+    return {"ticker": ticker, "revenue": revenue, "yes_count_fp": "1.19", "no_count_fp": "0.00",
+            "yes_total_cost_dollars": "0.975800", "no_total_cost_dollars": "0.000000",
+            "fee_cost": "0.012300", "settled_time": "2026-11-09T04:00:00Z"}
+
+
+def test_settlement_text_says_won_or_lost_with_real_money():
+    import kalshi_trade as T
+    won = T.settlement_text(_settled())
+    assert won.startswith("BET WON at KALSHI +0.20"), won
+    assert "YES SEA" in won and "risked $0.99" in won and "paid $1.19" in won
+    assert T.settlement_text(_settled(revenue=0)).startswith("BET LOST at KALSHI -0.99")
+    assert T.settlement_text(_settled(revenue=99)).startswith("BET PUSHED")
+
+
+def test_settled_pushes_each_bet_once_and_retries_a_failed_push():
+    import os, tempfile, kalshi_trade as T
+    path = os.path.join(tempfile.mkdtemp(), "a.json")
+    sent, real = [], (F._deliver, T.recent_settlements)
+    T.recent_settlements = lambda now=None: [_settled()]
+    try:
+        F._deliver = lambda b: False
+        assert F.notify_settled(path) == 0, "a failed push is not marked sent"
+        F._deliver = lambda b: sent.append(b) or True
+        assert F.notify_settled(path) == 1
+        assert F.notify_settled(path) == 0, "already pushed"
+        assert F.new_only([], path) == [] and F.notify_settled(path) == 0, "survives pruning"
+    finally:
+        F._deliver, T.recent_settlements = real
+    assert len(sent) == 1 and sent[0].startswith("BET WON")
+
+
+def test_settlements_ignore_the_users_own_markets():
+    import kalshi_trade as T
+    from datetime import datetime, timezone
+    rp = T._paged
+    T._paged = lambda path, key, max_pages=20: [
+        _settled(), _settled("KXBTC15M-26OCT261930-30"),
+        dict(_settled(), settled_time="2026-10-01T00:00:00Z")]
+    try:
+        got = T.recent_settlements(datetime(2026, 11, 9, 12, tzinfo=timezone.utc))
+    finally:
+        T._paged = rp
+    assert [x["ticker"] for x in got] == ["KXNFLGAME-26NOV08ARISEA-SEA"]
+
+
+def test_settlement_read_failure_does_not_break_the_scan():
+    import kalshi_trade as T
+    real = T.recent_settlements
+    def boom(now=None):
+        raise RuntimeError("no key")
+    T.recent_settlements = boom
+    try:
+        assert F.notify_settled("/nonexistent/a.json") == 0
+    finally:
+        T.recent_settlements = real
+
+
+def test_hand_bet_pushes_when_placed_and_ignores_the_off_switch():
+    import os, kalshi_trade as T
+    class R:
+        def raise_for_status(self): pass
+        def json(self): return {"market": {"yes_ask_dollars": "0.8200", "exchange_index": 0}}
+    sent, seen, real = [], {}, (F._deliver, T._call, T.place)
+    F._deliver = lambda b: sent.append(b) or True
+    T._call = lambda *a, **k: R()
+    def fake(bet, cap=10.0, force=False):
+        seen.update(bet, force=force)
+        return "PLACED 1.19 @ 82c"
+    T.place = fake
+    try:
+        assert T.buy("KXNFLGAME-26NOV08ARISEA-SEA", 1.0, "model 82.8%") == "PLACED 1.19 @ 82c"
+    finally:
+        F._deliver, T._call, T.place = real
+    assert seen["force"] and seen["how"] == "YES" and abs(seen["cost"] - 0.84) < 0.02
+    assert sent[0].startswith("BET PLACED at KALSHI\nPLACED 1.19 @ 82c") and "model 82.8%" in sent[0]
+
+
 if __name__ == "__main__":
     f = 0
     for n, fn in sorted(globals().items()):

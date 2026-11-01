@@ -878,6 +878,40 @@ def maybe_recap(state_path: str, now: Optional[datetime] = None) -> bool:
     return True
 
 
+def notify_settled(state_path: str, now: Optional[datetime] = None) -> int:
+    """
+    Push each Kalshi bet once as it wins or loses.
+
+    A key is marked sent only after the push succeeds, so a failed push tries
+    again on the next scan. Keys outlive the lookback window so a settlement
+    can never come round a second time.
+    """
+    now = now or datetime.now(timezone.utc)
+    import kalshi_trade
+    try:
+        settled = kalshi_trade.recent_settlements(now)
+    except Exception as e:
+        print(f"[faults] settlements unreadable: {type(e).__name__}")
+        return 0
+    try:
+        seen = json.load(open(state_path))
+    except Exception:
+        seen = {}
+    sent = 0
+    for x in settled:
+        key = f"settled|{x['ticker']}"
+        if key in seen:
+            continue
+        if _deliver(kalshi_trade.settlement_text(x)):
+            seen[key] = (now + timedelta(days=30)).isoformat()
+            sent += 1
+    print(f"[faults] settlements: {len(settled)} recent, {sent} pushed")
+    if sent:
+        os.makedirs(os.path.dirname(state_path), exist_ok=True)
+        json.dump(seen, open(state_path, "w"))
+    return sent
+
+
 def send_push(topic: str, body: str) -> bool:
     """
     ntfy.sh push: lands on the lock screen in seconds, free, no account.
@@ -891,11 +925,13 @@ def send_push(topic: str, body: str) -> bool:
     title, _, rest = body.partition("\n")
     transposed = title.startswith("WRONG TEAM")
     placed = title.startswith("BET PLACED") or title.startswith("KALSHI WEEK")
+    won, lost = title.startswith("BET WON"), title.startswith("BET LOST")
     try:
         r = requests.post(f"https://ntfy.sh/{topic}", data=rest.encode("utf-8"),
                           headers={"Title": title,
                                    "Priority": "urgent" if transposed else "high",
                                    "Tags": ("rotating_light" if transposed else
+                                            "trophy" if won else "x" if lost else
                                             "white_check_mark" if placed else "moneybag")},
                           timeout=20)
     except requests.RequestException as e:
@@ -989,6 +1025,7 @@ def main() -> int:
             report(fresh)
             place_kalshi(fresh)
             send_alert(fresh)
+        notify_settled(os.path.join(ROOT, "cache", "faults_alerted.json"))
         maybe_recap(os.path.join(ROOT, "cache", "faults_alerted.json"))
         return 0
     if a.scan:
