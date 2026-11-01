@@ -466,6 +466,16 @@ def test_moneyline_real_inversion_is_transposed():
     assert F.classify(f) == "TRANSPOSED"
 
 
+def test_ours_reads_every_series_shape():
+    # SERIES holds strings and, for soccer, a tuple. A tuple here once made
+    # every fills read raise, so each bet came back "fills unreadable".
+    import kalshi_trade as T
+    assert T.ours("KXNFLGAME-26NOV09BUFMIN-MIN")
+    assert T.ours("KXEPLGAME-26NOV08ARSCHE-ARS")
+    assert not T.ours("KXBTC15M-26OCT261930-30")
+    assert not T.ours(None)
+
+
 if __name__ == "__main__":
     f = 0
     for n, fn in sorted(globals().items()):

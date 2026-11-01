@@ -177,7 +177,10 @@ def ours(ticker: str) -> bool:
     neither use up the bot's daily cap nor appear in its recap.
     """
     import kalshi_feed
-    return any((ticker or "").startswith(s + "-") for s in kalshi_feed.SERIES.values())
+    # A league is one series or, for soccer, a tuple of them.
+    series = [s for v in kalshi_feed.SERIES.values()
+              for s in ((v,) if isinstance(v, str) else v)]
+    return any((ticker or "").startswith(s + "-") for s in series)
 
 
 def fills_between(a: datetime, b: datetime) -> list:
