@@ -432,9 +432,14 @@ jobs:
           python parlays_test.py
           python books_test.py
           python faults_test.py
-          python nfl_model_test.py
           python futures_test.py
           python test-teamnames.py
+
+      # numpy and pandas are installed here and nowhere else in this job.
+      - name: Test the NFL model
+        run: |
+          pip install --quiet numpy pandas
+          python nfl_model_test.py
 
       - name: Test pick selection
         # The parlay rules. Both were written after uncapping the list exposed
