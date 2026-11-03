@@ -7,7 +7,7 @@ an immediate-or-cancel limit order AT the price the scan saw: if the ask has
 moved up since, nothing fills and nothing is left resting on the book.
 
   unit           $1 (UNIT_DOLLARS), set by the user 2026-10-30
-  per bet        kalshi_bet's 0.5-3U, so $0.50-$3.00
+  per bet        kalshi_bet's flat 1U, so $1.00
   per day        DAILY_CAP_DOLLARS, counted from Kalshi's own fills since
                  midnight ET -- the exchange is the record, not a local file
                  that a cache miss could reset
@@ -332,6 +332,10 @@ def recap(now: Optional[datetime] = None) -> str:
     sets = [x for x in _paged("/portfolio/settlements", "settlements")
             if ours(x.get("ticker"))
             and (t := _when(x, "settled_time")) and start <= t < end]
+    import kalshi_gaps
+    closes = kalshi_gaps.closes()
+    clv = [c["consensus"] - _paid_per_contract(x) for x in sets
+           if (c := _close_of(x, closes)) and _paid_per_contract(x)]
     lines, net, w, l = [], 0.0, 0, 0
     for x in sets:
         cost = (float(x.get("yes_total_cost_dollars") or 0)
@@ -355,6 +359,9 @@ def recap(now: Optional[datetime] = None) -> str:
     body = [f"KALSHI WEEK {span}",
             f"placed {len(tickers)} bet(s), ${bought:.2f} incl. fees",
             f"settled {len(sets)}: {w}-{l}, net ${net:+.2f}"]
+    if clv:
+        body.append(f"vs closing line: {sum(clv) / len(clv) * 100:+.1f}c a contract "
+                    f"over {len(clv)}")
     if open_n:
         body.append(f"still open {open_n}")
     body += lines[:12]
@@ -363,8 +370,28 @@ def recap(now: Optional[datetime] = None) -> str:
     return "\n".join(body)
 
 
-def settlement_text(x: dict) -> str:
-    """One settled bet as a push. P&L is what actually landed in the account."""
+def _paid_per_contract(x: dict) -> float:
+    """Cost with fees per contract held; 0 when the record shows no contracts."""
+    n = float(x.get("yes_count_fp") or 0) + float(x.get("no_count_fp") or 0)
+    cost = (float(x.get("yes_total_cost_dollars") or 0)
+            + float(x.get("no_total_cost_dollars") or 0)
+            + float(x.get("fee_cost") or 0))
+    return cost / n if n else 0.0
+
+
+def _close_of(x: dict, closes: Optional[dict]) -> Optional[dict]:
+    held = "YES" if float(x.get("yes_count_fp") or 0) else "NO"
+    return (closes or {}).get((x.get("ticker"), held))
+
+
+def settlement_text(x: dict, closes: Optional[dict] = None) -> str:
+    """
+    One settled bet as a push. P&L is what actually landed in the account.
+
+    The closing line is the honest grade: a 10c longshot loses nine times in
+    ten however good the price was, so the push shows what the books said at
+    tip-off beside what was paid. `closes` is kalshi_gaps.closes().
+    """
     cost = (float(x.get("yes_total_cost_dollars") or 0)
             + float(x.get("no_total_cost_dollars") or 0)
             + float(x.get("fee_cost") or 0))
@@ -372,8 +399,13 @@ def settlement_text(x: dict) -> str:
     head = "BET WON" if pnl > 0.004 else "BET LOST" if pnl < -0.004 else "BET PUSHED"
     team = x["ticker"].rsplit("-", 1)[-1]
     held = "YES" if float(x.get("yes_count_fp") or 0) else "NO"
+    c, per = _close_of(x, closes), _paid_per_contract(x)
+    vs = ""
+    if c and per:
+        vs = (f"cost {per*100:.1f}c, books closed {c['consensus']*100:.1f}%, "
+              f"{(c['consensus'] - per)*100:+.1f}c vs close\n")
     return (f"{head} at KALSHI {pnl:+.2f}\n{held} {team}, risked ${cost:.2f}, "
-            f"paid ${(x.get('revenue') or 0) / 100:.2f}\n{x['ticker']}")
+            f"paid ${(x.get('revenue') or 0) / 100:.2f}\n{vs}{x['ticker']}")
 
 
 def recent_settlements(now: Optional[datetime] = None, days: int = 14) -> list:

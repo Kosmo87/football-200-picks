@@ -333,6 +333,15 @@ KALSHI_PRICE_RANGE = (0.10, 0.90)
 # Contracts sitting at the price, in dollars. Less than this and the "price"
 # is one stray order that a real stake would walk straight through.
 KALSHI_MIN_DEPTH = 50.0
+# NBA rules from the first two live bets (2026-11-02). Pacers: books 36.1%
+# against 24c, a 10pp gap that was the books lagging six players sitting (they
+# closed near 21%). Jazz: 3.8pp a full day out, gone by the close. Both times
+# the books moved to Kalshi. So an NBA gap only buys in the last hour, when
+# injury news is mostly out, and a very wide one is a reason to read the news,
+# not a reason to bet. Judgment from thin data: the ledger's closing prices
+# are there to overturn it.
+KALSHI_BET_WINDOW_MIN = {"NBA": 60}
+KALSHI_NEWS_GAP = {"NBA": 0.06}
 
 
 def kalshi_hits(league: str, an_games: List[dict], now: datetime,
@@ -368,7 +377,14 @@ def kalshi_hits(league: str, an_games: List[dict], now: datetime,
             continue
         if r["size"] * r["kalshi_price"] < KALSHI_MIN_DEPTH:
             continue
-        out.append(dict(r, captured_at=stamp, kind="KALSHI", source="kalshi"))
+        news = r["edge"] >= KALSHI_NEWS_GAP.get(league, 9.0)
+        window = KALSHI_BET_WINDOW_MIN.get(league)
+        # Left out rather than marked: a hit outside the window must not spend
+        # its one alert key, or the same gap could never buy once it opens.
+        if not news and window and (k - now).total_seconds() > window * 60:
+            continue
+        out.append(dict(r, captured_at=stamp, kind="KALSHI", source="kalshi",
+                        **({"news": True} if news else {})))
     return out
 
 
@@ -693,21 +709,20 @@ def bet_from(f: dict) -> Optional[dict]:
 
 def kalshi_bet(f: dict) -> Optional[dict]:
     """
-    A Kalshi gap as a bet. Same quarter-Kelly and 3U cap as bet_from.
+    A Kalshi gap as a flat 1U bet.
 
-    A contract costs `c` (price + fee) and pays $1, so it is a bet at odds
-    (1-c)/c and Kelly's fraction reduces to (p - c) / (1 - c).
+    Flat since 2026-11-03. Kelly sizing trusts the gap, and the widest gap yet
+    was the books being stale: it got the 3U maximum. Sizing can come back if
+    the graded record shows wider gaps really are better.
     """
-    if f.get("market") != "kalshi" or f.get("edge", 0) <= 0:
+    if f.get("market") != "kalshi" or f.get("edge", 0) <= 0 or f.get("news"):
         return None
     p, c = f["consensus"], f["kalshi_price"] + f["fee"]
-    kelly = (p - c) / (1 - c)
-    units = max(0.5, round(kelly / 4 / 0.01 * 2) / 2)
     return {"kind": "KALSHI", "book": "kalshi", "side": f["side"],
             "kalshi_price": f["kalshi_price"], "cost": c, "how": f["how"],
             "ticker": f["ticker"], "size": f["size"], "chance": p,
             "exchange_index": f.get("exchange_index"),
-            "edge": f["edge"], "units": min(units, 3.0),
+            "edge": f["edge"], "units": 1.0,
             "game": f["game"], "kickoff": f["kickoff"], "placed": f.get("placed")}
 
 
@@ -721,6 +736,11 @@ def place_kalshi(hits: List[dict]) -> None:
     import kalshi_trade
     ks = [h for h in hits if h.get("kind") == "KALSHI"]
     for h in sorted(ks, key=lambda h: -h["edge"]):
+        if h.get("news"):
+            print(f"  kalshi {h['league']} {h['side']}: no bet, gap too wide")
+            _deliver(_news_text(h))
+            h["pushed"] = True
+            continue
         bet = kalshi_bet(h)
         if not bet:
             continue
@@ -732,6 +752,15 @@ def place_kalshi(hits: List[dict]) -> None:
             bet["placed"] = h["placed"]
             _deliver(_kalshi_text(bet, kalshi_trade.UNIT_DOLLARS))
             h["pushed"] = True
+
+
+def _news_text(h: dict) -> str:
+    """A gap too wide to trust: no bet was placed, so say why and what to check."""
+    return (f"CHECK NEWS, NO BET at KALSHI\n"
+            f"{h['side']} {h['kalshi_price']*100:.0f}c vs books "
+            f"{h['consensus']*100:.1f}%, {h['edge']*100:.1f}pp\n"
+            f"Books may be behind injury news\n"
+            f"{h['game'][:40]} {h['kickoff'][5:16].replace('T', ' ')}Z")
 
 
 def _kalshi_text(t: dict, unit_dollars: float) -> str:
@@ -818,7 +847,9 @@ def _alert_key(h: dict) -> str:
     """One fault = one book's number on one side of one game. A new number is a new fault."""
     # Kalshi rows carry neither: its ask ticks a cent every few minutes, and a
     # new alert per cent would be the same gap pushed all afternoon.
-    num = h.get("book_point", h.get("book_price"))
+    # A news warning has its own key, so it cannot use up the one real bet this
+    # side may still earn in the last hour.
+    num = "news" if h.get("news") else h.get("book_point", h.get("book_price"))
     return f"{h['league']}|{h['game']}|{h['market']}|{h['book']}|{h['side']}|{num}"
 
 
@@ -897,12 +928,14 @@ def notify_settled(state_path: str, now: Optional[datetime] = None) -> int:
         seen = json.load(open(state_path))
     except Exception:
         seen = {}
+    import kalshi_gaps
+    closes = kalshi_gaps.closes()
     sent = 0
     for x in settled:
         key = f"settled|{x['ticker']}"
         if key in seen:
             continue
-        if _deliver(kalshi_trade.settlement_text(x)):
+        if _deliver(kalshi_trade.settlement_text(x, closes)):
             seen[key] = (now + timedelta(days=30)).isoformat()
             sent += 1
     print(f"[faults] settlements: {len(settled)} recent, {sent} pushed")

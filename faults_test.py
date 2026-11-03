@@ -160,10 +160,85 @@ def test_kalshi_alerts_even_with_mine_only():
 
 def test_kalshi_stake_is_whole_contracts_at_cost_with_fee():
     bet = F.kalshi_bet(_kalshi())
-    # (0.47 - 0.42) / 0.58 = 8.6% Kelly -> quarter is 2.2% -> 2U
-    assert bet["units"] == 2.0
+    assert bet["units"] == 1.0
     body = F.alert_text([_kalshi()])
-    assert "4.76 contracts $2.00 to win $2.76" in body, body
+    assert "2.38 contracts $1.00 to win $1.38" in body, body
+
+
+def test_kalshi_stake_is_flat_however_wide_the_gap():
+    assert F.kalshi_bet(_kalshi(consensus=0.90, edge=0.48))["units"] == 1.0
+    assert F.kalshi_bet(_kalshi(consensus=0.43, edge=0.01))["units"] == 1.0
+
+
+def _nba_hits(edge, minutes_out):
+    import kalshi_feed as K
+    from datetime import datetime, timedelta, timezone
+    now = datetime.now(timezone.utc)      # new_only forgets keys past kickoff
+    kick = (now + timedelta(minutes=minutes_out)).isoformat().replace("+00:00", "Z")
+    real = K.gaps
+    K.gaps = lambda league, games: [_kalshi(league=league, edge=edge, kickoff=kick)]
+    try:
+        return F.kalshi_hits("NBA", [], now, 10, now.isoformat())
+    finally:
+        K.gaps = real
+
+
+def test_nba_gap_only_bets_in_the_last_hour():
+    assert _nba_hits(0.04, 61) == [], "an hour and a minute out is too early"
+    hits = _nba_hits(0.04, 60)
+    assert len(hits) == 1 and not hits[0].get("news") and F.kalshi_bet(hits[0])
+    assert _nba_hits(0.04, 5) == [], "the ten-minute lead still applies"
+
+
+def test_other_sports_keep_betting_early():
+    import kalshi_feed as K
+    from datetime import datetime, timezone
+    now = datetime(2026, 11, 1, 0, 0, tzinfo=timezone.utc)
+    real = K.gaps
+    K.gaps = lambda league, games: [_kalshi(edge=0.11)]
+    try:
+        hits = F.kalshi_hits("NFL", [], now, 10, now.isoformat())
+    finally:
+        K.gaps = real
+    assert len(hits) == 1 and F.kalshi_bet(hits[0])
+
+
+def test_wide_nba_gap_warns_at_any_time_and_never_bets():
+    for edge in (0.06, 0.101):
+        hits = _nba_hits(edge, 400)
+        assert len(hits) == 1 and hits[0]["news"] and F.kalshi_bet(hits[0]) is None
+    assert _nba_hits(0.0599, 30)[0].get("news") is None
+
+
+def test_news_warning_pushes_and_places_nothing():
+    import kalshi_trade as T
+    sent, placed, real = [], [], (F._deliver, T.place)
+    F._deliver = lambda b: sent.append(b) or True
+    T.place = lambda bet, **k: placed.append(bet) or "PLACED 1 @ 24c"
+    try:
+        hits = _nba_hits(0.101, 400)
+        F.place_kalshi(hits)
+    finally:
+        F._deliver, T.place = real
+    assert not placed, "a news warning must never reach the order path"
+    assert len(sent) == 1 and sent[0].startswith("CHECK NEWS, NO BET"), sent
+    assert F.alert_text(hits) is None, "and it is not pushed a second time"
+
+
+def test_news_warning_does_not_use_up_the_later_bet():
+    import os, tempfile
+    state = os.path.join(tempfile.mkdtemp(), "s.json")
+    assert len(F.new_only(_nba_hits(0.10, 400), state)) == 1
+    assert len(F.new_only(_nba_hits(0.10, 390), state)) == 0, "warns once"
+    assert len(F.new_only(_nba_hits(0.04, 30), state)) == 1, "the bet still fires"
+    assert len(F.new_only(_nba_hits(0.04, 20), state)) == 0, "and bets once"
+
+
+def test_early_nba_gap_keeps_its_alert_key_for_the_window():
+    import os, tempfile
+    state = os.path.join(tempfile.mkdtemp(), "s.json")
+    assert F.new_only(_nba_hits(0.04, 300), state) == []
+    assert len(F.new_only(_nba_hits(0.04, 30), state)) == 1
 
 
 def test_kalshi_filters_thin_tails_and_small_gaps():
@@ -204,7 +279,7 @@ def _restore(T, real):
 
 
 def test_kalshi_order_is_ioc_bid_at_the_seen_price_sized_in_dollar_units():
-    T, sent, real = _trade_with(_Resp(201, {"fill_count": "4.76",
+    T, sent, real = _trade_with(_Resp(201, {"fill_count": "2.38",
                                             "average_fill_price": "0.4000"}))
     try:
         out = T.place(F.kalshi_bet(_kalshi()))
@@ -212,8 +287,8 @@ def test_kalshi_order_is_ioc_bid_at_the_seen_price_sized_in_dollar_units():
         _restore(T, real)
     o = sent[0]
     assert (o["side"], o["price"], o["time_in_force"]) == ("bid", "0.4000", "immediate_or_cancel")
-    assert o["count"] == "4.76", o["count"]     # 2U x $1 / 42c with fee
-    assert out == "PLACED 4.76 @ 40c", out
+    assert o["count"] == "2.38", o["count"]     # 1U x $1 / 42c with fee
+    assert out == "PLACED 2.38 @ 40c", out
 
 
 def test_order_waits_on_funding_and_reports_why_not():
@@ -229,7 +304,7 @@ def test_order_waits_on_funding_and_reports_why_not():
 
 
 def test_kalshi_respects_cap_switch_and_no_route():
-    T, sent, real = _trade_with(_Resp(201, {}), spent=9.0)
+    T, sent, real = _trade_with(_Resp(201, {}), spent=9.5)
     try:
         assert "cap" in T.place(F.kalshi_bet(_kalshi()))
         T.spent_today = lambda: 0.0
@@ -379,6 +454,97 @@ def test_gap_log_keeps_first_and_best_and_grades_once():
     row = json.loads(open(arch).read())
     assert row["won"] and abs(row["pnl"] - 0.58) < 1e-9     # 1 - (40c + 2c)
     assert "return/$" in G.report(arch)
+
+
+def _future(hours=5):
+    from datetime import datetime, timedelta, timezone
+    return datetime.now(timezone.utc) + timedelta(hours=hours)
+
+
+def test_gap_log_keeps_every_change_and_the_last_sighting():
+    import os, json, tempfile, kalshi_gaps as G
+    from datetime import timedelta
+    live = os.path.join(tempfile.mkdtemp(), "g.json")
+    kick = _future()
+    k = kick.isoformat()
+    t = lambda m: kick - timedelta(minutes=m)
+    for m, px in ((60, 0.40), (55, 0.40), (50, 0.38)):
+        G.observe([_kalshi(kalshi_price=px, kickoff=k)], t(m).isoformat(), live, now=t(m))
+    e = list(json.load(open(live)).values())[0]
+    assert [p[1] for p in e["path"]] == [0.40, 0.38], "unchanged sightings add no point"
+    assert e["seen"] == 3 and e["last"]["price"] == 0.38
+    assert isinstance(e["path"][0][0], int)
+
+
+def test_gap_log_ignores_prices_after_kickoff_for_the_close():
+    import os, json, tempfile, kalshi_gaps as G
+    from datetime import timedelta
+    live = os.path.join(tempfile.mkdtemp(), "g.json")
+    kick = _future()
+    k = kick.isoformat()
+    before, after = kick - timedelta(minutes=5), kick + timedelta(minutes=20)
+    G.observe([_kalshi(kalshi_price=0.40, kickoff=k)], before.isoformat(), live, now=before)
+    G.observe([_kalshi(kalshi_price=0.05, kickoff=k)], after.isoformat(), live, now=after)
+    e = list(json.load(open(live)).values())[0]
+    assert e["last"]["price"] == 0.40 and len(e["path"]) == 1
+
+
+def test_close_needs_a_sighting_near_kickoff():
+    import kalshi_gaps as G
+    from datetime import timedelta
+    kick = _future()
+    row = lambda m: {"kickoff": kick.isoformat(),
+                     "last": {"at": (kick - timedelta(minutes=m)).isoformat(), "price": 0.4}}
+    assert G._close(row(119)) and G._close(row(121)) is None
+    assert G._close({"kickoff": kick.isoformat()}) is None
+    assert G._close({"kickoff": kick.isoformat(), "last": {"at": "t1"}}) is None
+
+
+def test_grade_writes_close_and_splits_the_path_out():
+    import os, json, tempfile, kalshi_gaps as G
+    from datetime import datetime, timedelta, timezone
+    d = tempfile.mkdtemp()
+    live, arch = os.path.join(d, "g.json"), os.path.join(d, "a.ndjson")
+    kick = datetime.now(timezone.utc) - timedelta(hours=5)
+    before = kick - timedelta(minutes=5)
+    G.observe([_kalshi(kalshi_price=0.40, consensus=0.47, edge=0.05, kickoff=kick.isoformat())],
+              before.isoformat(), live, now=before)
+    assert G.grade(live, arch, result=lambda t: "no") == 1
+    row = json.loads(open(arch).read())
+    assert row["close"]["consensus"] == 0.47
+    assert "path" not in row and "last" not in row, "the results archive stays small"
+    p = json.loads(open(os.path.join(d, "a_paths.ndjson")).read())
+    assert p["path"][0][1:] == [0.40, 0.47]
+    rep = G.report(arch)
+    assert "Vs the close" in rep and "+5.0c" in rep, rep
+    assert G.closes(live, arch)[(row["ticker"], "YES")]["consensus"] == 0.47
+
+
+def test_grade_survives_rows_logged_before_paths_existed():
+    import os, json, tempfile, kalshi_gaps as G
+    from datetime import datetime, timedelta, timezone
+    d = tempfile.mkdtemp()
+    live, arch = os.path.join(d, "g.json"), os.path.join(d, "a.ndjson")
+    kick = (datetime.now(timezone.utc) - timedelta(hours=5)).isoformat()
+    snap = {"at": "t", "price": 0.4, "fee": 0.02, "consensus": 0.47, "edge": 0.05, "size": 1}
+    json.dump({"x": {"league": "NBA", "game": "g", "side": "s", "ticker": "T", "how": "YES",
+                     "kickoff": kick, "first": snap, "best": snap, "seen": 1}}, open(live, "w"))
+    assert G.grade(live, arch, result=lambda t: "yes") == 1
+    assert json.loads(open(arch).read())["close"] is None
+    assert "no graded gaps with a closing price" in G.report(arch)
+
+
+def test_settled_push_shows_cost_against_the_close():
+    import kalshi_trade as T
+    x = {"ticker": "KXNBAGAME-26NOV02ATLIND-IND", "revenue": 0, "yes_count_fp": "11.54",
+         "yes_total_cost_dollars": "2.7696", "no_total_cost_dollars": "0", "fee_cost": "0.1474"}
+    closes = {(x["ticker"], "YES"): {"consensus": 0.21, "price": 0.23}}
+    body = T.settlement_text(x, closes)
+    assert "cost 25.3c, books closed 21.0%, -4.3c vs close" in body, body
+    assert body.startswith("BET LOST at KALSHI -2.92"), body
+    assert "vs close" not in T.settlement_text(x), "no close, no claim"
+    assert "vs close" not in T.settlement_text(x, {(x["ticker"], "NO"): closes[(x["ticker"], "YES")]})
+    assert len(body) <= 320, len(body)
 
 
 def test_kalshi_names_match_feed_names():
