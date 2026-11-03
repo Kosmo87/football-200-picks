@@ -326,10 +326,12 @@ KALSHI_MIN_EDGE = 0.03
 # Set by --fast only, so a test or a local scan never writes the live log.
 GAP_LOG: Optional[str] = None
 KALSHI_MIN_EDGE_BY = {"ATP": 0.04, "WTA": 0.04, "NHL": 0.04, "NCAAB": 0.04}
-# Outside 10-90c the books' de-vig (proportional) is the weak part of the
+# Outside this range the books' de-vig (proportional) is the weak part of the
 # comparison: it hands longshots too much of the margin, and every Kalshi
 # longshot then looks a cent or two cheap. Those gaps are the method's.
-KALSHI_PRICE_RANGE = (0.10, 0.90)
+# Graded 2026-11-03: 71 of 102 positive gaps were under 30c, and sub-30c
+# outcomes won 33 times against ~43 either price expected (-24% per $).
+KALSHI_PRICE_RANGE = (0.25, 0.90)
 # Contracts sitting at the price, in dollars. Less than this and the "price"
 # is one stray order that a real stake would walk straight through.
 KALSHI_MIN_DEPTH = 50.0

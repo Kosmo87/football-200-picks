@@ -203,13 +203,14 @@ def report(archive: str = ARCHIVE) -> str:
         lo = max(b for b in BUCKETS if e >= b) if e >= BUCKETS[0] else BUCKETS[0]
         by[(r["league"], lo)].append(r)
     out = [f"{len(rows)} graded Kalshi outcomes\n",
-           f"{'sport':7} {'edge >=':>8} {'n':>5} {'won':>6} {'paid':>6} {'return/$':>9}"]
+           f"{'sport':7} {'edge >=':>9} {'n':>5} {'won':>6} {'paid':>6} {'return/$':>9}"]
     for (lg, lo), rs in sorted(by.items()):
         n = len(rs)
         won = sum(r["won"] for r in rs) / n
         paid = sum(r["best"]["price"] + r["best"]["fee"] for r in rs) / n
         ret = sum(r["pnl"] for r in rs) / sum(r["best"]["price"] + r["best"]["fee"] for r in rs)
-        out.append(f"{lg:7} {lo*100:7.0f}pp {n:5} {won*100:5.1f}% {paid*100:5.1f}c {ret*100:+8.1f}%")
+        label = "below 0" if lo < 0 else f"{lo*100:.0f}pp"
+        out.append(f"{lg:7} {label:>9} {n:5} {won*100:5.1f}% {paid*100:5.1f}c {ret*100:+8.1f}%")
     out += _close_report(rows)
     return "\n".join(out)
 
