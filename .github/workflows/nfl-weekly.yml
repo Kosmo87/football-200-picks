@@ -1,0 +1,95 @@
+name: NFL weekly picks
+
+# Thursday morning: every game's winner from nfl_model, pushed to ntfy and
+# frozen in data/archive/nfl_weekly.ndjson. Tuesday: those picks graded
+# against nflverse's final scores and pushed.
+#
+# Three runs each day because GitHub's cron runs late or not at all under
+# load. nfl_weekly.py marks what it sent (data/archive/nfl_weekly_sent.json),
+# so the later runs are no-ops once one gets through. Tuesday's runs wait for
+# Monday night's score; the last one (18:00 UTC or later) sends whatever is in.
+on:
+  schedule:
+    - cron: "30 11 * * 4"
+    - cron: "30 12 * * 4"
+    - cron: "30 13 * * 4"
+    - cron: "0 13 * * 2"
+    - cron: "0 15 * * 2"
+    - cron: "30 18 * * 2"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "auto (by weekday), picks, results, or preview (print this week's picks, send nothing)"
+        type: choice
+        options: [auto, picks, results, preview]
+        default: auto
+      force:
+        description: "Send again even if this week was already sent"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: nfl-weekly
+  cancel-in-progress: false
+
+jobs:
+  weekly:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install --quiet requests numpy pandas pyarrow
+
+      # Past seasons' QB tables, snaps and injury reports. A cold cache
+      # downloads ten seasons of play-by-play (~200 MB) once.
+      - uses: actions/cache@v4
+        with:
+          path: cache/nfl_model
+          key: nfl-model-${{ github.run_id }}
+          restore-keys: nfl-model-
+
+      - name: Picks or results
+        run: |
+          mode="${{ inputs.mode || 'auto' }}"
+          if [ "$mode" = "preview" ]; then
+            python nfl_weekly.py --picks
+            exit 0
+          fi
+          flags="--send"
+          [ "${{ inputs.force }}" = "true" ] && flags="$flags --force"
+          python nfl_weekly.py --$mode $flags
+
+      - name: Keep the cache small
+        # The slim QB tables are all later runs need; the current season's
+        # play-by-play is refetched every run regardless.
+        if: always()
+        run: rm -f cache/nfl_model/pbp_*.csv.gz cache/nfl_model/*.tmp
+
+      - name: Commit the frozen picks
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/archive/nfl_weekly.ndjson data/archive/nfl_weekly_sent.json 2>/dev/null || true
+          if git diff --staged --quiet; then
+            echo "Nothing new."
+            exit 0
+          fi
+          git commit -m "NFL weekly: $(date -u +'%Y-%m-%d %H:%M UTC')"
+          # build-board pushes to main too; rebase onto it and retry.
+          for attempt in 1 2 3; do
+            git push && exit 0
+            git fetch origin main || exit 1
+            git rebase -X theirs origin/main || { git rebase --abort; exit 1; }
+          done
+          exit 1

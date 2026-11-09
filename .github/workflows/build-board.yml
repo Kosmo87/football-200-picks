@@ -37,6 +37,10 @@ on:
       - "kalshi_feed.py"
       - "kalshi_trade.py"
       - "kalshi_gaps.py"
+      - "nfl_model.py"
+      - "nfl_model_test.py"
+      - "nfl_weekly.py"
+      - "nfl_weekly_test.py"
       - "an_feed.py"
       - "tripwire.py"
       - "futures.py"
@@ -440,6 +444,7 @@ jobs:
         run: |
           pip install --quiet numpy pandas
           python nfl_model_test.py
+          python nfl_weekly_test.py
 
       - name: Test pick selection
         # The parlay rules. Both were written after uncapping the list exposed

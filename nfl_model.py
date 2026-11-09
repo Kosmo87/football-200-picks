@@ -382,14 +382,21 @@ def backtest(F: pd.DataFrame, start: int = FIRST_TEST):
     print(f"  win ~ market + model: market t={b[1]/s[1]:.1f}, model t={b[2]/s[2]:.1f}")
 
 
+def fit(F: pd.DataFrame, cols: Optional[List[str]] = None):
+    """Weights on every finished game: (b, mu, sd), b[0] being home field."""
+    cols = cols or PICK_INPUTS
+    tr = F[F.result.notna() & (F.result != 0) & (F.season > FIRST_SEASON)]
+    mu, sd = tr[cols].mean(), tr[cols].std().replace(0, 1)
+    b, _ = logit(_design(tr, cols, mu, sd), (tr.result > 0).astype(float).values)
+    return b, mu, sd
+
+
 def picks(F: pd.DataFrame, week: int, season: Optional[int] = None,
           cols: Optional[List[str]] = None) -> pd.DataFrame:
     """Fit on every finished game and pick one week."""
     cols = cols or PICK_INPUTS
     season = season or int(F.season.max())
-    tr = F[F.result.notna() & (F.result != 0) & (F.season > FIRST_SEASON)]
-    mu, sd = tr[cols].mean(), tr[cols].std().replace(0, 1)
-    b, _ = logit(_design(tr, cols, mu, sd), (tr.result > 0).astype(float).values)
+    b, mu, sd = fit(F, cols)
     U = F[(F.season == season) & (F.week == week)].copy()
     U["p_home"] = 1 / (1 + np.exp(-_design(U, cols, mu, sd) @ b))
     U["pick"] = np.where(U.p_home > .5, U.home, U.away)
