@@ -344,18 +344,26 @@ def test_placed_bet_gets_its_own_push_and_leaves_the_alert():
 
 def test_recap_once_per_monday_after_nine():
     import os, tempfile, kalshi_trade as T
-    from datetime import datetime, timezone
+    from datetime import datetime, timedelta, timezone
+    # The most recent Monday, not a fixed date: new_only prunes markers against
+    # the real clock, so a hard-coded Monday failed every build once its 7-day
+    # marker lapsed (2026-11-09).
+    now = datetime.now(timezone.utc)
+    monday = (now - timedelta(days=now.weekday())).replace(hour=0, minute=0, second=0,
+                                                           microsecond=0)
+    nine_et = monday + timedelta(hours=9) - T._et_offset(monday + timedelta(hours=12))
+    at = lambda minutes, days=0: nine_et + timedelta(days=days, minutes=minutes)
     sent, real = [], (F._deliver, T.recap)
     F._deliver = lambda b: sent.append(b) or True
     T.recap = lambda now=None: "KALSHI WEEK x"
     path = os.path.join(tempfile.mkdtemp(), "a.json")
     try:
-        assert not F.maybe_recap(path, datetime(2026, 11, 2, 13, 0, tzinfo=timezone.utc))  # 8am ET
-        assert F.maybe_recap(path, datetime(2026, 11, 2, 14, 5, tzinfo=timezone.utc))
-        assert not F.maybe_recap(path, datetime(2026, 11, 2, 14, 10, tzinfo=timezone.utc))
-        assert not F.maybe_recap(path, datetime(2026, 11, 3, 14, 0, tzinfo=timezone.utc))  # Tue
-        assert F.new_only([], path) == [] and F.maybe_recap(
-            path, datetime(2026, 11, 2, 15, 0, tzinfo=timezone.utc)) is False, "survives pruning"
+        assert not F.maybe_recap(path, at(-60))                  # 8am ET
+        assert F.maybe_recap(path, at(5))
+        assert not F.maybe_recap(path, at(10))
+        assert not F.maybe_recap(path, at(0, days=1))            # Tuesday
+        assert F.new_only([], path) == [] and F.maybe_recap(path, at(60)) is False, \
+            "survives pruning"
     finally:
         F._deliver, T.recap = real
     assert sent == ["KALSHI WEEK x"]
