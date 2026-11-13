@@ -115,6 +115,12 @@ def test_results_wait_for_last_scores_then_send_once(monkey=None):
         W.LOG, W.SENT, W._push = old
 
 
+def test_email_bolds_the_pick_and_escapes():
+    h = W.email_html("NFL PICKS Week 10\nCIN @ ATL: CIN 72% (mkt 62%) - Burrow <over> Penix\nfooter")
+    assert "<h2" in h and "<b>CIN @ ATL: CIN 72% (mkt 62%)</b>" in h
+    assert "&lt;over&gt;" in h and "footer" in h
+
+
 if __name__ == "__main__":
     fails = 0
     for name, fn in list(globals().items()):

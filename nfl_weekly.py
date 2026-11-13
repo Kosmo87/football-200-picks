@@ -1,6 +1,6 @@
 """
-The weekly NFL pick list: every game's winner by nfl_model, pushed Thursday
-morning, then graded and pushed again Tuesday.
+The weekly NFL pick list: every game's winner by nfl_model, emailed Thursday
+morning, then graded and emailed again Tuesday.
 
 WHY a frozen list. A pick that can be rewritten after kickoff has no record.
 Thursday's list is written to data/archive/nfl_weekly.ndjson the first time it
@@ -248,13 +248,31 @@ def do_results(F, now: datetime, send: bool, force: bool = False) -> int:
     return 0
 
 
+def email_html(text: str) -> str:
+    """The push text as a readable email: title as a heading, one game per line."""
+    from html import escape
+    title, *lines = text.split("\n")
+    body = []
+    for ln in lines:
+        head, sep, why = ln.partition(" - ")
+        if sep:
+            body.append(f"<p style='margin:0 0 10px'><b>{escape(head)}</b><br>"
+                        f"<span style='color:#555'>{escape(why)}</span></p>")
+        else:
+            body.append(f"<p style='margin:0 0 6px'>{escape(ln)}</p>")
+    return (f"<div style='font-family:-apple-system,Helvetica,Arial,sans-serif;"
+            f"font-size:15px;max-width:640px'><h2 style='margin:0 0 14px'>{escape(title)}</h2>"
+            + "".join(body) + "</div>")
+
+
 def _push(text: str) -> bool:
-    import faults
-    topic = os.environ.get("NTFY_TOPIC", "").strip()
-    if not topic:
-        print("  NTFY_TOPIC not set - not sent")
+    """Email to DELIVER_TO (his choice, 2026-11-13: email, not ntfy)."""
+    import delivery
+    to = os.environ.get("DELIVER_TO", "").strip()
+    if not to:
+        print("  DELIVER_TO not set - not sent")
         return False
-    return faults.send_push(topic, text)
+    return delivery.send_email(to, text.split("\n", 1)[0], email_html(text))
 
 
 def main() -> int:

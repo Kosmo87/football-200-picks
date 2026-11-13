@@ -1,11 +1,13 @@
 name: NFL weekly picks
 
-# Thursday morning: every game's winner from nfl_model, pushed to ntfy and
+# Thursday morning: every game's winner from nfl_model, emailed and
 # frozen in data/archive/nfl_weekly.ndjson. Tuesday: those picks graded
-# against nflverse's final scores and pushed.
+# against nflverse's final scores and emailed.
 #
-# Three runs each day because GitHub's cron runs late or not at all under
-# load. nfl_weekly.py marks what it sent (data/archive/nfl_weekly_sent.json),
+# The clock is netlify/functions/fault-watch-trigger.mjs, which dispatches
+# this at the times below; GitHub's own cron ran the first Thursday 7.5 hours
+# late (2026-11-12) and stays only as a backstop. Three runs each day either
+# way. nfl_weekly.py marks what it sent (data/archive/nfl_weekly_sent.json),
 # so the later runs are no-ops once one gets through. Tuesday's runs wait for
 # Monday night's score; the last one (18:00 UTC or later) sends whatever is in.
 on:
@@ -40,7 +42,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
-      NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+      RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+      RESEND_FROM: ${{ vars.RESEND_FROM }}
+      DELIVER_TO: ${{ vars.DELIVER_TO }}
     steps:
       - uses: actions/checkout@v5
 
