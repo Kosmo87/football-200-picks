@@ -14374,10 +14374,15 @@
       "model_prob": 0.72844,
       "edge_pp": 8.370854,
       "sample": 15.0,
-      "status": "open",
-      "result": null,
+      "status": "lost",
+      "result": {
+        "home_abbr": "BAL",
+        "away_abbr": "LAC",
+        "home_score": 20,
+        "away_score": 23
+      },
       "clv_pp": 1.89,
-      "graded_at": null
+      "graded_at": "2026-11-17T04:37:24+00:00"
     },
     {
       "id": "NCAAF:401856889:238",
@@ -14865,14 +14870,14 @@
       "logged_at": "2026-11-15T11:02:15+00:00",
       "open_odds": -125,
       "open_implied": 0.53247,
-      "close_odds": -125,
-      "close_implied": 0.53247,
+      "close_odds": -118,
+      "close_implied": 0.51736,
       "model_prob": 0.67456,
       "edge_pp": 14.209361,
       "sample": 10.0,
       "status": "open",
       "result": null,
-      "clv_pp": 0.0,
+      "clv_pp": -1.51,
       "graded_at": null
     },
     {
@@ -15570,24 +15575,96 @@
       "result": null,
       "clv_pp": 0.0,
       "graded_at": null
+    },
+    {
+      "id": "NFL:401873066:11",
+      "league": "NFL",
+      "event_id": "401873066",
+      "matchup": "IND @ HOU",
+      "kickoff": "2026-11-20T01:15Z",
+      "team_id": "11",
+      "team_abbr": "IND",
+      "team_name": "Indianapolis Colts",
+      "opp_abbr": "HOU",
+      "side": "away",
+      "logged_at": "2026-11-17T04:32:47+00:00",
+      "open_odds": 470,
+      "open_implied": 0.16835,
+      "close_odds": 470,
+      "close_implied": 0.16835,
+      "model_prob": 0.28921,
+      "edge_pp": 12.085946,
+      "sample": 16.0,
+      "status": "open",
+      "result": null,
+      "clv_pp": 0.0,
+      "graded_at": null
+    },
+    {
+      "id": "NFL:401873076:23",
+      "league": "NFL",
+      "event_id": "401873076",
+      "matchup": "PIT @ PHI",
+      "kickoff": "2026-11-22T18:00Z",
+      "team_id": "23",
+      "team_abbr": "PIT",
+      "team_name": "Pittsburgh Steelers",
+      "opp_abbr": "PHI",
+      "side": "away",
+      "logged_at": "2026-11-17T04:32:47+00:00",
+      "open_odds": -218,
+      "open_implied": 0.65748,
+      "close_odds": -218,
+      "close_implied": 0.65748,
+      "model_prob": 0.72341,
+      "edge_pp": 6.593795,
+      "sample": 16.0,
+      "status": "open",
+      "result": null,
+      "clv_pp": 0.0,
+      "graded_at": null
+    },
+    {
+      "id": "NCAAF:401858530:135",
+      "league": "NCAAF",
+      "event_id": "401858530",
+      "matchup": "NU @ MINN",
+      "kickoff": "2026-11-21T17:00Z",
+      "team_id": "135",
+      "team_abbr": "MINN",
+      "team_name": "Minnesota Golden Gophers",
+      "opp_abbr": "NU",
+      "side": "home",
+      "logged_at": "2026-11-17T04:37:23+00:00",
+      "open_odds": 130,
+      "open_implied": 0.41701,
+      "close_odds": 130,
+      "close_implied": 0.41701,
+      "model_prob": 0.50906,
+      "edge_pp": 9.205618,
+      "sample": 10.0,
+      "status": "open",
+      "result": null,
+      "clv_pp": 0.0,
+      "graded_at": null
     }
   ],
   "summary": {
-    "open": 41,
+    "open": 43,
     "won": 226,
-    "lost": 276,
+    "lost": 277,
     "pushed": 1,
-    "units": -19.93,
-    "roi_pct": -4.0,
-    "win_pct": 45.0,
+    "units": -20.93,
+    "roi_pct": -4.2,
+    "win_pct": 44.9,
     "avg_clv_pp": -0.13,
-    "beat_close_pct": 38.6,
+    "beat_close_pct": 38.7,
     "by_league": {
       "NFL": {
         "won": 49,
-        "lost": 53,
-        "units": 10.32,
-        "roi_pct": 10.1
+        "lost": 54,
+        "units": 9.32,
+        "roi_pct": 9.0
       },
       "NCAAF": {
         "won": 177,
@@ -15597,5 +15674,5 @@
       }
     }
   },
-  "updated_at": "2026-11-16T22:10:44+00:00"
+  "updated_at": "2026-11-17T04:37:24+00:00"
 }
