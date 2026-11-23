@@ -1,163 +1,10 @@
 {
-  "generated_at": "2026-11-22T21:51:14+00:00",
+  "generated_at": "2026-11-23T02:52:03+00:00",
   "season": 2026,
   "leagues": {
     "NFL": {
       "league": "NFL",
       "games": [
-        {
-          "event_id": "401873077",
-          "name": "Minnesota Vikings at San Francisco 49ers",
-          "short_name": "MIN VS SF",
-          "kickoff": "2026-11-23T01:20Z",
-          "status": "Scheduled",
-          "neutral": true,
-          "provider": "DraftKings",
-          "spread": -3.5,
-          "spread_details": "SF -3.5",
-          "total": 46.5,
-          "home": {
-            "id": "25",
-            "name": "San Francisco 49ers",
-            "abbr": "SF",
-            "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/sf.png",
-            "elo": 1654.3,
-            "moneyline": -190
-          },
-          "away": {
-            "id": "16",
-            "name": "Minnesota Vikings",
-            "abbr": "MIN",
-            "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/min.png",
-            "elo": 1617.4,
-            "moneyline": 159
-          },
-          "legs": [
-            {
-              "side": "away",
-              "team_id": "16",
-              "team_name": "Minnesota Vikings",
-              "team_abbr": "MIN",
-              "odds": 159,
-              "model_prob": 0.44717,
-              "implied_prob": 0.3708,
-              "edge_pp": 7.636977,
-              "fair_odds": 124,
-              "sample": 16.0,
-              "team_sample": 16.0,
-              "opp_sample": 16.0,
-              "team_games": 12,
-              "opp_games": 12,
-              "prior_credit": 4.0,
-              "stale": true,
-              "stale_reason": "MIN quarterback out: Kyler Murray (Hamstring)"
-            },
-            {
-              "side": "home",
-              "team_id": "25",
-              "team_name": "San Francisco 49ers",
-              "team_abbr": "SF",
-              "odds": -190,
-              "model_prob": 0.55283,
-              "implied_prob": 0.6292,
-              "edge_pp": -7.636977,
-              "fair_odds": -124,
-              "sample": 16.0,
-              "team_sample": 16.0,
-              "opp_sample": 16.0,
-              "team_games": 12,
-              "opp_games": 12,
-              "prior_credit": 4.0,
-              "stale": true,
-              "stale_reason": "MIN quarterback out: Kyler Murray (Hamstring)"
-            }
-          ],
-          "context": {
-            "injuries": {
-              "home": {
-                "count": 2,
-                "long_term": 3,
-                "qb_out": 0,
-                "qbs": [],
-                "players": [
-                  {
-                    "player": "Isaac Guerendo",
-                    "position": "RB",
-                    "status": "Out",
-                    "detail": "Pectoral",
-                    "since": "2026-11-20T00:28Z"
-                  },
-                  {
-                    "player": "Brandon Aiyuk",
-                    "position": "WR",
-                    "status": "Out",
-                    "detail": "Personal",
-                    "since": "2026-11-18T17:55Z"
-                  }
-                ]
-              },
-              "away": {
-                "count": 2,
-                "long_term": 1,
-                "qb_out": 1,
-                "qbs": [
-                  "Kyler Murray (Hamstring)"
-                ],
-                "players": [
-                  {
-                    "player": "Kyler Murray",
-                    "position": "QB",
-                    "status": "Out",
-                    "detail": "Hamstring",
-                    "since": "2026-11-20T19:49Z"
-                  },
-                  {
-                    "player": "Jordan Addison",
-                    "position": "WR",
-                    "status": "Out",
-                    "detail": "Thumb",
-                    "since": "2026-11-18T19:25Z"
-                  }
-                ]
-              },
-              "source": "espn",
-              "teams_covered": 4,
-              "teams_playing": 4,
-              "error": null
-            },
-            "venue": {
-              "venue": "Estadio Banorte",
-              "city": "Mexico City",
-              "state": "",
-              "indoor": false
-            },
-            "weather": {
-              "temp_f": 61.1,
-              "wind_mph": 3.9,
-              "gust_mph": 23.7,
-              "precip_pct": 57,
-              "snow_in": 0.0
-            },
-            "flags": [
-              {
-                "kind": "qb_out",
-                "severity": "high",
-                "side": "away",
-                "text": "MIN quarterback out: Kyler Murray (Hamstring). The ratings are built from final scores and do not know this; the price does."
-              },
-              {
-                "kind": "wind",
-                "severity": "high",
-                "text": "Wind 4 mph, gusting 24 \u2014 kicking and the deep ball suffer"
-              },
-              {
-                "kind": "rain",
-                "severity": "low",
-                "text": "57% chance of rain"
-              }
-            ]
-          }
-        },
         {
           "event_id": "401873078",
           "name": "Cincinnati Bengals at Washington Commanders",
@@ -165,7 +12,7 @@
           "kickoff": "2026-11-24T01:15Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": 6.0,
           "spread_details": "CIN -6",
           "total": 54.5,
@@ -246,8 +93,8 @@
                 ]
               },
               "source": "espn",
-              "teams_covered": 4,
-              "teams_playing": 4,
+              "teams_covered": 2,
+              "teams_playing": 2,
               "error": null
             },
             "venue": {
@@ -256,20 +103,8 @@
               "state": "MD",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 50.8,
-              "wind_mph": 13.2,
-              "gust_mph": 29.3,
-              "precip_pct": 2,
-              "snow_in": 0.0
-            },
-            "flags": [
-              {
-                "kind": "wind",
-                "severity": "high",
-                "text": "Wind 13 mph, gusting 29 \u2014 kicking and the deep ball suffer"
-              }
-            ]
+            "weather": null,
+            "flags": []
           }
         }
       ],
@@ -278,30 +113,15 @@
         "legs": [],
         "per_leg_rate": 0.7362,
         "per_leg_stderr": 0.0104,
-        "provider": "DraftKings",
+        "provider": "Draft Kings",
         "provider_is_mine": false,
         "captured_at": null,
         "ten": {
           "points": 10.0,
-          "legs": [
-            {
-              "event_id": "401873077",
-              "matchup": "MIN VS SF",
-              "kickoff": "2026-11-23T01:20Z",
-              "team_abbr": "MIN",
-              "team_name": "Minnesota Vikings",
-              "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/min.png",
-              "spread": 3.5,
-              "source": "DraftKings",
-              "teased": 13.5,
-              "band": "dog +1.5..+3.5",
-              "prob": 0.7918,
-              "push_risk": false
-            }
-          ],
+          "legs": [],
           "per_leg_rate": 0.7918,
           "per_leg_stderr": 0.0071,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "provider_is_mine": false,
           "captured_at": null
         },
@@ -364,19 +184,19 @@
           "prior_games": 19
         },
         {
-          "team_id": "30",
-          "name": "Jacksonville Jaguars",
-          "abbr": "JAX",
-          "elo": 1657.0,
-          "games": 12,
-          "prior_games": 18
-        },
-        {
           "team_id": "25",
           "name": "San Francisco 49ers",
           "abbr": "SF",
           "elo": 1654.3,
           "games": 12,
+          "prior_games": 19
+        },
+        {
+          "team_id": "7",
+          "name": "Denver Broncos",
+          "abbr": "DEN",
+          "elo": 1651.2,
+          "games": 13,
           "prior_games": 19
         },
         {
@@ -396,20 +216,20 @@
           "prior_games": 17
         },
         {
-          "team_id": "7",
-          "name": "Denver Broncos",
-          "abbr": "DEN",
-          "elo": 1641.6,
-          "games": 12,
-          "prior_games": 19
-        },
-        {
           "team_id": "8",
           "name": "Detroit Lions",
           "abbr": "DET",
           "elo": 1641.3,
           "games": 13,
           "prior_games": 17
+        },
+        {
+          "team_id": "30",
+          "name": "Jacksonville Jaguars",
+          "abbr": "JAX",
+          "elo": 1625.5,
+          "games": 13,
+          "prior_games": 18
         },
         {
           "team_id": "14",
@@ -460,6 +280,14 @@
           "prior_games": 18
         },
         {
+          "team_id": "19",
+          "name": "New York Giants",
+          "abbr": "NYG",
+          "elo": 1516.5,
+          "games": 13,
+          "prior_games": 17
+        },
+        {
           "team_id": "17",
           "name": "New England Patriots",
           "abbr": "NE",
@@ -481,14 +309,6 @@
           "abbr": "TB",
           "elo": 1486.9,
           "games": 13,
-          "prior_games": 17
-        },
-        {
-          "team_id": "19",
-          "name": "New York Giants",
-          "abbr": "NYG",
-          "elo": 1484.9,
-          "games": 12,
           "prior_games": 17
         },
         {
@@ -551,8 +371,8 @@
           "team_id": "13",
           "name": "Las Vegas Raiders",
           "abbr": "LV",
-          "elo": 1396.3,
-          "games": 13,
+          "elo": 1386.8,
+          "games": 14,
           "prior_games": 17
         },
         {
@@ -561,14 +381,6 @@
           "abbr": "PHI",
           "elo": 1375.0,
           "games": 13,
-          "prior_games": 18
-        },
-        {
-          "team_id": "24",
-          "name": "Los Angeles Chargers",
-          "abbr": "LAC",
-          "elo": 1366.0,
-          "games": 12,
           "prior_games": 18
         },
         {
@@ -591,9 +403,17 @@
           "team_id": "20",
           "name": "New York Jets",
           "abbr": "NYJ",
-          "elo": 1327.0,
-          "games": 13,
+          "elo": 1347.9,
+          "games": 14,
           "prior_games": 17
+        },
+        {
+          "team_id": "24",
+          "name": "Los Angeles Chargers",
+          "abbr": "LAC",
+          "elo": 1345.1,
+          "games": 13,
+          "prior_games": 18
         },
         {
           "team_id": "15",
@@ -619,8 +439,8 @@
         "prior_games_used": 1425,
         "history_seasons": "2021-2025",
         "top_division_teams": 0,
-        "completed_games": 207,
-        "upcoming_games": 2,
+        "completed_games": 210,
+        "upcoming_games": 1,
         "rated_teams": 32,
         "elo": {
           "k_factor": 24.0,
@@ -641,9 +461,9 @@
           "kickoff": "2026-11-25T00:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
-          "spread": -6.0,
-          "spread_details": "EMU -6",
+          "provider": "Draft Kings",
+          "spread": -5.5,
+          "spread_details": "EMU -5.5",
           "total": 45.5,
           "home": {
             "id": "2199",
@@ -651,15 +471,15 @@
             "abbr": "EMU",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2199.png",
             "elo": 1274.9,
-            "moneyline": -218
+            "moneyline": -225
           },
           "away": {
             "id": "2309",
             "name": "Kent State Golden Flashes",
             "abbr": "KENT",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2309.png",
-            "elo": 1249.3,
-            "moneyline": 180
+            "elo": 1250.9,
+            "moneyline": 185
           },
           "legs": [
             {
@@ -667,11 +487,11 @@
               "team_id": "2309",
               "team_name": "Kent State Golden Flashes",
               "team_abbr": "KENT",
-              "odds": 180,
-              "model_prob": 0.3861,
-              "implied_prob": 0.34252,
-              "edge_pp": 4.357154,
-              "fair_odds": 159,
+              "odds": 185,
+              "model_prob": 0.38828,
+              "implied_prob": 0.33635,
+              "edge_pp": 5.192804,
+              "fair_odds": 158,
               "sample": 9.0,
               "team_sample": 10.0,
               "opp_sample": 9.0,
@@ -684,11 +504,11 @@
               "team_id": "2199",
               "team_name": "Eastern Michigan Eagles",
               "team_abbr": "EMU",
-              "odds": -218,
-              "model_prob": 0.6139,
-              "implied_prob": 0.65748,
-              "edge_pp": -4.357154,
-              "fair_odds": -159,
+              "odds": -225,
+              "model_prob": 0.61172,
+              "implied_prob": 0.66365,
+              "edge_pp": -5.192804,
+              "fair_odds": -158,
               "sample": 9.0,
               "team_sample": 9.0,
               "opp_sample": 10.0,
@@ -724,13 +544,7 @@
               "state": "MI",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 31.7,
-              "wind_mph": 2.8,
-              "gust_mph": 3.4,
-              "precip_pct": 0,
-              "snow_in": 0.0
-            },
+            "weather": null,
             "flags": []
           }
         },
@@ -741,25 +555,25 @@
           "kickoff": "2026-11-25T00:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
-          "spread": -7.0,
-          "spread_details": "WMU -7",
-          "total": 46.5,
+          "provider": "Draft Kings",
+          "spread": -7.5,
+          "spread_details": "WMU -7.5",
+          "total": 45.5,
           "home": {
             "id": "2711",
             "name": "Western Michigan Broncos",
             "abbr": "WMU",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2711.png",
             "elo": 1625.2,
-            "moneyline": -278
+            "moneyline": -298
           },
           "away": {
             "id": "193",
             "name": "Miami (OH) RedHawks",
             "abbr": "M-OH",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/193.png",
-            "elo": 1564.4,
-            "moneyline": 225
+            "elo": 1564.6,
+            "moneyline": 240
           },
           "legs": [
             {
@@ -767,10 +581,10 @@
               "team_id": "193",
               "team_name": "Miami (OH) RedHawks",
               "team_abbr": "M-OH",
-              "odds": 225,
-              "model_prob": 0.33929,
-              "implied_prob": 0.29497,
-              "edge_pp": 4.432686,
+              "odds": 240,
+              "model_prob": 0.33949,
+              "implied_prob": 0.28203,
+              "edge_pp": 5.745925,
               "fair_odds": 195,
               "sample": 10.0,
               "team_sample": 10.0,
@@ -784,10 +598,10 @@
               "team_id": "2711",
               "team_name": "Western Michigan Broncos",
               "team_abbr": "WMU",
-              "odds": -278,
-              "model_prob": 0.66071,
-              "implied_prob": 0.70503,
-              "edge_pp": -4.432686,
+              "odds": -298,
+              "model_prob": 0.66051,
+              "implied_prob": 0.71797,
+              "edge_pp": -5.745925,
               "fair_odds": -195,
               "sample": 10.0,
               "team_sample": 10.0,
@@ -824,13 +638,7 @@
               "state": "MI",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 32.2,
-              "wind_mph": 5.4,
-              "gust_mph": 6.9,
-              "precip_pct": 0,
-              "snow_in": 0.0
-            },
+            "weather": null,
             "flags": []
           }
         },
@@ -841,7 +649,7 @@
           "kickoff": "2026-11-27T01:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -12.5,
           "spread_details": "TTU -12.5",
           "total": 46.5,
@@ -851,7 +659,7 @@
             "abbr": "TTU",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2641.png",
             "elo": 1774.1,
-            "moneyline": -455
+            "moneyline": -500
           },
           "away": {
             "id": "2628",
@@ -859,7 +667,7 @@
             "abbr": "TCU",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2628.png",
             "elo": 1591.4,
-            "moneyline": 350
+            "moneyline": 380
           },
           "legs": [
             {
@@ -867,10 +675,10 @@
               "team_id": "2628",
               "team_name": "TCU Horned Frogs",
               "team_abbr": "TCU",
-              "odds": 350,
+              "odds": 380,
               "model_prob": 0.20287,
-              "implied_prob": 0.21326,
-              "edge_pp": -1.038959,
+              "implied_prob": 0.2,
+              "edge_pp": 0.28669,
               "fair_odds": 393,
               "sample": 10.0,
               "team_sample": 10.0,
@@ -884,10 +692,10 @@
               "team_id": "2641",
               "team_name": "Texas Tech Red Raiders",
               "team_abbr": "TTU",
-              "odds": -455,
+              "odds": -500,
               "model_prob": 0.79713,
-              "implied_prob": 0.78674,
-              "edge_pp": 1.038959,
+              "implied_prob": 0.8,
+              "edge_pp": -0.28669,
               "fair_odds": -393,
               "sample": 10.0,
               "team_sample": 10.0,
@@ -924,13 +732,7 @@
               "state": "TX",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 49.8,
-              "wind_mph": 7.3,
-              "gust_mph": 10.1,
-              "precip_pct": 1,
-              "snow_in": 0.0
-            },
+            "weather": null,
             "flags": []
           }
         },
@@ -941,7 +743,7 @@
           "kickoff": "2026-11-27T17:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -5.5,
           "spread_details": "IOWA -5.5",
           "total": 39.5,
@@ -1024,13 +826,7 @@
               "state": "IA",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 41.9,
-              "wind_mph": 6.8,
-              "gust_mph": 8.7,
-              "precip_pct": 0,
-              "snow_in": 0.0
-            },
+            "weather": null,
             "flags": []
           }
         },
@@ -1041,7 +837,7 @@
           "kickoff": "2026-11-27T17:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -18.5,
           "spread_details": "MISS -18.5",
           "total": 56.5,
@@ -1051,7 +847,7 @@
             "abbr": "MISS",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/145.png",
             "elo": 1676.8,
-            "moneyline": -1350
+            "moneyline": -1200
           },
           "away": {
             "id": "344",
@@ -1059,7 +855,7 @@
             "abbr": "MSST",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/344.png",
             "elo": 1311.2,
-            "moneyline": 800
+            "moneyline": 750
           },
           "legs": [
             {
@@ -1067,10 +863,10 @@
               "team_id": "344",
               "team_name": "Mississippi State Bulldogs",
               "team_abbr": "MSST",
-              "odds": 800,
+              "odds": 750,
               "model_prob": 0.08154,
-              "implied_prob": 0.10662,
-              "edge_pp": -2.508043,
+              "implied_prob": 0.11304,
+              "edge_pp": -3.150626,
               "fair_odds": 1126,
               "sample": 10.0,
               "team_sample": 10.0,
@@ -1084,10 +880,10 @@
               "team_id": "145",
               "team_name": "Ole Miss Rebels",
               "team_abbr": "MISS",
-              "odds": -1350,
+              "odds": -1200,
               "model_prob": 0.91846,
-              "implied_prob": 0.89338,
-              "edge_pp": 2.508043,
+              "implied_prob": 0.88696,
+              "edge_pp": 3.150626,
               "fair_odds": -1126,
               "sample": 10.0,
               "team_sample": 11.0,
@@ -1124,20 +920,8 @@
               "state": "MS",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 38.6,
-              "wind_mph": 12.1,
-              "gust_mph": 22.1,
-              "precip_pct": 27,
-              "snow_in": 0.0
-            },
-            "flags": [
-              {
-                "kind": "wind",
-                "severity": "high",
-                "text": "Wind 12 mph, gusting 22 \u2014 kicking and the deep ball suffer"
-              }
-            ]
+            "weather": null,
+            "flags": []
           }
         },
         {
@@ -1147,7 +931,7 @@
           "kickoff": "2026-11-27T17:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -1.5,
           "spread_details": "UTSA -1.5",
           "total": 58.5,
@@ -1156,16 +940,16 @@
             "name": "UTSA Roadrunners",
             "abbr": "UTSA",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2636.png",
-            "elo": 1645.4,
-            "moneyline": -115
+            "elo": 1630.7,
+            "moneyline": -118
           },
           "away": {
             "id": "202",
             "name": "Tulsa Golden Hurricane",
             "abbr": "TLSA",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/202.png",
-            "elo": 1544.6,
-            "moneyline": -105
+            "elo": 1543.2,
+            "moneyline": -102
           },
           "legs": [
             {
@@ -1173,16 +957,16 @@
               "team_id": "202",
               "team_name": "Tulsa Golden Hurricane",
               "team_abbr": "TLSA",
-              "odds": -105,
-              "model_prob": 0.28975,
-              "implied_prob": 0.48917,
-              "edge_pp": -19.941749,
-              "fair_odds": 245,
-              "sample": 10.0,
+              "odds": -102,
+              "model_prob": 0.30572,
+              "implied_prob": 0.48264,
+              "edge_pp": -17.691714,
+              "fair_odds": 227,
+              "sample": 9.0,
               "team_sample": 10.0,
-              "opp_sample": 10.0,
+              "opp_sample": 9.0,
               "team_games": 6,
-              "opp_games": 6,
+              "opp_games": 5,
               "prior_credit": 4.0
             },
             {
@@ -1190,15 +974,15 @@
               "team_id": "2636",
               "team_name": "UTSA Roadrunners",
               "team_abbr": "UTSA",
-              "odds": -115,
-              "model_prob": 0.71025,
-              "implied_prob": 0.51083,
-              "edge_pp": 19.941749,
-              "fair_odds": -245,
-              "sample": 10.0,
-              "team_sample": 10.0,
+              "odds": -118,
+              "model_prob": 0.69428,
+              "implied_prob": 0.51736,
+              "edge_pp": 17.691714,
+              "fair_odds": -227,
+              "sample": 9.0,
+              "team_sample": 9.0,
               "opp_sample": 10.0,
-              "team_games": 6,
+              "team_games": 5,
               "opp_games": 6,
               "prior_credit": 4.0
             }
@@ -1241,17 +1025,17 @@
           "kickoff": "2026-11-27T17:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
-          "spread": 8.5,
-          "spread_details": "BUF -8.5",
+          "provider": "Draft Kings",
+          "spread": 7.5,
+          "spread_details": "BUF -7.5",
           "total": 50.5,
           "home": {
             "id": "2006",
             "name": "Akron Zips",
             "abbr": "AKR",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2006.png",
-            "elo": 1250.2,
-            "moneyline": 295
+            "elo": 1250.6,
+            "moneyline": 260
           },
           "away": {
             "id": "2084",
@@ -1259,7 +1043,7 @@
             "abbr": "BUFF",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2084.png",
             "elo": 1584.3,
-            "moneyline": -375
+            "moneyline": -325
           },
           "legs": [
             {
@@ -1267,11 +1051,11 @@
               "team_id": "2084",
               "team_name": "Buffalo Bulls",
               "team_abbr": "BUFF",
-              "odds": -375,
-              "model_prob": 0.83296,
-              "implied_prob": 0.75719,
-              "edge_pp": 7.577396,
-              "fair_odds": -499,
+              "odds": -325,
+              "model_prob": 0.83267,
+              "implied_prob": 0.73354,
+              "edge_pp": 9.913235,
+              "fair_odds": -498,
               "sample": 10.0,
               "team_sample": 10.0,
               "opp_sample": 10.0,
@@ -1284,11 +1068,11 @@
               "team_id": "2006",
               "team_name": "Akron Zips",
               "team_abbr": "AKR",
-              "odds": 295,
-              "model_prob": 0.16704,
-              "implied_prob": 0.24281,
-              "edge_pp": -7.577396,
-              "fair_odds": 499,
+              "odds": 260,
+              "model_prob": 0.16733,
+              "implied_prob": 0.26646,
+              "edge_pp": -9.913235,
+              "fair_odds": 498,
               "sample": 10.0,
               "team_sample": 10.0,
               "opp_sample": 10.0,
@@ -1324,20 +1108,8 @@
               "state": "OH",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 40.4,
-              "wind_mph": 15.2,
-              "gust_mph": 28.0,
-              "precip_pct": 38,
-              "snow_in": 0.0
-            },
-            "flags": [
-              {
-                "kind": "wind",
-                "severity": "high",
-                "text": "Wind 15 mph, gusting 28 \u2014 kicking and the deep ball suffer"
-              }
-            ]
+            "weather": null,
+            "flags": []
           }
         },
         {
@@ -1347,17 +1119,17 @@
           "kickoff": "2026-11-27T17:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
-          "spread": 4.0,
-          "spread_details": "TOL -4",
+          "provider": "Draft Kings",
+          "spread": 3.5,
+          "spread_details": "TOL -3.5",
           "total": 49.5,
           "home": {
             "id": "195",
             "name": "Ohio Bobcats",
             "abbr": "OHIO",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/195.png",
-            "elo": 1590.7,
-            "moneyline": 160
+            "elo": 1590.8,
+            "moneyline": 154
           },
           "away": {
             "id": "2649",
@@ -1365,7 +1137,7 @@
             "abbr": "TOL",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2649.png",
             "elo": 1598.1,
-            "moneyline": -192
+            "moneyline": -185
           },
           "legs": [
             {
@@ -1373,10 +1145,10 @@
               "team_id": "2649",
               "team_name": "Toledo Rockets",
               "team_abbr": "TOL",
-              "odds": -192,
-              "model_prob": 0.43182,
-              "implied_prob": 0.63094,
-              "edge_pp": -19.912154,
+              "odds": -185,
+              "model_prob": 0.43185,
+              "implied_prob": 0.62247,
+              "edge_pp": -19.061642,
               "fair_odds": 132,
               "sample": 10.0,
               "team_sample": 10.0,
@@ -1390,10 +1162,10 @@
               "team_id": "195",
               "team_name": "Ohio Bobcats",
               "team_abbr": "OHIO",
-              "odds": 160,
-              "model_prob": 0.56818,
-              "implied_prob": 0.36906,
-              "edge_pp": 19.912154,
+              "odds": 154,
+              "model_prob": 0.56815,
+              "implied_prob": 0.37753,
+              "edge_pp": 19.061642,
               "fair_odds": -132,
               "sample": 10.0,
               "team_sample": 10.0,
@@ -1430,13 +1202,7 @@
               "state": "OH",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 60.4,
-              "wind_mph": 3.0,
-              "gust_mph": 5.7,
-              "precip_pct": 14,
-              "snow_in": 0.0
-            },
+            "weather": null,
             "flags": []
           }
         },
@@ -1447,7 +1213,7 @@
           "kickoff": "2026-11-27T20:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -3.0,
           "spread_details": "USA -3",
           "total": 56.5,
@@ -1457,7 +1223,7 @@
             "abbr": "USA",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/6.png",
             "elo": 1500.0,
-            "moneyline": -142
+            "moneyline": -148
           },
           "away": {
             "id": "2026",
@@ -1465,7 +1231,7 @@
             "abbr": "APP",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2026.png",
             "elo": 1384.3,
-            "moneyline": 120
+            "moneyline": 124
           },
           "legs": [
             {
@@ -1473,10 +1239,10 @@
               "team_id": "2026",
               "team_name": "App State Mountaineers",
               "team_abbr": "APP",
-              "odds": 120,
+              "odds": 124,
               "model_prob": 0.27237,
-              "implied_prob": 0.43651,
-              "edge_pp": -16.413937,
+              "implied_prob": 0.42794,
+              "edge_pp": -15.55718,
               "fair_odds": 267,
               "sample": 0.0,
               "team_sample": 11.0,
@@ -1490,10 +1256,10 @@
               "team_id": "6",
               "team_name": "South Alabama Jaguars",
               "team_abbr": "USA",
-              "odds": -142,
+              "odds": -148,
               "model_prob": 0.72763,
-              "implied_prob": 0.56349,
-              "edge_pp": 16.413937,
+              "implied_prob": 0.57206,
+              "edge_pp": 15.55718,
               "fair_odds": -267,
               "sample": 0.0,
               "team_sample": 0.0,
@@ -1530,13 +1296,7 @@
               "state": "AL",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 57.1,
-              "wind_mph": 4.7,
-              "gust_mph": 8.5,
-              "precip_pct": 0,
-              "snow_in": 0.0
-            },
+            "weather": null,
             "flags": []
           }
         },
@@ -1547,7 +1307,7 @@
           "kickoff": "2026-11-27T20:30Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": 5.5,
           "spread_details": "FLA -5.5",
           "total": 52.5,
@@ -1638,13 +1398,7 @@
               "state": "FL",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 58.3,
-              "wind_mph": 5.6,
-              "gust_mph": 8.7,
-              "precip_pct": 0,
-              "snow_in": 0.0
-            },
+            "weather": null,
             "flags": []
           }
         },
@@ -1655,7 +1409,7 @@
           "kickoff": "2026-11-27T20:30Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -17.5,
           "spread_details": "MEM -17.5",
           "total": 64.5,
@@ -1664,7 +1418,7 @@
             "name": "Memphis Tigers",
             "abbr": "MEM",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/235.png",
-            "elo": 1607.1,
+            "elo": 1610.1,
             "moneyline": -900
           },
           "away": {
@@ -1672,7 +1426,7 @@
             "name": "Temple Owls",
             "abbr": "TEM",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/218.png",
-            "elo": 1188.5,
+            "elo": 1188.9,
             "moneyline": 600
           },
           "legs": [
@@ -1682,10 +1436,10 @@
               "team_name": "Temple Owls",
               "team_abbr": "TEM",
               "odds": 600,
-              "model_prob": 0.06146,
+              "model_prob": 0.06056,
               "implied_prob": 0.13699,
-              "edge_pp": -7.552428,
-              "fair_odds": 1527,
+              "edge_pp": -7.642192,
+              "fair_odds": 1551,
               "sample": 10.0,
               "team_sample": 10.0,
               "opp_sample": 10.0,
@@ -1699,10 +1453,10 @@
               "team_name": "Memphis Tigers",
               "team_abbr": "MEM",
               "odds": -900,
-              "model_prob": 0.93854,
+              "model_prob": 0.93944,
               "implied_prob": 0.86301,
-              "edge_pp": 7.552428,
-              "fair_odds": -1527,
+              "edge_pp": 7.642192,
+              "fair_odds": -1551,
               "sample": 10.0,
               "team_sample": 10.0,
               "opp_sample": 10.0,
@@ -1738,13 +1492,7 @@
               "state": "TN",
               "indoor": false
             },
-            "weather": {
-              "temp_f": 52.4,
-              "wind_mph": 5.2,
-              "gust_mph": 7.4,
-              "precip_pct": 0,
-              "snow_in": 0.0
-            },
+            "weather": null,
             "flags": []
           }
         },
@@ -1755,9 +1503,9 @@
           "kickoff": "2026-11-27T20:30Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
-          "spread": 10.5,
-          "spread_details": "NDSU -10.5",
+          "provider": "Draft Kings",
+          "spread": 9.5,
+          "spread_details": "NDSU -9.5",
           "total": 39.5,
           "home": {
             "id": "23",
@@ -1765,7 +1513,7 @@
             "abbr": "SJSU",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/23.png",
             "elo": 1290.4,
-            "moneyline": 400
+            "moneyline": 310
           },
           "away": {
             "id": "2449",
@@ -1773,7 +1521,7 @@
             "abbr": "NDSU",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2449.png",
             "elo": 1537.0,
-            "moneyline": -535
+            "moneyline": -395
           },
           "legs": [
             {
@@ -1781,10 +1529,10 @@
               "team_id": "2449",
               "team_name": "North Dakota State Bison",
               "team_abbr": "NDSU",
-              "odds": -535,
+              "odds": -395,
               "model_prob": 0.75078,
-              "implied_prob": 0.80816,
-              "edge_pp": -5.737847,
+              "implied_prob": 0.7659,
+              "edge_pp": -1.512348,
               "fair_odds": -301,
               "sample": 6.0,
               "team_sample": 6.0,
@@ -1798,10 +1546,10 @@
               "team_id": "23",
               "team_name": "San Jos\u00e9 State Spartans",
               "team_abbr": "SJSU",
-              "odds": 400,
+              "odds": 310,
               "model_prob": 0.24922,
-              "implied_prob": 0.19184,
-              "edge_pp": 5.737847,
+              "implied_prob": 0.2341,
+              "edge_pp": 1.512348,
               "fair_odds": 301,
               "sample": 6.0,
               "team_sample": 11.0,
@@ -1839,9 +1587,9 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 62.3,
-              "wind_mph": 4.9,
-              "gust_mph": 4.5,
+              "temp_f": 63.3,
+              "wind_mph": 3.5,
+              "gust_mph": 2.9,
               "precip_pct": 0,
               "snow_in": 0.0
             },
@@ -1855,7 +1603,7 @@
           "kickoff": "2026-11-27T21:30Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -6.5,
           "spread_details": "UNM -6.5",
           "total": 41.5,
@@ -1939,9 +1687,9 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 58.1,
-              "wind_mph": 9.2,
-              "gust_mph": 6.5,
+              "temp_f": 58.2,
+              "wind_mph": 11.0,
+              "gust_mph": 8.7,
               "precip_pct": 0,
               "snow_in": 0.0
             },
@@ -1955,10 +1703,10 @@
           "kickoff": "2026-11-28T00:30Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
-          "spread": 10.5,
-          "spread_details": "TEX -10.5",
-          "total": 39.5,
+          "provider": "Draft Kings",
+          "spread": 11.5,
+          "spread_details": "TEX -11.5",
+          "total": 40.5,
           "home": {
             "id": "245",
             "name": "Texas A&M Aggies",
@@ -2039,13 +1787,19 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 52.9,
-              "wind_mph": 6.9,
-              "gust_mph": 8.9,
+              "temp_f": 54.5,
+              "wind_mph": 8.3,
+              "gust_mph": 17.7,
               "precip_pct": 0,
               "snow_in": 0.0
             },
-            "flags": []
+            "flags": [
+              {
+                "kind": "wind",
+                "severity": "low",
+                "text": "Breezy: 8 mph, gusting 18"
+              }
+            ]
           }
         },
         {
@@ -2055,9 +1809,9 @@
           "kickoff": "2026-11-28T00:30Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
-          "spread": -7.0,
-          "spread_details": "WIS -7",
+          "provider": "Draft Kings",
+          "spread": -7.5,
+          "spread_details": "WIS -7.5",
           "total": 37.5,
           "home": {
             "id": "275",
@@ -2065,7 +1819,7 @@
             "abbr": "WIS",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/275.png",
             "elo": 1550.8,
-            "moneyline": -258
+            "moneyline": -290
           },
           "away": {
             "id": "135",
@@ -2073,7 +1827,7 @@
             "abbr": "MINN",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/135.png",
             "elo": 1472.3,
-            "moneyline": 210
+            "moneyline": 235
           },
           "legs": [
             {
@@ -2081,10 +1835,10 @@
               "team_id": "135",
               "team_name": "Minnesota Golden Gophers",
               "team_abbr": "MINN",
-              "odds": 210,
+              "odds": 235,
               "model_prob": 0.31675,
-              "implied_prob": 0.30921,
-              "edge_pp": 0.754336,
+              "implied_prob": 0.28645,
+              "edge_pp": 3.030171,
               "fair_odds": 216,
               "sample": 10.0,
               "team_sample": 10.0,
@@ -2098,10 +1852,10 @@
               "team_id": "275",
               "team_name": "Wisconsin Badgers",
               "team_abbr": "WIS",
-              "odds": -258,
+              "odds": -290,
               "model_prob": 0.68325,
-              "implied_prob": 0.69079,
-              "edge_pp": -0.754336,
+              "implied_prob": 0.71355,
+              "edge_pp": -3.030171,
               "fair_odds": -216,
               "sample": 10.0,
               "team_sample": 10.0,
@@ -2139,9 +1893,9 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 36.4,
-              "wind_mph": 7.5,
-              "gust_mph": 16.1,
+              "temp_f": 37.4,
+              "wind_mph": 6.9,
+              "gust_mph": 18.3,
               "precip_pct": 3,
               "snow_in": 0.0
             },
@@ -2149,7 +1903,7 @@
               {
                 "kind": "wind",
                 "severity": "low",
-                "text": "Breezy: 8 mph, gusting 16"
+                "text": "Breezy: 7 mph, gusting 18"
               }
             ]
           }
@@ -2161,7 +1915,7 @@
           "kickoff": "2026-11-28T02:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -21.0,
           "spread_details": "UTAH -21",
           "total": 68.5,
@@ -2245,10 +1999,10 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 48.3,
-              "wind_mph": 3.3,
-              "gust_mph": 5.4,
-              "precip_pct": 16,
+              "temp_f": 50.2,
+              "wind_mph": 4.7,
+              "gust_mph": 5.6,
+              "precip_pct": 11,
               "snow_in": 0.0
             },
             "flags": []
@@ -2261,9 +2015,9 @@
           "kickoff": "2026-11-28T17:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
-          "spread": 25.5,
-          "spread_details": "ND -25.5",
+          "provider": "Draft Kings",
+          "spread": 24.5,
+          "spread_details": "ND -24.5",
           "total": 52.5,
           "home": {
             "id": "183",
@@ -2271,15 +2025,15 @@
             "abbr": "SYR",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/183.png",
             "elo": 1373.1,
-            "moneyline": 1200
+            "moneyline": 1300
           },
           "away": {
             "id": "87",
             "name": "Notre Dame Fighting Irish",
             "abbr": "ND",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/87.png",
-            "elo": 1848.6,
-            "moneyline": -2400
+            "elo": 1848.4,
+            "moneyline": -2800
           },
           "legs": [
             {
@@ -2287,11 +2041,11 @@
               "team_id": "87",
               "team_name": "Notre Dame Fighting Irish",
               "team_abbr": "ND",
-              "odds": -2400,
-              "model_prob": 0.91839,
-              "implied_prob": 0.92582,
-              "edge_pp": -0.74232,
-              "fair_odds": -1125,
+              "odds": -2800,
+              "model_prob": 0.91829,
+              "implied_prob": 0.93112,
+              "edge_pp": -1.282669,
+              "fair_odds": -1124,
               "sample": 10.0,
               "team_sample": 10.0,
               "opp_sample": 11.0,
@@ -2338,7 +2092,7 @@
           "kickoff": "2026-11-28T17:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -25.5,
           "spread_details": "MIA -25.5",
           "total": 53.5,
@@ -2348,7 +2102,7 @@
             "abbr": "MIA",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2390.png",
             "elo": 1808.3,
-            "moneyline": -2800
+            "moneyline": -3200
           },
           "away": {
             "id": "103",
@@ -2356,7 +2110,7 @@
             "abbr": "BC",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/103.png",
             "elo": 1450.3,
-            "moneyline": 1300
+            "moneyline": 1400
           },
           "legs": [
             {
@@ -2364,10 +2118,10 @@
               "team_id": "2390",
               "team_name": "Miami Hurricanes",
               "team_abbr": "MIA",
-              "odds": -2800,
-              "model_prob": 0.91511,
-              "implied_prob": 0.93112,
-              "edge_pp": -1.600411,
+              "odds": -3200,
+              "model_prob": 0.9151,
+              "implied_prob": 0.93567,
+              "edge_pp": -2.057057,
               "fair_odds": -1078,
               "sample": 10.0,
               "team_sample": 10.0,
@@ -2405,10 +2159,10 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 70.7,
-              "wind_mph": 5.3,
-              "gust_mph": 5.1,
-              "precip_pct": 17,
+              "temp_f": 75.1,
+              "wind_mph": 3.5,
+              "gust_mph": 5.6,
+              "precip_pct": 15,
               "snow_in": 0.0
             },
             "flags": []
@@ -2421,9 +2175,9 @@
           "kickoff": "2026-11-28T17:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
-          "spread": -10.5,
-          "spread_details": "OSU -10.5",
+          "provider": "Draft Kings",
+          "spread": -10.0,
+          "spread_details": "OSU -10",
           "total": 38.5,
           "home": {
             "id": "194",
@@ -2431,7 +2185,7 @@
             "abbr": "OSU",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/194.png",
             "elo": 1681.9,
-            "moneyline": -440
+            "moneyline": -395
           },
           "away": {
             "id": "130",
@@ -2439,7 +2193,7 @@
             "abbr": "MICH",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/130.png",
             "elo": 1569.9,
-            "moneyline": 340
+            "moneyline": 310
           },
           "legs": [
             {
@@ -2447,10 +2201,10 @@
               "team_id": "130",
               "team_name": "Michigan Wolverines",
               "team_abbr": "MICH",
-              "odds": 340,
+              "odds": 310,
               "model_prob": 0.27658,
-              "implied_prob": 0.21809,
-              "edge_pp": 5.84885,
+              "implied_prob": 0.2341,
+              "edge_pp": 4.24843,
               "fair_odds": 262,
               "sample": 10.0,
               "team_sample": 10.0,
@@ -2464,10 +2218,10 @@
               "team_id": "194",
               "team_name": "Ohio State Buckeyes",
               "team_abbr": "OSU",
-              "odds": -440,
+              "odds": -395,
               "model_prob": 0.72342,
-              "implied_prob": 0.78191,
-              "edge_pp": -5.84885,
+              "implied_prob": 0.7659,
+              "edge_pp": -4.24843,
               "fair_odds": -262,
               "sample": 10.0,
               "team_sample": 10.0,
@@ -2505,17 +2259,17 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 47.1,
-              "wind_mph": 11.3,
-              "gust_mph": 22.6,
-              "precip_pct": 2,
+              "temp_f": 48.1,
+              "wind_mph": 12.4,
+              "gust_mph": 30.2,
+              "precip_pct": 5,
               "snow_in": 0.0
             },
             "flags": [
               {
                 "kind": "wind",
                 "severity": "high",
-                "text": "Wind 11 mph, gusting 23 \u2014 kicking and the deep ball suffer"
+                "text": "Wind 12 mph, gusting 30 \u2014 kicking and the deep ball suffer"
               }
             ]
           }
@@ -2527,17 +2281,17 @@
           "kickoff": "2026-11-28T17:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": 3.0,
           "spread_details": "LOU -3",
-          "total": 55.5,
+          "total": 54.5,
           "home": {
             "id": "96",
             "name": "Kentucky Wildcats",
             "abbr": "UK",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/96.png",
             "elo": 1475.2,
-            "moneyline": 102
+            "moneyline": 120
           },
           "away": {
             "id": "97",
@@ -2545,7 +2299,7 @@
             "abbr": "LOU",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/97.png",
             "elo": 1727.6,
-            "moneyline": -122
+            "moneyline": -142
           },
           "legs": [
             {
@@ -2553,10 +2307,10 @@
               "team_id": "97",
               "team_name": "Louisville Cardinals",
               "team_abbr": "LOU",
-              "odds": -122,
+              "odds": -142,
               "model_prob": 0.75703,
-              "implied_prob": 0.52609,
-              "edge_pp": 23.094377,
+              "implied_prob": 0.56349,
+              "edge_pp": 19.353829,
               "fair_odds": -312,
               "sample": 10.0,
               "team_sample": 10.0,
@@ -2570,10 +2324,10 @@
               "team_id": "96",
               "team_name": "Kentucky Wildcats",
               "team_abbr": "UK",
-              "odds": 102,
+              "odds": 120,
               "model_prob": 0.24297,
-              "implied_prob": 0.47391,
-              "edge_pp": -23.094377,
+              "implied_prob": 0.43651,
+              "edge_pp": -19.353829,
               "fair_odds": 312,
               "sample": 10.0,
               "team_sample": 10.0,
@@ -2611,9 +2365,9 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 49.8,
-              "wind_mph": 14.8,
-              "gust_mph": 21.9,
+              "temp_f": 51.5,
+              "wind_mph": 19.1,
+              "gust_mph": 33.1,
               "precip_pct": 1,
               "snow_in": 0.0
             },
@@ -2621,7 +2375,7 @@
               {
                 "kind": "wind",
                 "severity": "high",
-                "text": "Wind 15 mph, gusting 22 \u2014 kicking and the deep ball suffer"
+                "text": "Wind 19 mph, gusting 33 \u2014 kicking and the deep ball suffer"
               }
             ]
           }
@@ -2633,10 +2387,10 @@
           "kickoff": "2026-11-28T17:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -5.5,
           "spread_details": "UNC -5.5",
-          "total": 55.5,
+          "total": 54.5,
           "home": {
             "id": "153",
             "name": "North Carolina Tar Heels",
@@ -2717,10 +2471,10 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 56.2,
-              "wind_mph": 5.0,
-              "gust_mph": 7.8,
-              "precip_pct": 2,
+              "temp_f": 55.1,
+              "wind_mph": 6.5,
+              "gust_mph": 11.4,
+              "precip_pct": 1,
               "snow_in": 0.0
             },
             "flags": []
@@ -2733,7 +2487,7 @@
           "kickoff": "2026-11-28T17:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": 3.5,
           "spread_details": "CONN -3.5",
           "total": 48.5,
@@ -2743,7 +2497,7 @@
             "abbr": "WYO",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2751.png",
             "elo": 1497.4,
-            "moneyline": 130
+            "moneyline": 136
           },
           "away": {
             "id": "41",
@@ -2751,7 +2505,7 @@
             "abbr": "CONN",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/41.png",
             "elo": 1561.3,
-            "moneyline": -155
+            "moneyline": -162
           },
           "legs": [
             {
@@ -2759,10 +2513,10 @@
               "team_id": "41",
               "team_name": "UConn Huskies",
               "team_abbr": "CONN",
-              "odds": -155,
+              "odds": -162,
               "model_prob": 0.51278,
-              "implied_prob": 0.58299,
-              "edge_pp": -7.021646,
+              "implied_prob": 0.59337,
+              "edge_pp": -8.059358,
               "fair_odds": -105,
               "sample": 10.0,
               "team_sample": 10.0,
@@ -2776,10 +2530,10 @@
               "team_id": "2751",
               "team_name": "Wyoming Cowboys",
               "team_abbr": "WYO",
-              "odds": 130,
+              "odds": 136,
               "model_prob": 0.48722,
-              "implied_prob": 0.41701,
-              "edge_pp": 7.021646,
+              "implied_prob": 0.40663,
+              "edge_pp": 8.059358,
               "fair_odds": 105,
               "sample": 10.0,
               "team_sample": 10.0,
@@ -2817,17 +2571,22 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 34.7,
-              "wind_mph": 12.0,
-              "gust_mph": 22.4,
-              "precip_pct": 14,
-              "snow_in": 0.0
+              "temp_f": 30.4,
+              "wind_mph": 9.7,
+              "gust_mph": 21.3,
+              "precip_pct": 33,
+              "snow_in": 0.248
             },
             "flags": [
               {
                 "kind": "wind",
                 "severity": "high",
-                "text": "Wind 12 mph, gusting 22 \u2014 kicking and the deep ball suffer"
+                "text": "Wind 10 mph, gusting 21 \u2014 kicking and the deep ball suffer"
+              },
+              {
+                "kind": "snow",
+                "severity": "high",
+                "text": "Snow in the forecast (0.25 in/hr)"
               }
             ]
           }
@@ -2839,25 +2598,25 @@
           "kickoff": "2026-11-28T17:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": 16.5,
           "spread_details": "NAVY -16.5",
-          "total": 56.5,
+          "total": 55.5,
           "home": {
             "id": "2429",
             "name": "Charlotte 49ers",
             "abbr": "CLT",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2429.png",
-            "elo": 1236.1,
-            "moneyline": 575
+            "elo": 1236.0,
+            "moneyline": 550
           },
           "away": {
             "id": "2426",
             "name": "Navy Midshipmen",
             "abbr": "NAVY",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2426.png",
-            "elo": 1581.0,
-            "moneyline": -850
+            "elo": 1579.3,
+            "moneyline": -800
           },
           "legs": [
             {
@@ -2865,11 +2624,11 @@
               "team_id": "2426",
               "team_name": "Navy Midshipmen",
               "team_abbr": "NAVY",
-              "odds": -850,
-              "model_prob": 0.84142,
-              "implied_prob": 0.85794,
-              "edge_pp": -1.652003,
-              "fair_odds": -531,
+              "odds": -800,
+              "model_prob": 0.84024,
+              "implied_prob": 0.85246,
+              "edge_pp": -1.221921,
+              "fair_odds": -526,
               "sample": 10.0,
               "team_sample": 10.0,
               "opp_sample": 10.0,
@@ -2882,11 +2641,11 @@
               "team_id": "2429",
               "team_name": "Charlotte 49ers",
               "team_abbr": "CLT",
-              "odds": 575,
-              "model_prob": 0.15858,
-              "implied_prob": 0.14206,
-              "edge_pp": 1.652003,
-              "fair_odds": 531,
+              "odds": 550,
+              "model_prob": 0.15976,
+              "implied_prob": 0.14754,
+              "edge_pp": 1.221921,
+              "fair_odds": 526,
               "sample": 10.0,
               "team_sample": 10.0,
               "opp_sample": 10.0,
@@ -2923,10 +2682,10 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 53.5,
-              "wind_mph": 2.8,
-              "gust_mph": 4.3,
-              "precip_pct": 2,
+              "temp_f": 53.7,
+              "wind_mph": 4.3,
+              "gust_mph": 6.9,
+              "precip_pct": 1,
               "snow_in": 0.0
             },
             "flags": []
@@ -2939,10 +2698,10 @@
           "kickoff": "2026-11-28T17:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": 4.5,
           "spread_details": "CMU -4.5",
-          "total": 46.5,
+          "total": 47.5,
           "home": {
             "id": "2050",
             "name": "Ball State Cardinals",
@@ -2966,9 +2725,9 @@
               "team_name": "Central Michigan Chippewas",
               "team_abbr": "CMU",
               "odds": -205,
-              "model_prob": 0.60998,
+              "model_prob": 0.61005,
               "implied_prob": 0.64473,
-              "edge_pp": -3.474765,
+              "edge_pp": -3.467743,
               "fair_odds": -156,
               "sample": 10.0,
               "team_sample": 10.0,
@@ -2983,9 +2742,9 @@
               "team_name": "Ball State Cardinals",
               "team_abbr": "BALL",
               "odds": 170,
-              "model_prob": 0.39002,
+              "model_prob": 0.38995,
               "implied_prob": 0.35527,
-              "edge_pp": 3.474765,
+              "edge_pp": 3.467743,
               "fair_odds": 156,
               "sample": 10.0,
               "team_sample": 10.0,
@@ -3023,17 +2782,17 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 44.2,
-              "wind_mph": 17.0,
-              "gust_mph": 34.4,
-              "precip_pct": 6,
+              "temp_f": 48.5,
+              "wind_mph": 16.5,
+              "gust_mph": 26.8,
+              "precip_pct": 3,
               "snow_in": 0.0
             },
             "flags": [
               {
                 "kind": "wind",
                 "severity": "high",
-                "text": "Wind 17 mph, gusting 34 \u2014 kicking and the deep ball suffer"
+                "text": "Wind 16 mph, gusting 27 \u2014 kicking and the deep ball suffer"
               }
             ]
           }
@@ -3045,7 +2804,7 @@
           "kickoff": "2026-11-28T17:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -2.5,
           "spread_details": "GASO -2.5",
           "total": 52.5,
@@ -3055,7 +2814,7 @@
             "abbr": "GASO",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/290.png",
             "elo": 1662.2,
-            "moneyline": -155
+            "moneyline": -135
           },
           "away": {
             "id": "2348",
@@ -3063,7 +2822,7 @@
             "abbr": "LT",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2348.png",
             "elo": 1669.6,
-            "moneyline": 130
+            "moneyline": 114
           },
           "legs": [
             {
@@ -3071,10 +2830,10 @@
               "team_id": "2348",
               "team_name": "Louisiana Tech Bulldogs",
               "team_abbr": "LT",
-              "odds": 130,
+              "odds": 114,
               "model_prob": 0.4319,
-              "implied_prob": 0.41701,
-              "edge_pp": 1.488813,
+              "implied_prob": 0.44856,
+              "edge_pp": -1.66634,
               "fair_odds": 132,
               "sample": 10.0,
               "team_sample": 10.0,
@@ -3088,10 +2847,10 @@
               "team_id": "290",
               "team_name": "Georgia Southern Eagles",
               "team_abbr": "GASO",
-              "odds": -155,
+              "odds": -135,
               "model_prob": 0.5681,
-              "implied_prob": 0.58299,
-              "edge_pp": -1.488813,
+              "implied_prob": 0.55144,
+              "edge_pp": 1.66634,
               "fair_odds": -132,
               "sample": 10.0,
               "team_sample": 10.0,
@@ -3129,9 +2888,9 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 58.6,
-              "wind_mph": 7.4,
-              "gust_mph": 10.3,
+              "temp_f": 57.1,
+              "wind_mph": 6.2,
+              "gust_mph": 9.2,
               "precip_pct": 2,
               "snow_in": 0.0
             },
@@ -3145,7 +2904,7 @@
           "kickoff": "2026-11-28T17:30Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -3.0,
           "spread_details": "NU -3",
           "total": 49.5,
@@ -3155,7 +2914,7 @@
             "abbr": "NU",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/77.png",
             "elo": 1499.2,
-            "moneyline": -142
+            "moneyline": -148
           },
           "away": {
             "id": "356",
@@ -3163,7 +2922,7 @@
             "abbr": "ILL",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/356.png",
             "elo": 1595.8,
-            "moneyline": 120
+            "moneyline": 124
           },
           "legs": [
             {
@@ -3171,10 +2930,10 @@
               "team_id": "356",
               "team_name": "Illinois Fighting Illini",
               "team_abbr": "ILL",
-              "odds": 120,
+              "odds": 124,
               "model_prob": 0.55964,
-              "implied_prob": 0.43651,
-              "edge_pp": 12.313163,
+              "implied_prob": 0.42794,
+              "edge_pp": 13.16992,
               "fair_odds": -127,
               "sample": 10.0,
               "team_sample": 10.0,
@@ -3188,10 +2947,10 @@
               "team_id": "77",
               "team_name": "Northwestern Wildcats",
               "team_abbr": "NU",
-              "odds": -142,
+              "odds": -148,
               "model_prob": 0.44036,
-              "implied_prob": 0.56349,
-              "edge_pp": -12.313163,
+              "implied_prob": 0.57206,
+              "edge_pp": -13.16992,
               "fair_odds": 127,
               "sample": 10.0,
               "team_sample": 11.0,
@@ -3229,17 +2988,17 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 35.6,
-              "wind_mph": 9.7,
-              "gust_mph": 21.9,
-              "precip_pct": 21,
+              "temp_f": 40.9,
+              "wind_mph": 12.7,
+              "gust_mph": 24.4,
+              "precip_pct": 28,
               "snow_in": 0.0
             },
             "flags": [
               {
                 "kind": "wind",
                 "severity": "high",
-                "text": "Wind 10 mph, gusting 22 \u2014 kicking and the deep ball suffer"
+                "text": "Wind 13 mph, gusting 24 \u2014 kicking and the deep ball suffer"
               }
             ]
           }
@@ -3251,7 +3010,7 @@
           "kickoff": "2026-11-28T17:45Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": 13.5,
           "spread_details": "LSU -13.5",
           "total": 47.5,
@@ -3261,7 +3020,7 @@
             "abbr": "ARK",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/8.png",
             "elo": 1505.9,
-            "moneyline": 455
+            "moneyline": 425
           },
           "away": {
             "id": "99",
@@ -3269,7 +3028,7 @@
             "abbr": "LSU",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/99.png",
             "elo": 1548.4,
-            "moneyline": -625
+            "moneyline": -575
           },
           "legs": [
             {
@@ -3277,10 +3036,10 @@
               "team_id": "99",
               "team_name": "LSU Tigers",
               "team_abbr": "LSU",
-              "odds": -625,
+              "odds": -575,
               "model_prob": 0.48202,
-              "implied_prob": 0.82712,
-              "edge_pp": -34.509924,
+              "implied_prob": 0.81726,
+              "edge_pp": -33.523443,
               "fair_odds": 107,
               "sample": 10.0,
               "team_sample": 10.0,
@@ -3294,10 +3053,10 @@
               "team_id": "8",
               "team_name": "Arkansas Razorbacks",
               "team_abbr": "ARK",
-              "odds": 455,
+              "odds": 425,
               "model_prob": 0.51798,
-              "implied_prob": 0.17288,
-              "edge_pp": 34.509924,
+              "implied_prob": 0.18274,
+              "edge_pp": 33.523443,
               "fair_odds": -107,
               "sample": 10.0,
               "team_sample": 10.0,
@@ -3335,10 +3094,10 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 56.8,
-              "wind_mph": 2.5,
-              "gust_mph": 3.6,
-              "precip_pct": 2,
+              "temp_f": 57.2,
+              "wind_mph": 6.3,
+              "gust_mph": 9.4,
+              "precip_pct": 0,
               "snow_in": 0.0
             },
             "flags": []
@@ -3351,7 +3110,7 @@
           "kickoff": "2026-11-28T18:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -1.5,
           "spread_details": "ECU -1.5",
           "total": 55.5,
@@ -3360,7 +3119,7 @@
             "name": "East Carolina Pirates",
             "abbr": "ECU",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/151.png",
-            "elo": 1559.3,
+            "elo": 1561.3,
             "moneyline": -122
           },
           "away": {
@@ -3368,7 +3127,7 @@
             "name": "Florida Atlantic Owls",
             "abbr": "FAU",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2226.png",
-            "elo": 1488.2,
+            "elo": 1489.0,
             "moneyline": 102
           },
           "legs": [
@@ -3378,10 +3137,10 @@
               "team_name": "Florida Atlantic Owls",
               "team_abbr": "FAU",
               "odds": 102,
-              "model_prob": 0.32601,
+              "model_prob": 0.32464,
               "implied_prob": 0.47391,
-              "edge_pp": -14.7908,
-              "fair_odds": 207,
+              "edge_pp": -14.927012,
+              "fair_odds": 208,
               "sample": 10.0,
               "team_sample": 10.0,
               "opp_sample": 11.0,
@@ -3395,10 +3154,10 @@
               "team_name": "East Carolina Pirates",
               "team_abbr": "ECU",
               "odds": -122,
-              "model_prob": 0.67399,
+              "model_prob": 0.67536,
               "implied_prob": 0.52609,
-              "edge_pp": 14.7908,
-              "fair_odds": -207,
+              "edge_pp": 14.927012,
+              "fair_odds": -208,
               "sample": 10.0,
               "team_sample": 11.0,
               "opp_sample": 10.0,
@@ -3435,10 +3194,10 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 58.2,
-              "wind_mph": 5.6,
-              "gust_mph": 6.9,
-              "precip_pct": 1,
+              "temp_f": 57.8,
+              "wind_mph": 7.3,
+              "gust_mph": 9.8,
+              "precip_pct": 0,
               "snow_in": 0.0
             },
             "flags": []
@@ -3451,7 +3210,7 @@
           "kickoff": "2026-11-28T18:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": 3.0,
           "spread_details": "KENN -3",
           "total": 54.5,
@@ -3460,16 +3219,16 @@
             "name": "Western Kentucky Hilltoppers",
             "abbr": "WKU",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/98.png",
-            "elo": 1438.3,
-            "moneyline": 114
+            "elo": 1423.0,
+            "moneyline": 120
           },
           "away": {
             "id": "338",
             "name": "Kennesaw State Owls",
             "abbr": "KENN",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/338.png",
-            "elo": 1507.8,
-            "moneyline": -135
+            "elo": 1506.9,
+            "moneyline": -142
           },
           "legs": [
             {
@@ -3477,16 +3236,16 @@
               "team_id": "338",
               "team_name": "Kennesaw State Owls",
               "team_abbr": "KENN",
-              "odds": -135,
-              "model_prob": 0.5208,
-              "implied_prob": 0.55144,
-              "edge_pp": -3.064445,
-              "fair_odds": -109,
-              "sample": 10.0,
+              "odds": -142,
+              "model_prob": 0.54149,
+              "implied_prob": 0.56349,
+              "edge_pp": -2.200659,
+              "fair_odds": -118,
+              "sample": 9.0,
               "team_sample": 10.0,
-              "opp_sample": 10.0,
+              "opp_sample": 9.0,
               "team_games": 6,
-              "opp_games": 6,
+              "opp_games": 5,
               "prior_credit": 4.0
             },
             {
@@ -3494,15 +3253,15 @@
               "team_id": "98",
               "team_name": "Western Kentucky Hilltoppers",
               "team_abbr": "WKU",
-              "odds": 114,
-              "model_prob": 0.4792,
-              "implied_prob": 0.44856,
-              "edge_pp": 3.064445,
-              "fair_odds": 109,
-              "sample": 10.0,
-              "team_sample": 10.0,
+              "odds": 120,
+              "model_prob": 0.45851,
+              "implied_prob": 0.43651,
+              "edge_pp": 2.200659,
+              "fair_odds": 118,
+              "sample": 9.0,
+              "team_sample": 9.0,
               "opp_sample": 10.0,
-              "team_games": 6,
+              "team_games": 5,
               "opp_games": 6,
               "prior_credit": 4.0
             }
@@ -3535,17 +3294,17 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 54.8,
-              "wind_mph": 13.6,
-              "gust_mph": 21.5,
-              "precip_pct": 1,
+              "temp_f": 58.0,
+              "wind_mph": 16.0,
+              "gust_mph": 24.6,
+              "precip_pct": 0,
               "snow_in": 0.0
             },
             "flags": [
               {
                 "kind": "wind",
                 "severity": "high",
-                "text": "Wind 14 mph, gusting 22 \u2014 kicking and the deep ball suffer"
+                "text": "Wind 16 mph, gusting 25 \u2014 kicking and the deep ball suffer"
               }
             ]
           }
@@ -3557,17 +3316,17 @@
           "kickoff": "2026-11-28T18:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": 4.5,
           "spread_details": "MRSH -4.5",
-          "total": 50.5,
+          "total": 51.5,
           "home": {
             "id": "2433",
             "name": "UL Monroe Warhawks",
             "abbr": "ULM",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2433.png",
             "elo": 1272.9,
-            "moneyline": 154
+            "moneyline": 164
           },
           "away": {
             "id": "276",
@@ -3575,7 +3334,7 @@
             "abbr": "MRSH",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/276.png",
             "elo": 1416.5,
-            "moneyline": -185
+            "moneyline": -198
           },
           "legs": [
             {
@@ -3583,10 +3342,10 @@
               "team_id": "276",
               "team_name": "Marshall Thundering Herd",
               "team_abbr": "MRSH",
-              "odds": -185,
+              "odds": -198,
               "model_prob": 0.6248,
-              "implied_prob": 0.62247,
-              "edge_pp": 0.232895,
+              "implied_prob": 0.6369,
+              "edge_pp": -1.210868,
               "fair_odds": -167,
               "sample": 9.0,
               "team_sample": 9.0,
@@ -3600,10 +3359,10 @@
               "team_id": "2433",
               "team_name": "UL Monroe Warhawks",
               "team_abbr": "ULM",
-              "odds": 154,
+              "odds": 164,
               "model_prob": 0.3752,
-              "implied_prob": 0.37753,
-              "edge_pp": -0.232895,
+              "implied_prob": 0.3631,
+              "edge_pp": 1.210868,
               "fair_odds": 167,
               "sample": 9.0,
               "team_sample": 9.85,
@@ -3641,10 +3400,10 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 64.8,
-              "wind_mph": 8.3,
-              "gust_mph": 11.9,
-              "precip_pct": 1,
+              "temp_f": 67.5,
+              "wind_mph": 9.1,
+              "gust_mph": 13.4,
+              "precip_pct": 0,
               "snow_in": 0.0
             },
             "flags": []
@@ -3657,9 +3416,9 @@
           "kickoff": "2026-11-28T18:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
-          "spread": -5.5,
-          "spread_details": "ODU -5.5",
+          "provider": "Draft Kings",
+          "spread": -6.0,
+          "spread_details": "ODU -6",
           "total": 50.5,
           "home": {
             "id": "295",
@@ -3667,7 +3426,7 @@
             "abbr": "ODU",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/295.png",
             "elo": 1477.2,
-            "moneyline": -192
+            "moneyline": -238
           },
           "away": {
             "id": "2572",
@@ -3675,7 +3434,7 @@
             "abbr": "USM",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2572.png",
             "elo": 1382.1,
-            "moneyline": 160
+            "moneyline": 195
           },
           "legs": [
             {
@@ -3683,10 +3442,10 @@
               "team_id": "2572",
               "team_name": "Southern Miss Golden Eagles",
               "team_abbr": "USM",
-              "odds": 160,
+              "odds": 195,
               "model_prob": 0.29643,
-              "implied_prob": 0.36906,
-              "edge_pp": -7.262616,
+              "implied_prob": 0.32497,
+              "edge_pp": -2.853525,
               "fair_odds": 237,
               "sample": 9.0,
               "team_sample": 9.0,
@@ -3700,10 +3459,10 @@
               "team_id": "295",
               "team_name": "Old Dominion Monarchs",
               "team_abbr": "ODU",
-              "odds": -192,
+              "odds": -238,
               "model_prob": 0.70357,
-              "implied_prob": 0.63094,
-              "edge_pp": 7.262616,
+              "implied_prob": 0.67503,
+              "edge_pp": 2.853525,
               "fair_odds": -237,
               "sample": 9.0,
               "team_sample": 10.0,
@@ -3741,10 +3500,10 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 59.0,
-              "wind_mph": 2.0,
-              "gust_mph": 3.4,
-              "precip_pct": 1,
+              "temp_f": 57.6,
+              "wind_mph": 7.8,
+              "gust_mph": 11.9,
+              "precip_pct": 0,
               "snow_in": 0.0
             },
             "flags": []
@@ -3757,7 +3516,7 @@
           "kickoff": "2026-11-28T19:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -2.5,
           "spread_details": "COLO -2.5",
           "total": 51.5,
@@ -3767,7 +3526,7 @@
             "abbr": "COLO",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/38.png",
             "elo": 1399.6,
-            "moneyline": -118
+            "moneyline": -122
           },
           "away": {
             "id": "2116",
@@ -3775,7 +3534,7 @@
             "abbr": "UCF",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2116.png",
             "elo": 1448.7,
-            "moneyline": -102
+            "moneyline": 102
           },
           "legs": [
             {
@@ -3783,10 +3542,10 @@
               "team_id": "2116",
               "team_name": "UCF Knights",
               "team_abbr": "UCF",
-              "odds": -102,
+              "odds": 102,
               "model_prob": 0.49148,
-              "implied_prob": 0.48264,
-              "edge_pp": 0.884391,
+              "implied_prob": 0.47391,
+              "edge_pp": 1.756637,
               "fair_odds": 103,
               "sample": 10.0,
               "team_sample": 10.0,
@@ -3800,10 +3559,10 @@
               "team_id": "38",
               "team_name": "Colorado Buffaloes",
               "team_abbr": "COLO",
-              "odds": -118,
+              "odds": -122,
               "model_prob": 0.50852,
-              "implied_prob": 0.51736,
-              "edge_pp": -0.884391,
+              "implied_prob": 0.52609,
+              "edge_pp": -1.756637,
               "fair_odds": -103,
               "sample": 10.0,
               "team_sample": 10.0,
@@ -3841,10 +3600,10 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 48.6,
-              "wind_mph": 7.5,
-              "gust_mph": 4.7,
-              "precip_pct": 11,
+              "temp_f": 40.0,
+              "wind_mph": 11.3,
+              "gust_mph": 10.7,
+              "precip_pct": 22,
               "snow_in": 0.0
             },
             "flags": []
@@ -3857,7 +3616,7 @@
           "kickoff": "2026-11-28T19:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -4.5,
           "spread_details": "ISU -4.5",
           "total": 54.5,
@@ -3941,17 +3700,17 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 48.0,
-              "wind_mph": 17.3,
-              "gust_mph": 24.6,
-              "precip_pct": 4,
+              "temp_f": 45.4,
+              "wind_mph": 18.9,
+              "gust_mph": 26.2,
+              "precip_pct": 3,
               "snow_in": 0.0
             },
             "flags": [
               {
                 "kind": "wind",
                 "severity": "high",
-                "text": "Wind 17 mph, gusting 25 \u2014 kicking and the deep ball suffer"
+                "text": "Wind 19 mph, gusting 26 \u2014 kicking and the deep ball suffer"
               }
             ]
           }
@@ -3963,7 +3722,7 @@
           "kickoff": "2026-11-28T19:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": 6.5,
           "spread_details": "ARMY -6.5",
           "total": 48.5,
@@ -3972,7 +3731,7 @@
             "name": "Rice Owls",
             "abbr": "RICE",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/242.png",
-            "elo": 1264.0,
+            "elo": 1263.8,
             "moneyline": 210
           },
           "away": {
@@ -3980,7 +3739,7 @@
             "name": "Army Black Knights",
             "abbr": "ARMY",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/349.png",
-            "elo": 1486.3,
+            "elo": 1486.5,
             "moneyline": -258
           },
           "legs": [
@@ -3990,10 +3749,10 @@
               "team_name": "Army Black Knights",
               "team_abbr": "ARMY",
               "odds": -258,
-              "model_prob": 0.72377,
+              "model_prob": 0.72427,
               "implied_prob": 0.69079,
-              "edge_pp": 3.297776,
-              "fair_odds": -262,
+              "edge_pp": 3.347552,
+              "fair_odds": -263,
               "sample": 10.0,
               "team_sample": 10.0,
               "opp_sample": 10.0,
@@ -4007,10 +3766,10 @@
               "team_name": "Rice Owls",
               "team_abbr": "RICE",
               "odds": 210,
-              "model_prob": 0.27623,
+              "model_prob": 0.27573,
               "implied_prob": 0.30921,
-              "edge_pp": -3.297776,
-              "fair_odds": 262,
+              "edge_pp": -3.347552,
+              "fair_odds": 263,
               "sample": 10.0,
               "team_sample": 10.0,
               "opp_sample": 10.0,
@@ -4047,19 +3806,13 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 72.4,
-              "wind_mph": 9.4,
-              "gust_mph": 15.0,
+              "temp_f": 71.3,
+              "wind_mph": 5.4,
+              "gust_mph": 10.5,
               "precip_pct": 0,
               "snow_in": 0.0
             },
-            "flags": [
-              {
-                "kind": "wind",
-                "severity": "low",
-                "text": "Breezy: 9 mph, gusting 15"
-              }
-            ]
+            "flags": []
           }
         },
         {
@@ -4069,17 +3822,17 @@
           "kickoff": "2026-11-28T19:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -15.5,
           "spread_details": "JMU -15.5",
-          "total": 55.5,
+          "total": 56.5,
           "home": {
             "id": "256",
             "name": "James Madison Dukes",
             "abbr": "JMU",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/256.png",
             "elo": 1562.0,
-            "moneyline": -800
+            "moneyline": -750
           },
           "away": {
             "id": "324",
@@ -4087,7 +3840,7 @@
             "abbr": "CCU",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/324.png",
             "elo": 1402.9,
-            "moneyline": 550
+            "moneyline": 525
           },
           "legs": [
             {
@@ -4095,10 +3848,10 @@
               "team_id": "324",
               "team_name": "Coastal Carolina Chanticleers",
               "team_abbr": "CCU",
-              "odds": 550,
+              "odds": 525,
               "model_prob": 0.22577,
-              "implied_prob": 0.14754,
-              "edge_pp": 7.822717,
+              "implied_prob": 0.1535,
+              "edge_pp": 7.226929,
               "fair_odds": 343,
               "sample": 10.0,
               "team_sample": 10.0,
@@ -4112,10 +3865,10 @@
               "team_id": "256",
               "team_name": "James Madison Dukes",
               "team_abbr": "JMU",
-              "odds": -800,
+              "odds": -750,
               "model_prob": 0.77423,
-              "implied_prob": 0.85246,
-              "edge_pp": -7.822717,
+              "implied_prob": 0.8465,
+              "edge_pp": -7.226929,
               "fair_odds": -343,
               "sample": 10.0,
               "team_sample": 10.0,
@@ -4153,13 +3906,19 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 53.7,
-              "wind_mph": 7.2,
-              "gust_mph": 7.6,
-              "precip_pct": 3,
+              "temp_f": 54.4,
+              "wind_mph": 11.8,
+              "gust_mph": 16.6,
+              "precip_pct": 1,
               "snow_in": 0.0
             },
-            "flags": []
+            "flags": [
+              {
+                "kind": "wind",
+                "severity": "low",
+                "text": "Breezy: 12 mph, gusting 17"
+              }
+            ]
           }
         },
         {
@@ -4169,7 +3928,7 @@
           "kickoff": "2026-11-28T19:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": 5.5,
           "spread_details": "UL -5.5",
           "total": 56.5,
@@ -4253,10 +4012,10 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 59.0,
-              "wind_mph": 5.4,
-              "gust_mph": 7.6,
-              "precip_pct": 3,
+              "temp_f": 58.5,
+              "wind_mph": 6.2,
+              "gust_mph": 11.0,
+              "precip_pct": 1,
               "snow_in": 0.0
             },
             "flags": []
@@ -4269,7 +4028,7 @@
           "kickoff": "2026-11-28T19:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": 15.5,
           "spread_details": "LIB -15.5",
           "total": 51.5,
@@ -4278,16 +4037,16 @@
             "name": "Missouri State Bears",
             "abbr": "MOST",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2623.png",
-            "elo": 1363.9,
-            "moneyline": 425
+            "elo": 1382.1,
+            "moneyline": 470
           },
           "away": {
             "id": "2335",
             "name": "Liberty Flames",
             "abbr": "LIB",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2335.png",
-            "elo": 1607.1,
-            "moneyline": -575
+            "elo": 1590.7,
+            "moneyline": -650
           },
           "legs": [
             {
@@ -4295,16 +4054,16 @@
               "team_id": "2335",
               "team_name": "Liberty Flames",
               "team_abbr": "LIB",
-              "odds": -575,
-              "model_prob": 0.74709,
-              "implied_prob": 0.81726,
-              "edge_pp": -7.017004,
-              "fair_odds": -295,
-              "sample": 10.0,
-              "team_sample": 10.0,
-              "opp_sample": 11.0,
-              "team_games": 6,
-              "opp_games": 7,
+              "odds": -650,
+              "model_prob": 0.70776,
+              "implied_prob": 0.83165,
+              "edge_pp": -12.389285,
+              "fair_odds": -242,
+              "sample": 9.0,
+              "team_sample": 9.0,
+              "opp_sample": 10.0,
+              "team_games": 5,
+              "opp_games": 6,
               "prior_credit": 4.0
             },
             {
@@ -4312,16 +4071,16 @@
               "team_id": "2623",
               "team_name": "Missouri State Bears",
               "team_abbr": "MOST",
-              "odds": 425,
-              "model_prob": 0.25291,
-              "implied_prob": 0.18274,
-              "edge_pp": 7.017004,
-              "fair_odds": 295,
-              "sample": 10.0,
-              "team_sample": 11.0,
-              "opp_sample": 10.0,
-              "team_games": 7,
-              "opp_games": 6,
+              "odds": 470,
+              "model_prob": 0.29224,
+              "implied_prob": 0.16835,
+              "edge_pp": 12.389285,
+              "fair_odds": 242,
+              "sample": 9.0,
+              "team_sample": 10.0,
+              "opp_sample": 9.0,
+              "team_games": 6,
+              "opp_games": 5,
               "prior_credit": 4.0
             }
           ],
@@ -4353,17 +4112,17 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 56.3,
+              "temp_f": 57.2,
               "wind_mph": 9.8,
-              "gust_mph": 15.0,
-              "precip_pct": 1,
+              "gust_mph": 16.6,
+              "precip_pct": 2,
               "snow_in": 0.0
             },
             "flags": [
               {
                 "kind": "wind",
                 "severity": "low",
-                "text": "Breezy: 10 mph, gusting 15"
+                "text": "Breezy: 10 mph, gusting 17"
               }
             ]
           }
@@ -4375,7 +4134,7 @@
           "kickoff": "2026-11-28T19:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -11.5,
           "spread_details": "FIU -11.5",
           "total": 41.5,
@@ -4384,16 +4143,16 @@
             "name": "Florida International Panthers",
             "abbr": "FIU",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2229.png",
-            "elo": 1340.0,
-            "moneyline": -470
+            "elo": 1338.6,
+            "moneyline": -455
           },
           "away": {
             "id": "2534",
             "name": "Sam Houston Bearkats",
             "abbr": "SHSU",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2534.png",
-            "elo": 1127.1,
-            "moneyline": 360
+            "elo": 1144.4,
+            "moneyline": 350
           },
           "legs": [
             {
@@ -4401,15 +4160,15 @@
               "team_id": "2534",
               "team_name": "Sam Houston Bearkats",
               "team_abbr": "SHSU",
-              "odds": 360,
-              "model_prob": 0.17624,
-              "implied_prob": 0.20864,
-              "edge_pp": -3.239398,
-              "fair_odds": 467,
+              "odds": 350,
+              "model_prob": 0.1924,
+              "implied_prob": 0.21326,
+              "edge_pp": -2.085865,
+              "fair_odds": 420,
               "sample": 10.0,
-              "team_sample": 11.0,
+              "team_sample": 10.0,
               "opp_sample": 10.0,
-              "team_games": 7,
+              "team_games": 6,
               "opp_games": 6,
               "prior_credit": 4.0
             },
@@ -4418,16 +4177,16 @@
               "team_id": "2229",
               "team_name": "Florida International Panthers",
               "team_abbr": "FIU",
-              "odds": -470,
-              "model_prob": 0.82376,
-              "implied_prob": 0.79136,
-              "edge_pp": 3.239398,
-              "fair_odds": -467,
+              "odds": -455,
+              "model_prob": 0.8076,
+              "implied_prob": 0.78674,
+              "edge_pp": 2.085865,
+              "fair_odds": -420,
               "sample": 10.0,
               "team_sample": 10.0,
-              "opp_sample": 11.0,
+              "opp_sample": 10.0,
               "team_games": 6,
-              "opp_games": 7,
+              "opp_games": 6,
               "prior_credit": 4.0
             }
           ],
@@ -4459,10 +4218,10 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 72.3,
-              "wind_mph": 7.7,
-              "gust_mph": 8.5,
-              "precip_pct": 24,
+              "temp_f": 75.9,
+              "wind_mph": 5.0,
+              "gust_mph": 6.3,
+              "precip_pct": 20,
               "snow_in": 0.0
             },
             "flags": []
@@ -4475,7 +4234,7 @@
           "kickoff": "2026-11-28T19:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -3.0,
           "spread_details": "MTSU -3",
           "total": 52.5,
@@ -4484,7 +4243,7 @@
             "name": "Middle Tennessee Blue Raiders",
             "abbr": "MTSU",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2393.png",
-            "elo": 1371.3,
+            "elo": 1368.4,
             "moneyline": -155
           },
           "away": {
@@ -4492,7 +4251,7 @@
             "name": "New Mexico State Aggies",
             "abbr": "NMSU",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/166.png",
-            "elo": 1237.4,
+            "elo": 1238.8,
             "moneyline": 130
           },
           "legs": [
@@ -4502,10 +4261,10 @@
               "team_name": "New Mexico State Aggies",
               "team_abbr": "NMSU",
               "odds": 130,
-              "model_prob": 0.25203,
+              "model_prob": 0.25686,
               "implied_prob": 0.41701,
-              "edge_pp": -16.497391,
-              "fair_odds": 297,
+              "edge_pp": -16.014788,
+              "fair_odds": 289,
               "sample": 9.0,
               "team_sample": 9.0,
               "opp_sample": 10.0,
@@ -4519,10 +4278,10 @@
               "team_name": "Middle Tennessee Blue Raiders",
               "team_abbr": "MTSU",
               "odds": -155,
-              "model_prob": 0.74797,
+              "model_prob": 0.74314,
               "implied_prob": 0.58299,
-              "edge_pp": 16.497391,
-              "fair_odds": -297,
+              "edge_pp": 16.014788,
+              "fair_odds": -289,
               "sample": 9.0,
               "team_sample": 10.0,
               "opp_sample": 9.0,
@@ -4559,17 +4318,17 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 56.9,
-              "wind_mph": 11.5,
-              "gust_mph": 17.7,
-              "precip_pct": 3,
+              "temp_f": 60.7,
+              "wind_mph": 12.1,
+              "gust_mph": 19.2,
+              "precip_pct": 1,
               "snow_in": 0.0
             },
             "flags": [
               {
                 "kind": "wind",
                 "severity": "low",
-                "text": "Breezy: 12 mph, gusting 18"
+                "text": "Breezy: 12 mph, gusting 19"
               }
             ]
           }
@@ -4581,9 +4340,9 @@
           "kickoff": "2026-11-28T20:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
-          "spread": 4.5,
-          "spread_details": "SC -4.5",
+          "provider": "Draft Kings",
+          "spread": 5.5,
+          "spread_details": "SC -5.5",
           "total": 40.5,
           "home": {
             "id": "228",
@@ -4591,7 +4350,7 @@
             "abbr": "CLEM",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/228.png",
             "elo": 1572.2,
-            "moneyline": 142
+            "moneyline": 170
           },
           "away": {
             "id": "2579",
@@ -4599,7 +4358,7 @@
             "abbr": "SC",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2579.png",
             "elo": 1561.0,
-            "moneyline": -170
+            "moneyline": -205
           },
           "legs": [
             {
@@ -4607,10 +4366,10 @@
               "team_id": "2579",
               "team_name": "South Carolina Gamecocks",
               "team_abbr": "SC",
-              "odds": -170,
+              "odds": -205,
               "model_prob": 0.40589,
-              "implied_prob": 0.60376,
-              "edge_pp": -19.786682,
+              "implied_prob": 0.64473,
+              "edge_pp": -23.883827,
               "fair_odds": 146,
               "sample": 10.0,
               "team_sample": 10.0,
@@ -4624,10 +4383,10 @@
               "team_id": "228",
               "team_name": "Clemson Tigers",
               "team_abbr": "CLEM",
-              "odds": 142,
+              "odds": 170,
               "model_prob": 0.59411,
-              "implied_prob": 0.39624,
-              "edge_pp": 19.786682,
+              "implied_prob": 0.35527,
+              "edge_pp": 23.883827,
               "fair_odds": -146,
               "sample": 10.0,
               "team_sample": 10.0,
@@ -4665,10 +4424,10 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 56.3,
-              "wind_mph": 3.5,
-              "gust_mph": 6.3,
-              "precip_pct": 3,
+              "temp_f": 56.8,
+              "wind_mph": 5.7,
+              "gust_mph": 10.5,
+              "precip_pct": 2,
               "snow_in": 0.0
             },
             "flags": []
@@ -4681,10 +4440,10 @@
           "kickoff": "2026-11-28T20:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
-          "spread": -3.5,
-          "spread_details": "VT -3.5",
-          "total": 52.5,
+          "provider": "Draft Kings",
+          "spread": -3.0,
+          "spread_details": "VT -3",
+          "total": 51.5,
           "home": {
             "id": "259",
             "name": "Virginia Tech Hokies",
@@ -4710,7 +4469,7 @@
               "odds": 120,
               "model_prob": 0.69156,
               "implied_prob": 0.43651,
-              "edge_pp": 25.505422,
+              "edge_pp": 25.505518,
               "fair_odds": -224,
               "sample": 10.0,
               "team_sample": 10.0,
@@ -4727,7 +4486,7 @@
               "odds": -142,
               "model_prob": 0.30844,
               "implied_prob": 0.56349,
-              "edge_pp": -25.505422,
+              "edge_pp": -25.505518,
               "fair_odds": 224,
               "sample": 10.0,
               "team_sample": 10.0,
@@ -4765,10 +4524,10 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 50.0,
-              "wind_mph": 3.4,
-              "gust_mph": 4.0,
-              "precip_pct": 3,
+              "temp_f": 52.1,
+              "wind_mph": 6.2,
+              "gust_mph": 11.4,
+              "precip_pct": 1,
               "snow_in": 0.0
             },
             "flags": []
@@ -4781,9 +4540,9 @@
           "kickoff": "2026-11-28T20:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
-          "spread": -3.5,
-          "spread_details": "ARST -3.5",
+          "provider": "Draft Kings",
+          "spread": -4.0,
+          "spread_details": "ARST -4",
           "total": 46.5,
           "home": {
             "id": "2032",
@@ -4791,7 +4550,7 @@
             "abbr": "ARST",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2032.png",
             "elo": 1416.5,
-            "moneyline": -166
+            "moneyline": -185
           },
           "away": {
             "id": "2653",
@@ -4799,7 +4558,7 @@
             "abbr": "TROY",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2653.png",
             "elo": 1345.0,
-            "moneyline": 140
+            "moneyline": 154
           },
           "legs": [
             {
@@ -4807,10 +4566,10 @@
               "team_id": "2653",
               "team_name": "Troy Trojans",
               "team_abbr": "TROY",
-              "odds": 140,
+              "odds": 154,
               "model_prob": 0.32565,
-              "implied_prob": 0.40036,
-              "edge_pp": -7.470909,
+              "implied_prob": 0.37753,
+              "edge_pp": -5.188131,
               "fair_odds": 207,
               "sample": 9.0,
               "team_sample": 9.0,
@@ -4824,10 +4583,10 @@
               "team_id": "2032",
               "team_name": "Arkansas State Red Wolves",
               "team_abbr": "ARST",
-              "odds": -166,
+              "odds": -185,
               "model_prob": 0.67435,
-              "implied_prob": 0.59964,
-              "edge_pp": 7.470909,
+              "implied_prob": 0.62247,
+              "edge_pp": 5.188131,
               "fair_odds": -207,
               "sample": 9.0,
               "team_sample": 9.0,
@@ -4865,10 +4624,10 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 49.9,
-              "wind_mph": 2.7,
-              "gust_mph": 4.3,
-              "precip_pct": 4,
+              "temp_f": 52.2,
+              "wind_mph": 3.9,
+              "gust_mph": 4.7,
+              "precip_pct": 3,
               "snow_in": 0.0
             },
             "flags": []
@@ -4881,10 +4640,10 @@
           "kickoff": "2026-11-28T20:30Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": 7.0,
           "spread_details": "USC -7",
-          "total": 46.5,
+          "total": 45.5,
           "home": {
             "id": "26",
             "name": "UCLA Bruins",
@@ -4965,9 +4724,9 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 70.1,
-              "wind_mph": 6.5,
-              "gust_mph": 14.3,
+              "temp_f": 73.5,
+              "wind_mph": 5.0,
+              "gust_mph": 11.0,
               "precip_pct": 0,
               "snow_in": 0.0
             },
@@ -4981,7 +4740,7 @@
           "kickoff": "2026-11-28T20:30Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -14.5,
           "spread_details": "BYU -14.5",
           "total": 55.5,
@@ -4991,7 +4750,7 @@
             "abbr": "BYU",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/252.png",
             "elo": 1705.8,
-            "moneyline": -575
+            "moneyline": -650
           },
           "away": {
             "id": "2132",
@@ -4999,7 +4758,7 @@
             "abbr": "CIN",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2132.png",
             "elo": 1472.8,
-            "moneyline": 425
+            "moneyline": 470
           },
           "legs": [
             {
@@ -5007,10 +4766,10 @@
               "team_id": "2132",
               "team_name": "Cincinnati Bearcats",
               "team_abbr": "CIN",
-              "odds": 425,
+              "odds": 470,
               "model_prob": 0.16007,
-              "implied_prob": 0.18274,
-              "edge_pp": -2.26732,
+              "implied_prob": 0.16835,
+              "edge_pp": -0.828225,
               "fair_odds": 525,
               "sample": 10.0,
               "team_sample": 10.0,
@@ -5024,10 +4783,10 @@
               "team_id": "252",
               "team_name": "BYU Cougars",
               "team_abbr": "BYU",
-              "odds": -575,
+              "odds": -650,
               "model_prob": 0.83993,
-              "implied_prob": 0.81726,
-              "edge_pp": 2.26732,
+              "implied_prob": 0.83165,
+              "edge_pp": 0.828225,
               "fair_odds": -525,
               "sample": 10.0,
               "team_sample": 11.0,
@@ -5065,10 +4824,10 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 49.6,
-              "wind_mph": 0.7,
-              "gust_mph": 1.8,
-              "precip_pct": 14,
+              "temp_f": 53.7,
+              "wind_mph": 1.1,
+              "gust_mph": 3.8,
+              "precip_pct": 19,
               "snow_in": 0.0
             },
             "flags": []
@@ -5081,17 +4840,17 @@
           "kickoff": "2026-11-28T20:30Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -14.0,
           "spread_details": "WAKE -14",
-          "total": 56.5,
+          "total": 55.5,
           "home": {
             "id": "154",
             "name": "Wake Forest Demon Deacons",
             "abbr": "WAKE",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/154.png",
             "elo": 1791.5,
-            "moneyline": -575
+            "moneyline": -625
           },
           "away": {
             "id": "150",
@@ -5099,7 +4858,7 @@
             "abbr": "DUKE",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/150.png",
             "elo": 1580.8,
-            "moneyline": 425
+            "moneyline": 455
           },
           "legs": [
             {
@@ -5107,11 +4866,11 @@
               "team_id": "150",
               "team_name": "Duke Blue Devils",
               "team_abbr": "DUKE",
-              "odds": 425,
-              "model_prob": 0.1781,
-              "implied_prob": 0.18274,
-              "edge_pp": -0.4645,
-              "fair_odds": 461,
+              "odds": 455,
+              "model_prob": 0.17809,
+              "implied_prob": 0.17288,
+              "edge_pp": 0.521683,
+              "fair_odds": 462,
               "sample": 10.0,
               "team_sample": 11.0,
               "opp_sample": 10.0,
@@ -5124,11 +4883,11 @@
               "team_id": "154",
               "team_name": "Wake Forest Demon Deacons",
               "team_abbr": "WAKE",
-              "odds": -575,
-              "model_prob": 0.8219,
-              "implied_prob": 0.81726,
-              "edge_pp": 0.4645,
-              "fair_odds": -461,
+              "odds": -625,
+              "model_prob": 0.82191,
+              "implied_prob": 0.82712,
+              "edge_pp": -0.521683,
+              "fair_odds": -462,
               "sample": 10.0,
               "team_sample": 10.0,
               "opp_sample": 11.0,
@@ -5165,10 +4924,10 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 53.7,
-              "wind_mph": 6.9,
-              "gust_mph": 12.3,
-              "precip_pct": 5,
+              "temp_f": 54.5,
+              "wind_mph": 7.2,
+              "gust_mph": 12.5,
+              "precip_pct": 1,
               "snow_in": 0.0
             },
             "flags": []
@@ -5181,7 +4940,7 @@
           "kickoff": "2026-11-28T20:30Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": 8.5,
           "spread_details": "SMU -8.5",
           "total": 60.5,
@@ -5198,7 +4957,7 @@
             "name": "SMU Mustangs",
             "abbr": "SMU",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2567.png",
-            "elo": 1592.1,
+            "elo": 1592.0,
             "moneyline": -310
           },
           "legs": [
@@ -5208,9 +4967,9 @@
               "team_name": "SMU Mustangs",
               "team_abbr": "SMU",
               "odds": -310,
-              "model_prob": 0.50199,
+              "model_prob": 0.50196,
               "implied_prob": 0.72575,
-              "edge_pp": -22.375822,
+              "edge_pp": -22.37908,
               "fair_odds": -101,
               "sample": 10.0,
               "team_sample": 10.0,
@@ -5225,9 +4984,9 @@
               "team_name": "Stanford Cardinal",
               "team_abbr": "STAN",
               "odds": 250,
-              "model_prob": 0.49801,
+              "model_prob": 0.49804,
               "implied_prob": 0.27425,
-              "edge_pp": 22.375822,
+              "edge_pp": 22.37908,
               "fair_odds": 101,
               "sample": 10.0,
               "team_sample": 10.0,
@@ -5266,9 +5025,9 @@
             },
             "weather": {
               "temp_f": 59.4,
-              "wind_mph": 1.7,
-              "gust_mph": 1.6,
-              "precip_pct": 6,
+              "wind_mph": 4.8,
+              "gust_mph": 11.4,
+              "precip_pct": 2,
               "snow_in": 0.0
             },
             "flags": []
@@ -5281,9 +5040,9 @@
           "kickoff": "2026-11-28T20:30Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
-          "spread": 7.5,
-          "spread_details": "PSU -7.5",
+          "provider": "Draft Kings",
+          "spread": 7.0,
+          "spread_details": "PSU -7",
           "total": 50.5,
           "home": {
             "id": "120",
@@ -5365,10 +5124,10 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 55.7,
-              "wind_mph": 4.6,
-              "gust_mph": 8.1,
-              "precip_pct": 2,
+              "temp_f": 56.0,
+              "wind_mph": 7.0,
+              "gust_mph": 11.9,
+              "precip_pct": 0,
               "snow_in": 0.0
             },
             "flags": []
@@ -5381,7 +5140,7 @@
           "kickoff": "2026-11-28T20:30Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -6.5,
           "spread_details": "USF -6.5",
           "total": 43.5,
@@ -5390,16 +5149,16 @@
             "name": "South Florida Bulls",
             "abbr": "USF",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/58.png",
-            "elo": 1448.2,
-            "moneyline": -225
+            "elo": 1463.9,
+            "moneyline": -238
           },
           "away": {
             "id": "2655",
             "name": "Tulane Green Wave",
             "abbr": "TULN",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2655.png",
-            "elo": 1491.6,
-            "moneyline": 185
+            "elo": 1487.7,
+            "moneyline": 195
           },
           "legs": [
             {
@@ -5407,16 +5166,16 @@
               "team_id": "2655",
               "team_name": "Tulane Green Wave",
               "team_abbr": "TULN",
-              "odds": 185,
-              "model_prob": 0.48329,
-              "implied_prob": 0.33635,
-              "edge_pp": 14.6938,
-              "fair_odds": 107,
-              "sample": 10.0,
+              "odds": 195,
+              "model_prob": 0.4553,
+              "implied_prob": 0.32497,
+              "edge_pp": 13.033553,
+              "fair_odds": 120,
+              "sample": 9.0,
               "team_sample": 11.0,
-              "opp_sample": 10.0,
+              "opp_sample": 9.0,
               "team_games": 7,
-              "opp_games": 6,
+              "opp_games": 5,
               "prior_credit": 4.0
             },
             {
@@ -5424,15 +5183,15 @@
               "team_id": "58",
               "team_name": "South Florida Bulls",
               "team_abbr": "USF",
-              "odds": -225,
-              "model_prob": 0.51671,
-              "implied_prob": 0.66365,
-              "edge_pp": -14.6938,
-              "fair_odds": -107,
-              "sample": 10.0,
-              "team_sample": 10.0,
+              "odds": -238,
+              "model_prob": 0.5447,
+              "implied_prob": 0.67503,
+              "edge_pp": -13.033553,
+              "fair_odds": -120,
+              "sample": 9.0,
+              "team_sample": 9.0,
               "opp_sample": 11.0,
-              "team_games": 6,
+              "team_games": 5,
               "opp_games": 7,
               "prior_credit": 4.0
             }
@@ -5465,10 +5224,10 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 62.0,
-              "wind_mph": 3.1,
-              "gust_mph": 2.9,
-              "precip_pct": 15,
+              "temp_f": 66.6,
+              "wind_mph": 1.6,
+              "gust_mph": 3.4,
+              "precip_pct": 9,
               "snow_in": 0.0
             },
             "flags": []
@@ -5481,7 +5240,7 @@
           "kickoff": "2026-11-28T20:30Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -4.5,
           "spread_details": "NIU -4.5",
           "total": 48.5,
@@ -5491,7 +5250,7 @@
             "abbr": "NIU",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2459.png",
             "elo": 1142.8,
-            "moneyline": -175
+            "moneyline": -198
           },
           "away": {
             "id": "2638",
@@ -5499,7 +5258,7 @@
             "abbr": "UTEP",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2638.png",
             "elo": 1145.9,
-            "moneyline": 145
+            "moneyline": 164
           },
           "legs": [
             {
@@ -5507,10 +5266,10 @@
               "team_id": "2638",
               "team_name": "UTEP Miners",
               "team_abbr": "UTEP",
-              "odds": 145,
+              "odds": 164,
               "model_prob": 0.42575,
-              "implied_prob": 0.39076,
-              "edge_pp": 3.498155,
+              "implied_prob": 0.3631,
+              "edge_pp": 6.264949,
               "fair_odds": 135,
               "sample": 10.0,
               "team_sample": 10.0,
@@ -5524,10 +5283,10 @@
               "team_id": "2459",
               "team_name": "Northern Illinois Huskies",
               "team_abbr": "NIU",
-              "odds": -175,
+              "odds": -198,
               "model_prob": 0.57425,
-              "implied_prob": 0.60924,
-              "edge_pp": -3.498155,
+              "implied_prob": 0.6369,
+              "edge_pp": -6.264949,
               "fair_odds": -135,
               "sample": 10.0,
               "team_sample": 11.0,
@@ -5565,9 +5324,9 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 64.1,
+              "temp_f": 61.3,
               "wind_mph": 5.9,
-              "gust_mph": 8.5,
+              "gust_mph": 9.6,
               "precip_pct": 1,
               "snow_in": 0.0
             },
@@ -5581,17 +5340,17 @@
           "kickoff": "2026-11-28T20:30Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
-          "spread": -2.5,
-          "spread_details": "BGSU -2.5",
+          "provider": "Draft Kings",
+          "spread": -3.0,
+          "spread_details": "BGSU -3",
           "total": 44.5,
           "home": {
             "id": "189",
             "name": "Bowling Green Falcons",
             "abbr": "BGSU",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/189.png",
-            "elo": 1350.0,
-            "moneyline": -118
+            "elo": 1350.2,
+            "moneyline": -155
           },
           "away": {
             "id": "113",
@@ -5599,7 +5358,7 @@
             "abbr": "MASS",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/113.png",
             "elo": 1122.4,
-            "moneyline": -102
+            "moneyline": 130
           },
           "legs": [
             {
@@ -5607,10 +5366,10 @@
               "team_id": "113",
               "team_name": "Massachusetts Minutemen",
               "team_abbr": "MASS",
-              "odds": -102,
-              "model_prob": 0.16427,
-              "implied_prob": 0.48264,
-              "edge_pp": -31.836701,
+              "odds": 130,
+              "model_prob": 0.16415,
+              "implied_prob": 0.41701,
+              "edge_pp": -25.285491,
               "fair_odds": 509,
               "sample": 10.0,
               "team_sample": 10.0,
@@ -5624,10 +5383,10 @@
               "team_id": "189",
               "team_name": "Bowling Green Falcons",
               "team_abbr": "BGSU",
-              "odds": -118,
-              "model_prob": 0.83573,
-              "implied_prob": 0.51736,
-              "edge_pp": 31.836701,
+              "odds": -155,
+              "model_prob": 0.83585,
+              "implied_prob": 0.58299,
+              "edge_pp": 25.285491,
               "fair_odds": -509,
               "sample": 10.0,
               "team_sample": 10.0,
@@ -5665,17 +5424,17 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 57.7,
-              "wind_mph": 12.1,
-              "gust_mph": 19.9,
+              "temp_f": 59.1,
+              "wind_mph": 13.0,
+              "gust_mph": 22.6,
               "precip_pct": 1,
               "snow_in": 0.0
             },
             "flags": [
               {
                 "kind": "wind",
-                "severity": "low",
-                "text": "Breezy: 12 mph, gusting 20"
+                "severity": "high",
+                "text": "Wind 13 mph, gusting 23 \u2014 kicking and the deep ball suffer"
               }
             ]
           }
@@ -5687,7 +5446,7 @@
           "kickoff": "2026-11-28T20:30Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -2.5,
           "spread_details": "DEL -2.5",
           "total": 57.5,
@@ -5697,15 +5456,15 @@
             "abbr": "DEL",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/48.png",
             "elo": 1545.9,
-            "moneyline": -122
+            "moneyline": -135
           },
           "away": {
             "id": "55",
             "name": "Jacksonville State Gamecocks",
             "abbr": "JXST",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/55.png",
-            "elo": 1526.8,
-            "moneyline": 102
+            "elo": 1526.9,
+            "moneyline": 114
           },
           "legs": [
             {
@@ -5713,10 +5472,10 @@
               "team_id": "55",
               "team_name": "Jacksonville State Gamecocks",
               "team_abbr": "JXST",
-              "odds": 102,
-              "model_prob": 0.39497,
-              "implied_prob": 0.47391,
-              "edge_pp": -7.894523,
+              "odds": 114,
+              "model_prob": 0.39518,
+              "implied_prob": 0.44856,
+              "edge_pp": -5.338339,
               "fair_odds": 153,
               "sample": 9.0,
               "team_sample": 9.0,
@@ -5730,10 +5489,10 @@
               "team_id": "48",
               "team_name": "Delaware Blue Hens",
               "team_abbr": "DEL",
-              "odds": -122,
-              "model_prob": 0.60503,
-              "implied_prob": 0.52609,
-              "edge_pp": 7.894523,
+              "odds": -135,
+              "model_prob": 0.60482,
+              "implied_prob": 0.55144,
+              "edge_pp": 5.338339,
               "fair_odds": -153,
               "sample": 9.0,
               "team_sample": 10.0,
@@ -5771,9 +5530,9 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 55.5,
-              "wind_mph": 7.4,
-              "gust_mph": 12.1,
+              "temp_f": 53.8,
+              "wind_mph": 8.6,
+              "gust_mph": 14.3,
               "precip_pct": 0,
               "snow_in": 0.0
             },
@@ -5787,25 +5546,25 @@
           "kickoff": "2026-11-28T21:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
-          "spread": -4.0,
-          "spread_details": "UNT -4",
+          "provider": "Draft Kings",
+          "spread": -3.5,
+          "spread_details": "UNT -3.5",
           "total": 47.5,
           "home": {
             "id": "249",
             "name": "North Texas Mean Green",
             "abbr": "UNT",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/249.png",
-            "elo": 1572.4,
-            "moneyline": -175
+            "elo": 1568.5,
+            "moneyline": -166
           },
           "away": {
             "id": "5",
             "name": "UAB Blazers",
             "abbr": "UAB",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/5.png",
-            "elo": 1443.5,
-            "moneyline": 145
+            "elo": 1444.8,
+            "moneyline": 140
           },
           "legs": [
             {
@@ -5813,11 +5572,11 @@
               "team_id": "5",
               "team_name": "UAB Blazers",
               "team_abbr": "UAB",
-              "odds": 145,
-              "model_prob": 0.2576,
-              "implied_prob": 0.39076,
-              "edge_pp": -13.316599,
-              "fair_odds": 288,
+              "odds": 140,
+              "model_prob": 0.26341,
+              "implied_prob": 0.40036,
+              "edge_pp": -13.694759,
+              "fair_odds": 280,
               "sample": 10.0,
               "team_sample": 10.0,
               "opp_sample": 10.0,
@@ -5830,11 +5589,11 @@
               "team_id": "249",
               "team_name": "North Texas Mean Green",
               "team_abbr": "UNT",
-              "odds": -175,
-              "model_prob": 0.7424,
-              "implied_prob": 0.60924,
-              "edge_pp": 13.316599,
-              "fair_odds": -288,
+              "odds": -166,
+              "model_prob": 0.73659,
+              "implied_prob": 0.59964,
+              "edge_pp": 13.694759,
+              "fair_odds": -280,
               "sample": 10.0,
               "team_sample": 10.0,
               "opp_sample": 10.0,
@@ -5871,9 +5630,9 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 69.1,
-              "wind_mph": 14.7,
-              "gust_mph": 18.3,
+              "temp_f": 70.2,
+              "wind_mph": 15.1,
+              "gust_mph": 19.5,
               "precip_pct": 0,
               "snow_in": 0.0
             },
@@ -5881,7 +5640,7 @@
               {
                 "kind": "wind",
                 "severity": "low",
-                "text": "Breezy: 15 mph, gusting 18"
+                "text": "Breezy: 15 mph, gusting 20"
               }
             ]
           }
@@ -5893,7 +5652,7 @@
           "kickoff": "2026-11-28T21:15Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -1.5,
           "spread_details": "MIZ -1.5",
           "total": 41.5,
@@ -5977,10 +5736,10 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 60.5,
-              "wind_mph": 4.4,
-              "gust_mph": 7.2,
-              "precip_pct": 5,
+              "temp_f": 59.1,
+              "wind_mph": 6.0,
+              "gust_mph": 13.0,
+              "precip_pct": 2,
               "snow_in": 0.0
             },
             "flags": []
@@ -5993,7 +5752,7 @@
           "kickoff": "2026-11-28T21:15Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": 3.5,
           "spread_details": "MSU -3.5",
           "total": 47.5,
@@ -6003,7 +5762,7 @@
             "abbr": "RUTG",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/164.png",
             "elo": 1372.3,
-            "moneyline": 124
+            "moneyline": 136
           },
           "away": {
             "id": "127",
@@ -6011,7 +5770,7 @@
             "abbr": "MSU",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/127.png",
             "elo": 1404.4,
-            "moneyline": -148
+            "moneyline": -162
           },
           "legs": [
             {
@@ -6019,10 +5778,10 @@
               "team_id": "127",
               "team_name": "Michigan State Spartans",
               "team_abbr": "MSU",
-              "odds": -148,
+              "odds": -162,
               "model_prob": 0.46707,
-              "implied_prob": 0.57206,
-              "edge_pp": -10.499421,
+              "implied_prob": 0.59337,
+              "edge_pp": -12.630432,
               "fair_odds": 114,
               "sample": 10.0,
               "team_sample": 10.0,
@@ -6036,10 +5795,10 @@
               "team_id": "164",
               "team_name": "Rutgers Scarlet Knights",
               "team_abbr": "RUTG",
-              "odds": 124,
+              "odds": 136,
               "model_prob": 0.53293,
-              "implied_prob": 0.42794,
-              "edge_pp": 10.499421,
+              "implied_prob": 0.40663,
+              "edge_pp": 12.630432,
               "fair_odds": -114,
               "sample": 10.0,
               "team_sample": 10.0,
@@ -6077,13 +5836,19 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 54.9,
-              "wind_mph": 6.5,
-              "gust_mph": 11.9,
+              "temp_f": 52.4,
+              "wind_mph": 7.9,
+              "gust_mph": 15.0,
               "precip_pct": 0,
               "snow_in": 0.0
             },
-            "flags": []
+            "flags": [
+              {
+                "kind": "wind",
+                "severity": "low",
+                "text": "Breezy: 8 mph, gusting 15"
+              }
+            ]
           }
         },
         {
@@ -6093,17 +5858,17 @@
           "kickoff": "2026-11-28T23:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": 21.0,
           "spread_details": "BOIS -21",
-          "total": 75.5,
+          "total": 76.5,
           "home": {
             "id": "36",
             "name": "Colorado State Rams",
             "abbr": "CSU",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/36.png",
             "elo": 1236.9,
-            "moneyline": 1000
+            "moneyline": 950
           },
           "away": {
             "id": "68",
@@ -6111,7 +5876,7 @@
             "abbr": "BOIS",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/68.png",
             "elo": 1631.3,
-            "moneyline": -1800
+            "moneyline": -1650
           },
           "legs": [
             {
@@ -6119,10 +5884,10 @@
               "team_id": "68",
               "team_name": "Boise State Broncos",
               "team_abbr": "BOIS",
-              "odds": -1800,
+              "odds": -1650,
               "model_prob": 0.87588,
-              "implied_prob": 0.91244,
-              "edge_pp": -3.655838,
+              "implied_prob": 0.90826,
+              "edge_pp": -3.237287,
               "fair_odds": -706,
               "sample": 10.0,
               "team_sample": 10.0,
@@ -6136,10 +5901,10 @@
               "team_id": "36",
               "team_name": "Colorado State Rams",
               "team_abbr": "CSU",
-              "odds": 1000,
+              "odds": 950,
               "model_prob": 0.12412,
-              "implied_prob": 0.08756,
-              "edge_pp": 3.655838,
+              "implied_prob": 0.09174,
+              "edge_pp": 3.237287,
               "fair_odds": 706,
               "sample": 10.0,
               "team_sample": 10.0,
@@ -6178,9 +5943,9 @@
             },
             "weather": {
               "temp_f": 43.1,
-              "wind_mph": 3.5,
-              "gust_mph": 4.7,
-              "precip_pct": 7,
+              "wind_mph": 6.9,
+              "gust_mph": 6.5,
+              "precip_pct": 19,
               "snow_in": 0.0
             },
             "flags": []
@@ -6193,7 +5958,7 @@
           "kickoff": "2026-11-28T23:15Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -7.0,
           "spread_details": "OKST -7",
           "total": 66.5,
@@ -6203,7 +5968,7 @@
             "abbr": "OKST",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/197.png",
             "elo": 1504.0,
-            "moneyline": -230
+            "moneyline": -250
           },
           "away": {
             "id": "2305",
@@ -6211,7 +5976,7 @@
             "abbr": "KU",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2305.png",
             "elo": 1477.6,
-            "moneyline": 190
+            "moneyline": 205
           },
           "legs": [
             {
@@ -6219,10 +5984,10 @@
               "team_id": "2305",
               "team_name": "Kansas Jayhawks",
               "team_abbr": "KU",
-              "odds": 190,
+              "odds": 205,
               "model_prob": 0.38491,
-              "implied_prob": 0.33099,
-              "edge_pp": 5.392109,
+              "implied_prob": 0.31461,
+              "edge_pp": 7.030732,
               "fair_odds": 160,
               "sample": 11.0,
               "team_sample": 11.0,
@@ -6236,10 +6001,10 @@
               "team_id": "197",
               "team_name": "Oklahoma State Cowboys",
               "team_abbr": "OKST",
-              "odds": -230,
+              "odds": -250,
               "model_prob": 0.61509,
-              "implied_prob": 0.66901,
-              "edge_pp": -5.392109,
+              "implied_prob": 0.68539,
+              "edge_pp": -7.030732,
               "fair_odds": -160,
               "sample": 11.0,
               "team_sample": 11.0,
@@ -6277,10 +6042,10 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 55.6,
+              "temp_f": 58.1,
               "wind_mph": 3.4,
-              "gust_mph": 3.4,
-              "precip_pct": 0,
+              "gust_mph": 2.0,
+              "precip_pct": 1,
               "snow_in": 0.0
             },
             "flags": []
@@ -6293,9 +6058,9 @@
           "kickoff": "2026-11-28T23:30Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
-          "spread": 2.5,
-          "spread_details": "SDSU -2.5",
+          "provider": "Draft Kings",
+          "spread": 1.5,
+          "spread_details": "SDSU -1.5",
           "total": 45.5,
           "home": {
             "id": "265",
@@ -6303,7 +6068,7 @@
             "abbr": "WSU",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/265.png",
             "elo": 1402.0,
-            "moneyline": 114
+            "moneyline": -110
           },
           "away": {
             "id": "21",
@@ -6311,7 +6076,7 @@
             "abbr": "SDSU",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/21.png",
             "elo": 1511.3,
-            "moneyline": -135
+            "moneyline": -110
           },
           "legs": [
             {
@@ -6319,10 +6084,10 @@
               "team_id": "21",
               "team_name": "San Diego State Aztecs",
               "team_abbr": "SDSU",
-              "odds": -135,
+              "odds": -110,
               "model_prob": 0.57753,
-              "implied_prob": 0.55144,
-              "edge_pp": 2.608407,
+              "implied_prob": 0.5,
+              "edge_pp": 7.752519,
               "fair_odds": -137,
               "sample": 10.0,
               "team_sample": 10.0,
@@ -6336,10 +6101,10 @@
               "team_id": "265",
               "team_name": "Washington State Cougars",
               "team_abbr": "WSU",
-              "odds": 114,
+              "odds": -110,
               "model_prob": 0.42247,
-              "implied_prob": 0.44856,
-              "edge_pp": -2.608407,
+              "implied_prob": 0.5,
+              "edge_pp": -7.752519,
               "fair_odds": 137,
               "sample": 10.0,
               "team_sample": 10.0,
@@ -6377,10 +6142,10 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 42.3,
-              "wind_mph": 6.2,
-              "gust_mph": 5.6,
-              "precip_pct": 23,
+              "temp_f": 43.2,
+              "wind_mph": 7.7,
+              "gust_mph": 12.8,
+              "precip_pct": 15,
               "snow_in": 0.0
             },
             "flags": []
@@ -6393,7 +6158,7 @@
           "kickoff": "2026-11-29T00:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -22.5,
           "spread_details": "IU -22.5",
           "total": 52.5,
@@ -6477,17 +6242,17 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 47.0,
-              "wind_mph": 8.2,
-              "gust_mph": 27.1,
-              "precip_pct": 1,
+              "temp_f": 49.2,
+              "wind_mph": 10.6,
+              "gust_mph": 29.8,
+              "precip_pct": 2,
               "snow_in": 0.0
             },
             "flags": [
               {
                 "kind": "wind",
                 "severity": "high",
-                "text": "Wind 8 mph, gusting 27 \u2014 kicking and the deep ball suffer"
+                "text": "Wind 11 mph, gusting 30 \u2014 kicking and the deep ball suffer"
               }
             ]
           }
@@ -6499,7 +6264,7 @@
           "kickoff": "2026-11-29T00:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": 11.5,
           "spread_details": "TENN -11.5",
           "total": 43.5,
@@ -6583,17 +6348,17 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 53.3,
-              "wind_mph": 8.1,
-              "gust_mph": 24.6,
-              "precip_pct": 2,
+              "temp_f": 55.7,
+              "wind_mph": 6.4,
+              "gust_mph": 19.7,
+              "precip_pct": 1,
               "snow_in": 0.0
             },
             "flags": [
               {
                 "kind": "wind",
-                "severity": "high",
-                "text": "Wind 8 mph, gusting 25 \u2014 kicking and the deep ball suffer"
+                "severity": "low",
+                "text": "Breezy: 6 mph, gusting 20"
               }
             ]
           }
@@ -6605,7 +6370,7 @@
           "kickoff": "2026-11-29T00:30Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -16.5,
           "spread_details": "ALA -16.5",
           "total": 49.5,
@@ -6615,7 +6380,7 @@
             "abbr": "ALA",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/333.png",
             "elo": 1745.3,
-            "moneyline": -650
+            "moneyline": -800
           },
           "away": {
             "id": "2",
@@ -6623,7 +6388,7 @@
             "abbr": "AUB",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2.png",
             "elo": 1531.7,
-            "moneyline": 470
+            "moneyline": 550
           },
           "legs": [
             {
@@ -6631,10 +6396,10 @@
               "team_id": "2",
               "team_name": "Auburn Tigers",
               "team_abbr": "AUB",
-              "odds": 470,
+              "odds": 550,
               "model_prob": 0.17563,
-              "implied_prob": 0.16835,
-              "edge_pp": 0.727891,
+              "implied_prob": 0.14754,
+              "edge_pp": 2.808809,
               "fair_odds": 469,
               "sample": 9.85,
               "team_sample": 9.85,
@@ -6648,10 +6413,10 @@
               "team_id": "333",
               "team_name": "Alabama Crimson Tide",
               "team_abbr": "ALA",
-              "odds": -650,
+              "odds": -800,
               "model_prob": 0.82437,
-              "implied_prob": 0.83165,
-              "edge_pp": -0.727891,
+              "implied_prob": 0.85246,
+              "edge_pp": -2.808809,
               "fair_odds": -469,
               "sample": 9.85,
               "team_sample": 10.0,
@@ -6689,13 +6454,19 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 53.1,
-              "wind_mph": 4.5,
-              "gust_mph": 7.4,
-              "precip_pct": 2,
+              "temp_f": 50.5,
+              "wind_mph": 5.6,
+              "gust_mph": 17.0,
+              "precip_pct": 0,
               "snow_in": 0.0
             },
-            "flags": []
+            "flags": [
+              {
+                "kind": "wind",
+                "severity": "low",
+                "text": "Breezy: 6 mph, gusting 17"
+              }
+            ]
           }
         },
         {
@@ -6705,9 +6476,9 @@
           "kickoff": "2026-11-29T00:30Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
-          "spread": -13.5,
-          "spread_details": "ORE -13.5",
+          "provider": "Draft Kings",
+          "spread": -14.0,
+          "spread_details": "ORE -14",
           "total": 49.5,
           "home": {
             "id": "2483",
@@ -6715,7 +6486,7 @@
             "abbr": "ORE",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2483.png",
             "elo": 1812.5,
-            "moneyline": -520
+            "moneyline": -600
           },
           "away": {
             "id": "264",
@@ -6723,7 +6494,7 @@
             "abbr": "WASH",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/264.png",
             "elo": 1685.4,
-            "moneyline": 390
+            "moneyline": 440
           },
           "legs": [
             {
@@ -6731,10 +6502,10 @@
               "team_id": "264",
               "team_name": "Washington Huskies",
               "team_abbr": "WASH",
-              "odds": 390,
+              "odds": 440,
               "model_prob": 0.25951,
-              "implied_prob": 0.19571,
-              "edge_pp": 6.380579,
+              "implied_prob": 0.17766,
+              "edge_pp": 8.184789,
               "fair_odds": 285,
               "sample": 10.0,
               "team_sample": 10.0,
@@ -6748,10 +6519,10 @@
               "team_id": "2483",
               "team_name": "Oregon Ducks",
               "team_abbr": "ORE",
-              "odds": -520,
+              "odds": -600,
               "model_prob": 0.74049,
-              "implied_prob": 0.80429,
-              "edge_pp": -6.380579,
+              "implied_prob": 0.82234,
+              "edge_pp": -8.184789,
               "fair_odds": -285,
               "sample": 10.0,
               "team_sample": 11.0,
@@ -6789,10 +6560,10 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 48.7,
-              "wind_mph": 2.9,
-              "gust_mph": 3.6,
-              "precip_pct": 30,
+              "temp_f": 50.4,
+              "wind_mph": 3.6,
+              "gust_mph": 3.1,
+              "precip_pct": 28,
               "snow_in": 0.0
             },
             "flags": []
@@ -6805,7 +6576,7 @@
           "kickoff": "2026-11-29T00:30Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": 9.5,
           "spread_details": "PITT -9.5",
           "total": 47.5,
@@ -6889,9 +6660,9 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 64.0,
-              "wind_mph": 1.9,
-              "gust_mph": 3.1,
+              "temp_f": 63.8,
+              "wind_mph": 3.7,
+              "gust_mph": 2.7,
               "precip_pct": 47,
               "snow_in": 0.0
             },
@@ -6905,7 +6676,7 @@
           "kickoff": "2026-11-29T02:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -7.5,
           "spread_details": "ARIZ -7.5",
           "total": 54.5,
@@ -6989,9 +6760,9 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 67.5,
-              "wind_mph": 1.2,
-              "gust_mph": 2.0,
+              "temp_f": 67.8,
+              "wind_mph": 1.3,
+              "gust_mph": 1.1,
               "precip_pct": 0,
               "snow_in": 0.0
             },
@@ -7005,7 +6776,7 @@
           "kickoff": "2026-11-29T02:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -4.5,
           "spread_details": "UNLV -4.5",
           "total": 43.5,
@@ -7099,7 +6870,7 @@
           "kickoff": "2026-11-29T02:30Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -6.0,
           "spread_details": "HOU -6",
           "total": 55.5,
@@ -7183,9 +6954,9 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 66.0,
-              "wind_mph": 6.3,
-              "gust_mph": 16.8,
+              "temp_f": 66.4,
+              "wind_mph": 5.7,
+              "gust_mph": 15.0,
               "precip_pct": 0,
               "snow_in": 0.0
             },
@@ -7193,7 +6964,7 @@
               {
                 "kind": "wind",
                 "severity": "low",
-                "text": "Breezy: 6 mph, gusting 17"
+                "text": "Breezy: 6 mph, gusting 15"
               }
             ]
           }
@@ -7205,7 +6976,7 @@
           "kickoff": "2026-11-29T02:30Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": 7.0,
           "spread_details": "TXST -7",
           "total": 52.5,
@@ -7289,10 +7060,10 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 41.2,
-              "wind_mph": 1.8,
-              "gust_mph": 4.0,
-              "precip_pct": 25,
+              "temp_f": 46.3,
+              "wind_mph": 2.7,
+              "gust_mph": 2.9,
+              "precip_pct": 26,
               "snow_in": 0.0
             },
             "flags": []
@@ -7305,17 +7076,17 @@
           "kickoff": "2026-11-29T03:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
-          "spread": -2.5,
-          "spread_details": "FRES -2.5",
-          "total": 56.5,
+          "provider": "Draft Kings",
+          "spread": -3.0,
+          "spread_details": "FRES -3",
+          "total": 57.5,
           "home": {
             "id": "278",
             "name": "Fresno State Bulldogs",
             "abbr": "FRES",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/278.png",
             "elo": 1475.0,
-            "moneyline": -130
+            "moneyline": -155
           },
           "away": {
             "id": "204",
@@ -7323,7 +7094,7 @@
             "abbr": "ORST",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/204.png",
             "elo": 1412.8,
-            "moneyline": 110
+            "moneyline": 130
           },
           "legs": [
             {
@@ -7331,10 +7102,10 @@
               "team_id": "204",
               "team_name": "Oregon State Beavers",
               "team_abbr": "ORST",
-              "odds": 110,
+              "odds": 130,
               "model_prob": 0.33739,
-              "implied_prob": 0.45726,
-              "edge_pp": -11.98685,
+              "implied_prob": 0.41701,
+              "edge_pp": -7.961939,
               "fair_odds": 196,
               "sample": 10.0,
               "team_sample": 10.0,
@@ -7348,10 +7119,10 @@
               "team_id": "278",
               "team_name": "Fresno State Bulldogs",
               "team_abbr": "FRES",
-              "odds": -130,
+              "odds": -155,
               "model_prob": 0.66261,
-              "implied_prob": 0.54274,
-              "edge_pp": 11.98685,
+              "implied_prob": 0.58299,
+              "edge_pp": 7.961939,
               "fair_odds": -196,
               "sample": 10.0,
               "team_sample": 10.0,
@@ -7389,13 +7160,19 @@
               "indoor": false
             },
             "weather": {
-              "temp_f": 64.4,
-              "wind_mph": 5.2,
-              "gust_mph": 8.1,
-              "precip_pct": 23,
+              "temp_f": 66.3,
+              "wind_mph": 8.4,
+              "gust_mph": 16.6,
+              "precip_pct": 14,
               "snow_in": 0.0
             },
-            "flags": []
+            "flags": [
+              {
+                "kind": "wind",
+                "severity": "low",
+                "text": "Breezy: 8 mph, gusting 17"
+              }
+            ]
           }
         },
         {
@@ -7405,7 +7182,7 @@
           "kickoff": "2026-11-29T04:00Z",
           "status": "Scheduled",
           "neutral": false,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "spread": -13.5,
           "spread_details": "HAW -13.5",
           "total": 38.5,
@@ -7415,15 +7192,15 @@
             "abbr": "HAW",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/62.png",
             "elo": 1409.8,
-            "moneyline": -535
+            "moneyline": -550
           },
           "away": {
             "id": "16",
             "name": "Sacramento State Hornets",
             "abbr": "SAC",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/16.png",
-            "elo": 1302.4,
-            "moneyline": 400
+            "elo": 1302.8,
+            "moneyline": 410
           },
           "legs": [
             {
@@ -7431,11 +7208,11 @@
               "team_id": "16",
               "team_name": "Sacramento State Hornets",
               "team_abbr": "SAC",
-              "odds": 400,
-              "model_prob": 0.28194,
-              "implied_prob": 0.19184,
-              "edge_pp": 9.009479,
-              "fair_odds": 255,
+              "odds": 410,
+              "model_prob": 0.28236,
+              "implied_prob": 0.18813,
+              "edge_pp": 9.422404,
+              "fair_odds": 254,
               "sample": 6.35,
               "team_sample": 6.35,
               "opp_sample": 10.0,
@@ -7448,11 +7225,11 @@
               "team_id": "62",
               "team_name": "Hawai'i Rainbow Warriors",
               "team_abbr": "HAW",
-              "odds": -535,
-              "model_prob": 0.71806,
-              "implied_prob": 0.80816,
-              "edge_pp": -9.009479,
-              "fair_odds": -255,
+              "odds": -550,
+              "model_prob": 0.71764,
+              "implied_prob": 0.81187,
+              "edge_pp": -9.422404,
+              "fair_odds": -254,
               "sample": 6.35,
               "team_sample": 10.0,
               "opp_sample": 6.35,
@@ -7492,7 +7269,7 @@
               "temp_f": 70.8,
               "wind_mph": 9.4,
               "gust_mph": 30.4,
-              "precip_pct": 4,
+              "precip_pct": 5,
               "snow_in": 0.0
             },
             "flags": [
@@ -7509,6 +7286,34 @@
         "points": 6.0,
         "legs": [
           {
+            "event_id": "401866471",
+            "matchup": "M-OH @ WMU",
+            "kickoff": "2026-11-25T00:00Z",
+            "team_abbr": "WMU",
+            "team_name": "Western Michigan Broncos",
+            "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2711.png",
+            "spread": -7.5,
+            "source": "Draft Kings",
+            "teased": -1.5,
+            "band": "fav -8.5..-7.5",
+            "prob": 0.7063,
+            "push_risk": false
+          },
+          {
+            "event_id": "401866472",
+            "matchup": "BUFF @ AKR",
+            "kickoff": "2026-11-27T17:00Z",
+            "team_abbr": "BUFF",
+            "team_name": "Buffalo Bulls",
+            "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2084.png",
+            "spread": -7.5,
+            "source": "Draft Kings",
+            "teased": -1.5,
+            "band": "fav -8.5..-7.5",
+            "prob": 0.7063,
+            "push_risk": false
+          },
+          {
             "event_id": "401864546",
             "matchup": "AFA @ UNM",
             "kickoff": "2026-11-27T21:30Z",
@@ -7516,9 +7321,23 @@
             "team_name": "New Mexico Lobos",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/167.png",
             "spread": -6.5,
-            "source": "DraftKings",
+            "source": "Draft Kings",
             "teased": -0.5,
             "band": "fav -7.5..-6.5",
+            "prob": 0.7063,
+            "push_risk": false
+          },
+          {
+            "event_id": "401858544",
+            "matchup": "MINN @ WIS",
+            "kickoff": "2026-11-28T00:30Z",
+            "team_abbr": "WIS",
+            "team_name": "Wisconsin Badgers",
+            "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/275.png",
+            "spread": -7.5,
+            "source": "Draft Kings",
+            "teased": -1.5,
+            "band": "fav -8.5..-7.5",
             "prob": 0.7063,
             "push_risk": false
           },
@@ -7530,7 +7349,7 @@
             "team_name": "Louisiana Tech Bulldogs",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2348.png",
             "spread": 2.5,
-            "source": "DraftKings",
+            "source": "Draft Kings",
             "teased": 8.5,
             "band": "dog +1.5..+2.5",
             "prob": 0.7063,
@@ -7544,7 +7363,7 @@
             "team_name": "UCF Knights",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2116.png",
             "spread": 2.5,
-            "source": "DraftKings",
+            "source": "Draft Kings",
             "teased": 8.5,
             "band": "dog +1.5..+2.5",
             "prob": 0.7063,
@@ -7558,23 +7377,9 @@
             "team_name": "Army Black Knights",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/349.png",
             "spread": -6.5,
-            "source": "DraftKings",
+            "source": "Draft Kings",
             "teased": -0.5,
             "band": "fav -7.5..-6.5",
-            "prob": 0.7063,
-            "push_risk": false
-          },
-          {
-            "event_id": "401858539",
-            "matchup": "PSU @ MD",
-            "kickoff": "2026-11-28T20:30Z",
-            "team_abbr": "PSU",
-            "team_name": "Penn State Nittany Lions",
-            "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/213.png",
-            "spread": -7.5,
-            "source": "DraftKings",
-            "teased": -1.5,
-            "band": "fav -8.5..-7.5",
             "prob": 0.7063,
             "push_risk": false
           },
@@ -7586,23 +7391,9 @@
             "team_name": "South Florida Bulls",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/58.png",
             "spread": -6.5,
-            "source": "DraftKings",
+            "source": "Draft Kings",
             "teased": -0.5,
             "band": "fav -7.5..-6.5",
-            "prob": 0.7063,
-            "push_risk": false
-          },
-          {
-            "event_id": "401866475",
-            "matchup": "MASS @ BGSU",
-            "kickoff": "2026-11-28T20:30Z",
-            "team_abbr": "MASS",
-            "team_name": "Massachusetts Minutemen",
-            "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/113.png",
-            "spread": 2.5,
-            "source": "DraftKings",
-            "teased": 8.5,
-            "band": "dog +1.5..+2.5",
             "prob": 0.7063,
             "push_risk": false
           },
@@ -7614,21 +7405,7 @@
             "team_name": "Jacksonville State Gamecocks",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/55.png",
             "spread": 2.5,
-            "source": "DraftKings",
-            "teased": 8.5,
-            "band": "dog +1.5..+2.5",
-            "prob": 0.7063,
-            "push_risk": false
-          },
-          {
-            "event_id": "401860929",
-            "matchup": "SDSU @ WSU",
-            "kickoff": "2026-11-28T23:30Z",
-            "team_abbr": "WSU",
-            "team_name": "Washington State Cougars",
-            "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/265.png",
-            "spread": 2.5,
-            "source": "DraftKings",
+            "source": "Draft Kings",
             "teased": 8.5,
             "band": "dog +1.5..+2.5",
             "prob": 0.7063,
@@ -7642,30 +7419,16 @@
             "team_name": "Arizona Wildcats",
             "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/12.png",
             "spread": -7.5,
-            "source": "DraftKings",
+            "source": "Draft Kings",
             "teased": -1.5,
             "band": "fav -8.5..-7.5",
-            "prob": 0.7063,
-            "push_risk": false
-          },
-          {
-            "event_id": "401860927",
-            "matchup": "ORST @ FRES",
-            "kickoff": "2026-11-29T03:00Z",
-            "team_abbr": "ORST",
-            "team_name": "Oregon State Beavers",
-            "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/204.png",
-            "spread": 2.5,
-            "source": "DraftKings",
-            "teased": 8.5,
-            "band": "dog +1.5..+2.5",
             "prob": 0.7063,
             "push_risk": false
           }
         ],
         "per_leg_rate": 0.7063,
         "per_leg_stderr": 0.0196,
-        "provider": "DraftKings",
+        "provider": "Draft Kings",
         "provider_is_mine": false,
         "captured_at": null,
         "max_price_best": 101,
@@ -7706,16 +7469,16 @@
           "points": 10.0,
           "legs": [
             {
-              "event_id": "401866472",
-              "matchup": "BUFF @ AKR",
+              "event_id": "401866473",
+              "matchup": "TOL @ OHIO",
               "kickoff": "2026-11-27T17:00Z",
-              "team_abbr": "BUFF",
-              "team_name": "Buffalo Bulls",
-              "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2084.png",
-              "spread": -8.5,
-              "source": "DraftKings",
-              "teased": 1.5,
-              "band": "fav -12.5..-8.5",
+              "team_abbr": "OHIO",
+              "team_name": "Ohio Bobcats",
+              "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/195.png",
+              "spread": 3.5,
+              "source": "Draft Kings",
+              "teased": 13.5,
+              "band": "dog +1.5..+3.5",
               "prob": 0.7723,
               "push_risk": false
             },
@@ -7726,9 +7489,9 @@
               "team_abbr": "NDSU",
               "team_name": "North Dakota State Bison",
               "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2449.png",
-              "spread": -10.5,
-              "source": "DraftKings",
-              "teased": -0.5,
+              "spread": -9.5,
+              "source": "Draft Kings",
+              "teased": 0.5,
               "band": "fav -12.5..-8.5",
               "prob": 0.7723,
               "push_risk": false
@@ -7740,23 +7503,9 @@
               "team_abbr": "TEX",
               "team_name": "Texas Longhorns",
               "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/251.png",
-              "spread": -10.5,
-              "source": "DraftKings",
-              "teased": -0.5,
-              "band": "fav -12.5..-8.5",
-              "prob": 0.7723,
-              "push_risk": false
-            },
-            {
-              "event_id": "401858540",
-              "matchup": "MICH @ OSU",
-              "kickoff": "2026-11-28T17:00Z",
-              "team_abbr": "OSU",
-              "team_name": "Ohio State Buckeyes",
-              "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/194.png",
-              "spread": -10.5,
-              "source": "DraftKings",
-              "teased": -0.5,
+              "spread": -11.5,
+              "source": "Draft Kings",
+              "teased": -1.5,
               "band": "fav -12.5..-8.5",
               "prob": 0.7723,
               "push_risk": false
@@ -7769,7 +7518,7 @@
               "team_name": "Wyoming Cowboys",
               "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2751.png",
               "spread": 3.5,
-              "source": "DraftKings",
+              "source": "Draft Kings",
               "teased": 13.5,
               "band": "dog +1.5..+3.5",
               "prob": 0.7723,
@@ -7783,7 +7532,7 @@
               "team_name": "Louisiana Tech Bulldogs",
               "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2348.png",
               "spread": 2.5,
-              "source": "DraftKings",
+              "source": "Draft Kings",
               "teased": 12.5,
               "band": "dog +1.5..+3.5",
               "prob": 0.7723,
@@ -7797,7 +7546,7 @@
               "team_name": "UCF Knights",
               "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2116.png",
               "spread": 2.5,
-              "source": "DraftKings",
+              "source": "Draft Kings",
               "teased": 12.5,
               "band": "dog +1.5..+3.5",
               "prob": 0.7723,
@@ -7811,37 +7560,9 @@
               "team_name": "Florida International Panthers",
               "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2229.png",
               "spread": -11.5,
-              "source": "DraftKings",
+              "source": "Draft Kings",
               "teased": -1.5,
               "band": "fav -12.5..-8.5",
-              "prob": 0.7723,
-              "push_risk": false
-            },
-            {
-              "event_id": "401858317",
-              "matchup": "UVA @ VT",
-              "kickoff": "2026-11-28T20:00Z",
-              "team_abbr": "UVA",
-              "team_name": "Virginia Cavaliers",
-              "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/258.png",
-              "spread": 3.5,
-              "source": "DraftKings",
-              "teased": 13.5,
-              "band": "dog +1.5..+3.5",
-              "prob": 0.7723,
-              "push_risk": false
-            },
-            {
-              "event_id": "401869939",
-              "matchup": "TROY @ ARST",
-              "kickoff": "2026-11-28T20:00Z",
-              "team_abbr": "TROY",
-              "team_name": "Troy Trojans",
-              "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2653.png",
-              "spread": 3.5,
-              "source": "DraftKings",
-              "teased": 13.5,
-              "band": "dog +1.5..+3.5",
               "prob": 0.7723,
               "push_risk": false
             },
@@ -7853,23 +7574,9 @@
               "team_name": "SMU Mustangs",
               "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2567.png",
               "spread": -8.5,
-              "source": "DraftKings",
+              "source": "Draft Kings",
               "teased": 1.5,
               "band": "fav -12.5..-8.5",
-              "prob": 0.7723,
-              "push_risk": false
-            },
-            {
-              "event_id": "401866475",
-              "matchup": "MASS @ BGSU",
-              "kickoff": "2026-11-28T20:30Z",
-              "team_abbr": "MASS",
-              "team_name": "Massachusetts Minutemen",
-              "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/113.png",
-              "spread": 2.5,
-              "source": "DraftKings",
-              "teased": 12.5,
-              "band": "dog +1.5..+3.5",
               "prob": 0.7723,
               "push_risk": false
             },
@@ -7881,8 +7588,22 @@
               "team_name": "Jacksonville State Gamecocks",
               "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/55.png",
               "spread": 2.5,
-              "source": "DraftKings",
+              "source": "Draft Kings",
               "teased": 12.5,
+              "band": "dog +1.5..+3.5",
+              "prob": 0.7723,
+              "push_risk": false
+            },
+            {
+              "event_id": "401862843",
+              "matchup": "UAB @ UNT",
+              "kickoff": "2026-11-28T21:00Z",
+              "team_abbr": "UAB",
+              "team_name": "UAB Blazers",
+              "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/5.png",
+              "spread": 3.5,
+              "source": "Draft Kings",
+              "teased": 13.5,
               "band": "dog +1.5..+3.5",
               "prob": 0.7723,
               "push_risk": false
@@ -7895,22 +7616,8 @@
               "team_name": "Rutgers Scarlet Knights",
               "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/164.png",
               "spread": 3.5,
-              "source": "DraftKings",
+              "source": "Draft Kings",
               "teased": 13.5,
-              "band": "dog +1.5..+3.5",
-              "prob": 0.7723,
-              "push_risk": false
-            },
-            {
-              "event_id": "401860929",
-              "matchup": "SDSU @ WSU",
-              "kickoff": "2026-11-28T23:30Z",
-              "team_abbr": "WSU",
-              "team_name": "Washington State Cougars",
-              "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/265.png",
-              "spread": 2.5,
-              "source": "DraftKings",
-              "teased": 12.5,
               "band": "dog +1.5..+3.5",
               "prob": 0.7723,
               "push_risk": false
@@ -7923,7 +7630,7 @@
               "team_name": "Tennessee Volunteers",
               "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2633.png",
               "spread": -11.5,
-              "source": "DraftKings",
+              "source": "Draft Kings",
               "teased": -1.5,
               "band": "fav -12.5..-8.5",
               "prob": 0.7723,
@@ -7937,23 +7644,9 @@
               "team_name": "Pittsburgh Panthers",
               "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/221.png",
               "spread": -9.5,
-              "source": "DraftKings",
+              "source": "Draft Kings",
               "teased": 0.5,
               "band": "fav -12.5..-8.5",
-              "prob": 0.7723,
-              "push_risk": false
-            },
-            {
-              "event_id": "401860927",
-              "matchup": "ORST @ FRES",
-              "kickoff": "2026-11-29T03:00Z",
-              "team_abbr": "ORST",
-              "team_name": "Oregon State Beavers",
-              "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/204.png",
-              "spread": 2.5,
-              "source": "DraftKings",
-              "teased": 12.5,
-              "band": "dog +1.5..+3.5",
               "prob": 0.7723,
               "push_risk": false
             },
@@ -7965,9 +7658,23 @@
               "team_name": "App State Mountaineers",
               "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2026.png",
               "spread": 3.0,
-              "source": "DraftKings",
+              "source": "Draft Kings",
               "teased": 13.0,
               "band": "dog +1.5..+3.5",
+              "prob": 0.7529,
+              "push_risk": true
+            },
+            {
+              "event_id": "401858540",
+              "matchup": "MICH @ OSU",
+              "kickoff": "2026-11-28T17:00Z",
+              "team_abbr": "OSU",
+              "team_name": "Ohio State Buckeyes",
+              "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/194.png",
+              "spread": -10.0,
+              "source": "Draft Kings",
+              "teased": 0.0,
+              "band": "fav -12.5..-8.5",
               "prob": 0.7529,
               "push_risk": true
             },
@@ -7979,7 +7686,7 @@
               "team_name": "Kentucky Wildcats",
               "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/96.png",
               "spread": 3.0,
-              "source": "DraftKings",
+              "source": "Draft Kings",
               "teased": 13.0,
               "band": "dog +1.5..+3.5",
               "prob": 0.7529,
@@ -7993,7 +7700,7 @@
               "team_name": "Illinois Fighting Illini",
               "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/356.png",
               "spread": 3.0,
-              "source": "DraftKings",
+              "source": "Draft Kings",
               "teased": 13.0,
               "band": "dog +1.5..+3.5",
               "prob": 0.7529,
@@ -8007,7 +7714,7 @@
               "team_name": "Western Kentucky Hilltoppers",
               "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/98.png",
               "spread": 3.0,
-              "source": "DraftKings",
+              "source": "Draft Kings",
               "teased": 13.0,
               "band": "dog +1.5..+3.5",
               "prob": 0.7529,
@@ -8021,7 +7728,49 @@
               "team_name": "New Mexico State Aggies",
               "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/166.png",
               "spread": 3.0,
-              "source": "DraftKings",
+              "source": "Draft Kings",
+              "teased": 13.0,
+              "band": "dog +1.5..+3.5",
+              "prob": 0.7529,
+              "push_risk": true
+            },
+            {
+              "event_id": "401858317",
+              "matchup": "UVA @ VT",
+              "kickoff": "2026-11-28T20:00Z",
+              "team_abbr": "UVA",
+              "team_name": "Virginia Cavaliers",
+              "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/258.png",
+              "spread": 3.0,
+              "source": "Draft Kings",
+              "teased": 13.0,
+              "band": "dog +1.5..+3.5",
+              "prob": 0.7529,
+              "push_risk": true
+            },
+            {
+              "event_id": "401866475",
+              "matchup": "MASS @ BGSU",
+              "kickoff": "2026-11-28T20:30Z",
+              "team_abbr": "MASS",
+              "team_name": "Massachusetts Minutemen",
+              "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/113.png",
+              "spread": 3.0,
+              "source": "Draft Kings",
+              "teased": 13.0,
+              "band": "dog +1.5..+3.5",
+              "prob": 0.7529,
+              "push_risk": true
+            },
+            {
+              "event_id": "401860927",
+              "matchup": "ORST @ FRES",
+              "kickoff": "2026-11-29T03:00Z",
+              "team_abbr": "ORST",
+              "team_name": "Oregon State Beavers",
+              "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/204.png",
+              "spread": 3.0,
+              "source": "Draft Kings",
               "teased": 13.0,
               "band": "dog +1.5..+3.5",
               "prob": 0.7529,
@@ -8030,7 +7779,7 @@
           ],
           "per_leg_rate": 0.7723,
           "per_leg_stderr": 0.0147,
-          "provider": "DraftKings",
+          "provider": "Draft Kings",
           "provider_is_mine": false,
           "captured_at": null,
           "max_price_best": -147,
@@ -8146,7 +7895,7 @@
           "team_id": "87",
           "name": "Notre Dame Fighting Irish",
           "abbr": "ND",
-          "elo": 1848.6,
+          "elo": 1848.4,
           "games": 6,
           "prior_games": 12
         },
@@ -8295,14 +8044,6 @@
           "prior_games": 13
         },
         {
-          "team_id": "2636",
-          "name": "UTSA Roadrunners",
-          "abbr": "UTSA",
-          "elo": 1645.4,
-          "games": 6,
-          "prior_games": 13
-        },
-        {
           "team_id": "213",
           "name": "Penn State Nittany Lions",
           "abbr": "PSU",
@@ -8335,6 +8076,14 @@
           "prior_games": 14
         },
         {
+          "team_id": "2636",
+          "name": "UTSA Roadrunners",
+          "abbr": "UTSA",
+          "elo": 1630.7,
+          "games": 5,
+          "prior_games": 13
+        },
+        {
           "team_id": "326",
           "name": "Texas State Bobcats",
           "abbr": "TXST",
@@ -8362,17 +8111,9 @@
           "team_id": "235",
           "name": "Memphis Tigers",
           "abbr": "MEM",
-          "elo": 1607.1,
+          "elo": 1610.1,
           "games": 6,
           "prior_games": 13
-        },
-        {
-          "team_id": "2335",
-          "name": "Liberty Flames",
-          "abbr": "LIB",
-          "elo": 1607.1,
-          "games": 6,
-          "prior_games": 12
         },
         {
           "team_id": "2649",
@@ -8394,7 +8135,7 @@
           "team_id": "2567",
           "name": "SMU Mustangs",
           "abbr": "SMU",
-          "elo": 1592.1,
+          "elo": 1592.0,
           "games": 6,
           "prior_games": 13
         },
@@ -8410,9 +8151,17 @@
           "team_id": "195",
           "name": "Ohio Bobcats",
           "abbr": "OHIO",
-          "elo": 1590.7,
+          "elo": 1590.8,
           "games": 6,
           "prior_games": 13
+        },
+        {
+          "team_id": "2335",
+          "name": "Liberty Flames",
+          "abbr": "LIB",
+          "elo": 1590.7,
+          "games": 5,
+          "prior_games": 12
         },
         {
           "team_id": "2084",
@@ -8421,14 +8170,6 @@
           "elo": 1584.3,
           "games": 6,
           "prior_games": 12
-        },
-        {
-          "team_id": "2426",
-          "name": "Navy Midshipmen",
-          "abbr": "NAVY",
-          "elo": 1581.0,
-          "games": 6,
-          "prior_games": 13
         },
         {
           "team_id": "150",
@@ -8447,6 +8188,14 @@
           "prior_games": 14
         },
         {
+          "team_id": "2426",
+          "name": "Navy Midshipmen",
+          "abbr": "NAVY",
+          "elo": 1579.3,
+          "games": 6,
+          "prior_games": 13
+        },
+        {
           "team_id": "9",
           "name": "Arizona State Sun Devils",
           "abbr": "ASU",
@@ -8459,14 +8208,6 @@
           "name": "Houston Cougars",
           "abbr": "HOU",
           "elo": 1576.9,
-          "games": 6,
-          "prior_games": 13
-        },
-        {
-          "team_id": "249",
-          "name": "North Texas Mean Green",
-          "abbr": "UNT",
-          "elo": 1572.4,
           "games": 6,
           "prior_games": 13
         },
@@ -8495,10 +8236,18 @@
           "prior_games": 13
         },
         {
+          "team_id": "249",
+          "name": "North Texas Mean Green",
+          "abbr": "UNT",
+          "elo": 1568.5,
+          "games": 6,
+          "prior_games": 13
+        },
+        {
           "team_id": "193",
           "name": "Miami (OH) RedHawks",
           "abbr": "M-OH",
-          "elo": 1564.4,
+          "elo": 1564.6,
           "games": 6,
           "prior_games": 14
         },
@@ -8509,6 +8258,14 @@
           "elo": 1562.0,
           "games": 6,
           "prior_games": 14
+        },
+        {
+          "team_id": "151",
+          "name": "East Carolina Pirates",
+          "abbr": "ECU",
+          "elo": 1561.3,
+          "games": 7,
+          "prior_games": 13
         },
         {
           "team_id": "41",
@@ -8525,14 +8282,6 @@
           "elo": 1561.0,
           "games": 6,
           "prior_games": 12
-        },
-        {
-          "team_id": "151",
-          "name": "East Carolina Pirates",
-          "abbr": "ECU",
-          "elo": 1559.3,
-          "games": 7,
-          "prior_games": 13
         },
         {
           "team_id": "275",
@@ -8567,20 +8316,20 @@
           "prior_games": 13
         },
         {
-          "team_id": "202",
-          "name": "Tulsa Golden Hurricane",
-          "abbr": "TLSA",
-          "elo": 1544.6,
-          "games": 6,
-          "prior_games": 12
-        },
-        {
           "team_id": "2439",
           "name": "UNLV Rebels",
           "abbr": "UNLV",
           "elo": 1543.8,
           "games": 6,
           "prior_games": 14
+        },
+        {
+          "team_id": "202",
+          "name": "Tulsa Golden Hurricane",
+          "abbr": "TLSA",
+          "elo": 1543.2,
+          "games": 6,
+          "prior_games": 12
         },
         {
           "team_id": "2449",
@@ -8610,7 +8359,7 @@
           "team_id": "55",
           "name": "Jacksonville State Gamecocks",
           "abbr": "JXST",
-          "elo": 1526.8,
+          "elo": 1526.9,
           "games": 5,
           "prior_games": 14
         },
@@ -8642,7 +8391,7 @@
           "team_id": "338",
           "name": "Kennesaw State Owls",
           "abbr": "KENN",
-          "elo": 1507.8,
+          "elo": 1506.9,
           "games": 6,
           "prior_games": 14
         },
@@ -8703,26 +8452,26 @@
           "prior_games": 13
         },
         {
-          "team_id": "2655",
-          "name": "Tulane Green Wave",
-          "abbr": "TULN",
-          "elo": 1491.6,
-          "games": 7,
-          "prior_games": 13
-        },
-        {
           "team_id": "2226",
           "name": "Florida Atlantic Owls",
           "abbr": "FAU",
-          "elo": 1488.2,
+          "elo": 1489.0,
           "games": 6,
           "prior_games": 12
+        },
+        {
+          "team_id": "2655",
+          "name": "Tulane Green Wave",
+          "abbr": "TULN",
+          "elo": 1487.7,
+          "games": 7,
+          "prior_games": 13
         },
         {
           "team_id": "349",
           "name": "Army Black Knights",
           "abbr": "ARMY",
-          "elo": 1486.3,
+          "elo": 1486.5,
           "games": 6,
           "prior_games": 13
         },
@@ -8783,6 +8532,14 @@
           "prior_games": 13
         },
         {
+          "team_id": "58",
+          "name": "South Florida Bulls",
+          "abbr": "USF",
+          "elo": 1463.9,
+          "games": 5,
+          "prior_games": 13
+        },
+        {
           "team_id": "238",
           "name": "Vanderbilt Commodores",
           "abbr": "VAN",
@@ -8815,28 +8572,12 @@
           "prior_games": 12
         },
         {
-          "team_id": "58",
-          "name": "South Florida Bulls",
-          "abbr": "USF",
-          "elo": 1448.2,
-          "games": 6,
-          "prior_games": 13
-        },
-        {
           "team_id": "5",
           "name": "UAB Blazers",
           "abbr": "UAB",
-          "elo": 1443.5,
+          "elo": 1444.8,
           "games": 6,
           "prior_games": 12
-        },
-        {
-          "team_id": "98",
-          "name": "Western Kentucky Hilltoppers",
-          "abbr": "WKU",
-          "elo": 1438.3,
-          "games": 6,
-          "prior_games": 13
         },
         {
           "team_id": "59",
@@ -8860,6 +8601,14 @@
           "abbr": "PITT",
           "elo": 1429.7,
           "games": 6,
+          "prior_games": 13
+        },
+        {
+          "team_id": "98",
+          "name": "Western Kentucky Hilltoppers",
+          "abbr": "WKU",
+          "elo": 1423.0,
+          "games": 5,
           "prior_games": 13
         },
         {
@@ -8983,6 +8732,14 @@
           "prior_games": 13
         },
         {
+          "team_id": "2623",
+          "name": "Missouri State Bears",
+          "abbr": "MOST",
+          "elo": 1382.1,
+          "games": 6,
+          "prior_games": 13
+        },
+        {
           "team_id": "2572",
           "name": "Southern Miss Golden Eagles",
           "abbr": "USM",
@@ -9010,17 +8767,9 @@
           "team_id": "2393",
           "name": "Middle Tennessee Blue Raiders",
           "abbr": "MTSU",
-          "elo": 1371.3,
+          "elo": 1368.4,
           "games": 6,
           "prior_games": 12
-        },
-        {
-          "team_id": "2623",
-          "name": "Missouri State Bears",
-          "abbr": "MOST",
-          "elo": 1363.9,
-          "games": 7,
-          "prior_games": 13
         },
         {
           "team_id": "2306",
@@ -9034,7 +8783,7 @@
           "team_id": "189",
           "name": "Bowling Green Falcons",
           "abbr": "BGSU",
-          "elo": 1350.0,
+          "elo": 1350.2,
           "games": 6,
           "prior_games": 12
         },
@@ -9050,7 +8799,7 @@
           "team_id": "2229",
           "name": "Florida International Panthers",
           "abbr": "FIU",
-          "elo": 1340.0,
+          "elo": 1338.6,
           "games": 6,
           "prior_games": 13
         },
@@ -9074,7 +8823,7 @@
           "team_id": "16",
           "name": "Sacramento State Hornets",
           "abbr": "SAC",
-          "elo": 1302.4,
+          "elo": 1302.8,
           "games": 6,
           "prior_games": 1
         },
@@ -9130,23 +8879,23 @@
           "team_id": "242",
           "name": "Rice Owls",
           "abbr": "RICE",
-          "elo": 1264.0,
+          "elo": 1263.8,
           "games": 6,
           "prior_games": 13
-        },
-        {
-          "team_id": "2006",
-          "name": "Akron Zips",
-          "abbr": "AKR",
-          "elo": 1250.2,
-          "games": 6,
-          "prior_games": 12
         },
         {
           "team_id": "2309",
           "name": "Kent State Golden Flashes",
           "abbr": "KENT",
-          "elo": 1249.3,
+          "elo": 1250.9,
+          "games": 6,
+          "prior_games": 12
+        },
+        {
+          "team_id": "2006",
+          "name": "Akron Zips",
+          "abbr": "AKR",
+          "elo": 1250.6,
           "games": 6,
           "prior_games": 12
         },
@@ -9154,7 +8903,7 @@
           "team_id": "166",
           "name": "New Mexico State Aggies",
           "abbr": "NMSU",
-          "elo": 1237.4,
+          "elo": 1238.8,
           "games": 5,
           "prior_games": 12
         },
@@ -9170,7 +8919,7 @@
           "team_id": "2429",
           "name": "Charlotte 49ers",
           "abbr": "CLT",
-          "elo": 1236.1,
+          "elo": 1236.0,
           "games": 6,
           "prior_games": 12
         },
@@ -9178,7 +8927,7 @@
           "team_id": "218",
           "name": "Temple Owls",
           "abbr": "TEM",
-          "elo": 1188.5,
+          "elo": 1188.9,
           "games": 6,
           "prior_games": 12
         },
@@ -9191,18 +8940,18 @@
           "prior_games": 12
         },
         {
+          "team_id": "2534",
+          "name": "Sam Houston Bearkats",
+          "abbr": "SHSU",
+          "elo": 1144.4,
+          "games": 6,
+          "prior_games": 12
+        },
+        {
           "team_id": "2459",
           "name": "Northern Illinois Huskies",
           "abbr": "NIU",
           "elo": 1142.8,
-          "games": 7,
-          "prior_games": 12
-        },
-        {
-          "team_id": "2534",
-          "name": "Sam Houston Bearkats",
-          "abbr": "SHSU",
-          "elo": 1127.1,
           "games": 7,
           "prior_games": 12
         },
@@ -10054,7 +9803,7 @@
         "prior_games_used": 4495,
         "history_seasons": "2021-2025",
         "top_division_teams": 150,
-        "completed_games": 423,
+        "completed_games": 420,
         "upcoming_games": 69,
         "rated_teams": 241,
         "elo": {
